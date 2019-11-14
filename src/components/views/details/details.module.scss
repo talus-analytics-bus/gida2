@@ -1,0 +1,860 @@
+@import '../../../assets/styles/colors.scss';
+
+$drawer-width: 360px;
+$header-height: 100px;
+$button-width: 200px;
+$spacing: 20px;
+.wedgeTooltip {
+  span {
+    font-weight: bold;
+  }
+}
+.details {
+  display: flex;
+  flex-flow: row;
+  height: 100%;
+
+  .wedgeLabels {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    color: $dark-grey;
+
+    flex-flow: row;
+    font-weight: normal;
+    font-size: .65em;
+    line-height: 1.2;
+  }
+  .labelRight {
+    text-align: right;
+  }
+
+  .sidebars {
+    display: flex;
+    flex-flow: column;
+    // width: auto;
+    // min-width: 508px;
+    // max-width: 30%;
+    // min-width: 500px;
+
+    .sidebar {
+      &:not(:first-child) {
+        margin-top: 5px;
+      }
+      &:first-child {
+        .item .content .subsection .title {
+          max-width: unset;
+        }
+      }
+    }
+  }
+
+  .sidebar {
+    display: flex;
+    flex-flow: column;
+    background-color: #f1f1f1;
+    padding: $spacing;
+    margin-left: $spacing*2;
+    margin-right: $spacing*2;
+
+    > .title {
+      flex-flow: row;
+      align-items: center;
+    }
+  }
+  .title {
+    // Name of country or "Global caseload"
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+
+    font-family: 'Raleway', serif;
+    font-weight: bold;
+    line-height: 1;
+    font-size: 1.75em;
+    color: black;
+
+    .flag {
+      height: 75px;
+      margin-right: $spacing;
+    }
+  }
+
+  .map {
+
+    height: 350px;
+    width: 513px;
+
+    // TODO confirm cross-browser compat.
+    transform: scale(.75);
+    transform-origin: top center;
+    // margin-bottom: -90px;
+    // margin-right: -125px;
+    margin: 0 -62.5px -90px -52.5px;
+
+    &, & * { cursor: default };
+
+    img {
+
+    }
+
+  }
+
+  .jee.item {
+    .title {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      flex-flow: row;
+
+      // .text {
+      //   max-width: 50%;
+      // }
+
+      .chart {
+        display: flex;
+        flex-flow: row;
+        align-items: baseline;
+        justify-content: flex-end;
+
+        .trapezoidContainer {
+          display: flex;
+          flex-flow: column;
+          align-items: center;
+          justify-content: center;
+          margin-top: auto;
+          margin-bottom: 10px;
+          position: relative;
+          width: 45px;
+          text-align: center;
+
+          .legend.trapezoid {
+            &.jeeCircle {
+              .jeeScoreValue {
+                font-size: .5em;
+                text-align: center;
+              }
+              & + .jeeCircleLegendLabel {
+                position: relative;
+                font-size: .6em;;
+                color: black;
+                font-weight: normal;
+                font-family: 'Open Sans', sans-serif;
+                text-align: center;
+                ;
+                &.labelTop {
+                  top: calc(-37px - 1.5em);
+                }
+                &.labelBottom {
+                  bottom: -.5em;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .itemContainer {
+    min-width: 410px;
+  }
+  .itemContainer:not(:first-child) {
+    margin-top: $spacing;
+  }
+
+  .item {
+    display: flex;
+    flex-flow: column;
+    position: relative;
+
+    .name {
+      display: flex;
+      flex-flow: column;
+
+    }
+
+    .title {
+      color: $dark-grey;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.298em;
+      font-weight: bold;
+
+      // > span {
+      //   display: flex;
+      // }
+
+      .info {
+        // TODO
+        img {
+          // TODO
+        }
+      }
+    }
+
+    .content {
+      display: flex;
+      flex-flow: row;
+      position: relative;
+      width: 100%;
+      // justify-content: space-between;
+
+      > span {
+        width: 40%;
+      }
+      // .stackedValues {
+      //   display: none;
+      // }
+
+      .value2Content {
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+        margin-top: 10px;
+        font-size: .8em;
+      }
+
+      &.jee {
+        flex-flow: column;
+
+        .subsection {
+          display: flex;
+          flex-flow: row;
+          justify-content: space-between;
+          align-items: flex-start;
+          background-color: white;
+          padding: 10px;
+          margin: 5px 0;
+
+          min-height: 51px;
+
+          .jeeChart {
+            display: flex;
+            flex-flow: column;
+            align-items: flex-end;
+
+            .jeeLabel {
+              font-family: 'rawline', serif;
+              font-weight: bold;
+              text-transform: uppercase;
+              text-align: right;
+              margin-left: auto;
+              font-size: 1.2em;
+              margin-bottom: 5px;
+              line-height: 1;
+
+              .jeeScoreValue {
+                font-size: .8em;
+              }
+            }
+          }
+        }
+        .subsection {
+          &:first-child {
+            margin-top: 20px;
+          }
+
+          .title {
+            font-size: 1.1em;
+            max-width: 50%;
+          }
+        }
+      }
+
+      .value {
+        font-size: 2em;
+      }
+      .label {
+        font-size: 1.1em;
+      }
+      .value {
+        color: black;
+        font-family: 'rawline', serif;
+        font-weight: bold;
+
+        .jee {
+          // padding-left: 5px;
+          // padding-bottom: 5px;
+          margin-top: 5px;
+          line-height: 2.5;
+          font-size: .8em;
+
+          display: flex;
+
+          $jeeBlockSize: 13.6px;
+          .jeeBlocks {
+            margin-right: 5px;
+            .jeeBlock {
+
+              // position: absolute;
+              height: $jeeBlockSize;
+              width: $jeeBlockSize;
+              margin-bottom: 1px;
+              transition: background-color 1s;
+              &:last-child {
+                margin-bottom: 0;
+              }
+              // border: 1px solid #f1f1f1;
+            }
+          }
+        }
+      }
+      .label {
+        color: $dark-grey;
+        font-family: 'Open Sans', sans-serif;
+      }
+      .noCases {
+        font-style: italic;
+        color: $dark-grey;
+      }
+      .chart {
+        display: flex;
+        flex-flow: row;
+        position: relative;
+
+        &.shapes {
+          flex-flow: column;
+          justify-content: center;
+          font-size: 24.6px;
+        }
+
+        // Trapezoid sizing for normal wedge chart
+        $wedge-width: 119px;
+        // $wedge-width: 78.5px;
+        $wedge-height: 8px;
+
+        $wedge-height-btm: $wedge-height;
+        $wedge-height-top: $wedge-height;
+
+        @for $i from 0 through 4 {
+          .trapezoid-#{$i+1} {
+            .bottom {
+              height: $wedge-height-top*($i + 1);
+            }
+          }
+        }
+        .trapezoid {
+          margin-right: 1px;
+          .top {
+            height: 0;
+            border-width:0 0 $wedge-height-btm $wedge-width;
+            border-style:solid;
+            border-color:transparent $light-grey-2 $light-grey-2 transparent;
+          }
+
+          .bottom {
+            background-color: $light-grey-2;
+          }
+        }
+
+        $rect-height: 30px;
+        .rect {
+          font-family: 'rawline', serif;
+          font-weight: 600;
+          font-size: 1em;
+          background-color: $light-grey-2;
+          width: $rect-height*2.06;
+          height: $rect-height + 3px;
+          text-align: center;
+          // padding-bottom: 2px;
+          line-height: $rect-height - 2px;
+
+          // border: 2.5px solid transparent;
+
+          // &.active {
+          //   box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+          //   -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+          // }
+        }
+
+        &.vaccChart {
+          .gutter {
+            width: 608px;
+          }
+          .active {
+            position: absolute;
+            left: 0;
+          }
+          .barValUnit {
+            font-size: .7em;
+            font-weight: normal;
+            font-family: 'Gotham Book', sans-serif;
+          }
+        }
+
+        &.measlesWedgeChart {
+          .trapezoidContainer {
+            &:not(:first-child) {
+              margin-left: 2px;
+            }
+            .rect {
+              width: 120px;
+              &.active {
+                // background-color: $value-red;
+                box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+                -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              }
+            }
+          }
+        }
+
+        .trapezoidContainers {
+          display: flex;
+          .trapezoidContainer {
+            display: flex;
+            // margin-top: auto;
+
+            .labelLeft, .labelRight {
+              bottom: calc(-2em - 10px);
+            }
+          }
+        }
+        .trapezoid {
+
+          font-family: 'rawline', serif;
+          font-weight: 600;
+          font-size: 1.4em;
+          // margin-right: 2px;
+          margin-top: auto;
+          text-align: center;
+          // padding-bottom: 2px;
+          // line-height: $rect-height - 2px;
+          // line-height: 30px;
+
+          .shape {
+            margin:0 auto;
+          }
+
+          &.active {
+            .bottom {
+              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              background-color: $value-red;
+            }
+            .top {
+              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              border-color:transparent $value-red $value-red transparent;
+            }
+          }
+        }
+
+        // .labelLeft, .labelRight {
+        //   position: absolute;
+        //   white-space: nowrap;
+        //   line-height: 1;
+        //   margin-top: 10px;
+        // }
+        // .labelLeft {}
+        // .labelRight {
+        //   right: 0;
+        //   text-align: right;
+        // }
+      }
+    }
+  }
+
+  // $itemMaxWidth: 1140px;
+  .main {
+    margin-right: $spacing*2;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    width: 100%;
+    // width: calc(67% - 0px);
+    // width: 100%;
+
+    .source {
+      text-align: right;
+      margin-left: auto;
+    }
+
+    .itemContainer {
+      &:not(:last-child) {
+        // &:first-child {
+        border-bottom: 1px solid #b2b2b2;
+        padding-bottom: 10px;
+      }
+      &:first-child {
+        margin-top: 18px;
+      }
+      .item {
+        // max-width: $itemMaxWidth;
+        .title {
+          font-family: 'rawline', sans-serif;
+          font-size: 1.298em;
+          margin-bottom: 20px;
+        }
+      }
+    }
+  }
+
+  $slidingLineWidth: auto;
+  $slidingLineHeight: 50vh;
+  // $slidingLineWidth: 750px;
+  .slidingLineContainer {
+    width: 100%;
+    // width: calc(100% - 60vw);
+    // width: 50vw;
+    // min-width: 300px;
+    // max-width: 100%;
+    // width: $slidingLineWidth;
+    // width: 100%;
+
+    .dataToggles {
+      display: none; // do not show them for now
+      // display: flex;
+      flex-flow: column;
+      float: right;
+      position: absolute;
+      top: 30px;
+      right: 0;
+      // bottom: 0;
+
+
+      z-index: 2;
+      font-size: .9em;
+      font-family: 'Open Sans', sans-serif;
+      color: $dark-grey;
+
+      cursor: default;
+      margin-bottom: 10px;
+      // span {
+      //   margin: 0 15px 0 0;
+      // }
+
+      .dataToggle {
+        input {
+          vertical-align: middle;
+          margin: 0 5px 5px 5px;
+        }
+        // label {
+        //   margin-right: 15px;
+        // }
+      }
+    }
+    .slidingLineLegend {
+      display: flex;
+      flex-flow: row;
+      margin-top: 10px;
+      // font-weight: bold;
+      font-size: 15.5px;
+      .entry {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        margin-right: 20px;
+        .symbol {
+          width: 20px;
+          border-top: 2px solid black;
+          margin-right: 5px;
+          &.monthlyIncidence {
+            stroke: $value-red;
+            stroke-width: 3px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            height: 0;
+          }
+          &.vaccinationCoverage {
+            stroke: darken(#5781ab, 15%);
+            // stroke: #333333;
+            stroke-width: 1.5px;
+            stroke-dasharray: 6, 6;
+            stroke-linecap: square;
+            height: 0;
+          }
+          &.noIncidence {
+            fill: #e6e6e6;
+          }
+        }
+        .label {
+          font-size: 1em;
+          margin-left: 5px;
+        }
+      }
+    }
+    button {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .125s;
+      margin: 0;
+      margin-left: auto;
+    }
+    .slidingLine {
+      height: $slidingLineHeight;
+      // height: $slidingLineWidth/2.2;
+      width: $slidingLineWidth;
+      // margin-left: 20px;
+      svg {
+        margin-top: 10px;
+      }
+      // Other styles for this chart are in slidingline.module.scss
+    }
+  }
+
+  .slidingLineChartWrapper {
+    position: relative;
+  }
+  // Reset button
+  button {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+#slidingLineTooltip {
+  .tooltipContainer {
+    background-color: white !important;
+    .tooltipContent {
+      background-color: white !important;
+      color:red;
+      span { color: red;}
+    }
+  }
+}
+
+.left {
+  width: auto;
+}
+
+.right {
+  display: flex;
+  flex-flow: column;
+  width: 50%;
+}
+
+// Delta styling, matching geomPopup.module.scss
+.delta {
+  font-size: initial;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: flex-start;
+  top: 5px;
+  position: relative;
+
+  .deltaBadge {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    background-color: $light-grey-2;
+    border-radius: $border-radius;
+    padding: 5px;
+
+    font-size: 15px;
+    .delta-value, i {
+      color: white;
+    }
+    .delta-value {
+      font-weight: 500;
+    }
+  }
+
+  i {
+    // size?
+    font-size: 1.7em;
+  }
+  .delta-value {
+    font-family: 'rawline', serif;
+    font-weight: bold;
+    .sign {
+      font-size: 1.852em;
+    }
+    .num {
+      font-size: 1.405em;
+      line-height: 0; // Required for vertical alignment with other divs
+    }
+  }
+  .delta-text {
+    font-size: .75em;
+    color: $dark-grey;
+    font-family: 'Gotham Book', serif;
+    margin-left: 5px;
+  }
+}
+// .delta {
+//   &.inc {
+//     i {
+//       transform: rotate(-90deg);
+//       transform-origin: center;
+//     }
+//     i, .delta-value {
+//       color: $value-red;
+//     }
+//   }
+//   &.dec {
+//     i {
+//       transform: rotate(90deg);
+//     }
+//     i, .delta-value {
+//       color: $value-green;
+//     }
+//   }
+//   &.same {
+//     .delta-text { margin-left: 5px;}
+//     .delta-value, i {
+//       display: none;
+//     }
+//   }
+// }
+.deltaBadge {
+  // margin-right: auto;
+  &.inc {
+    i {
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+    background-color: $value-red;
+  }
+  &.dec {
+    i {
+      transform: rotate(90deg);
+    }
+    background-color: $value-green;
+  }
+  &.same {
+    .delta-text { margin-left: 5px;}
+    display: none;
+  }
+  &.notCalc {
+    i { display: none; }
+    .num {
+      color: $grey;
+      font-size: 1.1em;
+    }
+    line-height: 1.1;
+    width: min-content;
+    // background-color: $grey;
+  }
+}
+
+// JEE block/trapezoid colors
+.jeeBlock {
+  background-color: #cecece;
+  &.green { transition: background-color 1s; background-color: $jee-green; }
+  &.lightgreen { background-color: $jee-green-light; }
+  &.yellow { background-color: $jee-yellow; }
+  &.lightyellow { background-color: $jee-yellow-light; }
+  &.red { background-color: $jee-red; }
+  &.gray { background-color: $jee-gray; }
+}
+.details .item.jee .jeeChart {
+
+  $colors: $jee-green, $jee-green-light, $jee-yellow, $jee-yellow-light, $jee-red, $jee-gray;
+  $colorNames: 'green', 'lightgreen', 'yellow', 'lightyellow', 'red', 'gray';
+
+  @for $i from 1 through length($colors) {
+    $color: nth($colors, $i);
+    $selector: '&.' + nth($colorNames, $i);
+    #{$selector} {
+      color: $color;
+      .chart .trapezoid.active {
+        .bottom { background-color: $color; }
+        .top { border-color: transparent $color $color transparent; }
+        + .jeeScoreValue { color: $color; }
+        &.jeeCircle { background-color: $color; }
+      }
+    }
+    .chart .legend.trapezoid-#{length($colors)-$i} {
+      .bottom, &.jeeCircle { background-color: $color; }
+      .top { border-color: transparent $color $color transparent; }
+    }
+  }
+
+  // JEE chart specific trap sizing and styling
+  .chart .trapezoidContainer {
+    &:not(:first-child) {
+      margin-left: 5px;
+    }
+  }
+  $wedge-width: 30px;
+
+  .chart .trapezoid {
+    color: white;
+    font-size: 35px;
+    font-weight: bold;
+    &.jeeCircle {
+      height: $wedge-width;
+      width: $wedge-width;
+      border-radius: 9999px;
+      // line-height: $wedge-width;
+      background-color: $light-grey-2;
+
+      &.legend {
+        height: 37px;
+        width: 37px;
+        // line-height: $wedge-width*1.25;
+      }
+    }
+    &.active {
+      .top, .bottom {
+        box-shadow: none;
+        -webkit-box-shadow: none;
+      }
+    }
+
+    margin-right: 0;
+  }
+
+  .chart {
+    margin-bottom: 0;
+
+    $wedge-height: 8px;
+
+    $wedge-height-btm: $wedge-height;
+    $wedge-height-top: $wedge-height;
+
+    @for $i from 0 through 4 {
+      .trapezoid-#{$i+1} {
+        .bottom {
+          height: $wedge-height-top*$i;
+        }
+      }
+    }
+    .trapezoid {
+      margin-right: 1px;
+      .top {
+        height: 0;
+        border-width:0 0 $wedge-height-btm $wedge-width;
+        border-style:solid;
+        border-color:transparent $light-grey-2 $light-grey-2 transparent;
+      }
+
+      .bottom {
+        background-color: $light-grey-2;
+      }
+    }
+
+    $wedge-width: 30px;
+    $wedge-height: 5px;
+
+    $wedge-height-btm: $wedge-height;
+    $wedge-height-top: $wedge-height;
+
+    @for $i from 0 through 4 {
+      .legend.trapezoid-#{$i+1} {
+        .bottom {
+          height: $wedge-height-top*$i;
+        }
+      }
+    }
+
+    .jeeScoreValue {
+      line-height: 28px;
+      font-size: .5em;
+    }
+    .legend {
+      &.trapezoid {
+        .jeeScoreValue {
+          line-height: 37px;
+        }
+        margin-right: 0;
+        .top {
+          height: 0;
+          border-width:0 0 $wedge-height-btm $wedge-width;
+        }
+      }
+    }
+  }
+}

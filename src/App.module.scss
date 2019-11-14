@@ -1,0 +1,64 @@
+@import './assets/styles/colors.scss';
+// $alert-height: 60px;
+$logo-height: 70px;
+
+.app {
+  display: grid;
+  grid-template-columns: auto; // ensures header resizes correctly if window size is changed
+  // Subtract header and foot from main content
+  grid-template-rows: 80px minmax(calc(100vh - 80px - 95px), auto);
+  &.windowed {
+    height: 100%;
+    > div:nth-child(2) > div {
+      height: 100% !important;
+      width: 100% !important;
+    }
+  }
+
+  @media #{$phone} {
+    * {
+      max-width: $phone-width;
+    }
+  }
+
+}
+
+.watermark {
+  background-image: url('./assets/images/watermark/watermark-med.png');
+  background-color: transparent;
+  opacity: 0.3;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 600;
+  pointer-events: none;
+  top: -30px;
+}
+
+$spacing: 15px;
+.modal {
+  padding: $spacing;
+  border-radius: 0;
+  .header {
+    font-family: 'rawline', serif;
+    font-size: 2.19em;
+    font-weight: bold;
+    line-height: 1.1;
+    color: #132338;
+    padding-bottom: $spacing*2;
+    border-bottom: 2px solid #6d6e70;
+  }
+  .content {
+    .text {
+      font-family: 'Gotham Book', sans-serif;
+      font-size: 1.19em;
+      line-height: 1.5;
+      p {
+        margin: $spacing*2 0;
+      }
+    }
+    .button {
+      // See index.scss
+    }
+  }
+}
