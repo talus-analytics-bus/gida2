@@ -35,16 +35,22 @@ import MiniLine from "./components/views/global/content/MiniLine.js";
 import Scatter from "./components/views/global/content/Scatter.js";
 import PagingBar from "./components/views/global/content/PagingBar.js";
 
+// testing components
+import TopTable from "./components/chart/table/TopTable.js";
+
 //: React.FC
 const App = () => {
   // Track whether the component is still loading.
   const [loading, setLoading] = React.useState(true);
+  const [topTableData, setTopTableData] = React.useState([]);
 
   async function getAppData() {
+    // TEST: Get top funders list
     const testFb = await FlowBundleQuery({
       focus_node_type: "source",
-      focus_node_ids: [],
-      flow_type_ids: [1, 2, 3, 4],
+      focus_node_ids: null,
+      focus_node_category: ["country"],
+      flow_type_ids: [1, 2],
       start_date: "2014-01-01",
       end_date: "2019-12-31",
       by_neighbor: false,
@@ -64,6 +70,7 @@ const App = () => {
     });
     console.log("testFb");
     console.log(testFb);
+    setTopTableData(testFb);
 
     console.log("testF");
     console.log(testF);
@@ -73,6 +80,25 @@ const App = () => {
   React.useEffect(() => {
     getAppData();
   }, []);
+
+  const testColNames = ["Name", "Disbursed", "Committed"];
+  const valueCols = ["disbursed_funds", "committed_funds"];
+
+  const tableRows = [];
+  topTableData.forEach(node => {
+    const row = {
+      name: node.focus_node_id
+    };
+    node.flow_bundles.forEach(fb => {
+      if (valueCols.includes(fb.flow_type)) {
+        row[fb.flow_type] = fb.focus_node_weight;
+      }
+    });
+    tableRows.push(row);
+  });
+
+  console.log("tableRows");
+  console.log(tableRows);
 
   // JSX for main app.
   return (
@@ -85,7 +111,7 @@ const App = () => {
               exact
               path="/"
               component={() => {
-                return <div>Hello, world!</div>;
+                return <TopTable colNames={testColNames} rows={tableRows} />;
               }}
             />
           </div>

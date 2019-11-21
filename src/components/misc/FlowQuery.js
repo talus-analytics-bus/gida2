@@ -9,6 +9,7 @@ import Util from "./Util.js";
 const FlowQuery = async function({
   focus_node_type,
   focus_node_ids = null,
+  focus_node_category = null,
   flow_type_ids,
   start_date,
   end_date,
@@ -22,6 +23,10 @@ const FlowQuery = async function({
     focus_node_type: focus_node_type,
     focus_node_ids:
       focus_node_ids !== null ? focus_node_ids.join(",") : focus_node_ids,
+    focus_node_category:
+      focus_node_category !== null
+        ? focus_node_category.join(",")
+        : focus_node_category,
     flow_type_ids: flow_type_ids.join(","),
     return_child_flows: return_child_flows,
     bundle_child_flows: bundle_child_flows,

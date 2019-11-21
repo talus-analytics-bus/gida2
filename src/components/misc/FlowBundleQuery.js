@@ -8,7 +8,8 @@ import Util from "./Util.js";
 
 const FlowBundleQuery = async function({
   focus_node_type,
-  focus_node_ids = [],
+  focus_node_ids = null,
+  focus_node_category = null,
   flow_type_ids,
   start_date,
   end_date,
@@ -19,7 +20,12 @@ const FlowBundleQuery = async function({
   // Define URL parameters //
   const params = {
     focus_node_type: focus_node_type,
-    focus_node_ids: focus_node_ids.join(","),
+    focus_node_ids:
+      focus_node_ids !== null ? focus_node_ids.join(",") : focus_node_ids,
+    focus_node_category:
+      focus_node_category !== null
+        ? focus_node_category.join(",")
+        : focus_node_category,
     flow_type_ids: flow_type_ids.join(","),
     by_neighbor: by_neighbor
   };
