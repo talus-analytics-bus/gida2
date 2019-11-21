@@ -1,11 +1,6 @@
 import axios from 'axios'
 import Util from './Util.js'
 
-// var API_BASE = process.env.REACT_APP_API_BASE_URL
-// if (typeof API_BASE === 'undefined') {
-//   API_BASE = 'http://localhost:5002'
-// }
-
 /**
  * Get observation data from API. Updates the observation data and loading status
  * when complete.
