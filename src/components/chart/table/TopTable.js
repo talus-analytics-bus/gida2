@@ -22,8 +22,8 @@ const TopTable = ({ colNames, rows, ...props }) => {
         {rows.map(r => (
           <tr>
             <td>{r.name}</td>
-            <td>{Util.formatSI(r.disbursed_funds || 0)} USD</td>
-            <td>{Util.formatSI(r.committed_funds || 0)} USD</td>
+            <td>{Util.money(r.disbursed_funds || 0)}</td>
+            <td>{Util.money(r.committed_funds || 0)}</td>
           </tr>
         ))}
       </tbody>
