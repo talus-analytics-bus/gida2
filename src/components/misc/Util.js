@@ -3,8 +3,14 @@ import * as d3 from "d3/dist/d3.min";
 // Utility functions and data.
 const Util = {};
 
-// List of countries that report data yearly only.
-Util.yearlyReportIso2 = ["VE"];
+// Executes queries in parallel and returns all results when completed.
+Util.getQueryResults = async queries => {
+  const results = {};
+  for (let q in queries) {
+    results[q] = await queries[q];
+  }
+  return results;
+};
 
 // Calculate age difference in months from text datetime strings.
 // Assumes a is more recent than b

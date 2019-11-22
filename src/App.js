@@ -37,28 +37,61 @@ import Scatter from "./components/views/global/content/Scatter.js";
 import PagingBar from "./components/views/global/content/PagingBar.js";
 
 // testing components
-import TopTable from "./components/chart/table/TopTable.js";
+import SimpleTable from "./components/chart/table/SimpleTable.js";
 
 //: React.FC
 const App = () => {
   // Track whether the component is still loading.
   const [loading, setLoading] = React.useState(true);
-  const [topTableData, setTopTableData] = React.useState([]);
+  const [funderData, setFunderData] = React.useState([]);
+  const [recipientData, setRecipientData] = React.useState([]);
+  const [countryFunderData, setCountryFunderData] = React.useState([]);
+  const [countryRecipientData, setCountryRecipientData] = React.useState([]);
+  const [networkData, setNetworkData] = React.useState([]);
   const [flowTypeInfo, setFlowTypeInfo] = React.useState([]);
 
   async function getAppData() {
-    // TEST: Get top funders list
-    const testFb = await FlowBundleQuery({
-      focus_node_type: "source",
+    const baseQueryParams = {
       focus_node_ids: null,
+      focus_node_type: "source",
       // focus_node_category: ["country"],
-      flow_type_ids: [1, 2],
+      flow_type_ids: [1, 2, 3, 4],
       start_date: "2014-01-01",
       end_date: "2019-12-31",
       by_neighbor: false,
       filters: {},
       summaries: {}
-    });
+    };
+    const queries = {
+      funderData: await FlowBundleQuery({
+        ...baseQueryParams,
+        focus_node_type: "source"
+      }),
+      recipientData: await FlowBundleQuery({
+        ...baseQueryParams,
+        focus_node_type: "target"
+      }),
+      countryFunderData: await FlowBundleQuery({
+        ...baseQueryParams,
+        focus_node_type: "source",
+        focus_node_category: ["country"]
+      }),
+      countryRecipientData: await FlowBundleQuery({
+        ...baseQueryParams,
+        focus_node_type: "target",
+        focus_node_category: ["country"]
+      }),
+      networkData: await FlowBundleQuery({
+        ...baseQueryParams,
+        focus_node_type: "source",
+        by_neighbor: true
+      })
+    };
+
+    const results = await Util.getQueryResults(queries);
+    console.log("results");
+    console.log(results);
+
     // const testF = await FlowQuery({
     //   focus_node_type: "source",
     //   focus_node_ids: null,
@@ -70,9 +103,11 @@ const App = () => {
     //   bundle_child_flows_by_neighbor: false,
     //   filters: {}
     // });
-    console.log("testFb");
-    console.log(testFb);
-    setTopTableData(testFb);
+    setFunderData(results.funderData);
+    setRecipientData(results.recipientData);
+    setCountryFunderData(results.countryFunderData);
+    setCountryRecipientData(results.countryRecipientData);
+    setNetworkData(results.networkData);
 
     setFlowTypeInfo(
       await FlowTypeQuery({
@@ -86,53 +121,197 @@ const App = () => {
   }
 
   React.useEffect(() => {
+    console.log("getAppData");
     getAppData();
   }, []);
 
-  const testColNames = ["Name", "Disbursed", "Committed"];
-  const valueCols = ["disbursed_funds", "committed_funds"];
+  // Define what columns to show in tables
+  const valueColsInkind = ["provided_inkind", "committed_inkind"];
+  const valueColsFinancial = ["disbursed_funds", "committed_funds"];
+  const valueColsAssistance = valueColsInkind.concat(valueColsFinancial);
 
-  const tableRows = [];
-  topTableData.forEach(node => {
-    const row = {
-      name: node.focus_node_id
-    };
-    node.flow_bundles.forEach(fb => {
-      if (valueCols.includes(fb.flow_type)) {
-        row[fb.flow_type] = fb.focus_node_weight;
-      }
+  /**
+   * TODO move this into the simpletable component
+   * Return row data for tables of top funders/recipients, and other tables.
+   * @method getTableRows
+   * @param  {[type]}     valueCols [description]
+   * @param  {[type]}     data      [description]
+   * @return {[type]}               [description]
+   */
+  const getTableRows = ({ valueCols, data }) => {
+    return data;
+    const tableRows = [];
+    data.forEach(node => {
+      const row = {
+        name: node.focus_node_id
+      };
+      node.flow_bundles.forEach(fb => {
+        if (valueCols.includes(fb.flow_type)) {
+          row[fb.flow_type] = fb.focus_node_weight;
+        }
+      });
+      tableRows.push(row);
     });
-    tableRows.push(row);
-  });
+    return tableRows;
+  };
 
-  console.log("flowTypeInfo");
-  console.log(flowTypeInfo);
+  // /**
+  //  * TODO at minimum move this into a NetworkMap component that just returns table for now
+  //  * TODO move this data processing to API (selected via "format" argument)
+  //  * TODO find way to nest within regions
+  //  * @method getNetworkFlows
+  //  * @param  {[type]}        valueCols [description]
+  //  * @param  {[type]}        data      [description]
+  //  * @return {[type]}                  [description]
+  //  */
+  // const getNetworkFlows = ({ valueCols, data }) => {
+  //   const networkFlows = [];
+  //   data.forEach(node => {
+  //     node.flow_bundles.forEach(fb => {
+  //       valueCols.forEach(vc => {
+  //         if (vc === fb.flow_type) {
+  //           fb.flow_bundles.forEach(fb2 => {
+  //             // TODO Flow targets should be country or group!
+  //             const flow = {
+  //               source: node.focus_node_id,
+  //               source_parent_1: "TODO",
+  //               source_parent_2: "TODO",
+  //               flow_type: vc
+  //             };
+  //             flow.target = fb2.target.join(", ");
+  //             flow.target_parent_1 = "TODO";
+  //             flow.target_parent_2 = "TODO";
+  //             flow[vc] = fb2.focus_node_weight;
+  //             networkFlows.push(flow);
+  //           });
+  //         }
+  //       });
+  //     });
+  //   });
+  //   return networkFlows;
+  // };
+  //
+  // const networkFlows = getNetworkFlows({
+  //   valueCols: valueColsAssistance,
+  //   data: networkData
+  // });
+  // console.log("networkFlows");
+  // console.log(networkFlows);
+
+  const limit = 50;
+
+  const baseCols = [
+    {
+      name: "name",
+      display_name: "Name"
+    }
+  ];
+
+  const baseColsNetwork = [
+    {
+      name: "source",
+      display_name: "Funder"
+    },
+    {
+      name: "target",
+      display_name: "Recipient"
+    }
+  ];
+
+  const getColInfo = ({ valueCols, baseCols, flowTypeInfo }) => {
+    const valueColInfo = flowTypeInfo.filter(ft => valueCols.includes(ft.name));
+    return baseCols.concat(valueColInfo);
+  };
 
   // JSX for main app.
-  return (
-    <div>
-      <BrowserRouter>
-        <Nav />
-        <Switch>
-          <div>
-            <Route
-              exact
-              path="/"
-              component={() => {
-                return (
-                  <TopTable
-                    metrics={["disbursed_funds", "committed_funds"]}
-                    flowTypeInfo={flowTypeInfo}
-                    rows={tableRows}
-                  />
-                );
-              }}
-            />
-          </div>
-        </Switch>
-      </BrowserRouter>
-    </div>
-  );
+  if (loading) return <div />;
+  else
+    return (
+      <div>
+        <BrowserRouter>
+          <Nav />
+          <Switch>
+            <div>
+              <Route
+                exact
+                path="/"
+                component={() => {
+                  return (
+                    <div>
+                      <h1>Top {limit} funders (sorted by disbursed funds)</h1>
+                      <SimpleTable
+                        colInfo={getColInfo({
+                          valueCols: valueColsAssistance,
+                          baseCols: baseCols,
+                          flowTypeInfo: flowTypeInfo
+                        })}
+                        data={funderData}
+                        limit={limit}
+                      />
+                      <hr />
+                      <h1>
+                        Top {limit} recipients (sorted by disbursed funds)
+                      </h1>
+                      <SimpleTable
+                        colInfo={getColInfo({
+                          valueCols: valueColsAssistance,
+                          baseCols: baseCols,
+                          flowTypeInfo: flowTypeInfo
+                        })}
+                        data={recipientData}
+                        limit={limit}
+                      />
+                      <hr />
+                      <h1>
+                        Top {limit} country funders (sorted by disbursed funds)
+                      </h1>
+                      <SimpleTable
+                        colInfo={getColInfo({
+                          valueCols: valueColsAssistance,
+                          baseCols: baseCols,
+                          flowTypeInfo: flowTypeInfo
+                        })}
+                        data={countryFunderData}
+                        limit={limit}
+                      />
+                      <hr />
+                      <h1>
+                        Top {limit} country recipients (sorted by disbursed
+                        funds)
+                      </h1>
+                      <SimpleTable
+                        colInfo={getColInfo({
+                          valueCols: valueColsAssistance,
+                          baseCols: baseCols,
+                          flowTypeInfo: flowTypeInfo
+                        })}
+                        data={countryRecipientData}
+                        limit={limit}
+                      />
+                      <h1>Flows of disbursed funds</h1>
+                      {
+                        // <SimpleTable
+                        //   colInfo={getColInfo({
+                        //     valueCols: ["disbursed_funds"],
+                        //     baseCols: baseColsNetwork,
+                        //     flowTypeInfo: flowTypeInfo
+                        //   })}
+                        //   rows={getNetworkFlows({
+                        //     valueCols: ["disbursed_funds"],
+                        //     data: networkData
+                        //   })}
+                        //   limit={limit}
+                        // />
+                      }
+                    </div>
+                  );
+                }}
+              />
+            </div>
+          </Switch>
+        </BrowserRouter>
+      </div>
+    );
 };
 
 export default App;
