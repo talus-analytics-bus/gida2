@@ -29,6 +29,7 @@ import "material-design-icons/iconfont/material-icons.css";
 // queries
 import FlowBundleQuery from "./components/misc/FlowBundleQuery.js";
 import FlowQuery from "./components/misc/FlowQuery.js";
+import FlowTypeQuery from "./components/misc/FlowTypeQuery.js";
 
 // charts
 import MiniLine from "./components/views/global/content/MiniLine.js";
@@ -43,11 +44,12 @@ const App = () => {
   // Track whether the component is still loading.
   const [loading, setLoading] = React.useState(true);
   const [topTableData, setTopTableData] = React.useState([]);
+  const [flowTypeInfo, setFlowTypeInfo] = React.useState([]);
 
   async function getAppData() {
     // TEST: Get top funders list
     const testFb = await FlowBundleQuery({
-      focus_node_type: "target",
+      focus_node_type: "source",
       focus_node_ids: null,
       // focus_node_category: ["country"],
       flow_type_ids: [1, 2],
@@ -57,23 +59,29 @@ const App = () => {
       filters: {},
       summaries: {}
     });
-    const testF = await FlowQuery({
-      focus_node_type: "source",
-      focus_node_ids: null,
-      flow_type_ids: [5],
-      start_date: "2014-01-01",
-      end_date: "2019-12-31",
-      return_child_flows: true,
-      bundle_child_flows: true,
-      bundle_child_flows_by_neighbor: false,
-      filters: {}
-    });
+    // const testF = await FlowQuery({
+    //   focus_node_type: "source",
+    //   focus_node_ids: null,
+    //   flow_type_ids: [5],
+    //   start_date: "2014-01-01",
+    //   end_date: "2019-12-31",
+    //   return_child_flows: true,
+    //   bundle_child_flows: true,
+    //   bundle_child_flows_by_neighbor: false,
+    //   filters: {}
+    // });
     console.log("testFb");
     console.log(testFb);
     setTopTableData(testFb);
 
-    console.log("testF");
-    console.log(testF);
+    setFlowTypeInfo(
+      await FlowTypeQuery({
+        flow_type_ids: null
+      })
+    );
+
+    // console.log("testF");
+    // console.log(testF);
     setLoading(false);
   }
 
@@ -97,8 +105,8 @@ const App = () => {
     tableRows.push(row);
   });
 
-  console.log("tableRows");
-  console.log(tableRows);
+  console.log("flowTypeInfo");
+  console.log(flowTypeInfo);
 
   // JSX for main app.
   return (
@@ -111,7 +119,13 @@ const App = () => {
               exact
               path="/"
               component={() => {
-                return <TopTable colNames={testColNames} rows={tableRows} />;
+                return (
+                  <TopTable
+                    metrics={["disbursed_funds", "committed_funds"]}
+                    flowTypeInfo={flowTypeInfo}
+                    rows={tableRows}
+                  />
+                );
               }}
             />
           </div>

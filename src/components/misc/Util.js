@@ -692,6 +692,21 @@ Util.comma = function(num) {
   return resultTmp;
 };
 
+// Formats value based on column name
+Util.formatValue = (val, cn) => {
+  if (val === undefined) val = 0;
+  if (val === "unknown") return "Specific amount not reported";
+  else {
+    switch (cn) {
+      case "disbursed_funds":
+      case "committed_funds":
+        return Util.money(val); // TODO units
+      default:
+        return val;
+    }
+  }
+};
+
 // Format money as comma number with USD suffix
 Util.money = val => {
   if (val === "unknown") return "Specific amount not reported";

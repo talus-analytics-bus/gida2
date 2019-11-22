@@ -9,7 +9,7 @@ import Util from "./Util.js";
 const FlowTypeQuery = async function({ flow_type_ids }) {
   // Define URL parameters //
   const params = {
-    flow_type_ids: flow_type_ids.join(",")
+    flow_type_ids: flow_type_ids !== null ? flow_type_ids.join(",") : null
   };
 
   // Define URL params
@@ -19,10 +19,10 @@ const FlowTypeQuery = async function({ flow_type_ids }) {
 
   // Send request
   // Await response
-  const res = await axios.get(`${Util.API_URL}/flow_types`, config);
+  const res = await axios.get(`${Util.API_URL}/flow_type`, config);
 
   // Return response data
-  return res.data.data;
+  return res.data;
 };
 
 export default FlowTypeQuery;
