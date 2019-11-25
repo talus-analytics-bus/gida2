@@ -84,7 +84,8 @@ const App = () => {
       networkData: await FlowBundleQuery({
         ...baseQueryParams,
         focus_node_type: "source",
-        by_neighbor: true
+        by_neighbor: true,
+        focus_node_category: ["country", "group"]
       })
     };
 
@@ -155,48 +156,43 @@ const App = () => {
     return tableRows;
   };
 
-  // /**
-  //  * TODO at minimum move this into a NetworkMap component that just returns table for now
-  //  * TODO move this data processing to API (selected via "format" argument)
-  //  * TODO find way to nest within regions
-  //  * @method getNetworkFlows
-  //  * @param  {[type]}        valueCols [description]
-  //  * @param  {[type]}        data      [description]
-  //  * @return {[type]}                  [description]
-  //  */
-  // const getNetworkFlows = ({ valueCols, data }) => {
-  //   const networkFlows = [];
-  //   data.forEach(node => {
-  //     node.flow_bundles.forEach(fb => {
-  //       valueCols.forEach(vc => {
-  //         if (vc === fb.flow_type) {
-  //           fb.flow_bundles.forEach(fb2 => {
-  //             // TODO Flow targets should be country or group!
-  //             const flow = {
-  //               source: node.focus_node_id,
-  //               source_parent_1: "TODO",
-  //               source_parent_2: "TODO",
-  //               flow_type: vc
-  //             };
-  //             flow.target = fb2.target.join(", ");
-  //             flow.target_parent_1 = "TODO";
-  //             flow.target_parent_2 = "TODO";
-  //             flow[vc] = fb2.focus_node_weight;
-  //             networkFlows.push(flow);
-  //           });
-  //         }
-  //       });
-  //     });
-  //   });
-  //   return networkFlows;
-  // };
-  //
-  // const networkFlows = getNetworkFlows({
-  //   valueCols: valueColsAssistance,
-  //   data: networkData
-  // });
-  // console.log("networkFlows");
-  // console.log(networkFlows);
+  /**
+   * TODO at minimum move this into a NetworkMap component that just returns table for now
+   * TODO move this data processing to API (selected via "format" argument)
+   * TODO find way to nest within regions
+   * @method getNetworkFlows
+   * @param  {[type]}        valueCols [description]
+   * @param  {[type]}        data      [description]
+   * @return {[type]}                  [description]
+   */
+  const getNetworkFlows = ({ data }) => {
+    const networkFlows = [];
+    data.forEach(d => {
+      // Create flow between source and target
+      const strict = true;
+      if (strict) {
+        if (d.source.length > 1) return;
+        else if (d.target.length > 1) return;
+      }
+      const flow = {
+        source: d.focus_node_id,
+        target: d.target.join(", ")
+      };
+
+      // Add flow type values
+      for (const [key, val] of Object.entries(d.flow_types)) {
+        flow[key] = val.focus_node_weight;
+      }
+      networkFlows.push(flow);
+    });
+    return networkFlows;
+  };
+
+  const networkFlows = getNetworkFlows({
+    data: networkData
+  });
+  console.log("networkFlows");
+  console.log(networkFlows);
 
   const limit = 50;
 
@@ -238,6 +234,24 @@ const App = () => {
                 component={() => {
                   return (
                     <div>
+                      <h1>Flows of assistance</h1>
+                      <p>
+                        <i>
+                          where specific funder and recipient are able to be
+                          plotted on chord diagram
+                        </i>
+                      </p>
+                      {
+                        <SimpleTable
+                          colInfo={getColInfo({
+                            valueCols: valueColsAssistance,
+                            baseCols: baseColsNetwork,
+                            flowTypeInfo: flowTypeInfo
+                          })}
+                          rows={networkFlows}
+                          limit={limit}
+                        />
+                      }
                       <h1>Top {limit} funders (sorted by disbursed funds)</h1>
                       <SimpleTable
                         colInfo={getColInfo({
@@ -288,21 +302,6 @@ const App = () => {
                         data={countryRecipientData}
                         limit={limit}
                       />
-                      <h1>Flows of disbursed funds</h1>
-                      {
-                        // <SimpleTable
-                        //   colInfo={getColInfo({
-                        //     valueCols: ["disbursed_funds"],
-                        //     baseCols: baseColsNetwork,
-                        //     flowTypeInfo: flowTypeInfo
-                        //   })}
-                        //   rows={getNetworkFlows({
-                        //     valueCols: ["disbursed_funds"],
-                        //     data: networkData
-                        //   })}
-                        //   limit={limit}
-                        // />
-                      }
                     </div>
                   );
                 }}

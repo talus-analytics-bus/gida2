@@ -8,7 +8,7 @@ import Util from "../../misc/Util.js";
  * Simple table of metric by year with data source.
  * @method SimpleTable
  */
-const SimpleTable = ({ colInfo, data, ...props }) => {
+const SimpleTable = ({ colInfo, data, rows, ...props }) => {
   const getRows = data => {
     let rows = [];
     data.forEach(d => {
@@ -26,15 +26,17 @@ const SimpleTable = ({ colInfo, data, ...props }) => {
     }
     return rows;
   };
-  const rows = getRows(data);
+
+  if (rows === undefined) rows = getRows(data);
 
   // Return table (TODO in jQuery DataTable, probably)
+  const width = (100 / colInfo.length).toString() + "%";
   return (
     <table className={styles.simpletable}>
       <thead>
         {colInfo.map(cn => (
           <th>
-            <td>{cn.display_name}</td>
+            <td style={{ width: width }}>{cn.display_name}</td>
           </th>
         ))}
       </thead>
@@ -42,7 +44,9 @@ const SimpleTable = ({ colInfo, data, ...props }) => {
         {rows.map(r => (
           <tr>
             {colInfo.map(cn => (
-              <td>{Util.formatValue(r[cn.name], cn.name)}</td>
+              <td style={{ width: width }}>
+                {Util.formatValue(r[cn.name], cn.name)}
+              </td>
             ))}
           </tr>
         ))}
