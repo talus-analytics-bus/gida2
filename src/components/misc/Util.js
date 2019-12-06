@@ -872,4 +872,22 @@ Util.mobilecheck = () => {
   return check;
 };
 
+// Returns attribute formatter for the given slug
+// export const getAttrFormatter = name => {
+Util.getAttrFormatter = name => {
+  switch (name) {
+    case "core_elements":
+      return v => {
+        switch (v) {
+          case "R":
+            return "Response";
+          default:
+            return v;
+        }
+      };
+    default:
+      return v => v;
+  }
+};
+
 export default Util;

@@ -308,7 +308,7 @@ const App = () => {
               />
               <Route
                 exact
-                path="/details/:id/:entityType"
+                path="/details/:id/:entityRole"
                 render={d => {
                   return renderDetails({
                     ...d.match.params,

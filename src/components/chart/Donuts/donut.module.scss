@@ -1,0 +1,19 @@
+@import "../../../assets/styles/colors.scss";
+
+.donut {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  text-align: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 9999px;
+  position: relative;
+  background-color: $light-grey-2;
+
+  .content {
+  }
+}

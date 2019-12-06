@@ -1,26 +1,53 @@
 import React from "react";
 import styles from "./details.module.scss";
-
-// Content components
-import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
 import { Settings } from "../../../App.js";
+import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 import FlowBundleQuery from "../../misc/FlowBundleQuery.js";
 
+// Content components
+import DetailsSection from "../../views/details/content/DetailsSection.js";
+import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
+import Donuts from "../../chart/Donuts/Donuts.js";
+// import FundsByCoreElement from "../../chart/FundsByCoreElement/FundsByCoreElement.js";
+
 // FC for Details.
-const Details = ({ id, entityType, data, flowTypeInfo, ...props }) => {
+const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   return (
     <div className={"pageContainer"}>
       <h1>
-        {id} ({Util.getRoleTerm({ type: "noun", role: entityType })} profile)
+        {id} ({Util.getRoleTerm({ type: "noun", role: entityRole })} profile)
       </h1>
       <div className={styles.content}>
-        <FundsByYear
-          startYear={Settings.startYear}
-          endYear={Settings.endYear}
-          entityType={entityType}
-          data={data.flowBundles[0]}
-          flowTypeInfo={flowTypeInfo}
+        <DetailsSection
+          header={
+            <h2>
+              Total funds{" "}
+              {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
+              {Settings.startYear} to {Settings.endYear}
+            </h2>
+          }
+          content={
+            <FundsByYear
+              entityRole={entityRole}
+              data={data.flowBundles[0]}
+              flowTypeInfo={flowTypeInfo}
+            />
+          }
+        />
+        <DetailsSection
+          header={<h2>Funding by core element</h2>}
+          content={
+            <Donuts
+              data={getWeightsBySummaryAttribute({
+                field: "core_elements",
+                flowTypes: ["disbursed_funds", "committed_funds"],
+                data: data.flowBundles
+              })}
+              flowType="disbursed_funds"
+              attributeType={"core_elements"}
+            />
+          }
         />
       </div>
     </div>
@@ -32,7 +59,7 @@ export const renderDetails = ({
   setDetailsComponent,
   loading,
   id,
-  entityType
+  entityRole
 }) => {
   // Get data
   // FundsByYear, FundsByCoreElement:
@@ -52,7 +79,7 @@ export const renderDetails = ({
     getDetailsData({
       setDetailsComponent: setDetailsComponent,
       id: id,
-      entityType: entityType
+      entityRole: entityRole
     });
 
     return <div />;
@@ -67,12 +94,12 @@ export const renderDetails = ({
  * @method getDetailsData
  * @param  {[type]}       setDetailsComponent [description]
  * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityType          [description]
+ * @param  {[type]}       entityRole          [description]
  */
-const getDetailsData = async ({ setDetailsComponent, id, entityType }) => {
+const getDetailsData = async ({ setDetailsComponent, id, entityRole }) => {
   const baseQueryParams = {
     focus_node_ids: [id],
-    focus_node_type: entityType === "recipient" ? "target" : "source",
+    focus_node_type: entityRole === "recipient" ? "target" : "source",
     flow_type_ids: [1, 2, 3, 4],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
@@ -93,7 +120,7 @@ const getDetailsData = async ({ setDetailsComponent, id, entityType }) => {
   const results = await Util.getQueryResults(queries);
 
   setDetailsComponent(
-    <Details id={id} entityType={entityType} data={results} />
+    <Details id={id} entityRole={entityRole} data={results} />
   );
 };
 

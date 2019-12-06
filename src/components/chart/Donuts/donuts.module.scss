@@ -1,0 +1,14 @@
+@import "../../../assets/styles/colors.scss";
+
+.fundsByYear {
+  display: flex;
+  flex-flow: column;
+  .content {
+    display: flex;
+    flex-flow: row;
+    .totals {
+      display: flex;
+      flex-flow: column;
+    }
+  }
+}
