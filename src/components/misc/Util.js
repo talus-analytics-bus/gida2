@@ -698,6 +698,21 @@ Util.comma = function(num) {
   return resultTmp;
 };
 
+Util.formatLabel = ft => {
+  switch (ft) {
+    case "disbursed_funds":
+      return "disbursed";
+    case "committed_funds":
+      return "committed";
+    case "provided_inkind":
+      return "provided projects";
+    case "committed_inkind":
+      return "committed projects";
+    default:
+      return "";
+  }
+};
+
 // Formats value based on column name
 Util.formatValue = (val, cn) => {
   if (val === undefined) val = 0;

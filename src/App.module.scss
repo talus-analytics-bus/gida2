@@ -1,13 +1,13 @@
 @import "./assets/styles/colors.scss";
 // $alert-height: 60px;
 $logo-height: 70px;
-p,
-h1 {
-  margin-left: 15px;
-}
-h1 {
-  margin-bottom: 0;
-}
+// p,
+// h1 {
+//   margin-left: 15px;
+// }
+// h1 {
+//   margin-bottom: 0;
+// }
 .app {
   display: grid;
   grid-template-columns: auto; // ensures header resizes correctly if window size is changed

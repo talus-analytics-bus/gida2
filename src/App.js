@@ -50,6 +50,9 @@ const App = () => {
   const [networkData, setNetworkData] = React.useState([]);
   const [flowTypeInfo, setFlowTypeInfo] = React.useState([]);
 
+  // Try components
+  const [detailsComponent, setDetailsComponent] = React.useState(null);
+
   async function getAppData() {
     const baseQueryParams = {
       focus_node_ids: null,
@@ -116,8 +119,6 @@ const App = () => {
       })
     );
 
-    // console.log("testF");
-    // console.log(testF);
     setLoading(false);
   }
 
@@ -308,9 +309,15 @@ const App = () => {
               />
               <Route
                 exact
-                path="/details/:id"
+                path="/details/:id/:entityType"
                 render={d => {
-                  return renderDetails(d.match.params.id);
+                  return renderDetails({
+                    ...d.match.params,
+                    detailsComponent: detailsComponent,
+                    setDetailsComponent: setDetailsComponent,
+                    loading: loading,
+                    setLoading: setLoading
+                  });
                 }}
               />
             </div>
@@ -318,6 +325,11 @@ const App = () => {
         </BrowserRouter>
       </div>
     );
+};
+
+export const Settings = {
+  startYear: 2014,
+  endYear: 2019
 };
 
 export default App;
