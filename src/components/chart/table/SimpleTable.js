@@ -4,8 +4,7 @@ import styles from "./simpletable.module.scss";
 import Util from "../../misc/Util.js";
 
 /**
- * Yearly metric report for countries that have irregular WHO data reporting.
- * Simple table of metric by year with data source.
+ * Simple table for displaying data (proof-of-concept)
  * @method SimpleTable
  */
 const SimpleTable = ({ colInfo, data, rows, ...props }) => {

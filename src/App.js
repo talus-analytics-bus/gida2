@@ -16,7 +16,7 @@ import Map from "./components/map/Map";
 import Util from "./components/misc/Util.js";
 
 // views
-import Details from "./components/views/details/Details.js";
+import { Details, renderDetails } from "./components/views/details/Details.js";
 import Global from "./components/views/global/Global.js";
 import About from "./components/views/about/About.js";
 
@@ -304,6 +304,13 @@ const App = () => {
                       />
                     </div>
                   );
+                }}
+              />
+              <Route
+                exact
+                path="/details/:id"
+                render={d => {
+                  return renderDetails(d.match.params.id);
                 }}
               />
             </div>
