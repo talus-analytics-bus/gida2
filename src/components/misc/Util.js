@@ -3,6 +3,34 @@ import * as d3 from "d3/dist/d3.min";
 // Utility functions and data.
 const Util = {};
 
+// Return init cap version of input string
+Util.getInitCap = str => {
+  return str.charAt(0).toUpperCase() + str.slice(1, str.length);
+};
+
+// Returns correct noun form of entity given their role
+Util.getRoleTerm = ({ type, role }) => {
+  if (role === "funder") {
+    switch (type) {
+      case "noun":
+        return "funder";
+      case "adjective":
+        return "provided";
+      default:
+        return "";
+    }
+  } else if (role === "recipient") {
+    switch (type) {
+      case "noun":
+        return "recipient";
+      case "adjective":
+        return "received";
+      default:
+        return "";
+    }
+  }
+};
+
 // Executes queries in parallel and returns all results when completed.
 Util.getQueryResults = async queries => {
   const results = {};

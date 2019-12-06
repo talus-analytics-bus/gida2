@@ -1,7 +1,7 @@
 $white: #fff;
 $light-grey: #c8c8ce;
 $light-grey-2: #e6e6e6;
-$grey: #979797;
+$grey: #b2b2b2;
 $red: #eb1c25;
 $yellow: #f9c13b;
 $green: #009a65;
@@ -15,15 +15,15 @@ $dark-grey-2: #4d4d4d;
 
 $critical: #e91b25;
 $critical-light: #eda8ac;
-$critical-translucent: rgba(235, 28, 37, .1);
+$critical-translucent: rgba(235, 28, 37, 0.1);
 
 $alerted: #f9be3c;
 $alerted-light: #f7c96d;
-$alerted-translucent: rgba(249, 190, 60, .1);
+$alerted-translucent: rgba(249, 190, 60, 0.1);
 
 $stable: #029b67;
 $stable-light: #3dc191;
-$stable-translucent: rgba(2, 155, 103, .1);
+$stable-translucent: rgba(2, 155, 103, 0.1);
 
 $layout-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
@@ -46,20 +46,36 @@ $jee-gray: #808080;
 // Gradients
 $light-blue-1: #87acd5;
 $light-blue-2: #5697bf;
-$light-blue-gradient-1: linear-gradient(0deg, $light-blue-2 0%, $light-blue-1 100%);
-$light-blue-gradient-2: linear-gradient(0deg, darken($light-blue-2, 15%) 0%, darken($light-blue-1, 15%) 100%);
-$light-blue-gradient-3: linear-gradient(0deg, darken($light-blue-2, 25%) 0%, darken($light-blue-1, 25%) 100%);
+$light-blue-gradient-1: linear-gradient(
+  0deg,
+  $light-blue-2 0%,
+  $light-blue-1 100%
+);
+$light-blue-gradient-2: linear-gradient(
+  0deg,
+  darken($light-blue-2, 15%) 0%,
+  darken($light-blue-1, 15%) 100%
+);
+$light-blue-gradient-3: linear-gradient(
+  0deg,
+  darken($light-blue-2, 25%) 0%,
+  darken($light-blue-1, 25%) 100%
+);
 $value-red-gradient: linear-gradient(90deg, #e6c1c6 0%, $value-red 100%);
-$value-change-gradient: linear-gradient(90deg, $value-green 0%, white 50%, $value-red 100%);
+$value-change-gradient: linear-gradient(
+  90deg,
+  $value-green 0%,
+  white 50%,
+  $value-red 100%
+);
 
 $loading-spinner-gradient: radial-gradient(
-      circle at top right,
-      white,
-      rgba(255,255,255,0.0001) 75%
-    );
+  circle at top right,
+  white,
+  rgba(255, 255, 255, 0.0001) 75%
+);
 // $loading-spinner-gradient: linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0%, transparent 100%);
 // $loading-spinner-gradient: linear-gradient(90deg, white 0%, transparent 100%);
-
 
 // MEDIA QUERIES
 $phone: "screen and (max-width : 670px)";

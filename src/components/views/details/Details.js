@@ -8,17 +8,19 @@ import Util from "../../misc/Util.js";
 import FlowBundleQuery from "../../misc/FlowBundleQuery.js";
 
 // FC for Details.
-const Details = ({ id, entityType, data, ...props }) => {
+const Details = ({ id, entityType, data, flowTypeInfo, ...props }) => {
   return (
-    <div>
-      <h1>Details for {id}</h1>
-      <h2>{entityType}</h2>
+    <div className={"pageContainer"}>
+      <h1>
+        {id} ({Util.getRoleTerm({ type: "noun", role: entityType })} profile)
+      </h1>
       <div className={styles.content}>
         <FundsByYear
           startYear={Settings.startYear}
           endYear={Settings.endYear}
           entityType={entityType}
           data={data.flowBundles[0]}
+          flowTypeInfo={flowTypeInfo}
         />
       </div>
     </div>

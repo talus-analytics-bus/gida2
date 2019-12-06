@@ -1,4 +1,17 @@
 @import "../../../assets/styles/colors.scss";
 
-.fundsByYear {
+.totalByFlowType {
+  padding: 10px;
+  .value {
+    font-family: "RawlineRegular", serif;
+    font-weight: 800;
+    font-size: 1.5em;
+  }
+  .label {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 600;
+  }
+  &:not(:last-child) {
+    margin-bottom: 10px;
+  }
 }

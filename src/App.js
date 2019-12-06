@@ -123,8 +123,9 @@ const App = () => {
   }
 
   React.useEffect(() => {
-    console.log("getAppData");
-    getAppData();
+    setLoading(false);
+    // console.log("getAppData");
+    // getAppData();
   }, []);
 
   // Define what columns to show in tables
@@ -192,8 +193,6 @@ const App = () => {
   const networkFlows = getNetworkFlows({
     data: networkData
   });
-  console.log("networkFlows");
-  console.log(networkFlows);
 
   const limit = 50;
 
@@ -316,7 +315,8 @@ const App = () => {
                     detailsComponent: detailsComponent,
                     setDetailsComponent: setDetailsComponent,
                     loading: loading,
-                    setLoading: setLoading
+                    setLoading: setLoading,
+                    flowTypeInfo: flowTypeInfo
                   });
                 }}
               />

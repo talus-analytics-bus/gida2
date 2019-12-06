@@ -9,21 +9,22 @@ import Util from "../../misc/Util.js";
  */
 const SimpleTable = ({ colInfo, data, rows, ...props }) => {
   const getRows = data => {
-    let rows = [];
-    data.forEach(d => {
-      const row = {
-        name: d.focus_node_id
-      };
-      for (const [key, val] of Object.entries(d.flow_types)) {
-        row[key] = val.focus_node_weight;
-      }
-      rows.push(row);
-    });
-    // If limit then truncate data
-    if (props.limit !== undefined) {
-      rows = rows.slice(0, props.limit);
-    }
-    return rows;
+    return data.slice(0, props.limit);
+    // let rows = [];
+    // data.forEach(d => {
+    //   const row = {
+    //     name: d.focus_node_id
+    //   };
+    //   for (const [key, val] of Object.entries(d.flow_types)) {
+    //     row[key] = val.focus_node_weight;
+    //   }
+    //   rows.push(row);
+    // });
+    // // If limit then truncate data
+    // if (props.limit !== undefined) {
+    //   rows = rows.slice(0, props.limit);
+    // }
+    // return rows;
   };
 
   if (rows === undefined) rows = getRows(data);
