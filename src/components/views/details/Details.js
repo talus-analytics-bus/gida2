@@ -13,6 +13,11 @@ import StackBar from "../../chart/StackBar/StackBar.js";
 
 // FC for Details.
 const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
+  // Define the other node type based on the current entity role, which is used
+  // in certain charts.
+  const otherNodeType = entityRole === "funder" ? "target" : "source";
+
+  // Return JSX
   return (
     <div className={"pageContainer"}>
       <h1>
@@ -58,10 +63,11 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
                 flowTypes: ["disbursed_funds", "committed_funds"],
                 data: data.flowBundles,
                 byOtherNode: true,
-                otherNodeType: entityRole === "funder" ? "target" : "source"
+                otherNodeType: otherNodeType
               })}
               flowType="disbursed_funds"
               attributeType={"core_capacities"}
+              otherNodeType={otherNodeType}
             />
           }
         />
