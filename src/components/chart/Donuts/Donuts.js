@@ -8,6 +8,8 @@ import Donut from "./Donut.js";
 
 // FC
 const Donuts = ({ data, flowType, attributeType, ...props }) => {
+  console.log("data - Donuts.js");
+  console.log(data);
   return (
     <div className={styles.donuts}>
       {data.map(d => (

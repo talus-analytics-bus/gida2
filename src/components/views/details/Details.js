@@ -49,6 +49,20 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
             />
           }
         />
+        <DetailsSection
+          header={<h2>Funding by core capacity</h2>}
+          content={
+            <Donuts
+              data={getWeightsBySummaryAttribute({
+                field: "core_capacities",
+                flowTypes: ["disbursed_funds", "committed_funds"],
+                data: data.flowBundles
+              })}
+              flowType="disbursed_funds"
+              attributeType={"core_capacities"}
+            />
+          }
+        />
       </div>
     </div>
   );
@@ -103,7 +117,7 @@ const getDetailsData = async ({ setDetailsComponent, id, entityRole }) => {
     flow_type_ids: [1, 2, 3, 4],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
-    by_neighbor: false,
+    by_neighbor: true,
     filters: {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
