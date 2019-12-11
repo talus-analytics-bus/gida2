@@ -9,7 +9,7 @@ import FlowBundleQuery from "../../misc/FlowBundleQuery.js";
 import DetailsSection from "../../views/details/content/DetailsSection.js";
 import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
 import Donuts from "../../chart/Donuts/Donuts.js";
-// import FundsByCoreElement from "../../chart/FundsByCoreElement/FundsByCoreElement.js";
+import StackBar from "../../chart/StackBar/StackBar.js";
 
 // FC for Details.
 const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
@@ -52,11 +52,13 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         <DetailsSection
           header={<h2>Funding by core capacity</h2>}
           content={
-            <Donuts
+            <StackBar
               data={getWeightsBySummaryAttribute({
                 field: "core_capacities",
                 flowTypes: ["disbursed_funds", "committed_funds"],
-                data: data.flowBundles
+                data: data.flowBundles,
+                byOtherNode: true,
+                otherNodeType: entityRole === "funder" ? "target" : "source"
               })}
               flowType="disbursed_funds"
               attributeType={"core_capacities"}
