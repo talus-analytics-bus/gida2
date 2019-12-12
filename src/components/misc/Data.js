@@ -57,7 +57,7 @@ export const getSummaryAttributeWeightsByNode = ({
       else noData = false;
 
       // Initialize output obj for current flow type
-      output[ft] = {};
+      output[ft] = { total: curFtData.focus_node_weight };
 
       // Otherwise, add all the summary field values
       for (let [k, v] of Object.entries(summaries[field])) {
@@ -68,8 +68,6 @@ export const getSummaryAttributeWeightsByNode = ({
     // Push row to output array
     if (!noData) outputArr.push(output);
   });
-  console.log("outputArr");
-  console.log(outputArr);
   return outputArr;
 };
 
