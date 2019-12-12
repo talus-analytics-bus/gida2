@@ -74,6 +74,7 @@ export const getSummaryAttributeWeightsByNode = ({
 /**
  * Totals weights by a particular summary attribute given a FlowBundle API
  * response.
+ * TODO consider adding "total" field.
  */
 export const getWeightsBySummaryAttribute = ({
   field,
