@@ -66,30 +66,33 @@ const App = () => {
       summaries: {}
     };
     const queries = {
-      funderData: await FlowBundleQuery({
-        ...baseQueryParams,
-        focus_node_type: "source"
-      }),
-      recipientData: await FlowBundleQuery({
-        ...baseQueryParams,
-        focus_node_type: "target"
-      }),
-      countryFunderData: await FlowBundleQuery({
-        ...baseQueryParams,
-        focus_node_type: "source",
-        focus_node_category: ["country"]
-      }),
-      countryRecipientData: await FlowBundleQuery({
-        ...baseQueryParams,
-        focus_node_type: "target",
-        focus_node_category: ["country"]
-      }),
-      networkData: await FlowBundleQuery({
-        ...baseQueryParams,
-        focus_node_type: "source",
-        by_neighbor: true,
-        focus_node_category: ["country", "group"]
+      flowTypeInfo: await FlowTypeQuery({
+        flow_type_ids: null
       })
+      // funderData: await FlowBundleQuery({
+      //   ...baseQueryParams,
+      //   focus_node_type: "source"
+      // }),
+      // recipientData: await FlowBundleQuery({
+      //   ...baseQueryParams,
+      //   focus_node_type: "target"
+      // }),
+      // countryFunderData: await FlowBundleQuery({
+      //   ...baseQueryParams,
+      //   focus_node_type: "source",
+      //   focus_node_category: ["country"]
+      // }),
+      // countryRecipientData: await FlowBundleQuery({
+      //   ...baseQueryParams,
+      //   focus_node_type: "target",
+      //   focus_node_category: ["country"]
+      // }),
+      // networkData: await FlowBundleQuery({
+      //   ...baseQueryParams,
+      //   focus_node_type: "source",
+      //   by_neighbor: true,
+      //   focus_node_category: ["country", "group"]
+      // })
     };
 
     const results = await Util.getQueryResults(queries);
@@ -107,17 +110,12 @@ const App = () => {
     //   bundle_child_flows_by_neighbor: false,
     //   filters: {}
     // });
-    setFunderData(results.funderData);
-    setRecipientData(results.recipientData);
-    setCountryFunderData(results.countryFunderData);
-    setCountryRecipientData(results.countryRecipientData);
-    setNetworkData(results.networkData);
-
-    setFlowTypeInfo(
-      await FlowTypeQuery({
-        flow_type_ids: null
-      })
-    );
+    // setFunderData(results.funderData);
+    // setRecipientData(results.recipientData);
+    // setCountryFunderData(results.countryFunderData);
+    // setCountryRecipientData(results.countryRecipientData);
+    // setNetworkData(results.networkData);
+    setFlowTypeInfo(results.flowTypeInfo);
 
     setLoading(false);
   }
@@ -125,7 +123,7 @@ const App = () => {
   React.useEffect(() => {
     setLoading(false);
     // console.log("getAppData");
-    // getAppData();
+    getAppData();
   }, []);
 
   // Define what columns to show in tables

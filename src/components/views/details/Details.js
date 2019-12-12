@@ -26,8 +26,6 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   // Define the other node type based on the current entity role, which is used
   // in certain charts.
   const otherNodeType = entityRole === "funder" ? "target" : "source";
-  console.log("data");
-  console.log(data);
   // Return JSX
   return (
     <div className={"pageContainer"}>
@@ -44,12 +42,12 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
             </h2>
           }
           content={
-            <FundsByYear
-              entityRole={entityRole}
-              data={data.flowBundles[0]}
-              flowTypeInfo={flowTypeInfo}
-            />
+            <FundsByYear entityRole={entityRole} data={data.flowBundles[0]} />
           }
+          curFlowType={curFlowType}
+          setCurFlowType={setCurFlowType}
+          flowTypeInfo={flowTypeInfo}
+          toggleFlowType={false}
         />
         <DetailsSection
           header={<h2>Funding by core element</h2>}
@@ -64,6 +62,10 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
               attributeType={"core_elements"}
             />
           }
+          curFlowType={curFlowType}
+          setCurFlowType={setCurFlowType}
+          flowTypeInfo={flowTypeInfo}
+          toggleFlowType={true}
         />
         <DetailsSection
           header={<h2>Funding by core capacity</h2>}
@@ -81,6 +83,10 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
               otherNodeType={otherNodeType}
             />
           }
+          curFlowType={curFlowType}
+          setCurFlowType={setCurFlowType}
+          flowTypeInfo={flowTypeInfo}
+          toggleFlowType={true}
         />
         <DetailsSection
           header={<h2>Top {otherEntityRole}s</h2>}
@@ -149,6 +155,10 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
               })}
             />
           }
+          curFlowType={curFlowType}
+          setCurFlowType={setCurFlowType}
+          flowTypeInfo={flowTypeInfo}
+          toggleFlowType={true}
         />
       </div>
     </div>
@@ -160,7 +170,8 @@ export const renderDetails = ({
   setDetailsComponent,
   loading,
   id,
-  entityRole
+  entityRole,
+  flowTypeInfo
 }) => {
   // Get data
   // FundsByYear, FundsByCoreElement:
@@ -172,15 +183,11 @@ export const renderDetails = ({
     detailsComponent === null ||
     (detailsComponent && detailsComponent.props.id !== id)
   ) {
-    console.log("Getting details component");
-    // // if no selected country, load the correct one based on the ID
-    // const coverage = fillObservations.find(o => +o.place_id === +id)
-    // const cases = bubbleObservations.find(o => +o.place_id === +id)
-
     getDetailsData({
       setDetailsComponent: setDetailsComponent,
       id: id,
-      entityRole: entityRole
+      entityRole: entityRole,
+      flowTypeInfo: flowTypeInfo
     });
 
     return <div />;
@@ -197,7 +204,12 @@ export const renderDetails = ({
  * @param  {[type]}       id                  [description]
  * @param  {[type]}       entityRole          [description]
  */
-const getDetailsData = async ({ setDetailsComponent, id, entityRole }) => {
+const getDetailsData = async ({
+  setDetailsComponent,
+  id,
+  entityRole,
+  flowTypeInfo
+}) => {
   const baseQueryParams = {
     focus_node_ids: [id],
     focus_node_type: entityRole === "recipient" ? "target" : "source",
@@ -221,7 +233,12 @@ const getDetailsData = async ({ setDetailsComponent, id, entityRole }) => {
   const results = await Util.getQueryResults(queries);
 
   setDetailsComponent(
-    <Details id={id} entityRole={entityRole} data={results} />
+    <Details
+      id={id}
+      entityRole={entityRole}
+      data={results}
+      flowTypeInfo={flowTypeInfo}
+    />
   );
 };
 
