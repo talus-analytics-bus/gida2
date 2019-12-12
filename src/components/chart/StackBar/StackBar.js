@@ -15,19 +15,23 @@ const StackBar = ({ data, flowType, otherNodeType, ...props }) => {
         <SimpleTable
           colInfo={[
             {
-              name: "attribute",
+              fmtName: "attribute",
+              get: d => d.attribute,
               display_name: "Core capacity"
             },
             {
-              name: "disbursed_funds",
+              fmtName: "disbursed_funds",
+              get: d => d.disbursed_funds,
               display_name: "Disbursed funds"
             },
             {
-              name: "committed_funds",
+              fmtName: "committed_funds",
+              get: d => d.committed_funds,
               display_name: "Committed funds"
             },
             {
-              name: otherNodeType,
+              fmtName: otherNodeType,
+              get: d => d[otherNodeType],
               display_name: otherNodeType === "target" ? "Recipient" : "Funder"
             }
           ]}

@@ -13,15 +13,18 @@ const AreaLine = ({ data, ...props }) => {
         <SimpleTable
           colInfo={[
             {
-              name: "attribute",
+              fmtName: "attribute",
+              get: d => d.attribute,
               display_name: "Year"
             },
             {
-              name: "disbursed_funds",
+              fmtName: "disbursed_funds",
+              get: d => d.disbursed_funds,
               display_name: "Disbursed funds"
             },
             {
-              name: "committed_funds",
+              fmtName: "committed_funds",
+              get: d => d.committed_funds,
               display_name: "Committed funds"
             }
           ]}

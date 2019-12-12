@@ -1,4 +1,79 @@
 /**
+ * Returns array with one object per target/source node in the flow dataset,
+ * and key/value pairs containing the weights from the attribute summary named
+ * in the "field" argument.
+ * @method getSummaryAttributeWeightsByNode
+ * @param  {[type]}                         field     [description]
+ * @param  {[type]}                         flowTypes [description]
+ * @param  {[type]}                         data      [description]
+ * @param  {[type]}                         nodeType  [description]
+ * @param  {[type]}                         props     [description]
+ * @return {[type]}                                   [description]
+ */
+export const getSummaryAttributeWeightsByNode = ({
+  field,
+  flowTypes,
+  data,
+  nodeType,
+  ...props
+}) => {
+  // If no data, return null
+  if (data === undefined || data.length === 0) return null;
+
+  // Define output array
+  const outputArr = [];
+
+  // For each node,
+  data.forEach(d => {
+    // Create output object
+    const output = {
+      [nodeType]: d[nodeType].join("; ")
+    };
+
+    // Flag false if no data for any flow type, true otherwise
+    let noData = true;
+
+    // For each flow type
+    flowTypes.forEach(ft => {
+      // TODO reuse the code below from other function
+      // "getWeightsBySummaryAttribute"
+      // Get all data related to the flow type. If none, then continue to the
+      // next flow type.
+      const curFtData = d.flow_types[ft];
+      if (curFtData === undefined) return;
+
+      // get summaries for the current flow type (e.g., total weights by year)
+      const summaries = curFtData.summaries;
+
+      // If summaries not defined, skip this flow type
+      if (summaries === undefined) return;
+
+      // If summary not provided for field, skip this flow type
+      if (
+        summaries[field] === undefined ||
+        Object.keys(summaries[field]).length === 0
+      )
+        return;
+      else noData = false;
+
+      // Initialize output obj for current flow type
+      output[ft] = {};
+
+      // Otherwise, add all the summary field values
+      for (let [k, v] of Object.entries(summaries[field])) {
+        output[ft][k] = v;
+      }
+    });
+
+    // Push row to output array
+    if (!noData) outputArr.push(output);
+  });
+  console.log("outputArr");
+  console.log(outputArr);
+  return outputArr;
+};
+
+/**
  * Totals weights by a particular summary attribute given a FlowBundle API
  * response.
  */

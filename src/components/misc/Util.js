@@ -743,7 +743,7 @@ Util.formatLabel = ft => {
 
 // Formats value based on column name
 Util.formatValue = (val, cn) => {
-  if (val === undefined) val = 0;
+  if (val === undefined || val === null) val = 0;
   if (val === "unknown") return "Specific amount not reported";
   else {
     switch (cn) {
@@ -759,6 +759,7 @@ Util.formatValue = (val, cn) => {
 // Format money as comma number with USD suffix
 Util.money = val => {
   if (val === "unknown") return "Specific amount not reported";
+  else if (val === 0) return "0 USD";
   else {
     return `${Util.formatSI(val)} USD`; // TODO units
   }

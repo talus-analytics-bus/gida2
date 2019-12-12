@@ -1,7 +1,10 @@
 import React from "react";
 import styles from "./details.module.scss";
 import { Settings } from "../../../App.js";
-import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
+import {
+  getWeightsBySummaryAttribute,
+  getSummaryAttributeWeightsByNode
+} from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 import FlowBundleQuery from "../../misc/FlowBundleQuery.js";
 
@@ -10,13 +13,21 @@ import DetailsSection from "../../views/details/content/DetailsSection.js";
 import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
 import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
+import SimpleTable from "../../chart/table/SimpleTable.js";
 
 // FC for Details.
 const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
+  // Track whether viewing committed or disbursed/provided assistance
+  const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
+
+  // Define other entity role, which is used in certain charts
+  const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
+
   // Define the other node type based on the current entity role, which is used
   // in certain charts.
   const otherNodeType = entityRole === "funder" ? "target" : "source";
-
+  console.log("data");
+  console.log(data);
   // Return JSX
   return (
     <div className={"pageContainer"}>
@@ -49,7 +60,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
                 flowTypes: ["disbursed_funds", "committed_funds"],
                 data: data.flowBundles
               })}
-              flowType="disbursed_funds"
+              flowType={curFlowType}
               attributeType={"core_elements"}
             />
           }
@@ -65,9 +76,77 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
                 byOtherNode: true,
                 otherNodeType: otherNodeType
               })}
-              flowType="disbursed_funds"
+              flowType={curFlowType}
               attributeType={"core_capacities"}
               otherNodeType={otherNodeType}
+            />
+          }
+        />
+        <DetailsSection
+          header={<h2>Top {otherEntityRole}s</h2>}
+          content={
+            <SimpleTable
+              colInfo={[
+                {
+                  fmtName: otherNodeType,
+                  get: d => d[otherNodeType],
+                  display_name: Util.getInitCap(
+                    Util.getRoleTerm({
+                      type: "noun",
+                      role: otherEntityRole
+                    })
+                  )
+                },
+                {
+                  fmtName: curFlowType,
+                  get: d => (d[curFlowType] ? d[curFlowType].total : undefined),
+                  display_name: `Total ${
+                    curFlowType === "disbursed_funds"
+                      ? "disbursed"
+                      : "committed"
+                  }`
+                },
+                {
+                  fmtName: curFlowType,
+                  get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
+                  display_name: "Prevent"
+                },
+                {
+                  fmtName: curFlowType,
+                  get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
+                  display_name: "Detect"
+                },
+                {
+                  fmtName: curFlowType,
+                  get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
+                  display_name: "Respond"
+                },
+                {
+                  fmtName: curFlowType,
+                  get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
+                  display_name: "Other"
+                },
+                {
+                  fmtName: curFlowType,
+                  get: d =>
+                    d[curFlowType]
+                      ? d[curFlowType]["General IHR Implementation"]
+                      : undefined,
+                  display_name: "General IHR"
+                },
+                {
+                  fmtName: curFlowType,
+                  get: d =>
+                    d[curFlowType] ? d[curFlowType]["Unspecified"] : undefined,
+                  display_name: "Unspecified"
+                }
+              ]}
+              data={getSummaryAttributeWeightsByNode({
+                data: data.flowBundlesByNeighbor,
+                field: "core_elements",
+                flowTypes: ["disbursed_funds", "committed_funds"],
+                nodeType: otherNodeType
+              })}
             />
           }
         />

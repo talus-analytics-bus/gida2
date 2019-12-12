@@ -4,8 +4,6 @@ import styles from "./donut.module.scss";
 
 // FC
 const Donut = ({ datum, denominator, valKey, attrFormatter, ...props }) => {
-  console.log("datum[valKey]");
-  console.log(datum[valKey]);
   return (
     <div className={styles.donut}>
       <div className={styles.content}>
