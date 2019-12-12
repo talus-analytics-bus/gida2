@@ -880,8 +880,14 @@ Util.getAttrFormatter = name => {
     case "core_elements":
       return v => {
         switch (v) {
+          case "P":
+            return "Prevent";
+          case "D":
+            return "Detect";
           case "R":
-            return "Response";
+            return "Respond";
+          case "O":
+            return "Other";
           default:
             return v;
         }

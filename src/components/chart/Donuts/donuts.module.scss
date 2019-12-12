@@ -1,14 +1,6 @@
 @import "../../../assets/styles/colors.scss";
 
-.fundsByYear {
+.donuts {
   display: flex;
-  flex-flow: column;
-  .content {
-    display: flex;
-    flex-flow: row;
-    .totals {
-      display: flex;
-      flex-flow: column;
-    }
-  }
+  flex-flow: row;
 }
