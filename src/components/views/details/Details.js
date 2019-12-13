@@ -58,14 +58,14 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
     getWeightsBySummaryAttribute({
       field: "core_elements",
       flowTypes: ["disbursed_funds", "committed_funds"],
-      data: data.flowBundles
+      data: [data.flowBundles.master_summary]
     })
   );
 
   // Track donut denominator value
   const getDonutDenominator = data => {
     // Assume that first flow bundle is what is needed
-    const focusNodeBundle = data.flowBundles[0];
+    const focusNodeBundle = data.flowBundles.master_summary;
 
     // Return null if no data
     if (focusNodeBundle === undefined) return null;
@@ -85,7 +85,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   // Track the Top Recipients/Funders table data
   const [topTableData, setTopTableData] = React.useState(
     getSummaryAttributeWeightsByNode({
-      data: data.flowBundlesByNeighbor,
+      data: data.flowBundlesByNeighbor.flow_bundles,
       field: "core_elements",
       flowTypes: ["disbursed_funds", "committed_funds"],
       nodeType: otherNodeType
@@ -96,7 +96,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   const initTopTableDataOther = true
     ? // pageType === "ghsa"
       getSummaryAttributeWeightsByNode({
-        data: data.flowBundlesByNeighbor,
+        data: data.flowBundlesByNeighbor.flow_bundles,
         field: "core_elements",
         flowTypes: ["disbursed_funds", "committed_funds"],
         nodeType: nodeType
@@ -110,11 +110,13 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   console.log(data);
 
   // True if there are no data to show for the entire page, false otherwise.
-  const noData = data.flowBundles[0] === undefined;
+  const noData = data.flowBundles.flow_bundles[0] === undefined;
   const noFinancialData = noData
     ? true
-    : data.flowBundles[0].flow_types["disbursed_funds"] === undefined &&
-      data.flowBundles[0].flow_types["committed_funds"] === undefined;
+    : data.flowBundles.flow_bundles[0].flow_types["disbursed_funds"] ===
+        undefined &&
+      data.flowBundles.flow_bundles[0].flow_types["committed_funds"] ===
+        undefined;
   // const unknownDataOnly = isUnknownDataOnly(data.flowBundles[0]);
   // TODO
 
@@ -137,7 +139,10 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
               </h2>
             }
             content={
-              <FundsByYear entityRole={entityRole} data={data.flowBundles[0]} />
+              <FundsByYear
+                entityRole={entityRole}
+                data={data.flowBundles.master_summary}
+              />
             }
             curFlowType={curFlowType}
             setCurFlowType={setCurFlowType}
@@ -167,7 +172,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
                 data={getWeightsBySummaryAttribute({
                   field: "core_capacities",
                   flowTypes: ["disbursed_funds", "committed_funds"],
-                  data: data.flowBundlesByNeighbor,
+                  data: data.flowBundlesByNeighbor.flow_bundles,
                   byOtherNode: true,
                   otherNodeType: otherNodeType
                 })}
@@ -402,7 +407,8 @@ const getDetailsData = async ({
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
       datetime_summary: ["year"]
-    }
+    },
+    include_master_summary: true
   };
   const queries = {
     flowBundles: await FlowBundleFocusQuery(baseQueryParams),
