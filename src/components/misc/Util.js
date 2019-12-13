@@ -692,6 +692,7 @@ Util.sortByField = field => {
 
 // Percentize number
 Util.percentize = val => {
+  if (val > 0 && val < 1) return "<1%";
   return parseFloat(val).toFixed(0) + "%";
 };
 

@@ -5,8 +5,16 @@
  * @param  {[type]}          data [description]
  * @return {Boolean}              [description]
  */
-export const isUnknownDataOnly = ({ data }) => {
-  return true; // TODO
+export const isUnknownDataOnly = ({ masterSummary }) => {
+  console.log("masterSummary");
+  console.log(masterSummary);
+  let unknownOnly = true;
+  for (let [k, v] of Object.entries(masterSummary.flow_types)) {
+    if (v.focus_node_weight !== "unknown") {
+      unknownOnly = false;
+    }
+  }
+  return unknownOnly;
 };
 
 /**

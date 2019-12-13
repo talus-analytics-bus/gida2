@@ -3,7 +3,8 @@ import styles from "./details.module.scss";
 import { Settings } from "../../../App.js";
 import {
   getWeightsBySummaryAttribute,
-  getSummaryAttributeWeightsByNode
+  getSummaryAttributeWeightsByNode,
+  isUnknownDataOnly
 } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
@@ -58,19 +59,22 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
 
+  // Get master summary
+  const masterSummary = data.flowBundles.master_summary;
+
   // Track data for donuts
   const [donutData, setDonutData] = React.useState(
     getWeightsBySummaryAttribute({
       field: "core_elements",
       flowTypes: ["disbursed_funds", "committed_funds"],
-      data: [data.flowBundles.master_summary]
+      data: [masterSummary]
     })
   );
 
   // Track donut denominator value
   const getDonutDenominator = data => {
     // Assume that first flow bundle is what is needed
-    const focusNodeBundle = data.flowBundles.master_summary;
+    const focusNodeBundle = masterSummary;
 
     // Return null if no data
     if (focusNodeBundle === undefined) return null;
@@ -116,15 +120,15 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
 
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles.flow_bundles[0] === undefined;
-  const noFinancialData = noData
-    ? true
-    : data.flowBundles.flow_bundles[0].flow_types["disbursed_funds"] ===
-        undefined &&
-      data.flowBundles.flow_bundles[0].flow_types["committed_funds"] ===
-        undefined;
-  // const unknownDataOnly = isUnknownDataOnly(data.flowBundles[0]);
-  // TODO
-  //
+  // const noFinancialData = noData
+  //   ? true
+  //   : data.flowBundles.flow_bundles[0].flow_types["disbursed_funds"] ===
+  //       undefined &&
+  //     data.flowBundles.flow_bundles[0].flow_types["committed_funds"] ===
+  //       undefined;
+
+  const unknownDataOnly = isUnknownDataOnly({ masterSummary: masterSummary });
+
   const sections = [
     {
       header: (
@@ -137,7 +141,8 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
       content: (
         <FundsByYear
           entityRole={entityRole}
-          data={data.flowBundles.master_summary}
+          data={masterSummary}
+          unknownDataOnly={unknownDataOnly}
         />
       ),
       toggleFlowType: false,
@@ -154,7 +159,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         />
       ),
       toggleFlowType: true,
-      hide: noData
+      hide: noData || unknownDataOnly
     },
     {
       header: <h2>Funding by core capacity</h2>,
@@ -174,7 +179,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         />
       ),
       toggleFlowType: true,
-      hide: noData
+      hide: noData || unknownDataOnly
     },
     {
       header: <h2>Top {otherEntityRole}s</h2>,
@@ -240,7 +245,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         />
       ),
       toggleFlowType: true,
-      hide: noData
+      hide: noData || unknownDataOnly
     },
     {
       header: <h2>Top {entityRole}s</h2>,
@@ -306,7 +311,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         />
       ),
       toggleFlowType: true,
-      hide: noData || pageType !== "ghsa"
+      hide: noData || pageType !== "ghsa" || unknownDataOnly
     }
   ];
   // Return JSX
