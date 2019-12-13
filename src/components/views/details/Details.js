@@ -120,12 +120,10 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
 
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles.flow_bundles[0] === undefined;
-  // const noFinancialData = noData
-  //   ? true
-  //   : data.flowBundles.flow_bundles[0].flow_types["disbursed_funds"] ===
-  //       undefined &&
-  //     data.flowBundles.flow_bundles[0].flow_types["committed_funds"] ===
-  //       undefined;
+  const noFinancialData = noData
+    ? true
+    : masterSummary.flow_types["disbursed_funds"] === undefined &&
+      masterSummary.flow_types["committed_funds"] === undefined;
 
   const unknownDataOnly = isUnknownDataOnly({ masterSummary: masterSummary });
 
@@ -143,6 +141,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
           entityRole={entityRole}
           data={masterSummary}
           unknownDataOnly={unknownDataOnly}
+          noFinancialData={noFinancialData}
         />
       ),
       toggleFlowType: false,
@@ -159,7 +158,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         />
       ),
       toggleFlowType: true,
-      hide: noData || unknownDataOnly
+      hide: noData || unknownDataOnly || noFinancialData
     },
     {
       header: <h2>Funding by core capacity</h2>,
@@ -179,7 +178,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         />
       ),
       toggleFlowType: true,
-      hide: noData || unknownDataOnly
+      hide: noData || unknownDataOnly || noFinancialData
     },
     {
       header: <h2>Top {otherEntityRole}s</h2>,
@@ -245,7 +244,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         />
       ),
       toggleFlowType: true,
-      hide: noData || unknownDataOnly
+      hide: noData || unknownDataOnly || noFinancialData
     },
     {
       header: <h2>Top {entityRole}s</h2>,
@@ -311,7 +310,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         />
       ),
       toggleFlowType: true,
-      hide: noData || pageType !== "ghsa" || unknownDataOnly
+      hide: noData || pageType !== "ghsa" || unknownDataOnly || noFinancialData
     }
   ];
   // Return JSX
