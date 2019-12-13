@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, BrowserRouter } from "react-router-dom";
+import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom";
 import axios from "axios";
 import Modal from "reactjs-popup";
 import classNames from "classnames";
@@ -315,6 +315,25 @@ const App = () => {
                     setLoading: setLoading,
                     flowTypeInfo: flowTypeInfo
                   });
+                }}
+              />
+              <Route
+                exact
+                path="/details/:id"
+                render={d => {
+                  if (d.match.params.id === "ghsa")
+                    return renderDetails({
+                      ...d.match.params,
+                      detailsComponent: detailsComponent,
+                      setDetailsComponent: setDetailsComponent,
+                      loading: loading,
+                      setLoading: setLoading,
+                      flowTypeInfo: flowTypeInfo
+                    });
+                  else
+                    return (
+                      <Redirect to={`/details/${d.match.params.id}/funder`} />
+                    );
                 }}
               />
             </div>

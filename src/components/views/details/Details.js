@@ -7,6 +7,8 @@ import {
 } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
+import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
+import NodeQuery from "../../misc/NodeQuery.js";
 
 // Content components
 import DetailsSection from "../../views/details/content/DetailsSection.js";
@@ -34,6 +36,9 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   else if (id.toLowerCase() === "outbreak-response")
     pageType = "outbreak-response";
   else pageType = "entity";
+
+  // If entity role is not defined, let it be funder as a placeholder.
+  if (entityRole === undefined) entityRole = "funder";
 
   // Define noun for entity role
   const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
@@ -119,229 +124,212 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         undefined;
   // const unknownDataOnly = isUnknownDataOnly(data.flowBundles[0]);
   // TODO
-
+  //
+  const sections = [
+    {
+      header: (
+        <h2>
+          Total funds{" "}
+          {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
+          {Settings.startYear} to {Settings.endYear}
+        </h2>
+      ),
+      content: (
+        <FundsByYear
+          entityRole={entityRole}
+          data={data.flowBundles.master_summary}
+        />
+      ),
+      toggleFlowType: false,
+      hide: noData
+    },
+    {
+      header: <h2>Funding by core element</h2>,
+      content: (
+        <Donuts
+          data={donutData}
+          flowType={curFlowType}
+          attributeType={"core_elements"}
+          donutDenominator={donutDenominator}
+        />
+      ),
+      toggleFlowType: true,
+      hide: noData
+    },
+    {
+      header: <h2>Funding by core capacity</h2>,
+      content: (
+        <StackBar
+          data={getWeightsBySummaryAttribute({
+            field: "core_capacities",
+            flowTypes: ["disbursed_funds", "committed_funds"],
+            data: data.flowBundlesByNeighbor.flow_bundles,
+            byOtherNode: true,
+            otherNodeType: otherNodeType
+          })}
+          flowType={curFlowType}
+          flowTypeName={curFlowTypeName}
+          attributeType={"core_capacities"}
+          otherNodeType={otherNodeType}
+        />
+      ),
+      toggleFlowType: true,
+      hide: noData
+    },
+    {
+      header: <h2>Top {otherEntityRole}s</h2>,
+      content: (
+        <SimpleTable
+          colInfo={[
+            {
+              fmtName: otherNodeType,
+              get: d => d[otherNodeType],
+              display_name: Util.getInitCap(
+                Util.getRoleTerm({
+                  type: "noun",
+                  role: otherEntityRole
+                })
+              )
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].total : undefined),
+              display_name: `Total ${
+                curFlowType === "disbursed_funds" ? "disbursed" : "committed"
+              }`
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
+              display_name: "Prevent"
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
+              display_name: "Detect"
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
+              display_name: "Respond"
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
+              display_name: "Other"
+            },
+            {
+              fmtName: curFlowType,
+              get: d =>
+                d[curFlowType]
+                  ? d[curFlowType]["General IHR Implementation"]
+                  : undefined,
+              display_name: "General IHR"
+            },
+            {
+              fmtName: curFlowType,
+              get: d =>
+                d[curFlowType] ? d[curFlowType]["Unspecified"] : undefined,
+              display_name: "Unspecified"
+            }
+          ]}
+          data={topTableData}
+          hide={d => {
+            return d[curFlowType] !== undefined;
+          }}
+        />
+      ),
+      toggleFlowType: true,
+      hide: noData
+    },
+    {
+      header: <h2>Top {entityRole}s</h2>,
+      content: (
+        <SimpleTable
+          colInfo={[
+            {
+              fmtName: nodeType,
+              get: d => d[nodeType],
+              display_name: Util.getInitCap(
+                Util.getRoleTerm({
+                  type: "noun",
+                  role: entityRole
+                })
+              )
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].total : undefined),
+              display_name: `Total ${
+                curFlowType === "disbursed_funds" ? "disbursed" : "committed"
+              }`
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
+              display_name: "Prevent"
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
+              display_name: "Detect"
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
+              display_name: "Respond"
+            },
+            {
+              fmtName: curFlowType,
+              get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
+              display_name: "Other"
+            },
+            {
+              fmtName: curFlowType,
+              get: d =>
+                d[curFlowType]
+                  ? d[curFlowType]["General IHR Implementation"]
+                  : undefined,
+              display_name: "General IHR"
+            },
+            {
+              fmtName: curFlowType,
+              get: d =>
+                d[curFlowType] ? d[curFlowType]["Unspecified"] : undefined,
+              display_name: "Unspecified"
+            }
+          ]}
+          data={topTableDataOther}
+          hide={d => {
+            return d[curFlowType] !== undefined;
+          }}
+        />
+      ),
+      toggleFlowType: true,
+      hide: noData || pageType !== "ghsa"
+    }
+  ];
   // Return JSX
   return (
     <div className={"pageContainer"}>
       <h1>
-        {id} ({entityRoleNoun} profile)
+        {data.nodeData.name}{" "}
+        {pageType === "entity" && <span>({entityRoleNoun} profile)</span>}
       </h1>
-
-      {// Content if there is data available to show
-      !noData && (
-        <div className={styles.content}>
-          <DetailsSection
-            header={
-              <h2>
-                Total funds{" "}
-                {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
-                {Settings.startYear} to {Settings.endYear}
-              </h2>
-            }
-            content={
-              <FundsByYear
-                entityRole={entityRole}
-                data={data.flowBundles.master_summary}
-              />
-            }
-            curFlowType={curFlowType}
-            setCurFlowType={setCurFlowType}
-            flowTypeInfo={flowTypeInfo}
-            toggleFlowType={false}
-          />
-          <DetailsSection
-            header={<h2>Funding by core element</h2>}
-            content={
-              <Donuts
-                data={donutData}
-                flowType={curFlowType}
-                attributeType={"core_elements"}
-                donutDenominator={donutDenominator}
-              />
-            }
-            curFlowType={curFlowType}
-            setCurFlowType={setCurFlowType}
-            flowTypeInfo={flowTypeInfo}
-            toggleFlowType={true}
-            noFinancialData={noFinancialData}
-          />
-          <DetailsSection
-            header={<h2>Funding by core capacity</h2>}
-            content={
-              <StackBar
-                data={getWeightsBySummaryAttribute({
-                  field: "core_capacities",
-                  flowTypes: ["disbursed_funds", "committed_funds"],
-                  data: data.flowBundlesByNeighbor.flow_bundles,
-                  byOtherNode: true,
-                  otherNodeType: otherNodeType
-                })}
-                flowType={curFlowType}
-                flowTypeName={curFlowTypeName}
-                attributeType={"core_capacities"}
-                otherNodeType={otherNodeType}
-              />
-            }
-            curFlowType={curFlowType}
-            setCurFlowType={setCurFlowType}
-            flowTypeInfo={flowTypeInfo}
-            toggleFlowType={true}
-            noFinancialData={noFinancialData}
-          />
-          <DetailsSection
-            header={<h2>Top {otherEntityRole}s</h2>}
-            content={
-              <SimpleTable
-                colInfo={[
-                  {
-                    fmtName: otherNodeType,
-                    get: d => d[otherNodeType],
-                    display_name: Util.getInitCap(
-                      Util.getRoleTerm({
-                        type: "noun",
-                        role: otherEntityRole
-                      })
-                    )
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d =>
-                      d[curFlowType] ? d[curFlowType].total : undefined,
-                    display_name: `Total ${
-                      curFlowType === "disbursed_funds"
-                        ? "disbursed"
-                        : "committed"
-                    }`
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
-                    display_name: "Prevent"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
-                    display_name: "Detect"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
-                    display_name: "Respond"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
-                    display_name: "Other"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d =>
-                      d[curFlowType]
-                        ? d[curFlowType]["General IHR Implementation"]
-                        : undefined,
-                    display_name: "General IHR"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d =>
-                      d[curFlowType]
-                        ? d[curFlowType]["Unspecified"]
-                        : undefined,
-                    display_name: "Unspecified"
-                  }
-                ]}
-                data={topTableData}
-                hide={d => {
-                  return d[curFlowType] !== undefined;
-                }}
-              />
-            }
-            curFlowType={curFlowType}
-            setCurFlowType={setCurFlowType}
-            flowTypeInfo={flowTypeInfo}
-            toggleFlowType={true}
-            noFinancialData={noFinancialData}
-          />
-          {pageType === "ghsa" && (
+      {sections.map(
+        s =>
+          !s.hide && (
             <DetailsSection
-              header={<h2>Top {entityRole}s</h2>}
-              content={
-                <SimpleTable
-                  colInfo={[
-                    {
-                      fmtName: nodeType,
-                      get: d => d[nodeType],
-                      display_name: Util.getInitCap(
-                        Util.getRoleTerm({
-                          type: "noun",
-                          role: entityRole
-                        })
-                      )
-                    },
-                    {
-                      fmtName: curFlowType,
-                      get: d =>
-                        d[curFlowType] ? d[curFlowType].total : undefined,
-                      display_name: `Total ${
-                        curFlowType === "disbursed_funds"
-                          ? "disbursed"
-                          : "committed"
-                      }`
-                    },
-                    {
-                      fmtName: curFlowType,
-                      get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
-                      display_name: "Prevent"
-                    },
-                    {
-                      fmtName: curFlowType,
-                      get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
-                      display_name: "Detect"
-                    },
-                    {
-                      fmtName: curFlowType,
-                      get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
-                      display_name: "Respond"
-                    },
-                    {
-                      fmtName: curFlowType,
-                      get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
-                      display_name: "Other"
-                    },
-                    {
-                      fmtName: curFlowType,
-                      get: d =>
-                        d[curFlowType]
-                          ? d[curFlowType]["General IHR Implementation"]
-                          : undefined,
-                      display_name: "General IHR"
-                    },
-                    {
-                      fmtName: curFlowType,
-                      get: d =>
-                        d[curFlowType]
-                          ? d[curFlowType]["Unspecified"]
-                          : undefined,
-                      display_name: "Unspecified"
-                    }
-                  ]}
-                  data={topTableDataOther}
-                  hide={d => {
-                    return d[curFlowType] !== undefined;
-                  }}
-                />
-              }
+              header={s.header}
+              content={s.content}
               curFlowType={curFlowType}
               setCurFlowType={setCurFlowType}
               flowTypeInfo={flowTypeInfo}
-              toggleFlowType={true}
-              noFinancialData={noFinancialData}
+              toggleFlowType={s.toggleFlowType}
             />
-          )}
-        </div>
+          )
       )}
-      {// Content if there is NOT data available to show
-      noData && (
+      {noData && (
         <span>
           No funding data are currently available where {id} is a{" "}
           {entityRoleNoun}.
@@ -410,9 +398,36 @@ const getDetailsData = async ({
     },
     include_master_summary: true
   };
+
+  // If GHSA page, then filter by GHSA
+  if (id === "ghsa")
+    baseQueryParams.filters.parent_flow_info_filters = [
+      ["ghsa_funding", "true"]
+    ];
+
+  /**
+   * Given a unique ID, returns the correct query component to provide Details
+   * page data.
+   * @method getQueryComponentFromId
+   * @param  {[type]}                id [description]
+   * @return {[type]}                   [description]
+   */
+  const getQueryComponentFromId = id => {
+    switch (id) {
+      case "ghsa":
+        return FlowBundleGeneralQuery;
+      default:
+        return FlowBundleFocusQuery;
+    }
+  };
+
+  // Get appropriate query component based on what ID the details page has.
+  const Query = getQueryComponentFromId(id);
+
   const queries = {
-    flowBundles: await FlowBundleFocusQuery(baseQueryParams),
-    flowBundlesByNeighbor: await FlowBundleFocusQuery({
+    nodeData: await NodeQuery({ node_id: id }),
+    flowBundles: await Query(baseQueryParams),
+    flowBundlesByNeighbor: await Query({
       ...baseQueryParams,
       by_neighbor: true
     })

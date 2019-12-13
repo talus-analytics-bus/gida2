@@ -93,8 +93,6 @@ export const getWeightsBySummaryAttribute = ({
   data,
   ...props
 }) => {
-  console.log("data");
-  console.log(data);
   // Flag true if data should be returned specific to target/source, and false
   // if it should be returned aggregated by target/source (non-specific).
   const byOtherNode =
@@ -117,8 +115,6 @@ export const getWeightsBySummaryAttribute = ({
       const otherNodeType = byOtherNode ? props.otherNodeType : null;
 
       // Create string from target/source list
-      console.log("d");
-      console.log(d);
       const otherNodesStr = byOtherNode ? d[otherNodeType].join("; ") : null;
 
       // Get all data related to the flow type. If none, then continue to the
@@ -205,4 +201,21 @@ export const getWeightsBySummaryAttribute = ({
 
   // Format output as an array of objects (one object per row)
   return outputArr;
+};
+
+export const getNodeData = id => {
+  console.log("id");
+  console.log(id);
+  switch (id) {
+    case "ghsa":
+      return {
+        name: "Global Health Security Agenda (GHSA)",
+        id: id
+      };
+    default:
+      return {
+        name: id,
+        id: id
+      };
+  }
 };
