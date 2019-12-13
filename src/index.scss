@@ -5,6 +5,10 @@ body,
 #root {
   width: 100%;
   margin: 0;
+  input[type="radio"] {
+    top: -2px;
+    position: relative;
+  }
   .pageContainer {
     padding: 20px;
     width: 100%;

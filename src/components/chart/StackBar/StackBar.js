@@ -7,7 +7,13 @@ import * as d3 from "d3/dist/d3.min";
 import SimpleTable from "../table/SimpleTable.js";
 
 // FC
-const StackBar = ({ data, flowType, otherNodeType, ...props }) => {
+const StackBar = ({
+  data,
+  flowType,
+  flowTypeName,
+  otherNodeType,
+  ...props
+}) => {
   return (
     <div className={styles.stackbar}>
       {
@@ -20,22 +26,20 @@ const StackBar = ({ data, flowType, otherNodeType, ...props }) => {
               display_name: "Core capacity"
             },
             {
-              fmtName: "disbursed_funds",
-              get: d => d.disbursed_funds,
-              display_name: "Disbursed funds"
-            },
-            {
-              fmtName: "committed_funds",
-              get: d => d.committed_funds,
-              display_name: "Committed funds"
-            },
-            {
               fmtName: otherNodeType,
               get: d => d[otherNodeType],
               display_name: otherNodeType === "target" ? "Recipient" : "Funder"
+            },
+            {
+              fmtName: flowType,
+              get: d => d[flowType],
+              display_name: flowTypeName
             }
           ]}
           data={data}
+          hide={d => {
+            return d[flowType] !== undefined;
+          }}
         />
       }
     </div>

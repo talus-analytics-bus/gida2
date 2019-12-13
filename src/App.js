@@ -121,7 +121,6 @@ const App = () => {
   }
 
   React.useEffect(() => {
-    setLoading(false);
     // console.log("getAppData");
     getAppData();
   }, []);

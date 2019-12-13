@@ -17,8 +17,12 @@ import SimpleTable from "../../chart/table/SimpleTable.js";
 
 // FC for Details.
 const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
-  // Track whether viewing committed or disbursed/provided assistance
-  const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
+  // TODO make key changes to the page if the id is special:
+  // "ghsa"
+  // "outbreak_response"
+
+  // Define noun for entity role
+  const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
 
   // Define other entity role, which is used in certain charts
   const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
@@ -26,141 +30,206 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   // Define the other node type based on the current entity role, which is used
   // in certain charts.
   const otherNodeType = entityRole === "funder" ? "target" : "source";
+
+  // Track whether viewing committed or disbursed/provided assistance
+  const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
+
+  // Get display name for current flow type
+  const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
+    .display_name;
+
+  // Track data for donuts
+  const [donutData, setDonutData] = React.useState(
+    getWeightsBySummaryAttribute({
+      field: "core_elements",
+      flowTypes: ["disbursed_funds", "committed_funds"],
+      data: data.flowBundles
+    })
+  );
+
+  // Track donut denominator value
+  const getDonutDenominator = data => {
+    // Assume that first flow bundle is what is needed
+    const focusNodeBundle = data.flowBundles[0];
+
+    // Return null if no data
+    if (focusNodeBundle === undefined) return null;
+
+    // Get focus node weight for flow type
+    const flowTypeBundle = focusNodeBundle.flow_types[curFlowType];
+
+    // If data not available, return null
+    if (flowTypeBundle === undefined) return null;
+    else {
+      // otherwise, return the weight
+      return flowTypeBundle.focus_node_weight;
+    }
+  };
+  const [donutDenominator, setDonutDenominator] = React.useState(
+    getDonutDenominator(data)
+  );
+
+  // Track the Top Recipients/Funders table data
+  const [topTableData, setTopTableData] = React.useState(
+    getSummaryAttributeWeightsByNode({
+      data: data.flowBundlesByNeighbor,
+      field: "core_elements",
+      flowTypes: ["disbursed_funds", "committed_funds"],
+      nodeType: otherNodeType
+    })
+  );
+
+  console.log("topTableData");
+  console.log(topTableData);
+
+  // True if there are no data to show for the entire page, false otherwise.
+  const noData = data.flowBundles[0] === undefined;
+
   // Return JSX
   return (
     <div className={"pageContainer"}>
       <h1>
-        {id} ({Util.getRoleTerm({ type: "noun", role: entityRole })} profile)
+        {id} ({entityRoleNoun} profile)
       </h1>
-      <div className={styles.content}>
-        <DetailsSection
-          header={
-            <h2>
-              Total funds{" "}
-              {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
-              {Settings.startYear} to {Settings.endYear}
-            </h2>
-          }
-          content={
-            <FundsByYear entityRole={entityRole} data={data.flowBundles[0]} />
-          }
-          curFlowType={curFlowType}
-          setCurFlowType={setCurFlowType}
-          flowTypeInfo={flowTypeInfo}
-          toggleFlowType={false}
-        />
-        <DetailsSection
-          header={<h2>Funding by core element</h2>}
-          content={
-            <Donuts
-              data={getWeightsBySummaryAttribute({
-                field: "core_elements",
-                flowTypes: ["disbursed_funds", "committed_funds"],
-                data: data.flowBundles
-              })}
-              flowType={curFlowType}
-              attributeType={"core_elements"}
-            />
-          }
-          curFlowType={curFlowType}
-          setCurFlowType={setCurFlowType}
-          flowTypeInfo={flowTypeInfo}
-          toggleFlowType={true}
-        />
-        <DetailsSection
-          header={<h2>Funding by core capacity</h2>}
-          content={
-            <StackBar
-              data={getWeightsBySummaryAttribute({
-                field: "core_capacities",
-                flowTypes: ["disbursed_funds", "committed_funds"],
-                data: data.flowBundles,
-                byOtherNode: true,
-                otherNodeType: otherNodeType
-              })}
-              flowType={curFlowType}
-              attributeType={"core_capacities"}
-              otherNodeType={otherNodeType}
-            />
-          }
-          curFlowType={curFlowType}
-          setCurFlowType={setCurFlowType}
-          flowTypeInfo={flowTypeInfo}
-          toggleFlowType={true}
-        />
-        <DetailsSection
-          header={<h2>Top {otherEntityRole}s</h2>}
-          content={
-            <SimpleTable
-              colInfo={[
-                {
-                  fmtName: otherNodeType,
-                  get: d => d[otherNodeType],
-                  display_name: Util.getInitCap(
-                    Util.getRoleTerm({
-                      type: "noun",
-                      role: otherEntityRole
-                    })
-                  )
-                },
-                {
-                  fmtName: curFlowType,
-                  get: d => (d[curFlowType] ? d[curFlowType].total : undefined),
-                  display_name: `Total ${
-                    curFlowType === "disbursed_funds"
-                      ? "disbursed"
-                      : "committed"
-                  }`
-                },
-                {
-                  fmtName: curFlowType,
-                  get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
-                  display_name: "Prevent"
-                },
-                {
-                  fmtName: curFlowType,
-                  get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
-                  display_name: "Detect"
-                },
-                {
-                  fmtName: curFlowType,
-                  get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
-                  display_name: "Respond"
-                },
-                {
-                  fmtName: curFlowType,
-                  get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
-                  display_name: "Other"
-                },
-                {
-                  fmtName: curFlowType,
-                  get: d =>
-                    d[curFlowType]
-                      ? d[curFlowType]["General IHR Implementation"]
-                      : undefined,
-                  display_name: "General IHR"
-                },
-                {
-                  fmtName: curFlowType,
-                  get: d =>
-                    d[curFlowType] ? d[curFlowType]["Unspecified"] : undefined,
-                  display_name: "Unspecified"
-                }
-              ]}
-              data={getSummaryAttributeWeightsByNode({
-                data: data.flowBundlesByNeighbor,
-                field: "core_elements",
-                flowTypes: ["disbursed_funds", "committed_funds"],
-                nodeType: otherNodeType
-              })}
-            />
-          }
-          curFlowType={curFlowType}
-          setCurFlowType={setCurFlowType}
-          flowTypeInfo={flowTypeInfo}
-          toggleFlowType={true}
-        />
-      </div>
+
+      {// Content if there is data available to show
+      !noData && (
+        <div className={styles.content}>
+          <DetailsSection
+            header={
+              <h2>
+                Total funds{" "}
+                {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
+                {Settings.startYear} to {Settings.endYear}
+              </h2>
+            }
+            content={
+              <FundsByYear entityRole={entityRole} data={data.flowBundles[0]} />
+            }
+            curFlowType={curFlowType}
+            setCurFlowType={setCurFlowType}
+            flowTypeInfo={flowTypeInfo}
+            toggleFlowType={false}
+          />
+          <DetailsSection
+            header={<h2>Funding by core element</h2>}
+            content={
+              <Donuts
+                data={donutData}
+                flowType={curFlowType}
+                attributeType={"core_elements"}
+                donutDenominator={donutDenominator}
+              />
+            }
+            curFlowType={curFlowType}
+            setCurFlowType={setCurFlowType}
+            flowTypeInfo={flowTypeInfo}
+            toggleFlowType={true}
+          />
+          <DetailsSection
+            header={<h2>Funding by core capacity</h2>}
+            content={
+              <StackBar
+                data={getWeightsBySummaryAttribute({
+                  field: "core_capacities",
+                  flowTypes: ["disbursed_funds", "committed_funds"],
+                  data: data.flowBundlesByNeighbor,
+                  byOtherNode: true,
+                  otherNodeType: otherNodeType
+                })}
+                flowType={curFlowType}
+                flowTypeName={curFlowTypeName}
+                attributeType={"core_capacities"}
+                otherNodeType={otherNodeType}
+              />
+            }
+            curFlowType={curFlowType}
+            setCurFlowType={setCurFlowType}
+            flowTypeInfo={flowTypeInfo}
+            toggleFlowType={true}
+          />
+          <DetailsSection
+            header={<h2>Top {otherEntityRole}s</h2>}
+            content={
+              <SimpleTable
+                colInfo={[
+                  {
+                    fmtName: otherNodeType,
+                    get: d => d[otherNodeType],
+                    display_name: Util.getInitCap(
+                      Util.getRoleTerm({
+                        type: "noun",
+                        role: otherEntityRole
+                      })
+                    )
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d =>
+                      d[curFlowType] ? d[curFlowType].total : undefined,
+                    display_name: `Total ${
+                      curFlowType === "disbursed_funds"
+                        ? "disbursed"
+                        : "committed"
+                    }`
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
+                    display_name: "Prevent"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
+                    display_name: "Detect"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
+                    display_name: "Respond"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
+                    display_name: "Other"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d =>
+                      d[curFlowType]
+                        ? d[curFlowType]["General IHR Implementation"]
+                        : undefined,
+                    display_name: "General IHR"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d =>
+                      d[curFlowType]
+                        ? d[curFlowType]["Unspecified"]
+                        : undefined,
+                    display_name: "Unspecified"
+                  }
+                ]}
+                data={topTableData}
+                hide={d => {
+                  return d[curFlowType] !== undefined;
+                }}
+              />
+            }
+            curFlowType={curFlowType}
+            setCurFlowType={setCurFlowType}
+            flowTypeInfo={flowTypeInfo}
+            toggleFlowType={true}
+          />
+        </div>
+      )}
+      {// Content if there is NOT data available to show
+      noData && (
+        <span>
+          No funding data are currently available where {id} is a{" "}
+          {entityRoleNoun}.
+        </span>
+      )}
     </div>
   );
 };
@@ -178,6 +247,7 @@ export const renderDetails = ({
   // http://localhost:5002/flow_bundles?focus_node_type=source&focus_node_ids=United%20States&flow_type_ids=1%2C2%2C3%2C4&by_neighbor=false
 
   if (loading) {
+    console.log("DETAILS STILL LOADING");
     return <div>Loading...</div>;
   } else if (
     detailsComponent === null ||
@@ -216,7 +286,7 @@ const getDetailsData = async ({
     flow_type_ids: [1, 2, 3, 4],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
-    by_neighbor: true,
+    by_neighbor: false,
     filters: {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],

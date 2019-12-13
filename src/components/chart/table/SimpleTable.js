@@ -9,7 +9,9 @@ import Util from "../../misc/Util.js";
  */
 const SimpleTable = ({ colInfo, data, rows, ...props }) => {
   const getRows = data => {
-    return data.slice(0, props.limit);
+    // Get row-hiding function
+    const filterFcn = props.hide !== undefined ? props.hide : d => d;
+    return data.filter(d => filterFcn(d)).slice(0, props.limit);
   };
 
   if (rows === undefined) rows = getRows(data);

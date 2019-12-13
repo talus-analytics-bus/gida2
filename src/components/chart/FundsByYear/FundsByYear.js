@@ -11,6 +11,10 @@ import AreaLine from "../AreaLine/AreaLine.js";
 
 // FC
 const FundsByYear = ({ entityRole, data, flowTypeInfo, ...props }) => {
+  // Check if no data and show message if none
+  const noData = data === null;
+  console.log("data - FundsByYear.js");
+  console.log(data);
   return (
     <div className={styles.fundsByYear}>
       <div className={styles.content}>
