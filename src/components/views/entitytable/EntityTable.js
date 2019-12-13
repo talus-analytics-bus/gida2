@@ -1,4 +1,6 @@
 import React from "react";
+import classNames from "classnames";
+import { Link } from "react-router-dom";
 import styles from "./entitytable.module.scss";
 import { Settings } from "../../../App.js";
 import {
@@ -17,322 +19,129 @@ import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
 import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import SimpleTable from "../../chart/table/SimpleTable.js";
+import TableInstance from "../../chart/table/TableInstance.js";
 
-// FC for Details.
-const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
-  // TODO make key changes to the page if the id is special:
-  // "ghsa" - Same as normal but include both a top funder and recipient table,
-  //          and include only flows that are ghsa. Name of page is
-  //          "Global Health Security Agenda (GHSA)" and entityRole is always
-  //          funder.
-  // "outbreak-response" - TBD
+// FC for EntityTable.
+const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
+  // // Get page type from id
+  // let pageType;
+  // if (id.toLowerCase() === "ghsa") pageType = "ghsa";
+  // else if (id.toLowerCase() === "outbreak-response")
+  //   pageType = "outbreak-response";
+  // else pageType = "entity";
   //
-  // TODO show the message below if only non-specific or inkind flows are available (all "unknown")
-  //    No funding with specific amounts to show. Click "View table of funds" to view all available data.
-  // TODO
-
-  // Get page type from id
-  let pageType;
-  if (id.toLowerCase() === "ghsa") pageType = "ghsa";
-  else if (id.toLowerCase() === "outbreak-response")
-    pageType = "outbreak-response";
-  else pageType = "entity";
-
-  // If entity role is not defined, let it be funder as a placeholder.
-  if (entityRole === undefined) entityRole = "funder";
-
+  // // If entity role is not defined, let it be funder as a placeholder.
+  // if (entityRole === undefined) entityRole = "funder";
+  //
   // Define noun for entity role
   const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
-
-  // Define other entity role, which is used in certain charts
-  const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
-
-  // Define the other node type based on the current entity role, which is used
-  // in certain charts.
-  const otherNodeType = entityRole === "funder" ? "target" : "source";
-  const nodeType = entityRole === "funder" ? "source" : "target";
-
-  // Track whether viewing committed or disbursed/provided assistance
-  const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
-
-  // Get display name for current flow type
-  const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
-    .display_name;
+  //
+  // // Define other entity role, which is used in certain charts
+  // const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
+  //
+  // // Define the other node type based on the current entity role, which is used
+  // // in certain charts.
+  // const otherNodeType = entityRole === "funder" ? "target" : "source";
+  // const nodeType = entityRole === "funder" ? "source" : "target";
+  //
+  // // Track whether viewing committed or disbursed/provided assistance
+  // const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
+  //
+  // // Get display name for current flow type
+  // const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
+  //   .display_name;
+  //
 
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
 
-  // Track data for donuts
-  const [donutData, setDonutData] = React.useState(
-    getWeightsBySummaryAttribute({
-      field: "core_elements",
-      flowTypes: ["disbursed_funds", "committed_funds"],
-      data: [masterSummary]
-    })
-  );
+  // getWeightsBySummaryAttribute({
+  //   field: "core_elements",
+  //   flowTypes: ["disbursed_funds", "committed_funds", "provided_inkind", "committed_inkind"],
+  //   data: [masterSummary]
+  // })
 
-  // Track donut denominator value
-  const getDonutDenominator = data => {
-    // Assume that first flow bundle is what is needed
-    const focusNodeBundle = masterSummary;
+  //
+  // // Track donut denominator value
+  // const getDonutDenominator = data => {
+  //   // Assume that first flow bundle is what is needed
+  //   const focusNodeBundle = masterSummary;
+  //
+  //   // Return null if no data
+  //   if (focusNodeBundle === undefined) return null;
+  //
+  //   // Get focus node weight for flow type
+  //   const flowTypeBundle = focusNodeBundle.flow_types[curFlowType];
+  //
+  //   // If data not available, return null
+  //   if (flowTypeBundle === undefined) return null;
+  //   else {
+  //     // otherwise, return the weight
+  //     return flowTypeBundle.focus_node_weight;
+  //   }
+  // };
+  // const donutDenominator = getDonutDenominator(data);
+  //
+  // // Track the Top Recipients/Funders table data
+  // const [topTableData, setTopTableData] = React.useState(
+  //   getSummaryAttributeWeightsByNode({
+  //     data: data.flowBundlesByNeighbor.flow_bundles,
+  //     field: "core_elements",
+  //     flowTypes: ["disbursed_funds", "committed_funds"],
+  //     nodeType: otherNodeType
+  //   })
+  // );
+  //
+  // // If on GHSA page, get "other" top table to display.
+  // const initTopTableDataOther = true
+  //   ? // pageType === "ghsa"
+  //     getSummaryAttributeWeightsByNode({
+  //       data: data.flowBundlesByNeighbor.flow_bundles,
+  //       field: "core_elements",
+  //       flowTypes: ["disbursed_funds", "committed_funds"],
+  //       nodeType: nodeType
+  //     })
+  //   : null;
+  // const [topTableDataOther, setTopTableDataOther] = React.useState(
+  //   initTopTableDataOther
+  // );
 
-    // Return null if no data
-    if (focusNodeBundle === undefined) return null;
-
-    // Get focus node weight for flow type
-    const flowTypeBundle = focusNodeBundle.flow_types[curFlowType];
-
-    // If data not available, return null
-    if (flowTypeBundle === undefined) return null;
-    else {
-      // otherwise, return the weight
-      return flowTypeBundle.focus_node_weight;
-    }
-  };
-  const donutDenominator = getDonutDenominator(data);
-
-  // Track the Top Recipients/Funders table data
-  const [topTableData, setTopTableData] = React.useState(
-    getSummaryAttributeWeightsByNode({
-      data: data.flowBundlesByNeighbor.flow_bundles,
-      field: "core_elements",
-      flowTypes: ["disbursed_funds", "committed_funds"],
-      nodeType: otherNodeType
-    })
-  );
-
-  // If on GHSA page, get "other" top table to display.
-  const initTopTableDataOther = true
-    ? // pageType === "ghsa"
-      getSummaryAttributeWeightsByNode({
-        data: data.flowBundlesByNeighbor.flow_bundles,
-        field: "core_elements",
-        flowTypes: ["disbursed_funds", "committed_funds"],
-        nodeType: nodeType
-      })
-    : null;
-  const [topTableDataOther, setTopTableDataOther] = React.useState(
-    initTopTableDataOther
-  );
-
-  console.log("data - Details.js");
+  console.log("data - EntityTable.js");
   console.log(data);
 
-  // True if there are no data to show for the entire page, false otherwise.
+  // // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles.flow_bundles[0] === undefined;
-  const noFinancialData = noData
-    ? true
-    : masterSummary.flow_types["disbursed_funds"] === undefined &&
-      masterSummary.flow_types["committed_funds"] === undefined;
-
-  const unknownDataOnly = isUnknownDataOnly({ masterSummary: masterSummary });
+  // const noFinancialData = noData
+  //   ? true
+  //   : masterSummary.flow_types["disbursed_funds"] === undefined &&
+  //     masterSummary.flow_types["committed_funds"] === undefined;
+  //
+  // const unknownDataOnly = isUnknownDataOnly({ masterSummary: masterSummary });
 
   const sections = [
     {
-      header: (
-        <h2>
-          Total funds{" "}
-          {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
-          {Settings.startYear} to {Settings.endYear}
-        </h2>
-      ),
-      content: (
-        <FundsByYear
-          entityRole={entityRole}
-          data={masterSummary}
-          unknownDataOnly={unknownDataOnly}
-          noFinancialData={noFinancialData}
-        />
-      ),
-      toggleFlowType: false,
-      hide: noData
-    },
-    {
-      header: <h2>Funding by core element</h2>,
-      content: (
-        <Donuts
-          data={donutData}
-          flowType={curFlowType}
-          attributeType={"core_elements"}
-          donutDenominator={donutDenominator}
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || unknownDataOnly || noFinancialData
-    },
-    {
-      header: <h2>Funding by core capacity</h2>,
-      content: (
-        <StackBar
-          data={getWeightsBySummaryAttribute({
-            field: "core_capacities",
-            flowTypes: ["disbursed_funds", "committed_funds"],
-            data: data.flowBundlesByNeighbor.flow_bundles,
-            byOtherNode: true,
-            otherNodeType: otherNodeType
-          })}
-          flowType={curFlowType}
-          flowTypeName={curFlowTypeName}
-          attributeType={"core_capacities"}
-          otherNodeType={otherNodeType}
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || unknownDataOnly || noFinancialData
-    },
-    {
-      header: <h2>Top {otherEntityRole}s</h2>,
-      content: (
-        <SimpleTable
-          colInfo={[
-            {
-              fmtName: otherNodeType,
-              get: d => d[otherNodeType],
-              display_name: Util.getInitCap(
-                Util.getRoleTerm({
-                  type: "noun",
-                  role: otherEntityRole
-                })
-              )
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].total : undefined),
-              display_name: `Total ${
-                curFlowType === "disbursed_funds" ? "disbursed" : "committed"
-              }`
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
-              display_name: "Prevent"
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
-              display_name: "Detect"
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
-              display_name: "Respond"
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
-              display_name: "Other"
-            },
-            {
-              fmtName: curFlowType,
-              get: d =>
-                d[curFlowType]
-                  ? d[curFlowType]["General IHR Implementation"]
-                  : undefined,
-              display_name: "General IHR"
-            },
-            {
-              fmtName: curFlowType,
-              get: d =>
-                d[curFlowType] ? d[curFlowType]["Unspecified"] : undefined,
-              display_name: "Unspecified"
-            }
-          ]}
-          data={topTableData}
-          hide={d => {
-            return d[curFlowType] !== undefined;
-          }}
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || unknownDataOnly || noFinancialData
-    },
-    {
-      header: <h2>Top {entityRole}s</h2>,
-      content: (
-        <SimpleTable
-          colInfo={[
-            {
-              fmtName: nodeType,
-              get: d => d[nodeType],
-              display_name: Util.getInitCap(
-                Util.getRoleTerm({
-                  type: "noun",
-                  role: entityRole
-                })
-              )
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].total : undefined),
-              display_name: `Total ${
-                curFlowType === "disbursed_funds" ? "disbursed" : "committed"
-              }`
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
-              display_name: "Prevent"
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
-              display_name: "Detect"
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
-              display_name: "Respond"
-            },
-            {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
-              display_name: "Other"
-            },
-            {
-              fmtName: curFlowType,
-              get: d =>
-                d[curFlowType]
-                  ? d[curFlowType]["General IHR Implementation"]
-                  : undefined,
-              display_name: "General IHR"
-            },
-            {
-              fmtName: curFlowType,
-              get: d =>
-                d[curFlowType] ? d[curFlowType]["Unspecified"] : undefined,
-              display_name: "Unspecified"
-            }
-          ]}
-          data={topTableDataOther}
-          hide={d => {
-            return d[curFlowType] !== undefined;
-          }}
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || pageType !== "ghsa" || unknownDataOnly || noFinancialData
+      header: "Funds by core element",
+      content: <div />
+      // getWeightsBySummaryAttribute({
+      //   field: "core_elements",
+      //   flowTypes: ["disbursed_funds", "committed_funds", "provided_inkind", "committed_inkind"],
+      //   data: [masterSummary]
+      // })
     }
   ];
+
   // Return JSX
   return (
-    <div className={"pageContainer"}>
-      <h1>
-        {data.nodeData.name}{" "}
-        {pageType === "entity" && <span>({entityRoleNoun} profile)</span>}
-      </h1>
-      {sections.map(
-        s =>
-          !s.hide && (
-            <DetailsSection
-              header={s.header}
-              content={s.content}
-              curFlowType={curFlowType}
-              setCurFlowType={setCurFlowType}
-              flowTypeInfo={flowTypeInfo}
-              toggleFlowType={s.toggleFlowType}
-            />
-          )
-      )}
+    <div className={classNames("pageContainer", styles.entityTable)}>
+      <div className={styles.header}>
+        <h1>{data.nodeData.name}</h1>
+        <Link to={`/details/${id}/${entityRole}`}>
+          <button>Back to summary</button>
+        </Link>
+      </div>
+      <div className={styles.content}>
+        <TableInstance />
+      </div>
       {noData && (
         <span>
           No funding data are currently available where {id} is a{" "}
@@ -344,8 +153,8 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
 };
 
 export const renderEntityTable = ({
-  detailsComponent,
-  setDetailsComponent,
+  component,
+  setComponent,
   loading,
   id,
   entityRole,
@@ -357,12 +166,9 @@ export const renderEntityTable = ({
 
   if (loading) {
     return <div>Loading...</div>;
-  } else if (
-    detailsComponent === null ||
-    (detailsComponent && detailsComponent.props.id !== id)
-  ) {
-    getDetailsData({
-      setDetailsComponent: setDetailsComponent,
+  } else if (component === null || (component && component.props.id !== id)) {
+    getComponentData({
+      setComponent: setComponent,
       id: id,
       entityRole: entityRole,
       flowTypeInfo: flowTypeInfo
@@ -370,20 +176,20 @@ export const renderEntityTable = ({
 
     return <div />;
   } else {
-    return detailsComponent;
+    return component;
   }
 };
 
 /**
  * Returns data for the details page given the entity type and id.
  * TODO make this work for special detail pages like GHSA and response
- * @method getDetailsData
+ * @method getComponentData
  * @param  {[type]}       setDetailsComponent [description]
  * @param  {[type]}       id                  [description]
  * @param  {[type]}       entityRole          [description]
  */
-const getDetailsData = async ({
-  setDetailsComponent,
+const getComponentData = async ({
+  setComponent,
   id,
   entityRole,
   flowTypeInfo
@@ -437,13 +243,12 @@ const getDetailsData = async ({
     })
   };
 
-  // If GHSA page, add additional query
-  // TODO
-
+  // Get results in parallel
   const results = await Util.getQueryResults(queries);
 
-  setDetailsComponent(
-    <Details
+  // Set the component
+  setComponent(
+    <EntityTable
       id={id}
       entityRole={entityRole}
       data={results}
@@ -452,4 +257,4 @@ const getDetailsData = async ({
   );
 };
 
-export default Details;
+export default EntityTable;

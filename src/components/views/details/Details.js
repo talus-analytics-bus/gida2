@@ -31,7 +31,6 @@ const Details = ({
   setGhsaOnly,
   ...props
 }) => {
-  console.log("ghsaOnly = " + ghsaOnly);
   // make key changes to the page if the id is special:
   // "ghsa" - Same as normal but include both a top funder and recipient table,
   //          and include only flows that are ghsa. Name of page is
@@ -149,6 +148,7 @@ const Details = ({
       ),
       content: (
         <FundsByYear
+          id={id}
           entityRole={entityRole}
           data={masterSummary}
           unknownDataOnly={unknownDataOnly}

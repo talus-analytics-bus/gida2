@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Util from "../../misc/Util.js";
 import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
 import styles from "./fundsbyyear.module.scss";
@@ -11,6 +12,7 @@ import AreaLine from "../AreaLine/AreaLine.js";
 
 // FC
 const FundsByYear = ({
+  id,
   entityRole,
   data,
   flowTypeInfo,
@@ -19,8 +21,6 @@ const FundsByYear = ({
   ...props
 }) => {
   // Check if no data and show message if none
-  console.log("data - FundsByYear.js");
-  console.log(data);
   return (
     <div className={styles.fundsByYear}>
       {!unknownDataOnly && !noFinancialData && (
@@ -28,7 +28,9 @@ const FundsByYear = ({
           <div className={styles.totals}>
             <TotalByFlowType flowType="disbursed_funds" data={data} />
             <TotalByFlowType flowType="committed_funds" data={data} />
-            <button>View table of funds</button>
+            <Link to={`/details/${id}/${entityRole}/table`}>
+              <button>View table of funds</button>
+            </Link>
           </div>
           <div className={styles.areaLine}>
             <AreaLine
