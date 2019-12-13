@@ -1,7 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import styles from "./details.module.scss";
-import classNames from "classnames";
+import styles from "./entitytable.module.scss";
 import { Settings } from "../../../App.js";
 import {
   getWeightsBySummaryAttribute,
@@ -19,25 +17,19 @@ import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
 import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import SimpleTable from "../../chart/table/SimpleTable.js";
-import RadioToggle from "../../misc/RadioToggle.js";
 
 // FC for Details.
-const Details = ({
-  id,
-  entityRole,
-  data,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
-  ...props
-}) => {
-  console.log("ghsaOnly = " + ghsaOnly);
-  // make key changes to the page if the id is special:
+const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
+  // TODO make key changes to the page if the id is special:
   // "ghsa" - Same as normal but include both a top funder and recipient table,
   //          and include only flows that are ghsa. Name of page is
   //          "Global Health Security Agenda (GHSA)" and entityRole is always
   //          funder.
   // "outbreak-response" - TBD
+  //
+  // TODO show the message below if only non-specific or inkind flows are available (all "unknown")
+  //    No funding with specific amounts to show. Click "View table of funds" to view all available data.
+  // TODO
 
   // Get page type from id
   let pageType;
@@ -133,11 +125,8 @@ const Details = ({
     : masterSummary.flow_types["disbursed_funds"] === undefined &&
       masterSummary.flow_types["committed_funds"] === undefined;
 
-  // True if the only available data to show are for "unknown" values (specific
-  // value no reported).
   const unknownDataOnly = isUnknownDataOnly({ masterSummary: masterSummary });
 
-  // Define details content sections.
   const sections = [
     {
       header: (
@@ -324,39 +313,13 @@ const Details = ({
       hide: noData || pageType !== "ghsa" || unknownDataOnly || noFinancialData
     }
   ];
-
   // Return JSX
   return (
-    <div className={classNames("pageContainer", styles.details)}>
-      <div className={styles.header}>
-        <h1>
-          {data.nodeData.name}{" "}
-          {pageType === "entity" && <span>({entityRoleNoun} profile)</span>}
-        </h1>
-        {pageType !== "ghsa" && (
-          <RadioToggle
-            choices={[
-              {
-                name: "All funding",
-                value: "false"
-              },
-              {
-                name: "GHSA funding only",
-                value: "true",
-                tooltip:
-                  "The Global Health Security Agenda (GHSA) is a partnership of nations, international organizations, and non-governmental stakeholders to help build countries’ capacity to help create a world safe and secure from infectious disease threats. Only resources that have specifically been identified as being committed or disbursed under the GHSA are identified as GHSA financial resources in GIDA."
-              }
-            ]}
-            curVal={ghsaOnly}
-            callback={setGhsaOnly}
-          />
-        )}
-        {pageType !== "ghsa" && (
-          <Link to={"/details/ghsa"}>
-            <button>GHSA project details</button>
-          </Link>
-        )}
-      </div>
+    <div className={"pageContainer"}>
+      <h1>
+        {data.nodeData.name}{" "}
+        {pageType === "entity" && <span>({entityRoleNoun} profile)</span>}
+      </h1>
       {sections.map(
         s =>
           !s.hide && (
@@ -380,16 +343,18 @@ const Details = ({
   );
 };
 
-export const renderDetails = ({
+export const renderEntityTable = ({
   detailsComponent,
   setDetailsComponent,
   loading,
   id,
   entityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly
+  flowTypeInfo
 }) => {
+  // Get data
+  // FundsByYear, FundsByCoreElement:
+  // http://localhost:5002/flow_bundles?focus_node_type=source&focus_node_ids=United%20States&flow_type_ids=1%2C2%2C3%2C4&by_neighbor=false
+
   if (loading) {
     return <div>Loading...</div>;
   } else if (
@@ -400,9 +365,7 @@ export const renderDetails = ({
       setDetailsComponent: setDetailsComponent,
       id: id,
       entityRole: entityRole,
-      flowTypeInfo: flowTypeInfo,
-      ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly
+      flowTypeInfo: flowTypeInfo
     });
 
     return <div />;
@@ -423,12 +386,8 @@ const getDetailsData = async ({
   setDetailsComponent,
   id,
   entityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly
+  flowTypeInfo
 }) => {
-  console.log("ghsaOnly - getDetailsData.js");
-  console.log(ghsaOnly);
   const baseQueryParams = {
     focus_node_ids: [id],
     focus_node_type: entityRole === "recipient" ? "target" : "source",
@@ -445,7 +404,7 @@ const getDetailsData = async ({
   };
 
   // If GHSA page, then filter by GHSA
-  if (id === "ghsa" || ghsaOnly === "true")
+  if (id === "ghsa")
     baseQueryParams.filters.parent_flow_info_filters = [
       ["ghsa_funding", "true"]
     ];
@@ -469,9 +428,6 @@ const getDetailsData = async ({
   // Get appropriate query component based on what ID the details page has.
   const Query = getQueryComponentFromId(id);
 
-  console.log("\nbaseQueryParams");
-  console.log(baseQueryParams);
-
   const queries = {
     nodeData: await NodeQuery({ node_id: id }),
     flowBundles: await Query(baseQueryParams),
@@ -492,8 +448,6 @@ const getDetailsData = async ({
       entityRole={entityRole}
       data={results}
       flowTypeInfo={flowTypeInfo}
-      ghsaOnly={ghsaOnly}
-      setGhsaOnly={setGhsaOnly}
     />
   );
 };

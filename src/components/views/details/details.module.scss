@@ -1,4 +1,10 @@
 @import "../../../assets/styles/colors.scss";
 
 .details {
+  .header {
+    display: flex;
+    flex-flow: row;
+    align-items: center; // TODO check this
+    justify-content: space-between;
+  }
 }

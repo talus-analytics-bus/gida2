@@ -16,7 +16,9 @@ import Map from "./components/map/Map";
 import Util from "./components/misc/Util.js";
 
 // views
-import { Details, renderDetails } from "./components/views/details/Details.js";
+import { renderDetails } from "./components/views/details/Details.js";
+import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
+// import { renderPairTable } from "./components/views/pairtable/PairTable.js";
 import Global from "./components/views/global/Global.js";
 import About from "./components/views/about/About.js";
 
@@ -52,6 +54,14 @@ const App = () => {
 
   // Try components
   const [detailsComponent, setDetailsComponent] = React.useState(null);
+  const [entityTableComponent, setEntityTableComponent] = React.useState(null);
+  const [pairTableComponent, setPairTableComponent] = React.useState(null);
+
+  // Track data selections
+  const [ghsaOnly, setGhsaOnly] = React.useState("false");
+
+  console.log("ghsaOnly - App.js");
+  console.log(ghsaOnly);
 
   async function getAppData() {
     const baseQueryParams = {
@@ -121,9 +131,12 @@ const App = () => {
   }
 
   React.useEffect(() => {
-    // console.log("getAppData");
     getAppData();
   }, []);
+
+  React.useEffect(() => {
+    setDetailsComponent(null);
+  }, [ghsaOnly]);
 
   // Define what columns to show in tables
   const valueColsInkind = ["provided_inkind", "committed_inkind"];
@@ -311,6 +324,22 @@ const App = () => {
                     ...d.match.params,
                     detailsComponent: detailsComponent,
                     setDetailsComponent: setDetailsComponent,
+                    loading: loading,
+                    setLoading: setLoading,
+                    flowTypeInfo: flowTypeInfo,
+                    ghsaOnly: ghsaOnly,
+                    setGhsaOnly: setGhsaOnly
+                  });
+                }}
+              />
+              <Route
+                exact
+                path="/details/:id/:entityRole/table"
+                render={d => {
+                  return renderEntityTable({
+                    ...d.match.params,
+                    component: entityTableComponent,
+                    setComponent: setEntityTableComponent,
                     loading: loading,
                     setLoading: setLoading,
                     flowTypeInfo: flowTypeInfo
