@@ -4,4 +4,10 @@
     display: flex;
     flex-flow: column;
   }
+  label {
+    font-weight: normal;
+  }
+  input {
+    margin-right: 5px;
+  }
 }

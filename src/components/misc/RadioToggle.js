@@ -15,15 +15,8 @@ const RadioToggle = ({ choices, curVal, callback, ...props }) => {
    */
   const onChange = e => {
     const input = e.target.closest("label").querySelector("input");
-    console.log("input.value");
-    console.log(input.value);
-    console.log("callback");
-    console.log(callback);
     callback(input.value);
   };
-
-  console.log("curVal");
-  console.log(curVal);
 
   return (
     <div className={styles.radioToggle}>

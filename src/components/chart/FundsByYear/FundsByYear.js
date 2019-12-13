@@ -20,7 +20,11 @@ const FundsByYear = ({
   noFinancialData,
   ...props
 }) => {
-  // Check if no data and show message if none
+  const linkToEntityTable = (
+    <Link to={`/details/${id}/${entityRole}/table`}>
+      <button>View table of funds</button>
+    </Link>
+  );
   return (
     <div className={styles.fundsByYear}>
       {!unknownDataOnly && !noFinancialData && (
@@ -28,9 +32,7 @@ const FundsByYear = ({
           <div className={styles.totals}>
             <TotalByFlowType flowType="disbursed_funds" data={data} />
             <TotalByFlowType flowType="committed_funds" data={data} />
-            <Link to={`/details/${id}/${entityRole}/table`}>
-              <button>View table of funds</button>
-            </Link>
+            {linkToEntityTable}
           </div>
           <div className={styles.areaLine}>
             <AreaLine
@@ -51,7 +53,7 @@ const FundsByYear = ({
               No funding with specific amounts to show. Click "View table of
               funds" to view all available data.
             </span>
-            <button>View table of funds</button>
+            {linkToEntityTable}
           </div>
         </div>
       )}

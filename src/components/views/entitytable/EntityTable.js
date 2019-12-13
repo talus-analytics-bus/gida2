@@ -165,8 +165,7 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
           tableColumns={[
             {
               title: "Core element",
-              prop: "attribute",
-              render: Util.getAttrFormatter("core_elements")
+              prop: "attribute"
             }
           ].concat(getAssistanceTableCols(flowTypeInfo))}
           tableData={getWeightsBySummaryAttribute({

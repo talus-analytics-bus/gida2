@@ -1,3 +1,5 @@
+import Util from "./Util.js";
+
 /**
  * Returns true if the data are unknown amounts only, false otherwise.
  * TODO at API level instead.
@@ -6,8 +8,6 @@
  * @return {Boolean}              [description]
  */
 export const isUnknownDataOnly = ({ masterSummary }) => {
-  console.log("masterSummary");
-  console.log(masterSummary);
   let unknownOnly = true;
   for (let [k, v] of Object.entries(masterSummary.flow_types)) {
     if (v.focus_node_weight !== "unknown") {
@@ -101,6 +101,9 @@ export const getWeightsBySummaryAttribute = ({
   data,
   ...props
 }) => {
+  // Get value formatter
+  const format = Util.getAttrFormatter("core_elements");
+
   // Flag true if data should be returned specific to target/source, and false
   // if it should be returned aggregated by target/source (non-specific).
   const byOtherNode =
@@ -140,7 +143,10 @@ export const getWeightsBySummaryAttribute = ({
       if (summaries[field] === undefined) return;
 
       // Otherwise, for each value in it
-      for (let [k, v] of Object.entries(summaries[field])) {
+      for (let [kTmp, v] of Object.entries(summaries[field])) {
+        // Format key
+        const k = format(kTmp);
+
         // If the value has not yet been seen,
         if (output[k] === undefined) {
           // and the final output should be separated by target/source node,
