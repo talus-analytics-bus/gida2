@@ -18,6 +18,32 @@ body,
       padding: 0;
     }
   }
+
+  // DataTables global styling
+  .tableInstance {
+    // Search bar
+    [for="search-field"] {
+      margin-right: 10px;
+    }
+
+    [for="search-field"],
+    #search-field {
+      margin-left: auto;
+    }
+
+    table {
+      margin-top: 10px;
+    }
+
+    // If no paging, hide the relevant elements
+    &.noPaging {
+      #page-menu,
+      .pagination.pull-right,
+      [for="page-menu"] {
+        display: none;
+      }
+    }
+  }
 }
 
 @import "../node_modules/react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";

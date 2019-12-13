@@ -130,6 +130,27 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
     }
   ];
 
+  const allFlowTypes = [
+    "disbursed_funds",
+    "committed_funds",
+    "provided_inkind",
+    "committed_inkind"
+  ];
+  const getAssistanceTableCols = flowTypeInfo => {
+    return allFlowTypes.map(ft => {
+      const match = flowTypeInfo.find(d => d.name === ft);
+      return {
+        title: `${match.display_name} (${Settings.startYear}-${
+          Settings.endYear
+        })`,
+        prop: match.name,
+        // TODO format in data to allow search
+        render: val => Util.formatValue(val, match.name),
+        defaultContent: Util.formatValue(0, match.name)
+      };
+    });
+  };
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.entityTable)}>
@@ -140,7 +161,20 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
         </Link>
       </div>
       <div className={styles.content}>
-        <TableInstance />
+        <TableInstance
+          tableColumns={[
+            {
+              title: "Core element",
+              prop: "attribute",
+              render: Util.getAttrFormatter("core_elements")
+            }
+          ].concat(getAssistanceTableCols(flowTypeInfo))}
+          tableData={getWeightsBySummaryAttribute({
+            field: "core_elements",
+            flowTypes: allFlowTypes,
+            data: [masterSummary]
+          })}
+        />
       </div>
       {noData && (
         <span>
