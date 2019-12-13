@@ -2,11 +2,11 @@ import axios from "axios";
 import Util from "./Util.js";
 
 /**
- * Get flow bundle data from API.
- * @method FlowBundleQuery
+ * Get flow bundle data from API focused on a specific target or source node.
+ * @method FlowBundleFocusQuery
  */
 
-const FlowBundleQuery = async function({
+const FlowBundleFocusQuery = async function({
   focus_node_type,
   focus_node_ids = null,
   focus_node_category = null,
@@ -48,10 +48,14 @@ const FlowBundleQuery = async function({
 
   // Send request
   // Await response
-  const res = await axios.post(`${Util.API_URL}/flow_bundles`, data, config);
+  const res = await axios.post(
+    `${Util.API_URL}/flow_bundles_focus`,
+    data,
+    config
+  );
 
   // Return response data
   return res.data.data;
 };
 
-export default FlowBundleQuery;
+export default FlowBundleFocusQuery;

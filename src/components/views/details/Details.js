@@ -6,7 +6,7 @@ import {
   getSummaryAttributeWeightsByNode
 } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
-import FlowBundleQuery from "../../misc/FlowBundleQuery.js";
+import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 
 // Content components
 import DetailsSection from "../../views/details/content/DetailsSection.js";
@@ -405,8 +405,8 @@ const getDetailsData = async ({
     }
   };
   const queries = {
-    flowBundles: await FlowBundleQuery(baseQueryParams),
-    flowBundlesByNeighbor: await FlowBundleQuery({
+    flowBundles: await FlowBundleFocusQuery(baseQueryParams),
+    flowBundlesByNeighbor: await FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: true
     })

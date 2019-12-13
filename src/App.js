@@ -27,7 +27,7 @@ import infoTooltipStyles from "./components/misc/infotooltip.module.scss";
 import "material-design-icons/iconfont/material-icons.css";
 
 // queries
-import FlowBundleQuery from "./components/misc/FlowBundleQuery.js";
+import FlowBundleFocusQuery from "./components/misc/FlowBundleFocusQuery.js";
 import FlowQuery from "./components/misc/FlowQuery.js";
 import FlowTypeQuery from "./components/misc/FlowTypeQuery.js";
 
@@ -69,25 +69,25 @@ const App = () => {
       flowTypeInfo: await FlowTypeQuery({
         flow_type_ids: null
       })
-      // funderData: await FlowBundleQuery({
+      // funderData: await FlowBundleFocusQuery({
       //   ...baseQueryParams,
       //   focus_node_type: "source"
       // }),
-      // recipientData: await FlowBundleQuery({
+      // recipientData: await FlowBundleFocusQuery({
       //   ...baseQueryParams,
       //   focus_node_type: "target"
       // }),
-      // countryFunderData: await FlowBundleQuery({
+      // countryFunderData: await FlowBundleFocusQuery({
       //   ...baseQueryParams,
       //   focus_node_type: "source",
       //   focus_node_category: ["country"]
       // }),
-      // countryRecipientData: await FlowBundleQuery({
+      // countryRecipientData: await FlowBundleFocusQuery({
       //   ...baseQueryParams,
       //   focus_node_type: "target",
       //   focus_node_category: ["country"]
       // }),
-      // networkData: await FlowBundleQuery({
+      // networkData: await FlowBundleFocusQuery({
       //   ...baseQueryParams,
       //   focus_node_type: "source",
       //   by_neighbor: true,
