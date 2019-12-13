@@ -23,6 +23,10 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   //          "Global Health Security Agenda (GHSA)" and entityRole is always
   //          funder.
   // "outbreak-response" - TBD
+  //
+  // TODO show the message below if only non-specific or inkind flows are available (all "unknown")
+  //    No funding with specific amounts to show. Click "View table of funds" to view all available data.
+  // TODO
 
   // Get page type from id
   let pageType;
@@ -107,6 +111,12 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
 
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles[0] === undefined;
+  const noFinancialData = noData
+    ? true
+    : data.flowBundles[0].flow_types["disbursed_funds"] === undefined &&
+      data.flowBundles[0].flow_types["committed_funds"] === undefined;
+  // const unknownDataOnly = isUnknownDataOnly(data.flowBundles[0]);
+  // TODO
 
   // Return JSX
   return (
@@ -148,6 +158,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
             setCurFlowType={setCurFlowType}
             flowTypeInfo={flowTypeInfo}
             toggleFlowType={true}
+            noFinancialData={noFinancialData}
           />
           <DetailsSection
             header={<h2>Funding by core capacity</h2>}
@@ -170,6 +181,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
             setCurFlowType={setCurFlowType}
             flowTypeInfo={flowTypeInfo}
             toggleFlowType={true}
+            noFinancialData={noFinancialData}
           />
           <DetailsSection
             header={<h2>Top {otherEntityRole}s</h2>}
@@ -243,6 +255,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
             setCurFlowType={setCurFlowType}
             flowTypeInfo={flowTypeInfo}
             toggleFlowType={true}
+            noFinancialData={noFinancialData}
           />
           {pageType === "ghsa" && (
             <DetailsSection
@@ -317,6 +330,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
               setCurFlowType={setCurFlowType}
               flowTypeInfo={flowTypeInfo}
               toggleFlowType={true}
+              noFinancialData={noFinancialData}
             />
           )}
         </div>

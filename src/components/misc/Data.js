@@ -1,4 +1,15 @@
 /**
+ * Returns true if the data are unknown amounts only, false otherwise.
+ * TODO at API level instead.
+ * @method isUnknownDataOnly
+ * @param  {[type]}          data [description]
+ * @return {Boolean}              [description]
+ */
+export const isUnknownDataOnly = ({ data }) => {
+  return true; // TODO
+};
+
+/**
  * Returns array with one object per target/source node in the flow dataset,
  * and key/value pairs containing the weights from the attribute summary named
  * in the "field" argument.

@@ -9,6 +9,7 @@ const DetailsSection = ({
   setCurFlowType,
   flowTypeInfo,
   toggleFlowType,
+  noFinancialData,
   ...props
 }) => {
   /**
@@ -31,7 +32,7 @@ const DetailsSection = ({
   return (
     <div className={styles.detailsSection}>
       {header}
-      {toggleFlowType && (
+      {toggleFlowType && !noFinancialData && (
         <form>
           {["disbursed_funds", "committed_funds"].map(flowType => (
             <label onClick={onChange} for={flowType}>
@@ -46,7 +47,8 @@ const DetailsSection = ({
           ))}
         </form>
       )}
-      {content}
+      {!noFinancialData && content}
+      {noFinancialData && <span>No financial assistance data to show.</span>}
     </div>
   );
 };
