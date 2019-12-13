@@ -57,7 +57,7 @@ const App = () => {
     const baseQueryParams = {
       focus_node_ids: null,
       focus_node_type: "source",
-      // focus_node_category: ["country"],
+      // node_category: ["country"],
       flow_type_ids: [1, 2, 3, 4],
       start_date: "2014-01-01",
       end_date: "2019-12-31",
@@ -80,18 +80,18 @@ const App = () => {
       // countryFunderData: await FlowBundleFocusQuery({
       //   ...baseQueryParams,
       //   focus_node_type: "source",
-      //   focus_node_category: ["country"]
+      //   node_category: ["country"]
       // }),
       // countryRecipientData: await FlowBundleFocusQuery({
       //   ...baseQueryParams,
       //   focus_node_type: "target",
-      //   focus_node_category: ["country"]
+      //   node_category: ["country"]
       // }),
       // networkData: await FlowBundleFocusQuery({
       //   ...baseQueryParams,
       //   focus_node_type: "source",
       //   by_neighbor: true,
-      //   focus_node_category: ["country", "group"]
+      //   node_category: ["country", "group"]
       // })
     };
 
