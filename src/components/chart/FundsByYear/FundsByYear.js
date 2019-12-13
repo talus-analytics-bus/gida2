@@ -21,6 +21,7 @@ const FundsByYear = ({ entityRole, data, flowTypeInfo, ...props }) => {
         <div className={styles.totals}>
           <TotalByFlowType flowType="disbursed_funds" data={data} />
           <TotalByFlowType flowType="committed_funds" data={data} />
+          <button>View table of funds</button>
         </div>
         <div className={styles.areaLine}>
           <AreaLine
