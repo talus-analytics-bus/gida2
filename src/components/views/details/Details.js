@@ -76,9 +76,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
       return flowTypeBundle.focus_node_weight;
     }
   };
-  const [donutDenominator, setDonutDenominator] = React.useState(
-    getDonutDenominator(data)
-  );
+  const donutDenominator = getDonutDenominator(data);
 
   // Track the Top Recipients/Funders table data
   const [topTableData, setTopTableData] = React.useState(
@@ -104,8 +102,8 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
     initTopTableDataOther
   );
 
-  console.log("topTableData");
-  console.log(topTableData);
+  console.log("data - Details.js");
+  console.log(data);
 
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles[0] === undefined;
@@ -246,79 +244,81 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
             flowTypeInfo={flowTypeInfo}
             toggleFlowType={true}
           />
-          <DetailsSection
-            header={<h2>Top {entityRole}s</h2>}
-            content={
-              <SimpleTable
-                colInfo={[
-                  {
-                    fmtName: nodeType,
-                    get: d => d[nodeType],
-                    display_name: Util.getInitCap(
-                      Util.getRoleTerm({
-                        type: "noun",
-                        role: entityRole
-                      })
-                    )
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d =>
-                      d[curFlowType] ? d[curFlowType].total : undefined,
-                    display_name: `Total ${
-                      curFlowType === "disbursed_funds"
-                        ? "disbursed"
-                        : "committed"
-                    }`
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
-                    display_name: "Prevent"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
-                    display_name: "Detect"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
-                    display_name: "Respond"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
-                    display_name: "Other"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d =>
-                      d[curFlowType]
-                        ? d[curFlowType]["General IHR Implementation"]
-                        : undefined,
-                    display_name: "General IHR"
-                  },
-                  {
-                    fmtName: curFlowType,
-                    get: d =>
-                      d[curFlowType]
-                        ? d[curFlowType]["Unspecified"]
-                        : undefined,
-                    display_name: "Unspecified"
-                  }
-                ]}
-                data={topTableDataOther}
-                hide={d => {
-                  return d[curFlowType] !== undefined;
-                }}
-              />
-            }
-            curFlowType={curFlowType}
-            setCurFlowType={setCurFlowType}
-            flowTypeInfo={flowTypeInfo}
-            toggleFlowType={true}
-          />
+          {pageType === "ghsa" && (
+            <DetailsSection
+              header={<h2>Top {entityRole}s</h2>}
+              content={
+                <SimpleTable
+                  colInfo={[
+                    {
+                      fmtName: nodeType,
+                      get: d => d[nodeType],
+                      display_name: Util.getInitCap(
+                        Util.getRoleTerm({
+                          type: "noun",
+                          role: entityRole
+                        })
+                      )
+                    },
+                    {
+                      fmtName: curFlowType,
+                      get: d =>
+                        d[curFlowType] ? d[curFlowType].total : undefined,
+                      display_name: `Total ${
+                        curFlowType === "disbursed_funds"
+                          ? "disbursed"
+                          : "committed"
+                      }`
+                    },
+                    {
+                      fmtName: curFlowType,
+                      get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
+                      display_name: "Prevent"
+                    },
+                    {
+                      fmtName: curFlowType,
+                      get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
+                      display_name: "Detect"
+                    },
+                    {
+                      fmtName: curFlowType,
+                      get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
+                      display_name: "Respond"
+                    },
+                    {
+                      fmtName: curFlowType,
+                      get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
+                      display_name: "Other"
+                    },
+                    {
+                      fmtName: curFlowType,
+                      get: d =>
+                        d[curFlowType]
+                          ? d[curFlowType]["General IHR Implementation"]
+                          : undefined,
+                      display_name: "General IHR"
+                    },
+                    {
+                      fmtName: curFlowType,
+                      get: d =>
+                        d[curFlowType]
+                          ? d[curFlowType]["Unspecified"]
+                          : undefined,
+                      display_name: "Unspecified"
+                    }
+                  ]}
+                  data={topTableDataOther}
+                  hide={d => {
+                    return d[curFlowType] !== undefined;
+                  }}
+                />
+              }
+              curFlowType={curFlowType}
+              setCurFlowType={setCurFlowType}
+              flowTypeInfo={flowTypeInfo}
+              toggleFlowType={true}
+            />
+          )}
         </div>
       )}
       {// Content if there is NOT data available to show
@@ -399,7 +399,7 @@ const getDetailsData = async ({
   };
 
   // If GHSA page, add additional query
-  if ()
+  // TODO
 
   const results = await Util.getQueryResults(queries);
 
