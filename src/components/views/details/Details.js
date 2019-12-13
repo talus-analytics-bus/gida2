@@ -18,8 +18,18 @@ import SimpleTable from "../../chart/table/SimpleTable.js";
 // FC for Details.
 const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   // TODO make key changes to the page if the id is special:
-  // "ghsa"
-  // "outbreak_response"
+  // "ghsa" - Same as normal but include both a top funder and recipient table,
+  //          and include only flows that are ghsa. Name of page is
+  //          "Global Health Security Agenda (GHSA)" and entityRole is always
+  //          funder.
+  // "outbreak-response" - TBD
+
+  // Get page type from id
+  let pageType;
+  if (id.toLowerCase() === "ghsa") pageType = "ghsa";
+  else if (id.toLowerCase() === "outbreak-response")
+    pageType = "outbreak-response";
+  else pageType = "entity";
 
   // Define noun for entity role
   const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
@@ -30,6 +40,7 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   // Define the other node type based on the current entity role, which is used
   // in certain charts.
   const otherNodeType = entityRole === "funder" ? "target" : "source";
+  const nodeType = entityRole === "funder" ? "source" : "target";
 
   // Track whether viewing committed or disbursed/provided assistance
   const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
@@ -77,6 +88,20 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
       flowTypes: ["disbursed_funds", "committed_funds"],
       nodeType: otherNodeType
     })
+  );
+
+  // If on GHSA page, get "other" top table to display.
+  const initTopTableDataOther = true
+    ? // pageType === "ghsa"
+      getSummaryAttributeWeightsByNode({
+        data: data.flowBundlesByNeighbor,
+        field: "core_elements",
+        flowTypes: ["disbursed_funds", "committed_funds"],
+        nodeType: nodeType
+      })
+    : null;
+  const [topTableDataOther, setTopTableDataOther] = React.useState(
+    initTopTableDataOther
   );
 
   console.log("topTableData");
@@ -221,6 +246,79 @@ const Details = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
             flowTypeInfo={flowTypeInfo}
             toggleFlowType={true}
           />
+          <DetailsSection
+            header={<h2>Top {entityRole}s</h2>}
+            content={
+              <SimpleTable
+                colInfo={[
+                  {
+                    fmtName: nodeType,
+                    get: d => d[nodeType],
+                    display_name: Util.getInitCap(
+                      Util.getRoleTerm({
+                        type: "noun",
+                        role: entityRole
+                      })
+                    )
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d =>
+                      d[curFlowType] ? d[curFlowType].total : undefined,
+                    display_name: `Total ${
+                      curFlowType === "disbursed_funds"
+                        ? "disbursed"
+                        : "committed"
+                    }`
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
+                    display_name: "Prevent"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
+                    display_name: "Detect"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
+                    display_name: "Respond"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
+                    display_name: "Other"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d =>
+                      d[curFlowType]
+                        ? d[curFlowType]["General IHR Implementation"]
+                        : undefined,
+                    display_name: "General IHR"
+                  },
+                  {
+                    fmtName: curFlowType,
+                    get: d =>
+                      d[curFlowType]
+                        ? d[curFlowType]["Unspecified"]
+                        : undefined,
+                    display_name: "Unspecified"
+                  }
+                ]}
+                data={topTableDataOther}
+                hide={d => {
+                  return d[curFlowType] !== undefined;
+                }}
+              />
+            }
+            curFlowType={curFlowType}
+            setCurFlowType={setCurFlowType}
+            flowTypeInfo={flowTypeInfo}
+            toggleFlowType={true}
+          />
         </div>
       )}
       {// Content if there is NOT data available to show
@@ -247,7 +345,6 @@ export const renderDetails = ({
   // http://localhost:5002/flow_bundles?focus_node_type=source&focus_node_ids=United%20States&flow_type_ids=1%2C2%2C3%2C4&by_neighbor=false
 
   if (loading) {
-    console.log("DETAILS STILL LOADING");
     return <div>Loading...</div>;
   } else if (
     detailsComponent === null ||
@@ -300,6 +397,10 @@ const getDetailsData = async ({
       by_neighbor: true
     })
   };
+
+  // If GHSA page, add additional query
+  if ()
+
   const results = await Util.getQueryResults(queries);
 
   setDetailsComponent(
