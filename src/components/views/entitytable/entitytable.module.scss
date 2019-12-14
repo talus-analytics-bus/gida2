@@ -7,4 +7,9 @@
     align-items: center;
     justify-content: space-between;
   }
+  .tabs {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+  }
 }

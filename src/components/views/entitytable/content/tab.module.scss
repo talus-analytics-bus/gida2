@@ -1,0 +1,7 @@
+@import "../../../../assets/styles/colors.scss";
+.tab {
+  display: none;
+  &.selected {
+    display: flex;
+  }
+}

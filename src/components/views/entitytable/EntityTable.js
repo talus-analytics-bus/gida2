@@ -14,12 +14,8 @@ import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 
 // Content components
-import DetailsSection from "../../views/details/content/DetailsSection.js";
-import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
-import Donuts from "../../chart/Donuts/Donuts.js";
-import StackBar from "../../chart/StackBar/StackBar.js";
-import SimpleTable from "../../chart/table/SimpleTable.js";
 import TableInstance from "../../chart/table/TableInstance.js";
+import Tab from "../../views/entitytable/content/Tab.js";
 
 // FC for EntityTable.
 const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
@@ -35,6 +31,7 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   //
   // Define noun for entity role
   const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
+
   //
   // // Define other entity role, which is used in certain charts
   // const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
@@ -44,8 +41,7 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   // const otherNodeType = entityRole === "funder" ? "target" : "source";
   // const nodeType = entityRole === "funder" ? "source" : "target";
   //
-  // // Track whether viewing committed or disbursed/provided assistance
-  // const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
+
   //
   // // Get display name for current flow type
   // const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
@@ -118,24 +114,21 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   //
   // const unknownDataOnly = isUnknownDataOnly({ masterSummary: masterSummary });
 
-  const sections = [
-    {
-      header: "Funds by core element",
-      content: <div />
-      // getWeightsBySummaryAttribute({
-      //   field: "core_elements",
-      //   flowTypes: ["disbursed_funds", "committed_funds", "provided_inkind", "committed_inkind"],
-      //   data: [masterSummary]
-      // })
-    }
-  ];
-
+  // List of all flow types
   const allFlowTypes = [
     "disbursed_funds",
     "committed_funds",
     "provided_inkind",
     "committed_inkind"
   ];
+
+  /**
+   * Returns column definitions for all assistance types for use in
+   * TableInstance
+   * @method getAssistanceTableCols
+   * @param  {[type]}               flowTypeInfo [description]
+   * @return {[type]}                            [description]
+   */
   const getAssistanceTableCols = flowTypeInfo => {
     return allFlowTypes.map(ft => {
       const match = flowTypeInfo.find(d => d.name === ft);
@@ -144,23 +137,17 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
           Settings.endYear
         })`,
         prop: match.name,
-        // TODO format in data to allow search
         render: val => Util.formatValue(val, match.name),
         defaultContent: Util.formatValue(0, match.name)
       };
     });
   };
 
-  // Return JSX
-  return (
-    <div className={classNames("pageContainer", styles.entityTable)}>
-      <div className={styles.header}>
-        <h1>{data.nodeData.name}</h1>
-        <Link to={`/details/${id}/${entityRole}`}>
-          <button>Back to summary</button>
-        </Link>
-      </div>
-      <div className={styles.content}>
+  const sections = [
+    {
+      header: "Funds by core element",
+      slug: "ce",
+      content: (
         <TableInstance
           tableColumns={[
             {
@@ -174,6 +161,50 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
             data: [masterSummary]
           })}
         />
+      )
+    },
+    {
+      header: "Funds by core capacity",
+      slug: "cc",
+      content: (
+        <TableInstance
+          tableColumns={[
+            {
+              title: "Core capacity",
+              prop: "attribute"
+            }
+          ].concat(getAssistanceTableCols(flowTypeInfo))}
+          tableData={getWeightsBySummaryAttribute({
+            field: "core_capacities",
+            flowTypes: allFlowTypes,
+            data: [masterSummary]
+          })}
+        />
+      )
+    }
+  ];
+
+  // Track currently visible tab
+  const [curTab, setCurTab] = React.useState(sections[0].slug);
+
+  // Return JSX
+  return (
+    <div className={classNames("pageContainer", styles.entityTable)}>
+      <div className={styles.header}>
+        <h1>{data.nodeData.name}</h1>
+        <Link to={`/details/${id}/${entityRole}`}>
+          <button>Back to summary</button>
+        </Link>
+      </div>
+      <div className={styles.tabs}>
+        {sections.map(s => (
+          <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
+        ))}
+      </div>
+      <div className={styles.content}>
+        {sections.map(s => (
+          <Tab selected={curTab === s.slug} content={s.content} />
+        ))}
       </div>
       {noData && (
         <span>
