@@ -19,7 +19,7 @@ import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
 import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import SimpleTable from "../../chart/table/SimpleTable.js";
-import RadioToggle from "../../misc/RadioToggle.js";
+import GhsaToggle from "../../misc/GhsaToggle.js";
 
 // FC for Details.
 const Details = ({
@@ -334,22 +334,7 @@ const Details = ({
           {pageType === "entity" && <span>({entityRoleNoun} profile)</span>}
         </h1>
         {pageType !== "ghsa" && (
-          <RadioToggle
-            choices={[
-              {
-                name: "All funding",
-                value: "false"
-              },
-              {
-                name: "GHSA funding only",
-                value: "true",
-                tooltip:
-                  "The Global Health Security Agenda (GHSA) is a partnership of nations, international organizations, and non-governmental stakeholders to help build countries’ capacity to help create a world safe and secure from infectious disease threats. Only resources that have specifically been identified as being committed or disbursed under the GHSA are identified as GHSA financial resources in GIDA."
-              }
-            ]}
-            curVal={ghsaOnly}
-            callback={setGhsaOnly}
-          />
+          <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
         )}
         {pageType !== "ghsa" && (
           <Link to={"/details/ghsa"}>
@@ -372,8 +357,8 @@ const Details = ({
       )}
       {noData && (
         <span>
-          No funding data are currently available where {id} is a{" "}
-          {entityRoleNoun}.
+          No {ghsaOnly === "true" ? "GHSA-specific " : ""}funding data are
+          currently available where {id} is a {entityRoleNoun}.
         </span>
       )}
     </div>
@@ -427,8 +412,6 @@ const getDetailsData = async ({
   ghsaOnly,
   setGhsaOnly
 }) => {
-  console.log("ghsaOnly - getDetailsData.js");
-  console.log(ghsaOnly);
   const baseQueryParams = {
     focus_node_ids: [id],
     focus_node_type: entityRole === "recipient" ? "target" : "source",

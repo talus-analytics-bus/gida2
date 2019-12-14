@@ -136,6 +136,7 @@ const App = () => {
 
   React.useEffect(() => {
     setDetailsComponent(null);
+    setEntityTableComponent(null);
   }, [ghsaOnly]);
 
   // Define what columns to show in tables
@@ -342,7 +343,9 @@ const App = () => {
                     setComponent: setEntityTableComponent,
                     loading: loading,
                     setLoading: setLoading,
-                    flowTypeInfo: flowTypeInfo
+                    flowTypeInfo: flowTypeInfo,
+                    ghsaOnly: ghsaOnly,
+                    setGhsaOnly: setGhsaOnly
                   });
                 }}
               />

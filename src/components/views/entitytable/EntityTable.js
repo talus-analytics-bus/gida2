@@ -3,11 +3,7 @@ import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./entitytable.module.scss";
 import { Settings } from "../../../App.js";
-import {
-  getWeightsBySummaryAttribute,
-  getSummaryAttributeWeightsByNode,
-  isUnknownDataOnly
-} from "../../misc/Data.js";
+import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
@@ -16,19 +12,28 @@ import NodeQuery from "../../misc/NodeQuery.js";
 // Content components
 import TableInstance from "../../chart/table/TableInstance.js";
 import Tab from "../../views/entitytable/content/Tab.js";
+import GhsaToggle from "../../misc/GhsaToggle.js";
 
 // FC for EntityTable.
-const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
-  // // Get page type from id
-  // let pageType;
-  // if (id.toLowerCase() === "ghsa") pageType = "ghsa";
-  // else if (id.toLowerCase() === "outbreak-response")
-  //   pageType = "outbreak-response";
-  // else pageType = "entity";
-  //
+const EntityTable = ({
+  id,
+  entityRole,
+  data,
+  flowTypeInfo,
+  ghsaOnly,
+  setGhsaOnly,
+  ...props
+}) => {
+  // Get page type from id
+  let pageType;
+  if (id.toLowerCase() === "ghsa") pageType = "ghsa";
+  else if (id.toLowerCase() === "outbreak-response")
+    pageType = "outbreak-response";
+  else pageType = "entity";
+
   // // If entity role is not defined, let it be funder as a placeholder.
   // if (entityRole === undefined) entityRole = "funder";
-  //
+
   // Define noun for entity role
   const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
 
@@ -191,6 +196,9 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
   return (
     <div className={classNames("pageContainer", styles.entityTable)}>
       <div className={styles.header}>
+        {pageType !== "ghsa" && (
+          <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+        )}
         <h1>{data.nodeData.name}</h1>
         <Link to={`/details/${id}/${entityRole}`}>
           <button>Back to summary</button>
@@ -206,12 +214,6 @@ const EntityTable = ({ id, entityRole, data, flowTypeInfo, ...props }) => {
           <Tab selected={curTab === s.slug} content={s.content} />
         ))}
       </div>
-      {noData && (
-        <span>
-          No funding data are currently available where {id} is a{" "}
-          {entityRoleNoun}.
-        </span>
-      )}
     </div>
   );
 };
@@ -222,7 +224,9 @@ export const renderEntityTable = ({
   loading,
   id,
   entityRole,
-  flowTypeInfo
+  flowTypeInfo,
+  ghsaOnly,
+  setGhsaOnly
 }) => {
   // Get data
   // FundsByYear, FundsByCoreElement:
@@ -235,7 +239,9 @@ export const renderEntityTable = ({
       setComponent: setComponent,
       id: id,
       entityRole: entityRole,
-      flowTypeInfo: flowTypeInfo
+      flowTypeInfo: flowTypeInfo,
+      ghsaOnly: ghsaOnly,
+      setGhsaOnly: setGhsaOnly
     });
 
     return <div />;
@@ -256,7 +262,9 @@ const getComponentData = async ({
   setComponent,
   id,
   entityRole,
-  flowTypeInfo
+  flowTypeInfo,
+  ghsaOnly,
+  setGhsaOnly
 }) => {
   const baseQueryParams = {
     focus_node_ids: [id],
@@ -274,7 +282,7 @@ const getComponentData = async ({
   };
 
   // If GHSA page, then filter by GHSA
-  if (id === "ghsa")
+  if (id === "ghsa" || ghsaOnly === "true")
     baseQueryParams.filters.parent_flow_info_filters = [
       ["ghsa_funding", "true"]
     ];
@@ -317,6 +325,8 @@ const getComponentData = async ({
       entityRole={entityRole}
       data={results}
       flowTypeInfo={flowTypeInfo}
+      ghsaOnly={ghsaOnly}
+      setGhsaOnly={setGhsaOnly}
     />
   );
 };
