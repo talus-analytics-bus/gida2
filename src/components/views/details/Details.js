@@ -70,7 +70,7 @@ const Details = ({
   const masterSummary = data.flowBundles.master_summary;
 
   // Track data for donuts
-  const [donutData, setDonutData] = React.useState(
+  const [donutData] = React.useState(
     getWeightsBySummaryAttribute({
       field: "core_elements",
       flowTypes: ["disbursed_funds", "committed_funds"],
@@ -99,7 +99,7 @@ const Details = ({
   const donutDenominator = getDonutDenominator(data);
 
   // Track the Top Recipients/Funders table data
-  const [topTableData, setTopTableData] = React.useState(
+  const [topTableData] = React.useState(
     getSummaryAttributeWeightsByNode({
       data: data.flowBundlesByNeighbor.flow_bundles,
       field: "core_elements",
@@ -118,9 +118,7 @@ const Details = ({
           nodeType: nodeType
         })
       : null;
-  const [topTableDataOther, setTopTableDataOther] = React.useState(
-    initTopTableDataOther
-  );
+  const [topTableDataOther] = React.useState(initTopTableDataOther);
   console.log("data - Details.js");
   console.log(data);
 
@@ -411,6 +409,9 @@ const getDetailsData = async ({
   ghsaOnly,
   setGhsaOnly
 }) => {
+  // Define typical base query parameters used in FlowQuery,
+  // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
+  // modified in code below.
   const baseQueryParams = {
     focus_node_ids: [id],
     focus_node_type: entityRole === "recipient" ? "target" : "source",
@@ -426,7 +427,7 @@ const getDetailsData = async ({
     include_master_summary: true
   };
 
-  // If GHSA page, then filter by GHSA
+  // If GHSA page, then filter by GHSA projects.
   if (id === "ghsa" || ghsaOnly === "true")
     baseQueryParams.filters.parent_flow_info_filters = [
       ["ghsa_funding", "true"]
@@ -451,18 +452,27 @@ const getDetailsData = async ({
   // Get appropriate query component based on what ID the details page has.
   const Query = getQueryComponentFromId(id);
 
+  // Define queries for typical details page.
   const queries = {
+    // Information about the entity
     nodeData: await NodeQuery({ node_id: id }),
+
+    // Flow bundles
     flowBundles: await Query(baseQueryParams),
+
+    // Flow bundles that parse flows by neighbor nodes
     flowBundlesByNeighbor: await Query({
       ...baseQueryParams,
-      by_neighbor: true
+      by_neighbor: false,
+      focus_node_type: entityRole === "recipient" ? "target" : "source",
+      focus_node_ids: null
     })
   };
 
-  // If GHSA page, add additional query
+  // If GHSA page, add additional query to show both top funders and top
+  // recipients.
   if (id === "ghsa") {
-    queries["flowBundlesByNeighborOther"] = await FlowBundleFocusQuery({
+    queries["flowBundlesByNeighborOther"] = await Query({
       ...baseQueryParams,
       by_neighbor: false,
       focus_node_type: entityRole === "recipient" ? "target" : "source",
@@ -470,8 +480,10 @@ const getDetailsData = async ({
     });
   }
 
+  // Get query results.
   const results = await Util.getQueryResults(queries);
 
+  // Feed results and other data to the details component and mount it.
   setDetailsComponent(
     <Details
       id={id}
