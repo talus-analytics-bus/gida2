@@ -101,7 +101,7 @@ const Details = ({
   // Track the Top Recipients/Funders table data
   const [topTableData] = React.useState(
     getSummaryAttributeWeightsByNode({
-      data: data.flowBundlesByNeighbor.flow_bundles,
+      data: data.flowBundlesFocusOther.flow_bundles,
       field: "core_elements",
       flowTypes: ["disbursed_funds", "committed_funds"],
       nodeType: null
@@ -112,7 +112,7 @@ const Details = ({
   const initTopTableDataOther =
     pageType === "ghsa"
       ? getSummaryAttributeWeightsByNode({
-          data: data.flowBundlesByNeighborOther.flow_bundles,
+          data: data.flowBundlesFocus.flow_bundles,
           field: "core_elements",
           flowTypes: ["disbursed_funds", "committed_funds"],
           nodeType: null
@@ -178,7 +178,7 @@ const Details = ({
           data={getWeightsBySummaryAttribute({
             field: "core_capacities",
             flowTypes: ["disbursed_funds", "committed_funds"],
-            data: data.flowBundlesByNeighbor.flow_bundles,
+            data: data.flowBundlesFocusOther.flow_bundles,
             byOtherNode: true,
             otherNodeType: otherNodeType
           })}
@@ -381,7 +381,7 @@ export const renderDetails = ({
     detailsComponent === null ||
     (detailsComponent && detailsComponent.props.id !== id)
   ) {
-    getDetailsData({
+    getComponentData({
       setDetailsComponent: setDetailsComponent,
       id: id,
       entityRole: entityRole,
@@ -400,12 +400,12 @@ export const renderDetails = ({
  * Returns data for the details page given the entity type and id.
  * TODO make this work for response funding page
  * TODO clean up the code
- * @method getDetailsData
+ * @method getComponentData
  * @param  {[type]}       setDetailsComponent [description]
  * @param  {[type]}       id                  [description]
  * @param  {[type]}       entityRole          [description]
  */
-const getDetailsData = async ({
+const getComponentData = async ({
   setDetailsComponent,
   id,
   entityRole,
@@ -448,9 +448,9 @@ const getDetailsData = async ({
   const getQueryComponentFromId = id => {
     switch (id) {
       case "ghsa":
-        return FlowBundleGeneralQuery;
+        return FlowBundleGeneralQuery; // return general weights
       default:
-        return FlowBundleFocusQuery;
+        return FlowBundleFocusQuery; // return specific weights for focus node
     }
   };
 
@@ -462,28 +462,25 @@ const getDetailsData = async ({
     // Information about the entity
     nodeData: await NodeQuery({ node_id: id }),
 
-    // Flow bundles
-    flowBundles: await Query(baseQueryParams)
+    // Flow bundles (either focus or general depending on the page type)
+    flowBundles: await Query(baseQueryParams),
+
+    // Flow bundles by source/target specific pairing, oriented from the other
+    // node type (e.g., for a given source node whose page this is, return one
+    // row per target node it has a flow with)
+    flowBundlesFocusOther: await FlowBundleFocusQuery({
+      ...baseQueryParams,
+      focus_node_type: entityRole === "recipient" ? "source" : "target",
+      focus_node_ids: null
+    })
   };
 
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
   if (id === "ghsa") {
-    queries["flowBundlesByNeighborOther"] = await FlowBundleFocusQuery({
+    queries["flowBundlesFocus"] = await FlowBundleFocusQuery({
       ...baseQueryParams,
       focus_node_type: entityRole === "recipient" ? "target" : "source",
-      focus_node_ids: null
-    });
-
-    queries["flowBundlesByNeighbor"] = await FlowBundleFocusQuery({
-      ...baseQueryParams,
-      focus_node_type: entityRole === "recipient" ? "source" : "target",
-      focus_node_ids: null
-    });
-  } else {
-    queries["flowBundlesByNeighbor"] = await FlowBundleFocusQuery({
-      ...baseQueryParams,
-      focus_node_type: entityRole === "recipient" ? "source" : "target",
       focus_node_ids: null
     });
   }
