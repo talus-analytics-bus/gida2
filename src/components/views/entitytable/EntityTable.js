@@ -225,6 +225,61 @@ const EntityTable = ({
           })}
         />
       )
+    },
+    {
+      header: "In-kind contributions",
+      slug: "in-kind",
+      content: (
+        <TableInstance
+          tableColumns={[
+            {
+              title: "Provider",
+              prop: "source",
+              type: "text",
+              func: d => d.source.join("; ")
+            },
+            {
+              title: "Recipient",
+              prop: "target",
+              type: "text",
+              func: d => d.target.join("; ")
+            },
+            {
+              title: "Project name",
+              func: d => d.flow_info.project_name,
+              type: "text",
+              prop: "project_name"
+            },
+            {
+              title: "Years project committed",
+              func: d =>
+                d.master_summary.flow_types.committed_inkind
+                  ? d.master_summary.flow_types.committed_inkind
+                      .focus_node_weight
+                  : undefined,
+              type: "num",
+              prop: "committed_inkind",
+              render: val => Util.formatValue(val, "yes_no"),
+              defaultContent: "n/a"
+            },
+            {
+              title: "Years project provided",
+              func: d =>
+                d.master_summary.flow_types.provided_inkind
+                  ? d.master_summary.flow_types.provided_inkind
+                      .focus_node_weight
+                  : undefined,
+              type: "num",
+              prop: "provided_inkind",
+              render: val => Util.formatValue(val, "yes_no"),
+              defaultContent: "n/a"
+            }
+          ]}
+          tableData={data.flows.filter(f =>
+            f.flow_info.assistance_type.toLowerCase().includes("in-kind")
+          )}
+        />
+      )
     }
   ];
 
