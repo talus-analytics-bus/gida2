@@ -5,6 +5,7 @@ import styles from "./entitytable.module.scss";
 import { Settings } from "../../../App.js";
 import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
+import FlowQuery from "../../misc/FlowQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
@@ -37,82 +38,13 @@ const EntityTable = ({
   // Define noun for entity role
   const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
 
-  //
-  // // Define other entity role, which is used in certain charts
-  // const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
-  //
-  // // Define the other node type based on the current entity role, which is used
-  // // in certain charts.
-  // const otherNodeType = entityRole === "funder" ? "target" : "source";
-  // const nodeType = entityRole === "funder" ? "source" : "target";
-  //
-
-  //
-  // // Get display name for current flow type
-  // const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
-  //   .display_name;
-  //
-
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
-
-  // getWeightsBySummaryAttribute({
-  //   field: "core_elements",
-  //   flowTypes: ["disbursed_funds", "committed_funds", "provided_inkind", "committed_inkind"],
-  //   data: [masterSummary]
-  // })
-
-  //
-  // // Track donut denominator value
-  // const getDonutDenominator = data => {
-  //   // Assume that first flow bundle is what is needed
-  //   const focusNodeBundle = masterSummary;
-  //
-  //   // Return null if no data
-  //   if (focusNodeBundle === undefined) return null;
-  //
-  //   // Get focus node weight for flow type
-  //   const flowTypeBundle = focusNodeBundle.flow_types[curFlowType];
-  //
-  //   // If data not available, return null
-  //   if (flowTypeBundle === undefined) return null;
-  //   else {
-  //     // otherwise, return the weight
-  //     return flowTypeBundle.focus_node_weight;
-  //   }
-  // };
-  // const donutDenominator = getDonutDenominator(data);
-  //
-  // // Track the Top Recipients/Funders table data
-  // const [topTableData, setTopTableData] = React.useState(
-  //   getSummaryAttributeWeightsByNode({
-  //     data: data.flowBundlesByNeighbor.flow_bundles,
-  //     field: "core_elements",
-  //     flowTypes: ["disbursed_funds", "committed_funds"],
-  //     nodeType: otherNodeType
-  //   })
-  // );
-  //
-  // // If on GHSA page, get "other" top table to display.
-  // const initTopTableDataOther = true
-  //   ? // pageType === "ghsa"
-  //     getSummaryAttributeWeightsByNode({
-  //       data: data.flowBundlesByNeighbor.flow_bundles,
-  //       field: "core_elements",
-  //       flowTypes: ["disbursed_funds", "committed_funds"],
-  //       nodeType: nodeType
-  //     })
-  //   : null;
-  // const [topTableDataOther, setTopTableDataOther] = React.useState(
-  //   initTopTableDataOther
-  // );
-
   console.log("data - EntityTable.js");
   console.log(data);
 
   // // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles.flow_bundles[0] === undefined;
-  // const noFinancialData = noData
   //   ? true
   //   : masterSummary.flow_types["disbursed_funds"] === undefined &&
   //     masterSummary.flow_types["committed_funds"] === undefined;
@@ -143,12 +75,67 @@ const EntityTable = ({
         })`,
         prop: match.name,
         render: val => Util.formatValue(val, match.name),
-        defaultContent: Util.formatValue(0, match.name)
+        defaultContent: "n/a"
       };
     });
   };
 
   const sections = [
+    {
+      header: "All funds",
+      slug: "all",
+      content: (
+        <TableInstance
+          tableColumns={[
+            {
+              title: "Funder",
+              prop: "source",
+              func: d => d.source.join("; "),
+              defaultContent: "Unspecified"
+            },
+            {
+              title: "Recipient",
+              prop: "target",
+              func: d => d.target.join("; "),
+              defaultContent: "Unspecified"
+            },
+            {
+              title: "Project name",
+              func: d => d.flow_info.project_name,
+              prop: "project_name",
+              defaultContent: "Unspecified"
+            },
+            {
+              title: `Disbursed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d =>
+                d.master_summary.flow_types.disbursed_funds
+                  ? d.master_summary.flow_types.disbursed_funds
+                      .focus_node_weight
+                  : undefined,
+              prop: "disbursed_funds",
+              render: val => Util.formatValue(val, "disbursed_funds"),
+              defaultContent: "n/a"
+            },
+            {
+              title: `Committed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d =>
+                d.master_summary.flow_types.committed_funds
+                  ? d.master_summary.flow_types.committed_funds
+                      .focus_node_weight
+                  : undefined,
+              prop: "committed_funds",
+              render: val => Util.formatValue(val, "committed_funds"),
+              defaultContent: "n/a"
+            }
+          ]}
+          tableData={data.flows}
+        />
+      )
+    },
     {
       header: "Funds by core element",
       slug: "ce",
@@ -308,6 +295,10 @@ const getComponentData = async ({
 
   const queries = {
     nodeData: await NodeQuery({ node_id: id }),
+    flows: await FlowQuery({
+      ...baseQueryParams,
+      flow_type_ids: [5]
+    }),
     flowBundles: await Query(baseQueryParams),
     flowBundlesByNeighbor: await Query({
       ...baseQueryParams,

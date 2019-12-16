@@ -1,6 +1,28 @@
 import Util from "./Util.js";
 
 /**
+ * Given an array of objs with attribute 'func' that defines how the data need
+ * to be reshaped for each datum in 'data', returns the reshaped data. This is
+ * used to prepare data for TableInstance instances.
+ * @method getTableRowData
+ * @param  {[type]}        tableRowDefs [description]
+ * @param  {[type]}        data         [description]
+ * @return {[type]}                     [description]
+ */
+export const getTableRowData = (tableRowDefs, data) => {
+  const tableRows = [];
+  data.forEach(d => {
+    const row = {};
+    tableRowDefs.forEach(def => {
+      if (def.func === undefined) def.func = d => d[def.prop];
+      row[def.prop] = def.func(d);
+    });
+    tableRows.push(row);
+  });
+  return tableRows;
+};
+
+/**
  * Returns true if the data are unknown amounts only, false otherwise.
  * TODO at API level instead.
  * @method isUnknownDataOnly

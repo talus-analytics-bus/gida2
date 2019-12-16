@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import { DataTable } from "react-data-components";
+import { getTableRowData } from "../../misc/Data.js";
 // import styles from "./tableinstance.module.scss";
 
 /**
@@ -9,14 +10,11 @@ import { DataTable } from "react-data-components";
  */
 const TableInstance = ({ tableColumns, tableData, ...props }) => {
   const buildTable = tableData => {
-    // if (tableData.length === 0) return <div />;
-    // else
     return (
       <div className={classNames("tableInstance", "noPaging")}>
         <DataTable
-          keys={"NAME"}
           columns={tableColumns}
-          initialData={tableData}
+          initialData={getTableRowData(tableColumns, tableData)}
           initialPageLength={props.initialPageLength || 1e6}
           paging={props.paging || false}
           pageLengthOptions={[5, 20, 50]}

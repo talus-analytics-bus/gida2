@@ -13,9 +13,9 @@ const FlowQuery = async function({
   flow_type_ids,
   start_date,
   end_date,
-  return_child_flows = false,
-  bundle_child_flows = false,
-  bundle_child_flows_by_neighbor = false,
+  return_child_flows = true,
+  bundle_child_flows = true,
+  bundle_child_flows_by_neighbor = true,
   filters = {}
 }) {
   // Define URL parameters //
@@ -24,9 +24,7 @@ const FlowQuery = async function({
     focus_node_ids:
       focus_node_ids !== null ? focus_node_ids.join(",") : focus_node_ids,
     node_category:
-      node_category !== null
-        ? node_category.join(",")
-        : node_category,
+      node_category !== null ? node_category.join(",") : node_category,
     flow_type_ids: flow_type_ids.join(","),
     return_child_flows: return_child_flows,
     bundle_child_flows: bundle_child_flows,
