@@ -72,8 +72,8 @@ export const getSummaryAttributeWeightsByNode = ({
   data.forEach(d => {
     // Create output object
     const output = {
-      [nodeType]:
-        nodeType === "focus_node_id" ? d[nodeType] : d[nodeType].join("; ")
+      [nodeType !== null ? nodeType : "focus_node_id"]:
+        nodeType === null ? d["focus_node_id"] : d[nodeType].join("; ")
     };
 
     // Flag false if no data for any flow type, true otherwise

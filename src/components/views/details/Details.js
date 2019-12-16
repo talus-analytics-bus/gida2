@@ -104,7 +104,7 @@ const Details = ({
       data: data.flowBundlesByNeighbor.flow_bundles,
       field: "core_elements",
       flowTypes: ["disbursed_funds", "committed_funds"],
-      nodeType: "focus_node_id"
+      nodeType: null
     })
   );
 
@@ -115,7 +115,7 @@ const Details = ({
           data: data.flowBundlesByNeighborOther.flow_bundles,
           field: "core_elements",
           flowTypes: ["disbursed_funds", "committed_funds"],
-          nodeType: "focus_node_id"
+          nodeType: null
         })
       : null;
   const [topTableDataOther] = React.useState(initTopTableDataOther);
@@ -197,9 +197,8 @@ const Details = ({
         <SimpleTable
           colInfo={[
             {
-              fmtName: otherNodeType,
+              fmtName: "text",
               get: d => d.focus_node_id,
-              // get: d => d[otherNodeType],
               display_name: Util.getInitCap(
                 Util.getRoleTerm({
                   type: "noun",
@@ -264,7 +263,7 @@ const Details = ({
         <SimpleTable
           colInfo={[
             {
-              fmtName: nodeType,
+              fmtName: "text",
               get: d => d.focus_node_id,
               display_name: Util.getInitCap(
                 Util.getRoleTerm({
@@ -399,7 +398,8 @@ export const renderDetails = ({
 
 /**
  * Returns data for the details page given the entity type and id.
- * TODO make this work for special detail pages like GHSA and response
+ * TODO make this work for response funding page
+ * TODO clean up the code
  * @method getDetailsData
  * @param  {[type]}       setDetailsComponent [description]
  * @param  {[type]}       id                  [description]
@@ -471,21 +471,18 @@ const getDetailsData = async ({
   if (id === "ghsa") {
     queries["flowBundlesByNeighborOther"] = await FlowBundleFocusQuery({
       ...baseQueryParams,
-      by_neighbor: false,
       focus_node_type: entityRole === "recipient" ? "target" : "source",
       focus_node_ids: null
     });
 
     queries["flowBundlesByNeighbor"] = await FlowBundleFocusQuery({
       ...baseQueryParams,
-      by_neighbor: false,
       focus_node_type: entityRole === "recipient" ? "source" : "target",
       focus_node_ids: null
     });
   } else {
     queries["flowBundlesByNeighbor"] = await FlowBundleFocusQuery({
       ...baseQueryParams,
-      by_neighbor: false,
       focus_node_type: entityRole === "recipient" ? "source" : "target",
       focus_node_ids: null
     });
