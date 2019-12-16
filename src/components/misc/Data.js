@@ -119,6 +119,60 @@ export const getSummaryAttributeWeightsByNode = ({
 
 /**
  * Totals weights by a particular summary attribute given a FlowBundle API
+ * response, assuming FlowBundleGeneralQuery was called
+ * TODO consider adding "total" field.
+ */
+export const getWeightsBySummaryAttribute2 = ({
+  field,
+  flowTypes,
+  data,
+  ...props
+}) => {
+  // Get value formatter
+  const format = Util.getAttrFormatter("core_elements");
+
+  // Define output array
+  const outputArr = [];
+
+  // For each flow type
+  flowTypes.forEach(ft => {
+    // For each datum
+    data.forEach(d => {
+      // Get all data related to the flow type. If none, then continue to the
+      // next flow type.
+      const curFtData = d.flow_types[ft];
+      if (curFtData === undefined) return;
+
+      // get summaries for the current flow type (e.g., total weights by year)
+      const summaries = curFtData.summaries;
+
+      // If summaries not defined, skip this flow type
+      if (summaries === undefined) return;
+
+      // If summary not provided for field, skip this flow type
+      if (summaries[field] === undefined) return;
+
+      // Otherwise, for each value in it
+      for (let [kTmp, v] of Object.entries(summaries[field])) {
+        // Format key
+        const attribute = format(kTmp);
+
+        outputArr.push({
+          attribute: attribute,
+          [ft]: v,
+          source: d.source.join("; "),
+          target: d.target.join("; ")
+        });
+      }
+    });
+  });
+
+  // Format output as an array of objects (one object per row)
+  return outputArr;
+};
+
+/**
+ * Totals weights by a particular summary attribute given a FlowBundle API
  * response.
  * TODO consider adding "total" field.
  */

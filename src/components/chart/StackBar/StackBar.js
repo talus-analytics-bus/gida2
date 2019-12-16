@@ -12,6 +12,7 @@ const StackBar = ({
   flowType,
   flowTypeName,
   otherNodeType,
+  nodeType,
   ...props
 }) => {
   return (
@@ -24,6 +25,11 @@ const StackBar = ({
               fmtName: "attribute",
               get: d => d.attribute,
               display_name: "Core capacity"
+            },
+            {
+              fmtName: nodeType,
+              get: d => d[nodeType],
+              display_name: nodeType === "target" ? "Recipient" : "Funder"
             },
             {
               fmtName: otherNodeType,

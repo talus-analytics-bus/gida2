@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { Settings } from "../../../App.js";
 import {
   getWeightsBySummaryAttribute,
+  getWeightsBySummaryAttribute2,
   getSummaryAttributeWeightsByNode,
   isUnknownDataOnly
 } from "../../misc/Data.js";
@@ -56,8 +57,8 @@ const Details = ({
 
   // Define the other node type based on the current entity role, which is used
   // in certain charts.
-  const otherNodeType = entityRole === "funder" ? "target" : "source";
   const nodeType = entityRole === "funder" ? "source" : "target";
+  const otherNodeType = entityRole === "funder" ? "target" : "source";
 
   // Track whether viewing committed or disbursed/provided assistance
   const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
@@ -172,16 +173,18 @@ const Details = ({
       header: <h2>Funding by core capacity</h2>,
       content: (
         <StackBar
-          data={getWeightsBySummaryAttribute({
+          data={getWeightsBySummaryAttribute2({
             field: "core_capacities",
             flowTypes: ["disbursed_funds", "committed_funds"],
             data: data.flowBundles.flow_bundles,
             byOtherNode: true,
+            nodeType: nodeType,
             otherNodeType: otherNodeType
           })}
           flowType={curFlowType}
           flowTypeName={curFlowTypeName}
           attributeType={"core_capacities"}
+          nodeType={nodeType}
           otherNodeType={otherNodeType}
         />
       ),
