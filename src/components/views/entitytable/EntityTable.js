@@ -65,6 +65,24 @@ const EntityTable = ({
     });
   };
 
+  // Define other entity role, which is used in certain charts
+  const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
+
+  // Define funder/recipient columns to be displayed as appropriate.
+  const funderCol = {
+    title: "Funder",
+    prop: "source",
+    type: "text",
+    func: d => d.source.join("; ")
+  };
+
+  const recipientCol = {
+    title: "Recipient",
+    prop: "target",
+    type: "text",
+    func: d => d.target.join("; ")
+  };
+
   const sections = [
     {
       header: "All funds",
@@ -127,24 +145,14 @@ const EntityTable = ({
       )
     },
     {
-      header: "Funds by recipient", // TODO other role
+      header: "Funds by " + otherEntityRole, // TODO other role
       slug: "funds_by_other",
       content: (
         <TableInstance
           sortByProp={"disbursed_funds"}
           tableColumns={[
-            {
-              title: "Funder",
-              prop: "source",
-              type: "text",
-              func: d => d.source.join("; ")
-            },
-            {
-              title: "Recipient",
-              prop: "target",
-              type: "text",
-              func: d => d.target.join("; ")
-            },
+            otherEntityRole === "funder" ? funderCol : recipientCol,
+            otherEntityRole === "funder" ? recipientCol : funderCol,
             {
               title: `Disbursed funds (${Settings.startYear} - ${
                 Settings.endYear
@@ -382,25 +390,6 @@ const getComponentData = async ({
     baseFlowQueryParams.filters.flow_info_filters = [["ghsa_funding", "true"]];
   }
 
-  /**
-   * Given a unique ID, returns the correct query component to provide Details
-   * page data.
-   * @method getQueryComponentFromId
-   * @param  {[type]}                id [description]
-   * @return {[type]}                   [description]
-   */
-  const getQueryComponentFromId = id => {
-    switch (id) {
-      case "ghsa":
-        return FlowBundleGeneralQuery;
-      default:
-        return FlowBundleFocusQuery;
-    }
-  };
-
-  // Get appropriate query component based on what ID the details page has.
-  const Query = getQueryComponentFromId(id);
-
   // Define queries for typical entityTable page.
   const queries = {
     // Information about the entity
@@ -413,7 +402,7 @@ const getComponentData = async ({
     }),
 
     // Flow bundles (either focus or general depending on the page type)
-    flowBundles: await Query(baseQueryParams),
+    flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
 
     // General flow bundles by neighbor, for funder/recipient tables.
     flowBundlesByNeighbor: await FlowBundleGeneralQuery({

@@ -175,7 +175,7 @@ const Details = ({
           data={getWeightsBySummaryAttribute({
             field: "core_capacities",
             flowTypes: ["disbursed_funds", "committed_funds"],
-            data: data.flowBundlesFocusOther.flow_bundles,
+            data: data.flowBundles.flow_bundles,
             byOtherNode: true,
             otherNodeType: otherNodeType
           })}
@@ -434,32 +434,13 @@ const getComponentData = async ({
       ["ghsa_funding", "true"]
     ];
 
-  /**
-   * Given a unique ID, returns the correct query component to provide Details
-   * page data.
-   * @method getQueryComponentFromId
-   * @param  {[type]}                id [description]
-   * @return {[type]}                   [description]
-   */
-  const getQueryComponentFromId = id => {
-    switch (id) {
-      case "ghsa":
-        return FlowBundleGeneralQuery; // return general weights
-      default:
-        return FlowBundleFocusQuery; // return specific weights for focus node
-    }
-  };
-
-  // Get appropriate query component based on what ID the details page has.
-  const Query = getQueryComponentFromId(id);
-
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
     nodeData: await NodeQuery({ node_id: id }),
 
     // Flow bundles (either focus or general depending on the page type)
-    flowBundles: await Query(baseQueryParams),
+    flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
 
     // Flow bundles by source/target specific pairing, oriented from the other
     // node type (e.g., for a given source node whose page this is, return one
