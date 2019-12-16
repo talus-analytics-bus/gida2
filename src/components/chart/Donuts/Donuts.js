@@ -23,7 +23,14 @@ const Donuts = ({
   return (
     <div className={styles.donuts}>
       {!noData &&
-        ["P", "D", "R", "O", "General IHR", "Unspecified"].map(d => (
+        [
+          "Prevent",
+          "Detect",
+          "Respond",
+          "Other",
+          "General IHR Implementation",
+          "Unspecified"
+        ].map(d => (
           <Donut
             datum={data.find(
               dd => dd.attribute === d && dd[flowType] !== undefined
