@@ -130,6 +130,7 @@ const EntityTable = ({
               defaultContent: "n/a"
             }
           ]}
+          sortByProp={"disbursed_funds"}
           tableData={data.flows.filter(f =>
             f.flow_info.assistance_type.toLowerCase().includes("financial")
           )}
@@ -141,6 +142,7 @@ const EntityTable = ({
       slug: "funds_by_other",
       content: (
         <TableInstance
+          sortByProp={"disbursed_funds"}
           tableColumns={[
             {
               title: "Funder",
@@ -193,6 +195,7 @@ const EntityTable = ({
       slug: "ce",
       content: (
         <TableInstance
+          sortByProp={"disbursed_funds"}
           tableColumns={[
             {
               title: "Core element",
@@ -212,6 +215,7 @@ const EntityTable = ({
       slug: "cc",
       content: (
         <TableInstance
+          sortByProp={"disbursed_funds"}
           tableColumns={[
             {
               title: "Core capacity",
@@ -231,6 +235,7 @@ const EntityTable = ({
       slug: "in-kind",
       content: (
         <TableInstance
+          sortByProp={"provided_inkind"}
           tableColumns={[
             {
               title: "Provider",
@@ -251,18 +256,6 @@ const EntityTable = ({
               prop: "project_name"
             },
             {
-              title: "Years project committed",
-              func: d =>
-                d.master_summary.flow_types.committed_inkind
-                  ? d.master_summary.flow_types.committed_inkind
-                      .focus_node_weight
-                  : undefined,
-              type: "num",
-              prop: "committed_inkind",
-              render: val => Util.formatValue(val, "yes_no"),
-              defaultContent: "n/a"
-            },
-            {
               title: "Years project provided",
               func: d =>
                 d.master_summary.flow_types.provided_inkind
@@ -271,6 +264,18 @@ const EntityTable = ({
                   : undefined,
               type: "num",
               prop: "provided_inkind",
+              render: val => Util.formatValue(val, "yes_no"),
+              defaultContent: "n/a"
+            },
+            {
+              title: "Years project committed",
+              func: d =>
+                d.master_summary.flow_types.committed_inkind
+                  ? d.master_summary.flow_types.committed_inkind
+                      .focus_node_weight
+                  : undefined,
+              type: "num",
+              prop: "committed_inkind",
               render: val => Util.formatValue(val, "yes_no"),
               defaultContent: "n/a"
             }
