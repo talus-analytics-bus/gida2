@@ -70,7 +70,7 @@ const EntityTable = ({
     return allFlowTypes.map(ft => {
       const match = flowTypeInfo.find(d => d.name === ft);
       return {
-        title: `${match.display_name} (${Settings.startYear}-${
+        title: `${match.display_name} (${Settings.startYear} - ${
           Settings.endYear
         })`,
         prop: match.name,
