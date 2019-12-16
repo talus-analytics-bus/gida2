@@ -399,7 +399,6 @@ export const renderDetails = ({
 /**
  * Returns data for the details page given the entity type and id.
  * TODO make this work for response funding page
- * TODO clean up the code
  * @method getComponentData
  * @param  {[type]}       setDetailsComponent [description]
  * @param  {[type]}       id                  [description]
