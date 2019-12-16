@@ -74,8 +74,8 @@ const EntityTable = ({
           Settings.endYear
         })`,
         prop: match.name,
-        render: val => Util.formatValue(val, match.name),
-        defaultContent: "n/a"
+        render: val => Util.formatValue(val, match.name)
+        // defaultContent: "n/a"
       };
     });
   };
@@ -90,20 +90,20 @@ const EntityTable = ({
             {
               title: "Funder",
               prop: "source",
-              func: d => d.source.join("; "),
-              defaultContent: "Unspecified"
+              type: "text",
+              func: d => d.source.join("; ")
             },
             {
               title: "Recipient",
               prop: "target",
-              func: d => d.target.join("; "),
-              defaultContent: "Unspecified"
+              type: "text",
+              func: d => d.target.join("; ")
             },
             {
               title: "Project name",
               func: d => d.flow_info.project_name,
-              prop: "project_name",
-              defaultContent: "Unspecified"
+              type: "text",
+              prop: "project_name"
             },
             {
               title: `Disbursed funds (${Settings.startYear} - ${
@@ -114,6 +114,7 @@ const EntityTable = ({
                   ? d.master_summary.flow_types.disbursed_funds
                       .focus_node_weight
                   : undefined,
+              type: "num",
               prop: "disbursed_funds",
               render: val => Util.formatValue(val, "disbursed_funds"),
               defaultContent: "n/a"
@@ -127,12 +128,15 @@ const EntityTable = ({
                   ? d.master_summary.flow_types.committed_funds
                       .focus_node_weight
                   : undefined,
+              type: "num",
               prop: "committed_funds",
               render: val => Util.formatValue(val, "committed_funds"),
               defaultContent: "n/a"
             }
           ]}
-          tableData={data.flows}
+          tableData={data.flows.filter(f =>
+            f.flow_info.assistance_type.toLowerCase().includes("financial")
+          )}
         />
       )
     },
@@ -254,7 +258,7 @@ const getComponentData = async ({
   setGhsaOnly
 }) => {
   const baseQueryParams = {
-    focus_node_ids: [id],
+    focus_node_ids: id !== "ghsa" ? [id] : null,
     focus_node_type: entityRole === "recipient" ? "target" : "source",
     flow_type_ids: [1, 2, 3, 4],
     start_date: `${Settings.startYear}-01-01`,
@@ -268,11 +272,15 @@ const getComponentData = async ({
     include_master_summary: true
   };
 
+  const baseFlowQueryParams = JSON.parse(JSON.stringify(baseQueryParams));
+
   // If GHSA page, then filter by GHSA
-  if (id === "ghsa" || ghsaOnly === "true")
+  if (id === "ghsa" || ghsaOnly === "true") {
     baseQueryParams.filters.parent_flow_info_filters = [
       ["ghsa_funding", "true"]
     ];
+    baseFlowQueryParams.filters.flow_info_filters = [["ghsa_funding", "true"]];
+  }
 
   /**
    * Given a unique ID, returns the correct query component to provide Details
@@ -296,7 +304,7 @@ const getComponentData = async ({
   const queries = {
     nodeData: await NodeQuery({ node_id: id }),
     flows: await FlowQuery({
-      ...baseQueryParams,
+      ...baseFlowQueryParams,
       flow_type_ids: [5]
     }),
     flowBundles: await Query(baseQueryParams),

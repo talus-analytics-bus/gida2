@@ -21,6 +21,13 @@ body,
 
   // DataTables global styling
   .tableInstance {
+    // Empty cells --> data NA
+    td:empty::after {
+      content: "n/a";
+      color: $grey;
+      font-style: italic;
+    }
+
     // Search bar
     [for="search-field"] {
       margin-right: 10px;

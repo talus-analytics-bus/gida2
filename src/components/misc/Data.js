@@ -14,8 +14,12 @@ export const getTableRowData = (tableRowDefs, data) => {
   data.forEach(d => {
     const row = {};
     tableRowDefs.forEach(def => {
-      if (def.func === undefined) def.func = d => d[def.prop];
-      row[def.prop] = def.func(d);
+      const noDataVal = def.type === "num" ? -Infinity : "zzz";
+      if (def.func === undefined)
+        def.func = d => {
+          return d[def.prop] || -Infinity;
+        };
+      row[def.prop] = def.func(d) || noDataVal;
     });
     tableRows.push(row);
   });
