@@ -14,9 +14,6 @@ const Donuts = ({
   donutDenominator,
   ...props
 }) => {
-  console.log("data - Donuts.js");
-  console.log(data);
-
   // If no data, return message to that effect.
   const noData = data === null;
 
