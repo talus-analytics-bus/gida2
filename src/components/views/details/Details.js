@@ -104,7 +104,7 @@ const Details = ({
       data: data.flowBundlesByNeighbor.flow_bundles,
       field: "core_elements",
       flowTypes: ["disbursed_funds", "committed_funds"],
-      nodeType: otherNodeType
+      nodeType: "focus_node_id"
     })
   );
 
@@ -115,12 +115,15 @@ const Details = ({
           data: data.flowBundlesByNeighborOther.flow_bundles,
           field: "core_elements",
           flowTypes: ["disbursed_funds", "committed_funds"],
-          nodeType: nodeType
+          nodeType: "focus_node_id"
         })
       : null;
   const [topTableDataOther] = React.useState(initTopTableDataOther);
   console.log("data - Details.js");
   console.log(data);
+
+  console.log("topTableDataOther");
+  console.log(topTableDataOther);
 
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles.flow_bundles[0] === undefined;
@@ -195,7 +198,8 @@ const Details = ({
           colInfo={[
             {
               fmtName: otherNodeType,
-              get: d => d[otherNodeType],
+              get: d => d.focus_node_id,
+              // get: d => d[otherNodeType],
               display_name: Util.getInitCap(
                 Util.getRoleTerm({
                   type: "noun",
@@ -261,7 +265,7 @@ const Details = ({
           colInfo={[
             {
               fmtName: nodeType,
-              get: d => d[nodeType],
+              get: d => d.focus_node_id,
               display_name: Util.getInitCap(
                 Util.getRoleTerm({
                   type: "noun",
@@ -412,6 +416,7 @@ const getDetailsData = async ({
   // Define typical base query parameters used in FlowQuery,
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
   // modified in code below.
+  const nodeType = entityRole === "recipient" ? "target" : "source";
   const baseQueryParams = {
     focus_node_ids: [id],
     focus_node_type: entityRole === "recipient" ? "target" : "source",
@@ -419,7 +424,7 @@ const getDetailsData = async ({
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
     by_neighbor: false,
-    filters: {},
+    filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType, id]] } : {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
       datetime_summary: ["year"]
@@ -458,24 +463,30 @@ const getDetailsData = async ({
     nodeData: await NodeQuery({ node_id: id }),
 
     // Flow bundles
-    flowBundles: await Query(baseQueryParams),
-
-    // Flow bundles that parse flows by neighbor nodes
-    flowBundlesByNeighbor: await Query({
-      ...baseQueryParams,
-      by_neighbor: false,
-      focus_node_type: entityRole === "recipient" ? "target" : "source",
-      focus_node_ids: null
-    })
+    flowBundles: await Query(baseQueryParams)
   };
 
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
   if (id === "ghsa") {
-    queries["flowBundlesByNeighborOther"] = await Query({
+    queries["flowBundlesByNeighborOther"] = await FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: false,
       focus_node_type: entityRole === "recipient" ? "target" : "source",
+      focus_node_ids: null
+    });
+
+    queries["flowBundlesByNeighbor"] = await FlowBundleFocusQuery({
+      ...baseQueryParams,
+      by_neighbor: false,
+      focus_node_type: entityRole === "recipient" ? "source" : "target",
+      focus_node_ids: null
+    });
+  } else {
+    queries["flowBundlesByNeighbor"] = await FlowBundleFocusQuery({
+      ...baseQueryParams,
+      by_neighbor: false,
+      focus_node_type: entityRole === "recipient" ? "source" : "target",
       focus_node_ids: null
     });
   }
