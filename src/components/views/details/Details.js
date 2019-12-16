@@ -109,19 +109,18 @@ const Details = ({
   );
 
   // If on GHSA page, get "other" top table to display.
-  const initTopTableDataOther = true
-    ? // pageType === "ghsa"
-      getSummaryAttributeWeightsByNode({
-        data: data.flowBundlesByNeighbor.flow_bundles,
-        field: "core_elements",
-        flowTypes: ["disbursed_funds", "committed_funds"],
-        nodeType: nodeType
-      })
-    : null;
+  const initTopTableDataOther =
+    pageType === "ghsa"
+      ? getSummaryAttributeWeightsByNode({
+          data: data.flowBundlesByNeighborOther.flow_bundles,
+          field: "core_elements",
+          flowTypes: ["disbursed_funds", "committed_funds"],
+          nodeType: nodeType
+        })
+      : null;
   const [topTableDataOther, setTopTableDataOther] = React.useState(
     initTopTableDataOther
   );
-
   console.log("data - Details.js");
   console.log(data);
 
@@ -452,9 +451,6 @@ const getDetailsData = async ({
   // Get appropriate query component based on what ID the details page has.
   const Query = getQueryComponentFromId(id);
 
-  console.log("\nbaseQueryParams");
-  console.log(baseQueryParams);
-
   const queries = {
     nodeData: await NodeQuery({ node_id: id }),
     flowBundles: await Query(baseQueryParams),
@@ -465,7 +461,14 @@ const getDetailsData = async ({
   };
 
   // If GHSA page, add additional query
-  // TODO
+  if (id === "ghsa") {
+    queries["flowBundlesByNeighborOther"] = await FlowBundleFocusQuery({
+      ...baseQueryParams,
+      by_neighbor: false,
+      focus_node_type: entityRole === "recipient" ? "target" : "source",
+      focus_node_ids: null
+    });
+  }
 
   const results = await Util.getQueryResults(queries);
 
