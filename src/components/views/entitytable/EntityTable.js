@@ -32,21 +32,10 @@ const EntityTable = ({
     pageType = "outbreak-response";
   else pageType = "entity";
 
-  // // If entity role is not defined, let it be funder as a placeholder.
-  // if (entityRole === undefined) entityRole = "funder";
-
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
   console.log("data - EntityTable.js");
   console.log(data);
-
-  // // True if there are no data to show for the entire page, false otherwise.
-  const noData = data.flowBundles.flow_bundles[0] === undefined;
-  //   ? true
-  //   : masterSummary.flow_types["disbursed_funds"] === undefined &&
-  //     masterSummary.flow_types["committed_funds"] === undefined;
-  //
-  // const unknownDataOnly = isUnknownDataOnly({ masterSummary: masterSummary });
 
   // List of all flow types
   const allFlowTypes = [
@@ -412,13 +401,21 @@ const getComponentData = async ({
   // Get appropriate query component based on what ID the details page has.
   const Query = getQueryComponentFromId(id);
 
+  // Define queries for typical entityTable page.
   const queries = {
+    // Information about the entity
     nodeData: await NodeQuery({ node_id: id }),
+
+    // Project-specific data
     flows: await FlowQuery({
       ...baseFlowQueryParams,
       flow_type_ids: [5]
     }),
+
+    // Flow bundles (either focus or general depending on the page type)
     flowBundles: await Query(baseQueryParams),
+
+    // General flow bundles by neighbor, for funder/recipient tables.
     flowBundlesByNeighbor: await FlowBundleGeneralQuery({
       ...baseQueryParams,
       by_neighbor: true

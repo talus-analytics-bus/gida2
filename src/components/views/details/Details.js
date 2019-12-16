@@ -122,9 +122,6 @@ const Details = ({
   console.log("data - Details.js");
   console.log(data);
 
-  console.log("topTableDataOther");
-  console.log(topTableDataOther);
-
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles.flow_bundles[0] === undefined;
   const noFinancialData = noData
