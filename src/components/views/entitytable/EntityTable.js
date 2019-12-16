@@ -35,9 +35,6 @@ const EntityTable = ({
   // // If entity role is not defined, let it be funder as a placeholder.
   // if (entityRole === undefined) entityRole = "funder";
 
-  // Define noun for entity role
-  const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
-
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
   console.log("data - EntityTable.js");
@@ -75,7 +72,6 @@ const EntityTable = ({
         })`,
         prop: match.name,
         render: val => Util.formatValue(val, match.name)
-        // defaultContent: "n/a"
       };
     });
   };
@@ -136,6 +132,58 @@ const EntityTable = ({
           ]}
           tableData={data.flows.filter(f =>
             f.flow_info.assistance_type.toLowerCase().includes("financial")
+          )}
+        />
+      )
+    },
+    {
+      header: "Funds by recipient", // TODO other role
+      slug: "funds_by_other",
+      content: (
+        <TableInstance
+          tableColumns={[
+            {
+              title: "Funder",
+              prop: "source",
+              type: "text",
+              func: d => d.source.join("; ")
+            },
+            {
+              title: "Recipient",
+              prop: "target",
+              type: "text",
+              func: d => d.target.join("; ")
+            },
+            {
+              title: `Disbursed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d =>
+                d.flow_types.disbursed_funds
+                  ? d.flow_types.disbursed_funds.focus_node_weight
+                  : undefined,
+              type: "num",
+              prop: "disbursed_funds",
+              render: val => Util.formatValue(val, "disbursed_funds"),
+              defaultContent: "n/a"
+            },
+            {
+              title: `Committed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d =>
+                d.flow_types.committed_funds
+                  ? d.flow_types.committed_funds.focus_node_weight
+                  : undefined,
+              type: "num",
+              prop: "committed_funds",
+              render: val => Util.formatValue(val, "committed_funds"),
+              defaultContent: "n/a"
+            }
+          ]}
+          // tableData={data.flowBundlesByNeighbor.flow_bundles}
+          tableData={data.flowBundlesByNeighbor.flow_bundles.filter(
+            f => f.flow_types.committed_funds || f.flow_types.disbursed_funds
           )}
         />
       )
@@ -257,14 +305,16 @@ const getComponentData = async ({
   ghsaOnly,
   setGhsaOnly
 }) => {
+  // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
+  const nodeType = entityRole === "recipient" ? "target" : "source";
   const baseQueryParams = {
     focus_node_ids: id !== "ghsa" ? [id] : null,
-    focus_node_type: entityRole === "recipient" ? "target" : "source",
+    focus_node_type: nodeType,
     flow_type_ids: [1, 2, 3, 4],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
     by_neighbor: false,
-    filters: {},
+    filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType, id]] } : {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
       datetime_summary: ["year"]
@@ -272,9 +322,10 @@ const getComponentData = async ({
     include_master_summary: true
   };
 
+  // Set base query params for FlowQuery
   const baseFlowQueryParams = JSON.parse(JSON.stringify(baseQueryParams));
 
-  // If GHSA page, then filter by GHSA
+  // If GHSA page, then filter by GHSA.
   if (id === "ghsa" || ghsaOnly === "true") {
     baseQueryParams.filters.parent_flow_info_filters = [
       ["ghsa_funding", "true"]
@@ -308,7 +359,7 @@ const getComponentData = async ({
       flow_type_ids: [5]
     }),
     flowBundles: await Query(baseQueryParams),
-    flowBundlesByNeighbor: await Query({
+    flowBundlesByNeighbor: await FlowBundleGeneralQuery({
       ...baseQueryParams,
       by_neighbor: true
     })
