@@ -7,6 +7,7 @@ import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
+import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 
 // Content components
@@ -398,8 +399,8 @@ const getComponentData = async ({
       flow_type_ids: [5]
     }),
 
-    // Flow bundles (either focus or general depending on the page type)
-    flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
+    // // Flow bundles (either focus or general depending on the page type)
+    // flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
 
     // General flow bundles by neighbor, for funder/recipient tables.
     flowBundlesByNeighbor: await FlowBundleGeneralQuery({
@@ -408,8 +409,22 @@ const getComponentData = async ({
     })
   };
 
+  // If GHSA page, add additional query to show both top funders and top
+  // recipients.
+  if (id === "ghsa") {
+    queries["flowBundles"] = await FlowBundleGeneralQuery(baseQueryParams);
+  } else {
+    // Flow bundles (either focus or general depending on the page type)
+    queries["flowBundles"] = await FlowBundleFocusQuery({
+      ...baseQueryParams,
+      by_neighbor: true
+    });
+  }
+
   // Get results in parallel
   const results = await Util.getQueryResults(queries);
+  console.log("results");
+  console.log(results);
 
   // Set the component
   setComponent(

@@ -496,21 +496,13 @@ const getComponentData = async ({
       focus_node_type: entityRole === "recipient" ? "target" : "source",
       focus_node_ids: null
     });
-    // Flow bundles (either focus or general depending on the page type)
-    // NOTE: Think this needs to be the commented out thing in the case of GHSA
-    // queries["flowBundles"] = await FlowBundleFocusQuery({
-    //   ...baseQueryParams,
-    //   by_neighbor: true
-    // }),
     queries["flowBundles"] = await FlowBundleGeneralQuery(baseQueryParams);
   } else {
     // Flow bundles (either focus or general depending on the page type)
-    // NOTE: Think this needs to be the commented out thing in the case of GHSA
     queries["flowBundles"] = await FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: true
     });
-    // flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
   }
 
   // Get query results.
