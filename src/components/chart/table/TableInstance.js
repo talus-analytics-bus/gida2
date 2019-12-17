@@ -17,11 +17,11 @@ const TableInstance = ({
   ...props
 }) => {
   const buildTable = tableData => {
-    // set table columns render functions if not set
-    tableColumns.forEach(col => {
-      if (col.render === undefined)
-        col.render = v => Util.formatValue(v, col.prop);
-    });
+    // // set table columns render functions if not set
+    // tableColumns.forEach(col => {
+    //   if (col.render === undefined)
+    //     col.render = v => Util.formatValue(v, col.prop);
+    // });
     const sortBy =
       sortByProp !== undefined
         ? {
