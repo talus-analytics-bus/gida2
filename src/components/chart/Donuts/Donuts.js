@@ -12,6 +12,7 @@ const Donuts = ({ data, flowType, attributeType, ...props }) => {
   const noData = data === null;
 
   // Check if the flow type selected has data to show.
+  const flowTypeData = data.flow_types[flowType];
   const flowTypeHasData = data.flow_types[flowType] !== undefined;
 
   return (
@@ -21,12 +22,10 @@ const Donuts = ({ data, flowType, attributeType, ...props }) => {
           <Donut
             numerator={
               flowTypeHasData
-                ? data.flow_types[flowType].summaries[attributeType][d] || 0
+                ? flowTypeData.summaries[attributeType][d] || 0
                 : 0
             }
-            denominator={
-              flowTypeHasData ? data.flow_types[flowType].focus_node_weight : 0
-            }
+            denominator={flowTypeHasData ? flowTypeData.focus_node_weight : 0}
             attrFormatter={Util.getAttrFormatter(attributeType)}
             attribute={d}
           />
