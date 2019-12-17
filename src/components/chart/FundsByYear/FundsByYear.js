@@ -39,7 +39,7 @@ const FundsByYear = ({
 
   // Get link to entitytable page
   const linkToEntityTable = (
-    <Link to={`/details/${id}/${entityRole}/table`}>
+    <Link to={`/table/${id}/${entityRole}`}>
       <button>View table of funds</button>
     </Link>
   );

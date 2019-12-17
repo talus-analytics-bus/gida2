@@ -23,6 +23,7 @@ const EntityTable = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  otherId = null,
   ...props
 }) => {
   // Get page type from id
@@ -297,7 +298,7 @@ const EntityTable = ({
           <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
         )}
         <h1>{data.nodeData.name}</h1>
-        <Link to={`/details/${id}/${entityRole}`}>
+        <Link to={`/details/${id}/${entityRole || "funder"}`}>
           <button>Back to summary</button>
         </Link>
       </div>

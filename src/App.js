@@ -333,10 +333,27 @@ const App = () => {
               />
               <Route
                 exact
-                path="/details/:id/:entityRole/table"
+                path="/table/:id/:entityRole"
                 render={d => {
                   return renderEntityTable({
                     ...d.match.params,
+                    component: entityTableComponent,
+                    setComponent: setEntityTableComponent,
+                    loading: loading,
+                    setLoading: setLoading,
+                    flowTypeInfo: flowTypeInfo,
+                    ghsaOnly: ghsaOnly,
+                    setGhsaOnly: setGhsaOnly
+                  });
+                }}
+              />
+              <Route
+                exact
+                path="/pair-table/:funderId/:recipientId"
+                render={d => {
+                  return renderEntityTable({
+                    id: d.match.params.funderId,
+                    otherId: d.match.params.recipientId,
                     component: entityTableComponent,
                     setComponent: setEntityTableComponent,
                     loading: loading,
