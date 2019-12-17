@@ -20,6 +20,7 @@ import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
+import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 
 // FC for Details.
 const Details = ({
@@ -29,6 +30,7 @@ const Details = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  setComponent,
   ...props
 }) => {
   // make key changes to the page if the id is special:
@@ -290,6 +292,11 @@ const Details = ({
         {pageType !== "ghsa" && (
           <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
         )}
+        <EntityRoleToggle
+          entityRole={entityRole}
+          redirectUrlFunc={v => `/details/${id}/${v}`}
+          callback={() => setComponent(null)}
+        />
         {pageType !== "ghsa" && (
           <Link to={"/details/ghsa"}>
             <button>GHSA project details</button>
@@ -446,6 +453,7 @@ const getComponentData = async ({
       flowTypeInfo={flowTypeInfo}
       ghsaOnly={ghsaOnly}
       setGhsaOnly={setGhsaOnly}
+      setComponent={setDetailsComponent}
     />
   );
 };
