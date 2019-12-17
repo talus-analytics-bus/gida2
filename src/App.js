@@ -133,8 +133,8 @@ const App = () => {
   }, []);
 
   React.useEffect(() => {
-    setDetailsComponent(null);
-    setEntityTableComponent(null);
+    // setDetailsComponent(null);
+    // setEntityTableComponent(null);
   }, [ghsaOnly]);
 
   // Define what columns to show in tables

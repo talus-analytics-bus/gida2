@@ -1,0 +1,10 @@
+@import "../../../assets/styles/colors.scss";
+
+.details {
+  .header {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

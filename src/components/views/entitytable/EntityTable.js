@@ -15,7 +15,7 @@ import NodeQuery from "../../misc/NodeQuery.js";
 
 // Content components
 import TableInstance from "../../chart/table/TableInstance.js";
-import Tab from "../../views/entitytable/content/Tab.js";
+import Tab from "../../misc/Tab.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 
@@ -81,7 +81,10 @@ const EntityTable = ({
     type: "text",
     func: d =>
       getNodeLinkList({
-        urlType: entityRole === "funder" ? "table" : "pair-table",
+        urlType:
+          entityRole === "funder" || pageType === "ghsa"
+            ? "table"
+            : "pair-table",
         nodeList: d["source"],
         entityRole: "funder",
         id: id,
@@ -95,7 +98,10 @@ const EntityTable = ({
     type: "text",
     func: d =>
       getNodeLinkList({
-        urlType: entityRole === "recipient" ? "table" : "pair-table",
+        urlType:
+          entityRole === "recipient" || pageType === "ghsa"
+            ? "table"
+            : "pair-table",
         nodeList: d["target"],
         entityRole: "recipient",
         id: id,
@@ -116,7 +122,10 @@ const EntityTable = ({
               type: "text",
               func: d =>
                 getNodeLinkList({
-                  urlType: entityRole === "funder" ? "table" : "pair-table",
+                  urlType:
+                    entityRole === "funder" || pageType === "ghsa"
+                      ? "table"
+                      : "pair-table",
                   nodeList: d["source"],
                   entityRole: "funder",
                   id: id,
@@ -129,7 +138,10 @@ const EntityTable = ({
               type: "text",
               func: d =>
                 getNodeLinkList({
-                  urlType: entityRole === "recipient" ? "table" : "pair-table",
+                  urlType:
+                    entityRole === "recipient" || pageType === "ghsa"
+                      ? "table"
+                      : "pair-table",
                   nodeList: d["target"],
                   entityRole: "recipient",
                   id: id,
@@ -275,7 +287,10 @@ const EntityTable = ({
               type: "text",
               func: d =>
                 getNodeLinkList({
-                  urlType: entityRole === "funder" ? "table" : "pair-table",
+                  urlType:
+                    entityRole === "funder" || pageType === "ghsa"
+                      ? "table"
+                      : "pair-table",
                   nodeList: d["source"],
                   entityRole: "funder",
                   id: id,
@@ -288,7 +303,10 @@ const EntityTable = ({
               type: "text",
               func: d =>
                 getNodeLinkList({
-                  urlType: entityRole === "recipient" ? "table" : "pair-table",
+                  urlType:
+                    entityRole === "recipient" || pageType === "ghsa"
+                      ? "table"
+                      : "pair-table",
                   nodeList: d["target"],
                   entityRole: "recipient",
                   id: id,
@@ -363,7 +381,6 @@ const EntityTable = ({
               <EntityRoleToggle
                 entityRole={entityRole}
                 redirectUrlFunc={v => `/table/${id}/${v}`}
-                callback={() => setComponent(null)}
               />
             </div>
           )}
@@ -422,7 +439,8 @@ export const renderEntityTable = ({
     (component &&
       (component.props.id !== id ||
         component.props.otherId !== otherId ||
-        component.props.entityRole !== entityRole))
+        component.props.entityRole !== entityRole ||
+        component.props.ghsaOnly !== ghsaOnly))
   ) {
     getComponentData({
       setComponent: setComponent,
@@ -434,7 +452,7 @@ export const renderEntityTable = ({
       setGhsaOnly: setGhsaOnly
     });
 
-    return <div />;
+    return component ? component : <div />;
   } else {
     console.log("COMPONENT EXISTS");
     return component;
