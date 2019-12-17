@@ -11,15 +11,22 @@ const Donuts = ({ data, flowType, attributeType, ...props }) => {
   // If no data, return message to that effect.
   const noData = data === null;
 
+  // Check if the flow type selected has data to show.
+  const flowTypeHasData = data.flow_types[flowType] !== undefined;
+
   return (
     <div className={styles.donuts}>
       {!noData &&
         ["P", "D", "R", "O", "General IHR", "Unspecified"].map(d => (
           <Donut
             numerator={
-              data.flow_types[flowType].summaries[attributeType][d] || 0
+              flowTypeHasData
+                ? data.flow_types[flowType].summaries[attributeType][d] || 0
+                : 0
             }
-            denominator={data.flow_types[flowType].focus_node_weight}
+            denominator={
+              flowTypeHasData ? data.flow_types[flowType].focus_node_weight : 0
+            }
             attrFormatter={Util.getAttrFormatter(attributeType)}
             attribute={d}
           />

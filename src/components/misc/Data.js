@@ -1,6 +1,28 @@
 import Util from "./Util.js";
 
 /**
+ * Given the value and the type (num, text), returns the correct AZ or numeric
+ * code representing the data.
+ * @method getTableCellCodeFromVal
+ * @param  {[type]}                val   [description]
+ * @param  {[type]}                type  [description]
+ * @param  {[type]}                props [description]
+ * @return {[type]}                      [description]
+ */
+export const getTableCellCodeFromVal = ({ val, type, ...props }) => {
+  switch (type) {
+    case "num":
+    // If undefined or null, return -9999, which represents "n/a".
+    // If "unknown", return -8888, which represents ("Specific amount
+    // unknown").
+    //
+    case "text":
+    default:
+      return val;
+  }
+};
+
+/**
  * Given an array of objs with attribute 'func' that defines how the data need
  * to be reshaped for each datum in 'data', returns the reshaped data. This is
  * used to prepare data for TableInstance instances.
@@ -23,8 +45,8 @@ export const getTableRowData = ({
         def.func = d => {
           return d[def.prop] || -Infinity;
         };
-      if (def.fmt === undefined) def.fmt = d => d;
-      row[def.prop] = def.fmt(def.func(d) || noDataVal);
+      row[def.prop] = def.func(d) || noDataVal;
+      // row[def.prop] = def.fmt(def.func(d) || noDataVal);
     });
     if (filterFcn(row)) tableRows.push(row);
   });

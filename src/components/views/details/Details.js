@@ -271,7 +271,7 @@ const Details = ({
     },
     {
       header: <h2>Top {entityRole}s</h2>,
-      content: (
+      content: pageType === "ghsa" && (
         <TableInstance
           sortByProp={"total"}
           tableColumns={[
