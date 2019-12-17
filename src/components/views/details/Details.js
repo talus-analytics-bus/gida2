@@ -443,9 +443,10 @@ const getComponentData = async ({
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
   // modified in code below.
   const nodeType = entityRole === "recipient" ? "target" : "source";
+  const otherNodeType = entityRole === "recipient" ? "source" : "target";
   const baseQueryParams = {
     focus_node_ids: [id],
-    focus_node_type: entityRole === "recipient" ? "target" : "source",
+    focus_node_type: nodeType,
     flow_type_ids: [1, 2, 3, 4],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
@@ -469,15 +470,20 @@ const getComponentData = async ({
     // Information about the entity
     nodeData: await NodeQuery({ node_id: id }),
 
-    // Flow bundles (either focus or general depending on the page type)
-    flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
+    // // Flow bundles (either focus or general depending on the page type)
+    // // NOTE: Think this needs to be the commented out thing in the case of GHSA
+    // flowBundles: await FlowBundleFocusQuery({
+    //   ...baseQueryParams,
+    //   by_neighbor: true
+    // }),
+    // // flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
 
     // Flow bundles by source/target specific pairing, oriented from the other
     // node type (e.g., for a given source node whose page this is, return one
     // row per target node it has a flow with)
     flowBundlesFocusOther: await FlowBundleFocusQuery({
       ...baseQueryParams,
-      focus_node_type: entityRole === "recipient" ? "source" : "target",
+      focus_node_type: otherNodeType,
       focus_node_ids: null
     })
   };
@@ -490,10 +496,27 @@ const getComponentData = async ({
       focus_node_type: entityRole === "recipient" ? "target" : "source",
       focus_node_ids: null
     });
+    // Flow bundles (either focus or general depending on the page type)
+    // NOTE: Think this needs to be the commented out thing in the case of GHSA
+    // queries["flowBundles"] = await FlowBundleFocusQuery({
+    //   ...baseQueryParams,
+    //   by_neighbor: true
+    // }),
+    queries["flowBundles"] = await FlowBundleGeneralQuery(baseQueryParams);
+  } else {
+    // Flow bundles (either focus or general depending on the page type)
+    // NOTE: Think this needs to be the commented out thing in the case of GHSA
+    queries["flowBundles"] = await FlowBundleFocusQuery({
+      ...baseQueryParams,
+      by_neighbor: true
+    });
+    // flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
   }
 
   // Get query results.
   const results = await Util.getQueryResults(queries);
+  console.log("results - Details.js");
+  console.log(results);
 
   // Feed results and other data to the details component and mount it.
   setDetailsComponent(

@@ -106,8 +106,6 @@ const App = () => {
     };
 
     const results = await Util.getQueryResults(queries);
-    console.log("results");
-    console.log(results);
 
     // const testF = await FlowQuery({
     //   focus_node_type: "source",
