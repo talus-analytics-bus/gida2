@@ -9,7 +9,13 @@ import Util from "../../misc/Util.js";
  * Simple DataTable implementation
  * @method TableInstance
  */
-const TableInstance = ({ tableColumns, tableData, sortByProp, ...props }) => {
+const TableInstance = ({
+  tableColumns,
+  tableData,
+  sortByProp,
+  filterFcn = d => true,
+  ...props
+}) => {
   const buildTable = tableData => {
     // set table columns render functions if not set
     tableColumns.forEach(col => {
@@ -27,7 +33,11 @@ const TableInstance = ({ tableColumns, tableData, sortByProp, ...props }) => {
       <div className={classNames("tableInstance", "noPaging")}>
         <DataTable
           columns={tableColumns}
-          initialData={getTableRowData(tableColumns, tableData)}
+          initialData={getTableRowData({
+            tableRowDefs: tableColumns,
+            data: tableData,
+            filterFcn: filterFcn
+          })}
           initialPageLength={props.initialPageLength || 1e6}
           paging={props.paging || false}
           pageLengthOptions={[5, 20, 50]}

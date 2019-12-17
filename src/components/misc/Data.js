@@ -9,7 +9,11 @@ import Util from "./Util.js";
  * @param  {[type]}        data         [description]
  * @return {[type]}                     [description]
  */
-export const getTableRowData = (tableRowDefs, data) => {
+export const getTableRowData = ({
+  tableRowDefs,
+  data,
+  filterFcn = d => true
+}) => {
   const tableRows = [];
   data.forEach(d => {
     const row = {};
@@ -19,10 +23,13 @@ export const getTableRowData = (tableRowDefs, data) => {
         def.func = d => {
           return d[def.prop] || -Infinity;
         };
-      row[def.prop] = def.func(d) || noDataVal;
+      if (def.fmt === undefined) def.fmt = d => d;
+      row[def.prop] = def.fmt(def.func(d) || noDataVal);
     });
-    tableRows.push(row);
+    if (filterFcn(row)) tableRows.push(row);
   });
+  console.log("tableRows");
+  console.log(tableRows);
   return tableRows;
 };
 

@@ -18,7 +18,7 @@ import DetailsSection from "../../views/details/content/DetailsSection.js";
 import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
 import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
-import SimpleTable from "../../chart/table/SimpleTable.js";
+import TableInstance from "../../chart/table/TableInstance.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 
 // FC for Details.
@@ -108,6 +108,9 @@ const Details = ({
     })
   );
 
+  console.log("topTableData");
+  console.log(topTableData);
+
   // If on GHSA page, get "other" top table to display.
   const initTopTableDataOther =
     pageType === "ghsa"
@@ -191,64 +194,76 @@ const Details = ({
     {
       header: <h2>Top {otherEntityRole}s</h2>,
       content: (
-        <SimpleTable
-          colInfo={[
+        <TableInstance
+          sortByProp={"total"}
+          tableColumns={[
             {
-              fmtName: "text",
-              get: d => d.focus_node_id,
-              display_name: Util.getInitCap(
+              title: Util.getInitCap(
                 Util.getRoleTerm({
                   type: "noun",
                   role: otherEntityRole
                 })
-              )
+              ),
+              prop: "focus_node_id",
+              type: "text",
+              func: d => d.focus_node_id
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].total : undefined),
-              display_name: `Total ${
+              prop: "total",
+              func: d => (d[curFlowType] ? d[curFlowType].total : undefined),
+              type: "num",
+              title: `Total ${
                 curFlowType === "disbursed_funds" ? "disbursed" : "committed"
-              }`
+              }`,
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
-              display_name: "Prevent"
+              func: d => (d[curFlowType] ? d[curFlowType].P : undefined),
+              type: "num",
+              title: "Prevent",
+              prop: "prevent",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
-              display_name: "Detect"
+              func: d => (d[curFlowType] ? d[curFlowType].D : undefined),
+              type: "num",
+              title: "Detect",
+              prop: "detect",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
-              display_name: "Respond"
+              func: d => (d[curFlowType] ? d[curFlowType].R : undefined),
+              type: "num",
+              title: "Respond",
+              prop: "respond",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
-              display_name: "Other"
+              func: d => (d[curFlowType] ? d[curFlowType].O : undefined),
+              type: "num",
+              title: "Other",
+              prop: "Other",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d =>
+              func: d =>
                 d[curFlowType]
                   ? d[curFlowType]["General IHR Implementation"]
                   : undefined,
-              display_name: "General IHR"
+              title: "General IHR",
+              prop: "General IHR",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d =>
+              func: d =>
                 d[curFlowType] ? d[curFlowType]["Unspecified"] : undefined,
-              display_name: "Unspecified"
+              type: "num",
+              title: "Unspecified",
+              prop: "Unspecified",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             }
           ]}
-          data={topTableData}
-          hide={d => {
-            return d[curFlowType] !== undefined;
-          }}
+          tableData={topTableData.filter(d => d[curFlowType] !== undefined)}
         />
       ),
       toggleFlowType: true,
@@ -257,64 +272,78 @@ const Details = ({
     {
       header: <h2>Top {entityRole}s</h2>,
       content: (
-        <SimpleTable
-          colInfo={[
+        <TableInstance
+          sortByProp={"total"}
+          tableColumns={[
             {
-              fmtName: "text",
-              get: d => d.focus_node_id,
-              display_name: Util.getInitCap(
+              title: Util.getInitCap(
                 Util.getRoleTerm({
                   type: "noun",
-                  role: entityRole
+                  role: otherEntityRole
                 })
-              )
+              ),
+              prop: "focus_node_id",
+              type: "text",
+              func: d => d.focus_node_id
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].total : undefined),
-              display_name: `Total ${
+              prop: "total",
+              func: d => (d[curFlowType] ? d[curFlowType].total : undefined),
+              type: "num",
+              title: `Total ${
                 curFlowType === "disbursed_funds" ? "disbursed" : "committed"
-              }`
+              }`,
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].P : undefined),
-              display_name: "Prevent"
+              func: d => (d[curFlowType] ? d[curFlowType].P : undefined),
+              type: "num",
+              title: "Prevent",
+              prop: "prevent",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].D : undefined),
-              display_name: "Detect"
+              func: d => (d[curFlowType] ? d[curFlowType].D : undefined),
+              type: "num",
+              title: "Detect",
+              prop: "detect",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].R : undefined),
-              display_name: "Respond"
+              func: d => (d[curFlowType] ? d[curFlowType].R : undefined),
+              type: "num",
+              title: "Respond",
+              prop: "respond",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d => (d[curFlowType] ? d[curFlowType].O : undefined),
-              display_name: "Other"
+              func: d => (d[curFlowType] ? d[curFlowType].O : undefined),
+              type: "num",
+              title: "Other",
+              prop: "Other",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d =>
+              func: d =>
                 d[curFlowType]
                   ? d[curFlowType]["General IHR Implementation"]
                   : undefined,
-              display_name: "General IHR"
+              title: "General IHR",
+              prop: "General IHR",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             },
             {
-              fmtName: curFlowType,
-              get: d =>
+              func: d =>
                 d[curFlowType] ? d[curFlowType]["Unspecified"] : undefined,
-              display_name: "Unspecified"
+              type: "num",
+              title: "Unspecified",
+              prop: "Unspecified",
+              fmt: v => Util.formatValue(v, "disbursed_funds")
             }
           ]}
-          data={topTableDataOther}
-          hide={d => {
-            return d[curFlowType] !== undefined;
-          }}
+          tableData={topTableDataOther.filter(
+            d => d[curFlowType] !== undefined
+          )}
         />
       ),
       toggleFlowType: true,
