@@ -16,11 +16,9 @@ import Map from "./components/map/Map";
 import Util from "./components/misc/Util.js";
 
 // views
+import { renderExplore } from "./components/views/explore/Explore.js";
 import { renderDetails } from "./components/views/details/Details.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
-// import { renderPairTable } from "./components/views/pairtable/PairTable.js";
-import Global from "./components/views/global/Global.js";
-import About from "./components/views/about/About.js";
 
 // styles
 import styles from "./App.module.scss";
@@ -55,87 +53,26 @@ const App = () => {
   // Try components
   const [detailsComponent, setDetailsComponent] = React.useState(null);
   const [entityTableComponent, setEntityTableComponent] = React.useState(null);
-  const [pairTableComponent, setPairTableComponent] = React.useState(null);
+  const [exploreComponent, setExploreComponent] = React.useState(null);
 
   // Track data selections
   const [ghsaOnly, setGhsaOnly] = React.useState("false");
 
-  console.log("ghsaOnly - App.js");
-  console.log(ghsaOnly);
-
   async function getAppData() {
-    const baseQueryParams = {
-      focus_node_ids: null,
-      focus_node_type: "source",
-      // node_category: ["country"],
-      flow_type_ids: [1, 2, 3, 4],
-      start_date: "2014-01-01",
-      end_date: "2019-12-31",
-      by_neighbor: false,
-      filters: {},
-      summaries: {}
-    };
     const queries = {
       flowTypeInfo: await FlowTypeQuery({
         flow_type_ids: null
       })
-      // funderData: await FlowBundleFocusQuery({
-      //   ...baseQueryParams,
-      //   focus_node_type: "source"
-      // }),
-      // recipientData: await FlowBundleFocusQuery({
-      //   ...baseQueryParams,
-      //   focus_node_type: "target"
-      // }),
-      // countryFunderData: await FlowBundleFocusQuery({
-      //   ...baseQueryParams,
-      //   focus_node_type: "source",
-      //   node_category: ["country"]
-      // }),
-      // countryRecipientData: await FlowBundleFocusQuery({
-      //   ...baseQueryParams,
-      //   focus_node_type: "target",
-      //   node_category: ["country"]
-      // }),
-      // networkData: await FlowBundleFocusQuery({
-      //   ...baseQueryParams,
-      //   focus_node_type: "source",
-      //   by_neighbor: true,
-      //   node_category: ["country", "group"]
-      // })
     };
 
     const results = await Util.getQueryResults(queries);
-
-    // const testF = await FlowQuery({
-    //   focus_node_type: "source",
-    //   focus_node_ids: null,
-    //   flow_type_ids: [5],
-    //   start_date: "2014-01-01",
-    //   end_date: "2019-12-31",
-    //   return_child_flows: true,
-    //   bundle_child_flows: true,
-    //   bundle_child_flows_by_neighbor: false,
-    //   filters: {}
-    // });
-    // setFunderData(results.funderData);
-    // setRecipientData(results.recipientData);
-    // setCountryFunderData(results.countryFunderData);
-    // setCountryRecipientData(results.countryRecipientData);
-    // setNetworkData(results.networkData);
     setFlowTypeInfo(results.flowTypeInfo);
-
     setLoading(false);
   }
 
   React.useEffect(() => {
     getAppData();
   }, []);
-
-  React.useEffect(() => {
-    // setDetailsComponent(null);
-    // setEntityTableComponent(null);
-  }, [ghsaOnly]);
 
   // Define what columns to show in tables
   const valueColsInkind = ["provided_inkind", "committed_inkind"];
@@ -313,6 +250,22 @@ const App = () => {
                       />
                     </div>
                   );
+                }}
+              />
+              <Route
+                exact
+                path="/explore/:activeTab"
+                render={d => {
+                  return renderExplore({
+                    ...d.match.params,
+                    component: exploreComponent,
+                    setComponent: setExploreComponent,
+                    loading: loading,
+                    setLoading: setLoading,
+                    flowTypeInfo: flowTypeInfo,
+                    ghsaOnly: ghsaOnly,
+                    setGhsaOnly: setGhsaOnly
+                  });
                 }}
               />
               <Route
