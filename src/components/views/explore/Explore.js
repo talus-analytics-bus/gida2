@@ -42,7 +42,6 @@ const Explore = ({
       };
     }
   };
-  const headerData = getHeaderData(activeTab);
 
   // Define content tabs
   const sections = [
@@ -60,6 +59,9 @@ const Explore = ({
 
   // Track current tab
   const [curTab, setCurTab] = React.useState(activeTab || sections[0].slug);
+
+  // Get header data
+  const headerData = getHeaderData(curTab);
 
   // Return JSX
   return (
@@ -147,20 +149,16 @@ const getComponentData = async ({
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
   // modified in code below.
   const nodeType = entityRole === "recipient" ? "target" : "source";
-  const otherNodeType = entityRole === "recipient" ? "source" : "target";
   const baseQueryParams = {
-    focus_node_ids: [id],
+    focus_node_ids: null,
     focus_node_type: nodeType,
     flow_type_ids: [1, 2, 3, 4],
-    start_date: `${Settings.startYear}-01-01`,
+    start_date: `${Settings.startYear}-01-01`, // TODO check these two
     end_date: `${Settings.endYear}-12-31`,
     by_neighbor: false,
-    filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType, id]] } : {},
-    summaries: {
-      parent_flow_info_summary: ["core_capacities", "core_elements"],
-      datetime_summary: ["year"]
-    },
-    include_master_summary: true
+    filters: {},
+    summaries: {},
+    include_master_summary: false
   };
 
   // If GHSA page, then filter by GHSA projects.
@@ -172,46 +170,19 @@ const getComponentData = async ({
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
-    nodeData: await NodeQuery({ node_id: id }),
-
-    // // Flow bundles (either focus or general depending on the page type)
-    // // NOTE: Think this needs to be the commented out thing in the case of GHSA
-    // flowBundles: await FlowBundleFocusQuery({
-    //   ...baseQueryParams,
-    //   by_neighbor: true
-    // }),
-    // // flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
-
-    // Flow bundles by source/target specific pairing, oriented from the other
-    // node type (e.g., for a given source node whose page this is, return one
-    // row per target node it has a flow with)
-    flowBundlesFocusOther: await FlowBundleFocusQuery({
+    flowBundlesMap: await FlowBundleFocusQuery({
       ...baseQueryParams,
-      focus_node_type: otherNodeType,
-      focus_node_ids: null
+      node_category: ["country"]
+    }),
+    flowBundlesOrg: await FlowBundleFocusQuery({
+      ...baseQueryParams,
+      node_category: ["group"]
     })
   };
 
-  // If GHSA page, add additional query to show both top funders and top
-  // recipients.
-  if (id === "ghsa") {
-    queries["flowBundlesFocus"] = await FlowBundleFocusQuery({
-      ...baseQueryParams,
-      focus_node_type: entityRole === "recipient" ? "target" : "source",
-      focus_node_ids: null
-    });
-    queries["flowBundles"] = await FlowBundleGeneralQuery(baseQueryParams);
-  } else {
-    // Flow bundles (either focus or general depending on the page type)
-    queries["flowBundles"] = await FlowBundleFocusQuery({
-      ...baseQueryParams,
-      by_neighbor: true
-    });
-  }
-
   // Get query results.
   const results = await Util.getQueryResults(queries);
-  console.log("results - Details.js");
+  console.log("results - Explore.js");
   console.log(results);
 
   // Feed results and other data to the details component and mount it.
