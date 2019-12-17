@@ -101,8 +101,8 @@ const getComponentData = async ({
     focus_node_ids: null,
     focus_node_type: nodeType,
     flow_type_ids: [1, 2, 3, 4],
-    start_date: `${Settings.startYear}-01-01`, // TODO check these two
-    end_date: `${Settings.endYear}-12-31`,
+    start_date: `${props.minYear}-01-01`, // TODO check these two
+    end_date: `${props.maxYear}-12-31`,
     by_neighbor: false,
     filters: {},
     summaries: {},
@@ -141,6 +141,10 @@ const getComponentData = async ({
       setGhsaOnly={setGhsaOnly}
       setComponent={setComponent}
       activeTab={props.activeTab}
+      minYear={props.minYear}
+      maxYear={props.maxYear}
+      setMinYear={props.setMinYear}
+      setMaxYear={props.setMaxYear}
     />
   );
 };

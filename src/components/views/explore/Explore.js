@@ -6,6 +6,7 @@ import classNames from "classnames";
 // Content components
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
+import { Settings } from "../../../App.js";
 import Tab from "../../misc/Tab.js";
 import { renderMapViewer } from "./content/MapViewer/MapViewer.js";
 
@@ -16,10 +17,6 @@ const Explore = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
-  minYear,
-  maxYear,
-  coreCapacities,
-  outbreakTypes,
   ...props
 }) => {
   // Returns correct header content given the active tab
@@ -43,6 +40,10 @@ const Explore = ({
   // Track entity role selected for the map
   const [entityRole, setEntityRole] = React.useState("recipient");
 
+  // Track min and max year of data (consistent across tabs)
+  const [minYear, setMinYear] = React.useState(Settings.startYear);
+  const [maxYear, setMaxYear] = React.useState(Settings.endYear);
+
   // Define content tabs
   const sections = [
     {
@@ -55,7 +56,11 @@ const Explore = ({
         setEntityRole: setEntityRole,
         flowTypeInfo: flowTypeInfo,
         ghsaOnly: ghsaOnly,
-        setGhsaOnly: setGhsaOnly
+        setGhsaOnly: setGhsaOnly,
+        minYear: minYear,
+        setMinYear: setMinYear,
+        maxYear: maxYear,
+        setMaxYear: setMaxYear
       })
     },
     {
