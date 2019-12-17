@@ -58,7 +58,9 @@ const EntityTable = ({
           Settings.endYear
         })`,
         prop: match.name,
-        render: val => Util.formatValue(val, match.name)
+        render: val => Util.formatValue(val, match.name),
+        type: "num",
+        func: d => d[ft] || undefined
       };
     });
   };
@@ -104,7 +106,8 @@ const EntityTable = ({
               title: "Project name",
               func: d => d.flow_info.project_name,
               type: "text",
-              prop: "project_name"
+              prop: "project_name",
+              render: val => Util.formatValue(val, "project_name")
             },
             {
               title: `Disbursed funds (${Settings.startYear} - ${
