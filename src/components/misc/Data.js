@@ -2,6 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Util from "./Util.js";
 
+/**
+ * Given the parameters, returns a list of links (semicolon-delimited) for the
+ * list of nodes. Used mainly in populating table cells.
+ * @method getNodeLinkList
+ * @param  {[type]}        urlType    [description]
+ * @param  {[type]}        nodeList   [description]
+ * @param  {[type]}        entityRole [description]
+ * @param  {[type]}        id         [description]
+ * @param  {[type]}        otherId    [description]
+ * @return {[type]}                   [description]
+ */
 export const getNodeLinkList = ({
   urlType,
   nodeList,
@@ -15,7 +26,7 @@ export const getNodeLinkList = ({
       const url =
         entityRole === "funder"
           ? `/pair-table/${node}/${otherId || id}`
-          : `/pair-table/${otherId || id}/${node}`;
+          : `/pair-table/${id}/${node}`;
       return url;
     };
   } else if (urlType === "table") {
@@ -25,18 +36,16 @@ export const getNodeLinkList = ({
     };
   }
   return nodeList.map((node, i) => {
-    console.log("nodeList");
-    console.log(nodeList);
     const url = urlFunc(node);
     return (
       <span>
-        {(otherId || id) !== node && (
+        {(otherId || id) !== node && id !== node && (
           <span>
             <Link to={url}>{node}</Link>
             {i !== nodeList.length - 1 && <span>; </span>}
           </span>
         )}
-        {(otherId || id) === node && (
+        {((otherId || id) === node || id === node) && (
           <span>
             <span>{node}</span>
             {i !== nodeList.length - 1 && <span>; </span>}

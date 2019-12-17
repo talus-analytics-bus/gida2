@@ -340,7 +340,9 @@ export const renderDetails = ({
     return <div>Loading...</div>;
   } else if (
     detailsComponent === null ||
-    (detailsComponent && detailsComponent.props.id !== id)
+    (detailsComponent &&
+      (detailsComponent.props.id !== id ||
+        detailsComponent.props.entityRole !== entityRole))
   ) {
     getComponentData({
       setDetailsComponent: setDetailsComponent,

@@ -116,7 +116,7 @@ const EntityTable = ({
               type: "text",
               func: d =>
                 getNodeLinkList({
-                  urlType: "table",
+                  urlType: entityRole === "funder" ? "table" : "pair-table",
                   nodeList: d["source"],
                   entityRole: "funder",
                   id: id,
@@ -129,7 +129,7 @@ const EntityTable = ({
               type: "text",
               func: d =>
                 getNodeLinkList({
-                  urlType: "table",
+                  urlType: entityRole === "recipient" ? "table" : "pair-table",
                   nodeList: d["target"],
                   entityRole: "recipient",
                   id: id,
@@ -273,13 +273,27 @@ const EntityTable = ({
               title: "Provider",
               prop: "source",
               type: "text",
-              func: d => d.source.join("; ")
+              func: d =>
+                getNodeLinkList({
+                  urlType: entityRole === "funder" ? "table" : "pair-table",
+                  nodeList: d["source"],
+                  entityRole: "funder",
+                  id: id,
+                  otherId: otherId
+                })
             },
             {
               title: "Recipient",
               prop: "target",
               type: "text",
-              func: d => d.target.join("; ")
+              func: d =>
+                getNodeLinkList({
+                  urlType: entityRole === "recipient" ? "table" : "pair-table",
+                  nodeList: d["target"],
+                  entityRole: "recipient",
+                  id: id,
+                  otherId: otherId
+                })
             },
             {
               title: "Project name",
@@ -397,7 +411,9 @@ export const renderEntityTable = ({
   } else if (
     component === null ||
     (component &&
-      (component.props.id !== id || component.props.otherId !== otherId))
+      (component.props.id !== id ||
+        component.props.otherId !== otherId ||
+        component.props.entityRole !== entityRole))
   ) {
     getComponentData({
       setComponent: setComponent,
