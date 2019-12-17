@@ -40,10 +40,10 @@ export const getTableRowData = ({
   data.forEach(d => {
     const row = {};
     tableRowDefs.forEach(def => {
-      const noDataVal = def.type === "num" ? -Infinity : "zzz";
+      const noDataVal = def.type === "num" ? -9999 : "zzz";
       if (def.func === undefined)
         def.func = d => {
-          return d[def.prop] || -Infinity;
+          return d[def.prop];
         };
       row[def.prop] = def.func(d) || noDataVal;
       // row[def.prop] = def.fmt(def.func(d) || noDataVal);

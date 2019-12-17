@@ -250,6 +250,7 @@ const Details = ({
                 d[curFlowType]
                   ? d[curFlowType]["General IHR Implementation"]
                   : undefined,
+              type: "num",
               title: "General IHR",
               prop: "General IHR",
               fmt: v => Util.formatValue(v, "disbursed_funds")
