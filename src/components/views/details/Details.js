@@ -215,35 +215,35 @@ const Details = ({
               title: `Total ${
                 curFlowType === "disbursed_funds" ? "disbursed" : "committed"
               }`,
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d => (d[curFlowType] ? d[curFlowType].P : undefined),
               type: "num",
               title: "Prevent",
               prop: "prevent",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d => (d[curFlowType] ? d[curFlowType].D : undefined),
               type: "num",
               title: "Detect",
               prop: "detect",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d => (d[curFlowType] ? d[curFlowType].R : undefined),
               type: "num",
               title: "Respond",
               prop: "respond",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d => (d[curFlowType] ? d[curFlowType].O : undefined),
               type: "num",
               title: "Other",
               prop: "Other",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d =>
@@ -253,7 +253,7 @@ const Details = ({
               type: "num",
               title: "General IHR",
               prop: "General IHR",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d =>
@@ -261,7 +261,7 @@ const Details = ({
               type: "num",
               title: "Unspecified",
               prop: "Unspecified",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             }
           ]}
           tableData={topTableData.filter(d => d[curFlowType] !== undefined)}
@@ -294,35 +294,35 @@ const Details = ({
               title: `Total ${
                 curFlowType === "disbursed_funds" ? "disbursed" : "committed"
               }`,
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d => (d[curFlowType] ? d[curFlowType].P : undefined),
               type: "num",
               title: "Prevent",
               prop: "prevent",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d => (d[curFlowType] ? d[curFlowType].D : undefined),
               type: "num",
               title: "Detect",
               prop: "detect",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d => (d[curFlowType] ? d[curFlowType].R : undefined),
               type: "num",
               title: "Respond",
               prop: "respond",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d => (d[curFlowType] ? d[curFlowType].O : undefined),
               type: "num",
               title: "Other",
               prop: "Other",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d =>
@@ -331,7 +331,7 @@ const Details = ({
                   : undefined,
               title: "General IHR",
               prop: "General IHR",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             },
             {
               func: d =>
@@ -339,7 +339,7 @@ const Details = ({
               type: "num",
               title: "Unspecified",
               prop: "Unspecified",
-              fmt: v => Util.formatValue(v, "disbursed_funds")
+              render: v => Util.formatValue(v, "disbursed_funds")
             }
           ]}
           tableData={topTableDataOther.filter(
