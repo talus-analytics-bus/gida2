@@ -33,8 +33,6 @@ const EntityTable = ({
 
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
-  console.log("data - EntityTable.js");
-  console.log(data);
 
   // List of all flow types
   const allFlowTypes = [

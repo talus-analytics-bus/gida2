@@ -119,8 +119,6 @@ const Details = ({
         })
       : null;
   const [topTableDataOther] = React.useState(initTopTableDataOther);
-  console.log("data - Details.js");
-  console.log(data);
 
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.flowBundles.flow_bundles[0] === undefined;

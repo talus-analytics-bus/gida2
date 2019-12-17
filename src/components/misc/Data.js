@@ -299,8 +299,6 @@ export const getWeightsBySummaryAttribute = ({
 };
 
 export const getNodeData = id => {
-  console.log("id");
-  console.log(id);
   switch (id) {
     case "ghsa":
       return {
