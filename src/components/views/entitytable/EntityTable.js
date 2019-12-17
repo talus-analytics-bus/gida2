@@ -346,18 +346,27 @@ const EntityTable = ({
             {pageType !== "ghsa" && (
               <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
             )}
-            <h1>{data.nodeData.name}</h1>
+            <h1>
+              {
+                // <Link to={`/details/${data.nodeData.id}/${entityRole}`}>
+                //   {data.nodeData.name}
+                // </Link>
+                data.nodeData.name
+              }
+            </h1>
             <Link to={`/details/${id}/${entityRole || "funder"}`}>
               <button>Back to summary</button>
             </Link>
           </div>
-          <div className={styles.lower}>
-            <EntityRoleToggle
-              entityRole={entityRole}
-              redirectUrlFunc={v => `/table/${id}/${v}`}
-              callback={() => setComponent(null)}
-            />
-          </div>
+          {pageType !== "ghsa" && (
+            <div className={styles.lower}>
+              <EntityRoleToggle
+                entityRole={entityRole}
+                redirectUrlFunc={v => `/table/${id}/${v}`}
+                callback={() => setComponent(null)}
+              />
+            </div>
+          )}
         </div>
       )}
       {otherId !== undefined && (

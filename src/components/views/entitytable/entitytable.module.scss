@@ -4,6 +4,13 @@
   .header {
     display: flex;
     flex-flow: column;
+    h1 {
+      margin: 0 auto;
+    }
+    h1 > a {
+      text-decoration: none;
+      color: black;
+    }
     .upper,
     .lower {
       display: flex;
@@ -11,6 +18,10 @@
       align-items: center;
       justify-content: space-between;
     }
+    // button {
+    //   position: absolute;
+    //   right: 0;
+    // }
   }
   .tabs {
     display: flex;
