@@ -30,7 +30,14 @@ const TableInstance = ({
           }
         : {};
     return (
-      <div className={classNames("tableInstance", "noPaging")}>
+      <div
+        onClick={e => {
+          console.log("\nClicked TableInstance!");
+          console.log(e);
+          console.log(e.target);
+        }}
+        className={classNames("tableInstance", "noPaging")}
+      >
         <DataTable
           columns={tableColumns}
           initialData={getTableRowData({
@@ -46,6 +53,13 @@ const TableInstance = ({
       </div>
     );
   };
+
+  // React.useEffect(() => {
+  //   console.log("\nMounted TableInstance");
+  //   const clickableCells = document.getElementsByClassName("clickable");
+  //   console.log("clickableCells");
+  //   console.log(clickableCells);
+  // }, []);
 
   return buildTable(tableData);
 };

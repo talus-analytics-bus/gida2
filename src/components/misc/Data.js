@@ -1,4 +1,51 @@
+import React from "react";
+import { Link } from "react-router-dom";
 import Util from "./Util.js";
+
+export const getNodeLinkList = ({
+  urlType,
+  nodeList,
+  entityRole,
+  id,
+  otherId
+}) => {
+  let urlFunc;
+  if (urlType === "pair-table") {
+    urlFunc = node => {
+      const url =
+        entityRole === "funder"
+          ? `/pair-table/${node}/${otherId || id}`
+          : `/pair-table/${otherId || id}/${node}`;
+      return url;
+    };
+  } else if (urlType === "table") {
+    urlFunc = node => {
+      const url = `/table/${node}/${entityRole}`;
+      return url;
+    };
+  }
+  return nodeList.map((node, i) => {
+    console.log("nodeList");
+    console.log(nodeList);
+    const url = urlFunc(node);
+    return (
+      <span>
+        {(otherId || id) !== node && (
+          <span>
+            <Link to={url}>{node}</Link>
+            {i !== nodeList.length - 1 && <span>; </span>}
+          </span>
+        )}
+        {(otherId || id) === node && (
+          <span>
+            <span>{node}</span>
+            {i !== nodeList.length - 1 && <span>; </span>}
+          </span>
+        )}
+      </span>
+    );
+  });
+};
 
 /**
  * Given the value and the type (num, text), returns the correct AZ or numeric

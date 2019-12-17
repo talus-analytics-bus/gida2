@@ -3,7 +3,10 @@ import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./entitytable.module.scss";
 import { Settings } from "../../../App.js";
-import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
+import {
+  getWeightsBySummaryAttribute,
+  getNodeLinkList
+} from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
@@ -14,6 +17,7 @@ import NodeQuery from "../../misc/NodeQuery.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import Tab from "../../views/entitytable/content/Tab.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
+import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 
 // FC for EntityTable.
 const EntityTable = ({
@@ -24,9 +28,9 @@ const EntityTable = ({
   ghsaOnly,
   setGhsaOnly,
   otherId,
+  setComponent,
   ...props
 }) => {
-  console.log("otherId = " + otherId);
   // Get page type from id
   let pageType;
   if (id.toLowerCase() === "ghsa") pageType = "ghsa";
@@ -75,14 +79,28 @@ const EntityTable = ({
     title: "Funder",
     prop: "source",
     type: "text",
-    func: d => d.source.join("; ")
+    func: d =>
+      getNodeLinkList({
+        urlType: entityRole === "funder" ? "table" : "pair-table",
+        nodeList: d["source"],
+        entityRole: "funder",
+        id: id,
+        otherId: otherId
+      })
   };
 
   const recipientCol = {
     title: "Recipient",
     prop: "target",
     type: "text",
-    func: d => d.target.join("; ")
+    func: d =>
+      getNodeLinkList({
+        urlType: entityRole === "recipient" ? "table" : "pair-table",
+        nodeList: d["target"],
+        entityRole: "recipient",
+        id: id,
+        otherId: otherId
+      })
   };
 
   const sections = [
@@ -96,13 +114,27 @@ const EntityTable = ({
               title: "Funder",
               prop: "source",
               type: "text",
-              func: d => d.source.join("; ")
+              func: d =>
+                getNodeLinkList({
+                  urlType: "table",
+                  nodeList: d["source"],
+                  entityRole: "funder",
+                  id: id,
+                  otherId: otherId
+                })
             },
             {
               title: "Recipient",
               prop: "target",
               type: "text",
-              func: d => d.target.join("; ")
+              func: d =>
+                getNodeLinkList({
+                  urlType: "table",
+                  nodeList: d["target"],
+                  entityRole: "recipient",
+                  id: id,
+                  otherId: otherId
+                })
             },
             {
               title: "Project name",
@@ -292,8 +324,6 @@ const EntityTable = ({
   const [curTab, setCurTab] = React.useState(sections[0].slug);
 
   // Return JSX
-  // TODO: Make two versions of the header, one for otherId !== undefined and
-  // one for otherId === undefined.
   return (
     <div className={classNames("pageContainer", styles.entityTable)}>
       {otherId === undefined && (
@@ -307,19 +337,26 @@ const EntityTable = ({
               <button>Back to summary</button>
             </Link>
           </div>
+          <div className={styles.lower}>
+            <EntityRoleToggle
+              entityRole={entityRole}
+              redirectUrlFunc={v => `/table/${id}/${v}`}
+              callback={() => setComponent(null)}
+            />
+          </div>
         </div>
       )}
       {otherId !== undefined && (
         <div className={styles.header}>
           <div className={styles.upper}>
-            <Link to={`/details/${id}/funder`}>
-              <button>Go to funder page</button>
+            <Link to={`/table/${id}/funder`}>
+              <button>Go to funder table</button>
             </Link>
             <h1>
               {data.nodeData.name} → {data.nodeDataOther.name}
             </h1>
-            <Link to={`/details/${otherId}/recipient`}>
-              <button>Go to recipient page</button>
+            <Link to={`/table/${otherId}/recipient`}>
+              <button>Go to recipient table</button>
             </Link>
           </div>
           <div className={styles.lower}>
@@ -357,7 +394,11 @@ export const renderEntityTable = ({
   // Get data
   if (loading) {
     return <div>Loading...</div>;
-  } else if (component === null || (component && component.props.id !== id)) {
+  } else if (
+    component === null ||
+    (component &&
+      (component.props.id !== id || component.props.otherId !== otherId))
+  ) {
     getComponentData({
       setComponent: setComponent,
       id: id,
@@ -370,6 +411,7 @@ export const renderEntityTable = ({
 
     return <div />;
   } else {
+    console.log("COMPONENT EXISTS");
     return component;
   }
 };
@@ -484,6 +526,7 @@ const getComponentData = async ({
       flowTypeInfo={flowTypeInfo}
       ghsaOnly={ghsaOnly}
       setGhsaOnly={setGhsaOnly}
+      setComponent={setComponent}
     />
   );
 };

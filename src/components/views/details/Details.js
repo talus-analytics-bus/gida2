@@ -239,7 +239,11 @@ const Details = ({
               func: d => d.focus_node_id
             }
           ].concat(topTableCols)}
-          tableData={topTableData.filter(d => d[curFlowType] !== undefined)}
+          tableData={
+            topTableData
+              ? topTableData.filter(d => d[curFlowType] !== undefined)
+              : []
+          }
         />
       ),
       toggleFlowType: true,
@@ -250,10 +254,24 @@ const Details = ({
       content: pageType === "ghsa" && (
         <TableInstance
           sortByProp={"total"}
-          tableColumns={topTableCols}
-          tableData={topTableDataOther.filter(
-            d => d[curFlowType] !== undefined
-          )}
+          tableColumns={[
+            {
+              title: Util.getInitCap(
+                Util.getRoleTerm({
+                  type: "noun",
+                  role: entityRole
+                })
+              ),
+              prop: "focus_node_id",
+              type: "text",
+              func: d => d.focus_node_id
+            }
+          ].concat(topTableCols)}
+          tableData={
+            topTableDataOther
+              ? topTableDataOther.filter(d => d[curFlowType] !== undefined)
+              : []
+          }
         />
       ),
       toggleFlowType: true,
