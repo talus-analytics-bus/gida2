@@ -34,6 +34,11 @@ export const getNodeLinkList = ({
       const url = `/table/${node}/${entityRole}`;
       return url;
     };
+  } else if (urlType === "details") {
+    urlFunc = node => {
+      const url = `/details/${node}/${entityRole}`;
+      return url;
+    };
   }
   return nodeList.map((node, i) => {
     const url = urlFunc(node);

@@ -4,6 +4,7 @@ import styles from "./details.module.scss";
 import classNames from "classnames";
 import { Settings } from "../../../App.js";
 import {
+  getNodeLinkList,
   getWeightsBySummaryAttributeSimple,
   getSummaryAttributeWeightsByNode,
   isUnknownDataOnly
@@ -238,7 +239,13 @@ const Details = ({
               ),
               prop: "focus_node_id",
               type: "text",
-              func: d => d.focus_node_id
+              func: d =>
+                getNodeLinkList({
+                  urlType: "details",
+                  nodeList: [d.focus_node_id],
+                  entityRole: otherEntityRole,
+                  id: id
+                })
             }
           ].concat(topTableCols)}
           tableData={
@@ -266,7 +273,13 @@ const Details = ({
               ),
               prop: "focus_node_id",
               type: "text",
-              func: d => d.focus_node_id
+              func: d =>
+                getNodeLinkList({
+                  urlType: "details",
+                  nodeList: [d.focus_node_id],
+                  entityRole: entityRole,
+                  id: id
+                })
             }
           ].concat(topTableCols)}
           tableData={
