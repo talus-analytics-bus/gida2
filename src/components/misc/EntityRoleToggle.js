@@ -9,7 +9,6 @@ import RadioToggle from "./RadioToggle.js";
  */
 const EntityRoleToggle = ({ entityRole, redirectUrlFunc, callback }) => {
   const onClick = (v, jsx) => {
-    console.log("Did callback: " + redirectUrlFunc(v));
     return <Link to={redirectUrlFunc(v)}>{jsx}</Link>;
   };
 
@@ -26,7 +25,7 @@ const EntityRoleToggle = ({ entityRole, redirectUrlFunc, callback }) => {
         }
       ]}
       curVal={entityRole}
-      onClick={onClick}
+      onClick={redirectUrlFunc ? onClick : undefined}
       callback={callback}
     />
   );

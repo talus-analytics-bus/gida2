@@ -2,22 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./explore.module.scss";
 import classNames from "classnames";
-import { Settings } from "../../../App.js";
-// import {
-//   getNodeLinkList,
-//   getWeightsBySummaryAttributeSimple,
-//   getSummaryAttributeWeightsByNode,
-//   isUnknownDataOnly
-// } from "../../misc/Data.js";
-import Util from "../../misc/Util.js";
-import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
-import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
-import NodeQuery from "../../misc/NodeQuery.js";
 
 // Content components
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import Tab from "../../misc/Tab.js";
+import { renderMapViewer } from "./content/MapViewer/MapViewer.js";
 
 // FC for Explore.
 const Explore = ({
@@ -26,6 +16,10 @@ const Explore = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  minYear,
+  maxYear,
+  coreCapacities,
+  outbreakTypes,
   ...props
 }) => {
   // Returns correct header content given the active tab
@@ -43,12 +37,26 @@ const Explore = ({
     }
   };
 
+  // Track tab content components
+  const [mapViewerComponent, setMapViewerComponent] = React.useState(null);
+
+  // Track entity role selected for the map
+  const [entityRole, setEntityRole] = React.useState("recipient");
+
   // Define content tabs
   const sections = [
     {
       header: "Countries",
       slug: "map",
-      content: <div>Country map placeholder</div>
+      content: renderMapViewer({
+        component: mapViewerComponent,
+        setComponent: setMapViewerComponent,
+        entityRole: entityRole,
+        setEntityRole: setEntityRole,
+        flowTypeInfo: flowTypeInfo,
+        ghsaOnly: ghsaOnly,
+        setGhsaOnly: setGhsaOnly
+      })
     },
     {
       header: "Organizations",
@@ -105,99 +113,125 @@ export const renderExplore = ({
 }) => {
   if (loading) {
     return <div>Loading...</div>;
-  } else if (
-    component === null ||
-    (component &&
-      (component.props.id !== id ||
-        component.props.entityRole !== entityRole ||
-        component.props.ghsaOnly !== ghsaOnly))
-  ) {
-    getComponentData({
-      setComponent: setComponent,
-      id: id,
-      entityRole: entityRole,
-      flowTypeInfo: flowTypeInfo,
-      ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly,
-      ...props
-    });
-
-    return component ? component : <div />;
   } else {
-    return component;
+    return (
+      <Explore
+        flowTypeInfo={flowTypeInfo}
+        ghsaOnly={ghsaOnly}
+        setGhsaOnly={setGhsaOnly}
+        setComponent={setComponent}
+        activeTab={props.activeTab}
+      />
+    );
   }
 };
 
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for response funding page
- * @method getComponentData
- * @param  {[type]}       setComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setComponent,
-  id,
-  entityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
-  ...props
-}) => {
-  // Define typical base query parameters used in FlowQuery,
-  // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
-  // modified in code below.
-  const nodeType = entityRole === "recipient" ? "target" : "source";
-  const baseQueryParams = {
-    focus_node_ids: null,
-    focus_node_type: nodeType,
-    flow_type_ids: [1, 2, 3, 4],
-    start_date: `${Settings.startYear}-01-01`, // TODO check these two
-    end_date: `${Settings.endYear}-12-31`,
-    by_neighbor: false,
-    filters: {},
-    summaries: {},
-    include_master_summary: false
-  };
-
-  // If GHSA page, then filter by GHSA projects.
-  if (id === "ghsa" || ghsaOnly === "true")
-    baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "true"]
-    ];
-
-  // Define queries for typical details page.
-  const queries = {
-    // Information about the entity
-    flowBundlesMap: await FlowBundleFocusQuery({
-      ...baseQueryParams,
-      node_category: ["country"]
-    }),
-    flowBundlesOrg: await FlowBundleFocusQuery({
-      ...baseQueryParams,
-      node_category: ["group"]
-    })
-  };
-
-  // Get query results.
-  const results = await Util.getQueryResults(queries);
-  console.log("results - Explore.js");
-  console.log(results);
-
-  // Feed results and other data to the details component and mount it.
-  setComponent(
-    <Explore
-      id={id}
-      entityRole={entityRole}
-      data={results}
-      flowTypeInfo={flowTypeInfo}
-      ghsaOnly={ghsaOnly}
-      setGhsaOnly={setGhsaOnly}
-      setComponent={setComponent}
-      activeTab={props.activeTab}
-    />
-  );
-};
+// export const renderExplore = ({
+//   component,
+//   setComponent,
+//   loading,
+//   id,
+//   entityRole,
+//   flowTypeInfo,
+//   ghsaOnly,
+//   setGhsaOnly,
+//   ...props
+// }) => {
+//   if (loading) {
+//     return <div>Loading...</div>;
+//   } else if (
+//     component === null ||
+//     (component &&
+//       (component.props.id !== id ||
+//         component.props.entityRole !== entityRole ||
+//         component.props.ghsaOnly !== ghsaOnly))
+//   ) {
+//     getComponentData({
+//       setComponent: setComponent,
+//       id: id,
+//       entityRole: entityRole,
+//       flowTypeInfo: flowTypeInfo,
+//       ghsaOnly: ghsaOnly,
+//       setGhsaOnly: setGhsaOnly,
+//       ...props
+//     });
+//
+//     return component ? component : <div />;
+//   } else {
+//     return component;
+//   }
+// };
+//
+// /**
+//  * Returns data for the details page given the entity type and id.
+//  * TODO make this work for response funding page
+//  * @method getComponentData
+//  * @param  {[type]}       setComponent [description]
+//  * @param  {[type]}       id                  [description]
+//  * @param  {[type]}       entityRole          [description]
+//  */
+// const getComponentData = async ({
+//   setComponent,
+//   id,
+//   entityRole,
+//   flowTypeInfo,
+//   ghsaOnly,
+//   setGhsaOnly,
+//   ...props
+// }) => {
+//   // Define typical base query parameters used in FlowQuery,
+//   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
+//   // modified in code below.
+//   const nodeType = entityRole === "recipient" ? "target" : "source";
+//   const baseQueryParams = {
+//     focus_node_ids: null,
+//     focus_node_type: nodeType,
+//     flow_type_ids: [1, 2, 3, 4],
+//     start_date: `${Settings.startYear}-01-01`, // TODO check these two
+//     end_date: `${Settings.endYear}-12-31`,
+//     by_neighbor: false,
+//     filters: {},
+//     summaries: {},
+//     include_master_summary: false
+//   };
+//
+//   // If GHSA page, then filter by GHSA projects.
+//   if (id === "ghsa" || ghsaOnly === "true")
+//     baseQueryParams.filters.parent_flow_info_filters = [
+//       ["ghsa_funding", "true"]
+//     ];
+//
+//   // Define queries for typical details page.
+//   const queries = {
+//     // Information about the entity
+//     flowBundlesMap: await FlowBundleFocusQuery({
+//       ...baseQueryParams,
+//       node_category: ["country"]
+//     }),
+//     flowBundlesOrg: await FlowBundleFocusQuery({
+//       ...baseQueryParams,
+//       node_category: ["group"]
+//     })
+//   };
+//
+//   // Get query results.
+//   const results = await Util.getQueryResults(queries);
+//   console.log("results - Explore.js");
+//   console.log(results);
+//
+//   // Feed results and other data to the details component and mount it.
+//   setComponent(
+//     <Explore
+//       id={id}
+//       entityRole={entityRole}
+//       data={results}
+//       flowTypeInfo={flowTypeInfo}
+//       ghsaOnly={ghsaOnly}
+//       setGhsaOnly={setGhsaOnly}
+//       setComponent={setComponent}
+//       activeTab={props.activeTab}
+//     />
+//   );
+// };
 
 export default Explore;
