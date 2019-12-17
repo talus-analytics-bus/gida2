@@ -744,6 +744,7 @@ Util.formatLabel = ft => {
 
 // Formats value based on column name
 Util.formatValue = (val, cn) => {
+  if (val === "n/a") return val;
   if (val === -Infinity || val === "zzz") return "";
   if (val === undefined || val === null) val = 0;
   if (val === "unknown") return "Specific amount not reported";

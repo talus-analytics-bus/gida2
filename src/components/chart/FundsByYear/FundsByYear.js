@@ -1,12 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Util from "../../misc/Util.js";
-import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
 import styles from "./fundsbyyear.module.scss";
 
 // Infographic components
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
 import AreaLine from "../AreaLine/AreaLine.js";
+import { Settings } from "../../../App.js";
 
 // Data functions
 
@@ -20,6 +19,25 @@ const FundsByYear = ({
   noFinancialData,
   ...props
 }) => {
+  // Get area line data
+  const areaLineData = [];
+  for (let i = Settings.startYear; i <= Settings.endYear; i++) {
+    const yearDatum = {
+      attribute: i.toString()
+    };
+
+    flowTypeInfo.forEach(ft => {
+      if (data[ft.name] === undefined) yearDatum[ft.name] = "n/a";
+      else {
+        const yearDatumVal = data[ft.name].summaries.year[i.toString()];
+        if (yearDatumVal !== undefined) yearDatum[ft.name] = yearDatumVal;
+        else yearDatum[ft.name] = "n/a";
+      }
+    });
+    areaLineData.push(yearDatum);
+  }
+
+  // Get link to entitytable page
   const linkToEntityTable = (
     <Link to={`/details/${id}/${entityRole}/table`}>
       <button>View table of funds</button>
@@ -35,14 +53,7 @@ const FundsByYear = ({
             {linkToEntityTable}
           </div>
           <div className={styles.areaLine}>
-            <AreaLine
-              flowTypeInfo={flowTypeInfo}
-              data={getWeightsBySummaryAttribute({
-                field: "year",
-                flowTypes: ["disbursed_funds", "committed_funds"],
-                data: [data]
-              })}
-            />
+            <AreaLine flowTypeInfo={flowTypeInfo} data={areaLineData} />
           </div>
         </div>
       )}

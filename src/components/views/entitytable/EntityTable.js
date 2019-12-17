@@ -6,7 +6,6 @@ import { Settings } from "../../../App.js";
 import { getWeightsBySummaryAttribute } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
-import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 

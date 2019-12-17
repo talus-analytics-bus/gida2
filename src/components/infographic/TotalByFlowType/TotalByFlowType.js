@@ -17,7 +17,7 @@ const TotalByFlowType = ({ flowType, data, ...props }) => {
 const getAmountByFlowType = (flowType, data) => {
   if (data === undefined) return 0;
   else {
-    const flowTypeData = data["flow_types"][flowType];
+    const flowTypeData = data[flowType];
     if (flowTypeData !== undefined) {
       return flowTypeData["focus_node_weight"];
     } else return 0;

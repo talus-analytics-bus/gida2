@@ -6,6 +6,8 @@ import SimpleTable from "../table/SimpleTable.js";
 
 // FC
 const AreaLine = ({ data, ...props }) => {
+  console.log("data - AreaLine.js");
+  console.log(data);
   return (
     <div>
       {

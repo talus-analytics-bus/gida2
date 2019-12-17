@@ -4,10 +4,9 @@ import styles from "./donut.module.scss";
 
 // FC
 const Donut = ({
-  datum,
+  numerator,
   denominator,
-  valKey,
-  attrVal,
+  attribute,
   attrFormatter,
   ...props
 }) => {
@@ -15,11 +14,11 @@ const Donut = ({
     <div className={styles.donut}>
       <div className={styles.content}>
         <div className={styles.value}>
-          {datum !== undefined
-            ? Util.percentize(100 * (datum[valKey] / denominator))
+          {numerator !== 0
+            ? Util.percentize(100 * (numerator / denominator))
             : "0%"}
         </div>
-        <div className={styles.label}>{attrFormatter(attrVal)}</div>
+        <div className={styles.label}>{attrFormatter(attribute)}</div>
       </div>
     </div>
   );

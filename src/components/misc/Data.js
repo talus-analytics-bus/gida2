@@ -122,7 +122,7 @@ export const getSummaryAttributeWeightsByNode = ({
  * response, assuming FlowBundleGeneralQuery was called
  * TODO consider adding "total" field.
  */
-export const getWeightsBySummaryAttribute2 = ({
+export const getWeightsBySummaryAttributeSimple = ({
   field,
   flowTypes,
   data,

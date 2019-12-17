@@ -4,8 +4,7 @@ import styles from "./details.module.scss";
 import classNames from "classnames";
 import { Settings } from "../../../App.js";
 import {
-  getWeightsBySummaryAttribute,
-  getWeightsBySummaryAttribute2,
+  getWeightsBySummaryAttributeSimple,
   getSummaryAttributeWeightsByNode,
   isUnknownDataOnly
 } from "../../misc/Data.js";
@@ -71,33 +70,33 @@ const Details = ({
   const masterSummary = data.flowBundles.master_summary;
 
   // Track data for donuts
-  const [donutData] = React.useState(
-    getWeightsBySummaryAttribute({
-      field: "core_elements",
-      flowTypes: ["disbursed_funds", "committed_funds"],
-      data: [masterSummary]
-    })
-  );
+  // const [donutData] = React.useState(
+  //   getWeightsBySummaryAttribute({
+  //     field: "core_elements",
+  //     flowTypes: ["disbursed_funds", "committed_funds"],
+  //     data: [masterSummary]
+  //   })
+  // );
 
-  // Track donut denominator value
-  const getDonutDenominator = data => {
-    // Assume that first flow bundle is what is needed
-    const focusNodeBundle = masterSummary;
-
-    // Return null if no data
-    if (focusNodeBundle === undefined) return null;
-
-    // Get focus node weight for flow type
-    const flowTypeBundle = focusNodeBundle.flow_types[curFlowType];
-
-    // If data not available, return null
-    if (flowTypeBundle === undefined) return null;
-    else {
-      // otherwise, return the weight
-      return flowTypeBundle.focus_node_weight;
-    }
-  };
-  const donutDenominator = getDonutDenominator(data);
+  // // Track donut denominator value
+  // const getDonutDenominator = data => {
+  //   // Assume that first flow bundle is what is needed
+  //   const focusNodeBundle = masterSummary;
+  //
+  //   // Return null if no data
+  //   if (focusNodeBundle === undefined) return null;
+  //
+  //   // Get focus node weight for flow type
+  //   const flowTypeBundle = focusNodeBundle.flow_types[curFlowType];
+  //
+  //   // If data not available, return null
+  //   if (flowTypeBundle === undefined) return null;
+  //   else {
+  //     // otherwise, return the weight
+  //     return flowTypeBundle.focus_node_weight;
+  //   }
+  // };
+  // const donutDenominator = getDonutDenominator(data);
 
   // Track the Top Recipients/Funders table data
   const [topTableData] = React.useState(
@@ -148,9 +147,10 @@ const Details = ({
         <FundsByYear
           id={id}
           entityRole={entityRole}
-          data={masterSummary}
+          data={masterSummary.flow_types}
           unknownDataOnly={unknownDataOnly}
           noFinancialData={noFinancialData}
+          flowTypeInfo={flowTypeInfo}
         />
       ),
       toggleFlowType: false,
@@ -160,10 +160,9 @@ const Details = ({
       header: <h2>Funding by core element</h2>,
       content: (
         <Donuts
-          data={donutData}
+          data={masterSummary}
           flowType={curFlowType}
           attributeType={"core_elements"}
-          donutDenominator={donutDenominator}
         />
       ),
       toggleFlowType: true,
@@ -173,7 +172,7 @@ const Details = ({
       header: <h2>Funding by core capacity</h2>,
       content: (
         <StackBar
-          data={getWeightsBySummaryAttribute2({
+          data={getWeightsBySummaryAttributeSimple({
             field: "core_capacities",
             flowTypes: ["disbursed_funds", "committed_funds"],
             data: data.flowBundles.flow_bundles,
