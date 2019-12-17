@@ -17,6 +17,7 @@ import NodeQuery from "../../misc/NodeQuery.js";
 // Content components
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
+import Tab from "../../misc/Tab.js";
 
 // FC for Explore.
 const Explore = ({
@@ -43,6 +44,23 @@ const Explore = ({
   };
   const headerData = getHeaderData(activeTab);
 
+  // Define content tabs
+  const sections = [
+    {
+      header: "Countries",
+      slug: "map",
+      content: <div>Country map placeholder</div>
+    },
+    {
+      header: "Organizations",
+      slug: "org",
+      content: <div>Organization placeholder</div>
+    }
+  ];
+
+  // Track current tab
+  const [curTab, setCurTab] = React.useState(activeTab || sections[0].slug);
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.explore)}>
@@ -50,7 +68,11 @@ const Explore = ({
         <h1>{headerData.header}</h1>
         <span>{headerData.instructions}</span>
         <div className={styles.controls}>
-          <div className={styles.tabs} />
+          <div className={styles.tabs}>
+            {sections.map(s => (
+              <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
+            ))}
+          </div>
           <div className={styles.buttons}>
             <Link to={"/details/ghsa"}>
               <button>GHSA project details</button>
@@ -58,6 +80,11 @@ const Explore = ({
             <button>Dark</button>
           </div>
         </div>
+      </div>
+      <div className={styles.content}>
+        {sections.map(s => (
+          <Tab selected={curTab === s.slug} content={s.content} />
+        ))}
       </div>
     </div>
   );

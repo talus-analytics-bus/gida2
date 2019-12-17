@@ -4,5 +4,18 @@
   .header {
     display: flex;
     flex-flow: column;
+    .controls {
+      display: flex;
+      flex-flow: row;
+      .tabs {
+        display: flex;
+        flex-flow: row;
+      }
+      .buttons {
+        display: flex;
+        flex-flow: row;
+        margin-left: auto;
+      }
+    }
   }
 }
