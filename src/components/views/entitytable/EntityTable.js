@@ -23,9 +23,10 @@ const EntityTable = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
-  otherId = null,
+  otherId,
   ...props
 }) => {
+  console.log("otherId = " + otherId);
   // Get page type from id
   let pageType;
   if (id.toLowerCase() === "ghsa") pageType = "ghsa";
@@ -291,17 +292,43 @@ const EntityTable = ({
   const [curTab, setCurTab] = React.useState(sections[0].slug);
 
   // Return JSX
+  // TODO: Make two versions of the header, one for otherId !== undefined and
+  // one for otherId === undefined.
   return (
     <div className={classNames("pageContainer", styles.entityTable)}>
-      <div className={styles.header}>
-        {pageType !== "ghsa" && (
-          <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-        )}
-        <h1>{data.nodeData.name}</h1>
-        <Link to={`/details/${id}/${entityRole || "funder"}`}>
-          <button>Back to summary</button>
-        </Link>
-      </div>
+      {otherId === undefined && (
+        <div className={styles.header}>
+          <div className={styles.upper}>
+            {pageType !== "ghsa" && (
+              <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+            )}
+            <h1>{data.nodeData.name}</h1>
+            <Link to={`/details/${id}/${entityRole || "funder"}`}>
+              <button>Back to summary</button>
+            </Link>
+          </div>
+        </div>
+      )}
+      {otherId !== undefined && (
+        <div className={styles.header}>
+          <div className={styles.upper}>
+            <Link to={`/details/${id}/funder`}>
+              <button>Go to funder page</button>
+            </Link>
+            <h1>
+              {data.nodeData.name} → {data.nodeDataOther.name}
+            </h1>
+            <Link to={`/details/${otherId}/recipient`}>
+              <button>Go to recipient page</button>
+            </Link>
+          </div>
+          <div className={styles.lower}>
+            {pageType !== "ghsa" && (
+              <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+            )}
+          </div>
+        </div>
+      )}
       <div className={styles.tabs}>
         {sections.map(s => (
           <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
@@ -321,6 +348,7 @@ export const renderEntityTable = ({
   setComponent,
   loading,
   id,
+  otherId,
   entityRole,
   flowTypeInfo,
   ghsaOnly,
@@ -333,6 +361,7 @@ export const renderEntityTable = ({
     getComponentData({
       setComponent: setComponent,
       id: id,
+      otherId: otherId,
       entityRole: entityRole,
       flowTypeInfo: flowTypeInfo,
       ghsaOnly: ghsaOnly,
@@ -356,6 +385,7 @@ export const renderEntityTable = ({
 const getComponentData = async ({
   setComponent,
   id,
+  otherId,
   entityRole,
   flowTypeInfo,
   ghsaOnly,
@@ -363,6 +393,7 @@ const getComponentData = async ({
 }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
   const nodeType = entityRole === "recipient" ? "target" : "source";
+  const otherNodeType = entityRole === "recipient" ? "source" : "target";
   const baseQueryParams = {
     focus_node_ids: id !== "ghsa" ? [id] : null,
     focus_node_type: nodeType,
@@ -370,7 +401,18 @@ const getComponentData = async ({
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
     by_neighbor: false,
-    filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType, id]] } : {},
+
+    // Add filters as appropriate.
+    filters:
+      // If not GHSA page,
+      id !== "ghsa"
+        ? // And the "other ID" (recipient) of a pair has been defined,
+          otherId !== undefined
+          ? // Then include filters for source and target as appropriate
+            { flow_attr_filters: [[nodeType, id], [otherNodeType, otherId]] }
+          : // Otherwise, only filter by one of those (source or target)
+            { flow_attr_filters: [[nodeType, id]] }
+        : {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
       datetime_summary: ["year"]
@@ -410,6 +452,11 @@ const getComponentData = async ({
     })
   };
 
+  // If "other ID" specified, get its node data as well.
+  if (otherId !== undefined) {
+    queries["nodeDataOther"] = await NodeQuery({ node_id: otherId });
+  }
+
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
   if (id === "ghsa") {
@@ -431,6 +478,7 @@ const getComponentData = async ({
   setComponent(
     <EntityTable
       id={id}
+      otherId={otherId}
       entityRole={entityRole}
       data={results}
       flowTypeInfo={flowTypeInfo}

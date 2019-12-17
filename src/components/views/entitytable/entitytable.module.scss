@@ -3,9 +3,14 @@
 .entityTable {
   .header {
     display: flex;
-    flex-flow: row;
-    align-items: center;
-    justify-content: space-between;
+    flex-flow: column;
+    .upper,
+    .lower {
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      justify-content: space-between;
+    }
   }
   .tabs {
     display: flex;
