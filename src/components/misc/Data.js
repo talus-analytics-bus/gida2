@@ -10,13 +10,24 @@ import Util from "./Util.js";
  * @return {[type]}                      [description]
  */
 export const getTableCellCodeFromVal = ({ val, type, ...props }) => {
+  const undefinedOrNull = val === undefined || val === null;
+  const unknown = val === "unknown";
   switch (type) {
     case "num":
-    // If undefined or null, return -9999, which represents "n/a".
-    // If "unknown", return -8888, which represents ("Specific amount
-    // unknown").
-    //
+      // If undefined or null, return -9999, which represents "n/a".
+      if (undefinedOrNull) return -9999;
+      // If "unknown", return -8888, which represents ("Specific amount
+      // unknown").
+      if (unknown) return -8888;
+      else return val;
+
     case "text":
+      // If undefined or null, return 'zzz', which represents "n/a".
+      if (undefinedOrNull) return "zzz";
+      // If "unknown", return 'yyy', which represents ("Specific amount
+      // unknown").
+      if (unknown) return "yyy";
+      else return val;
     default:
       return val;
   }
@@ -40,12 +51,16 @@ export const getTableRowData = ({
   data.forEach(d => {
     const row = {};
     tableRowDefs.forEach(def => {
-      const noDataVal = def.type === "num" ? -9999 : "zzz";
+      // const noDataVal = def.type === "num" ? -9999 : "zzz";
       if (def.func === undefined)
         def.func = d => {
           return d[def.prop];
         };
-      row[def.prop] = def.func(d) || noDataVal;
+      row[def.prop] = getTableCellCodeFromVal({
+        val: def.func(d),
+        type: def.type
+      });
+      // row[def.prop] = def.func(d) || noDataVal;
       // row[def.prop] = def.fmt(def.func(d) || noDataVal);
     });
     if (filterFcn(row)) tableRows.push(row);

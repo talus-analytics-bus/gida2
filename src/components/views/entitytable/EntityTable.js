@@ -323,9 +323,6 @@ export const renderEntityTable = ({
   setGhsaOnly
 }) => {
   // Get data
-  // FundsByYear, FundsByCoreElement:
-  // http://localhost:5002/flow_bundles?focus_node_type=source&focus_node_ids=United%20States&flow_type_ids=1%2C2%2C3%2C4&by_neighbor=false
-
   if (loading) {
     return <div>Loading...</div>;
   } else if (component === null || (component && component.props.id !== id)) {
