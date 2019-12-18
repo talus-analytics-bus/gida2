@@ -87,11 +87,9 @@ const MapViewer = ({
   //   }
 
   // TODO:
-  // header with title and funder/recipient toggle
   // map
   // map controls (zoom, reset)
   // legend (maybe part of map?)
-  // options / tooltip
   return (
     <div className={styles.mapViewer}>
       <div className={styles.header}>
@@ -190,7 +188,6 @@ const remountComponent = ({
     component.props.ghsaOnly !== ghsaOnly ||
     component.props.coreCapacities.toString() !==
       props.coreCapacities.toString();
-  console.log("remount = " + remount);
   return remount;
 };
 

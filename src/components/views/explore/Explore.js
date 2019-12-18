@@ -34,9 +34,6 @@ const Explore = ({
     }
   };
 
-  // Track whether styling is dark or light
-  const [isDark, setIsDark] = React.useState(true);
-
   // Track tab content components
   const [mapViewerComponent, setMapViewerComponent] = React.useState(null);
 
@@ -87,10 +84,21 @@ const Explore = ({
   // Get header data
   const headerData = getHeaderData(curTab);
 
+  // When Explore is mounted, set to dark mode.
+  // When Explore is unmounted (we leave the page) return to light mode.
+  React.useEffect(() => {
+    props.setIsDark(true);
+    return () => {
+      props.setIsDark(false);
+    };
+  }, []);
+
   // Return JSX
   return (
     <div
-      className={classNames("pageContainer", styles.explore, { dark: isDark })}
+      className={classNames("pageContainer", styles.explore, {
+        [styles.dark]: props.isDark
+      })}
     >
       <div className={styles.header}>
         <h1>{headerData.header}</h1>
@@ -105,7 +113,9 @@ const Explore = ({
             <Link to={"/details/ghsa"}>
               <button>GHSA project details</button>
             </Link>
-            <button>Dark</button>
+            <button onClick={() => props.setIsDark(!props.isDark)}>
+              {props.isDark ? `Dark` : "Light"}
+            </button>
           </div>
         </div>
       </div>
@@ -139,117 +149,11 @@ export const renderExplore = ({
         setGhsaOnly={setGhsaOnly}
         setComponent={setComponent}
         activeTab={props.activeTab}
+        setIsDark={props.setIsDark}
+        isDark={props.isDark}
       />
     );
   }
 };
-
-// export const renderExplore = ({
-//   component,
-//   setComponent,
-//   loading,
-//   id,
-//   entityRole,
-//   flowTypeInfo,
-//   ghsaOnly,
-//   setGhsaOnly,
-//   ...props
-// }) => {
-//   if (loading) {
-//     return <div>Loading...</div>;
-//   } else if (
-//     component === null ||
-//     (component &&
-//       (component.props.id !== id ||
-//         component.props.entityRole !== entityRole ||
-//         component.props.ghsaOnly !== ghsaOnly))
-//   ) {
-//     getComponentData({
-//       setComponent: setComponent,
-//       id: id,
-//       entityRole: entityRole,
-//       flowTypeInfo: flowTypeInfo,
-//       ghsaOnly: ghsaOnly,
-//       setGhsaOnly: setGhsaOnly,
-//       ...props
-//     });
-//
-//     return component ? component : <div />;
-//   } else {
-//     return component;
-//   }
-// };
-//
-// /**
-//  * Returns data for the details page given the entity type and id.
-//  * TODO make this work for response funding page
-//  * @method getComponentData
-//  * @param  {[type]}       setComponent [description]
-//  * @param  {[type]}       id                  [description]
-//  * @param  {[type]}       entityRole          [description]
-//  */
-// const getComponentData = async ({
-//   setComponent,
-//   id,
-//   entityRole,
-//   flowTypeInfo,
-//   ghsaOnly,
-//   setGhsaOnly,
-//   ...props
-// }) => {
-//   // Define typical base query parameters used in FlowQuery,
-//   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
-//   // modified in code below.
-//   const nodeType = entityRole === "recipient" ? "target" : "source";
-//   const baseQueryParams = {
-//     focus_node_ids: null,
-//     focus_node_type: nodeType,
-//     flow_type_ids: [1, 2, 3, 4],
-//     start_date: `${Settings.startYear}-01-01`, // TODO check these two
-//     end_date: `${Settings.endYear}-12-31`,
-//     by_neighbor: false,
-//     filters: {},
-//     summaries: {},
-//     include_master_summary: false
-//   };
-//
-//   // If GHSA page, then filter by GHSA projects.
-//   if (id === "ghsa" || ghsaOnly === "true")
-//     baseQueryParams.filters.parent_flow_info_filters = [
-//       ["ghsa_funding", "true"]
-//     ];
-//
-//   // Define queries for typical details page.
-//   const queries = {
-//     // Information about the entity
-//     flowBundlesMap: await FlowBundleFocusQuery({
-//       ...baseQueryParams,
-//       node_category: ["country"]
-//     }),
-//     flowBundlesOrg: await FlowBundleFocusQuery({
-//       ...baseQueryParams,
-//       node_category: ["group"]
-//     })
-//   };
-//
-//   // Get query results.
-//   const results = await Util.getQueryResults(queries);
-//   console.log("results - Explore.js");
-//   console.log(results);
-//
-//   // Feed results and other data to the details component and mount it.
-//   setComponent(
-//     <Explore
-//       id={id}
-//       entityRole={entityRole}
-//       data={results}
-//       flowTypeInfo={flowTypeInfo}
-//       ghsaOnly={ghsaOnly}
-//       setGhsaOnly={setGhsaOnly}
-//       setComponent={setComponent}
-//       activeTab={props.activeTab}
-//     />
-//   );
-// };
 
 export default Explore;

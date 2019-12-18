@@ -3,6 +3,19 @@
 html,
 body,
 #root {
+  // Handle dark mode
+  // TODO finish the CSS for this.
+  .dark {
+    background-color: $dark-background-color;
+    color: $dark-color;
+    * {
+      color: $dark-color;
+    }
+    button {
+      background-color: $dark-grey;
+    }
+  }
+
   width: 100%;
   margin: 0;
   input[type="radio"] {

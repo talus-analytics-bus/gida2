@@ -41,6 +41,9 @@ const App = () => {
   // Track data selections
   const [ghsaOnly, setGhsaOnly] = React.useState("false");
 
+  // Track whether styling is dark or light
+  const [isDark, setIsDark] = React.useState(true);
+
   async function getAppData() {
     const queries = {
       flowTypeInfo: await FlowTypeQuery({
@@ -152,7 +155,7 @@ const App = () => {
   if (loading) return <div />;
   else
     return (
-      <div>
+      <div className={isDark ? "dark" : ""}>
         <BrowserRouter>
           <Nav />
           <Switch>
@@ -247,7 +250,9 @@ const App = () => {
                     setLoading: setLoading,
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly
+                    setGhsaOnly: setGhsaOnly,
+                    isDark: isDark,
+                    setIsDark: setIsDark
                   });
                 }}
               />
