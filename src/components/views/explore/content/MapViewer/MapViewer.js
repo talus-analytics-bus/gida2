@@ -1,6 +1,8 @@
 import React from "react";
 import styles from "./mapviewer.module.scss";
 import EntityRoleToggle from "../../../../misc/EntityRoleToggle.js";
+import GhsaToggle from "../../../../misc/GhsaToggle.js";
+import RadioToggle from "../../../../misc/RadioToggle.js";
 import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
@@ -13,6 +15,8 @@ const MapViewer = ({
   data,
   entityRole,
   setEntityRole,
+  ghsaOnly,
+  setGhsaOnly,
   minYear,
   maxYear,
   ...props
@@ -80,6 +84,23 @@ const MapViewer = ({
           data={data.flowBundlesMap.flow_bundles}
           minYear={minYear}
           maxYear={maxYear}
+        />
+      </div>
+      <div className={styles.menu}>
+        <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+        <RadioToggle
+          callback={setTransactionType}
+          curVal={transactionType}
+          choices={[
+            {
+              name: "Committed",
+              value: "committed"
+            },
+            {
+              name: "Disbursed",
+              value: "disbursed"
+            }
+          ]}
         />
       </div>
     </div>
