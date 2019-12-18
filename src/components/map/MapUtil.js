@@ -11,6 +11,16 @@ const greens = [
   "#045f32"
 ];
 
+const purples = [
+  "#bfd3e6",
+  "#88aac3",
+  "#757fb6",
+  "#75559d",
+  "#713286",
+  "#6a1266",
+  "#3c003a"
+];
+
 /**
  * Given the support type and the data, returns the appropriate D3 map color
  * scale function.
@@ -18,7 +28,7 @@ const greens = [
  * @method getMapColorScale
  */
 // TODO
-export const getMapColorScale = ({ supportType, values }) => {
+export const getMapColorScale = ({ supportType, data, flowType }) => {
   const colorScaleMaker = ({ domain, range, type }) => {
     const baseScale = d3[type || "scaleThreshold"]()
       .domain(domain)
@@ -36,6 +46,21 @@ export const getMapColorScale = ({ supportType, values }) => {
     return colorScaleMaker({
       domain: [5, 10, 15, 20, 25, 30],
       range: greens
+    });
+  } else if (supportType === "funds") {
+    // Get values for use in calculating quantile scales.
+    const values = data
+      .map(d => {
+        return d.flow_types[flowType]
+          ? d.flow_types[flowType].focus_node_weight
+          : null;
+      })
+      .filter(d => d !== null && d !== "unknown");
+
+    return colorScaleMaker({
+      domain: values,
+      range: purples,
+      type: "scaleQuantile"
     });
   } else
     return d3

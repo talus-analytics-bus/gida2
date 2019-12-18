@@ -17,7 +17,11 @@ const Map = ({
   ...props
 }) => {
   // Get map color scale to use.
-  const colorScale = getMapColorScale({ supportType, data });
+  const colorScale = getMapColorScale({
+    supportType: supportType,
+    data: data,
+    flowType: flowType
+  });
 
   return (
     <div className={styles.map}>
