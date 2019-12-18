@@ -36,7 +36,7 @@ const Map = ({
         supportType={supportType}
         coreCapacities={coreCapacities}
       />
-      <Legend />
+      <Legend {...{ colorScale, supportType, flowType }} />
     </div>
   );
 };
