@@ -30,14 +30,7 @@ const TableInstance = ({
           }
         : {};
     return (
-      <div
-        onClick={e => {
-          console.log("\nClicked TableInstance!");
-          console.log(e);
-          console.log(e.target);
-        }}
-        className={classNames("tableInstance", "noPaging")}
-      >
+      <div className={classNames("tableInstance", "noPaging")}>
         <DataTable
           columns={tableColumns}
           initialData={getTableRowData({

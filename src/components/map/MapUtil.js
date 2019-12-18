@@ -2,6 +2,15 @@ import React from "react";
 import Util from "../misc/Util.js";
 import * as d3 from "d3/dist/d3.min";
 
+const greens = [
+  "#eaeff1",
+  "#99c2ae",
+  "#569778",
+  "#3d8662",
+  "#217249",
+  "#045f32"
+];
+
 /**
  * Given the support type and the data, returns the appropriate D3 map color
  * scale function.
@@ -10,10 +19,29 @@ import * as d3 from "d3/dist/d3.min";
  */
 // TODO
 export const getMapColorScale = ({ supportType, values }) => {
-  return d3
-    .scaleLinear()
-    .domain([0, 1e5])
-    .range(["white", "purple"]);
+  const colorScaleMaker = ({ domain, range, type }) => {
+    const baseScale = d3[type || "scaleThreshold"]()
+      .domain(domain)
+      .range(range);
+    return v => {
+      const noData = v === "zzz" || v === -9999;
+      const unknownVal = v === "yyy" || v === -8888;
+      if (noData) return "#cccccc";
+      else if (unknownVal) return "yellow";
+      else return baseScale(v);
+    };
+  };
+
+  if (supportType === "inkind") {
+    return colorScaleMaker({
+      domain: [5, 10, 15, 20, 25, 30],
+      range: greens
+    });
+  } else
+    return d3
+      .scaleLinear()
+      .domain([0, 1e5])
+      .range(["white", "purple"]);
 };
 
 /**

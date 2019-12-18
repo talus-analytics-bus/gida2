@@ -315,8 +315,8 @@ const getComponentData = async ({
 
   // Get query results.
   const results = await Util.getQueryResults(queries);
-  console.log("results - MapViewer.js");
-  console.log(results);
+  // console.log("results - MapViewer.js");
+  // console.log(results);
 
   // Feed results and other data to the details component and mount it.
   setComponent(

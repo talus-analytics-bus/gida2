@@ -74,10 +74,12 @@ const d3Map = ({
             prop: "color",
             type: "text",
             render: d => (
-              <div
-                style={{ backgroundColor: colorScale(d) }}
-                className={styles.square}
-              />
+              <svg width="20" height="20">
+                <rect
+                  style={{ fill: colorScale(d) }}
+                  className={styles.square}
+                />
+              </svg>
             ),
             func: d =>
               d.flow_types[flowType]
