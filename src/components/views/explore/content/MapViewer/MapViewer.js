@@ -37,6 +37,9 @@ const MapViewer = ({
   // Track support type selected for the map
   const [supportType, setSupportType] = React.useState("funds");
 
+  // Track main map title
+  const [mapTitle, setMapTitle] = React.useState("funds");
+
   /**
    * Given the transaction type and the support type, returns the flow type.
    * @method getFlowTypeFromArgs
@@ -82,7 +85,20 @@ const MapViewer = ({
     marks[i] = i;
   }
 
-  // Get map title and flow type text.
+  const getMapTitle = ({ supportType, entityRole }) => {
+    if (supportType === "funds" || supportType === "inkind") {
+      if (entityRole === "recipient") {
+        return "Recipients by country";
+      } else return "Funders by country";
+    } else if (supportType === "jee") {
+      return "JEE score by country";
+    } else if (supportType === "needs_met") {
+      return "Combined financial resources and need metric";
+    } else return "[Error] Unknown map metric";
+  };
+
+  // Get whether metric has transaction type
+  const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
 
   // TODO:
   // map
@@ -92,8 +108,8 @@ const MapViewer = ({
     <div className={styles.mapViewer}>
       <div className={styles.header}>
         <div className={styles.labels}>
-          <div>Map title placeholder</div>
-          <div>{flowTypeDisplayName}</div>
+          <div>{getMapTitle({ supportType, entityRole })}</div>
+          {metricHasTransactionType && <div>{flowTypeDisplayName}</div>}
         </div>
         <div className={styles.toggle}>
           <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
@@ -110,20 +126,22 @@ const MapViewer = ({
       </div>
       <div className={styles.menu}>
         <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-        <RadioToggle
-          callback={setTransactionType}
-          curVal={transactionType}
-          choices={[
-            {
-              name: "Committed",
-              value: "committed"
-            },
-            {
-              name: "Disbursed",
-              value: "disbursed"
-            }
-          ]}
-        />
+        {metricHasTransactionType && (
+          <RadioToggle
+            callback={setTransactionType}
+            curVal={transactionType}
+            choices={[
+              {
+                name: "Committed",
+                value: "committed"
+              },
+              {
+                name: "Disbursed",
+                value: "disbursed"
+              }
+            ]}
+          />
+        )}
         <RadioToggle
           callback={setSupportType}
           curVal={supportType}
@@ -134,18 +152,28 @@ const MapViewer = ({
             },
             {
               name: "In-kind support",
-              value: "inkind"
+              value: "inkind",
+              tooltip:
+                "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
             },
             {
               name: "JEE score",
-              value: "jee"
+              value: "jee",
+              tooltip:
+                "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
             },
             {
               name: "Combined financial resources and need metric",
-              value: "needs_met"
+              value: "needs_met",
+              tooltip:
+                "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
             }
           ]}
         />
+        {
+          // TODO: add this tooltip for CC dropdown
+          // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+        }
         <ReactMultiSelectCheckboxes
           placeholderButtonLabel={"Select core capacities"}
           options={core_capacities_grouped}
