@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./d3map.module.scss";
+import classNames from "classnames";
 import TableInstance from "../chart/table/TableInstance.js";
 import Util from "../misc/Util.js";
 import {
@@ -17,6 +18,35 @@ const d3Map = ({
   maxYear,
   ...props
 }) => {
+  // Define hatch mark pattern.
+  const defs = (
+    <defs>
+      <pattern
+        id="pattern-stripe"
+        width="4"
+        height="4"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(45)"
+      >
+        <rect
+          width="3.5"
+          height="4"
+          transform="translate(0,0)"
+          fill="lightgray"
+        />
+      </pattern>
+      <mask id="mask-stripe">
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          fill="url(#pattern-stripe)"
+        />
+      </mask>
+    </defs>
+  );
+
   return (
     <div className={styles.d3Map}>
       <TableInstance
@@ -77,8 +107,11 @@ const d3Map = ({
               <svg width="20" height="20">
                 <rect
                   style={{ fill: colorScale(d) }}
-                  className={styles.square}
+                  className={classNames(styles.square, {
+                    [styles.hatch]: d === "yyy" || d === -8888
+                  })}
                 />
+                {defs}
               </svg>
             ),
             func: d =>

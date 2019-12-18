@@ -27,7 +27,7 @@ export const getMapColorScale = ({ supportType, values }) => {
       const noData = v === "zzz" || v === -9999;
       const unknownVal = v === "yyy" || v === -8888;
       if (noData) return "#cccccc";
-      else if (unknownVal) return "yellow";
+      else if (unknownVal) return "#cccccc";
       else return baseScale(v);
     };
   };

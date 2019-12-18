@@ -4,4 +4,7 @@
     width: 20px;
     height: 20px;
   }
+  .hatch {
+    mask: url(#mask-stripe);
+  }
 }
