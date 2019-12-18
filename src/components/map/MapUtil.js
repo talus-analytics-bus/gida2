@@ -1,5 +1,20 @@
 import React from "react";
 import Util from "../misc/Util.js";
+import * as d3 from "d3/dist/d3.min";
+
+/**
+ * Given the support type and the data, returns the appropriate D3 map color
+ * scale function.
+ * Values structured like array of values, [1, 2, 3, ...].
+ * @method getMapColorScale
+ */
+// TODO
+export const getMapColorScale = ({ supportType, values }) => {
+  return d3
+    .scaleLinear()
+    .domain([0, 1e5])
+    .range(["white", "purple"]);
+};
 
 /**
  * Given various parameters, determines the map tooltip label text that should

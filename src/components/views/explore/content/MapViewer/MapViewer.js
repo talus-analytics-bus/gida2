@@ -106,6 +106,7 @@ const MapViewer = ({
       </div>
       <div className={styles.content}>
         <Map
+          supportType={supportType}
           entityRole={entityRole}
           flowType={flowType}
           data={data.flowBundlesMap.flow_bundles}
