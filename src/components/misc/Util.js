@@ -742,6 +742,17 @@ Util.formatLabel = ft => {
   }
 };
 
+Util.getScoreName = score => {
+  if (score < 1.5) {
+    return "No Capacity";
+  } else if (score < 2.5) {
+    return "Limited Capacity";
+  } else if (score < 3.5) {
+    return "Developed Capacity";
+  } else if (score < 4.5) return "Demonstrated Capacity";
+  return "Sustained Capacity";
+};
+
 // Formats value based on column name
 Util.formatValue = (val, cn) => {
   if (val === -9999 || val === "zzz") return "";
@@ -750,8 +761,11 @@ Util.formatValue = (val, cn) => {
   if (val === undefined || val === null) val = 0;
   else {
     switch (cn) {
+      case "jee":
+        return Util.getScoreName(val);
       case "disbursed_funds":
       case "committed_funds":
+      case "funds":
         return Util.money(val); // TODO units
       default:
         return val;

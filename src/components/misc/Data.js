@@ -1,7 +1,68 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Util from "./Util.js";
+import * as d3 from "d3/dist/d3.min";
 
+// Given the full set of JEE scores, an ISO2 code, and a set of core capacities,
+// returns the average core capacity score for each defined core capacity for
+// the location with the provided ISO2 code.
+export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
+  // TODO
+  const ccsToInclude =
+    coreCapacities.length > 0 ? coreCapacities : core_capacities;
+  const output = ccsToInclude.map(cc => {
+    return {
+      value: cc.value,
+      score: 2 // TODO
+    };
+  });
+  return output;
+};
+
+/**
+ * Given the disbursed funds received (single value) and the data array of
+ * average core capacity scores (filtered only), returns a value that is
+ * higher if needs a more met in a country and lower if less met.
+ * @method calculateNeedsMet
+ * @param  {[type]}          disbursedFundsReceived [description]
+ * @param  {[type]}          avgCapScores           [description]
+ * @return {[type]}                                 [description]
+ */
+const debugNeedsMet = true;
+export const calculateNeedsMet = ({ datum, avgCapScores }) => {
+  // Get the disbursed funds received for this datum.
+  const disbursedFundsReceived = datum.flow_types["disbursed_funds"]
+    ? datum.flow_types["disbursed_funds"].focus_node_weight
+    : undefined;
+
+  // If undefined, then return null for the needs met value.
+  if (disbursedFundsReceived === undefined) return null;
+  else {
+    // Otherwise, continue.
+    // If the average core capacity scores are undefined and we're in debug
+    // mode, then define a placeholder value.
+    if (avgCapScores === undefined && debugNeedsMet)
+      avgCapScores = [{ value: 1 }];
+    // Otherwise, return null.
+    else if (avgCapScores === undefined) return null;
+    // Finally, perform the needs met calculation if needed data are avail.
+    // Get the average of the core capacity scores (filtered).
+    const score = d3.mean(avgCapScores, d => d.value);
+
+    // The numerator.
+    const numerator = 10 + Math.log10(1 + disbursedFundsReceived);
+
+    // The denominator.
+    const denominator = 5.01 - score;
+
+    // Needs met is the numerator divided by the denominator.
+    const needsMet = numerator / denominator;
+    return needsMet;
+  }
+};
+
+// Core capacities
+// TODO move this to API/db
 export const core_capacities = [
   {
     value: "P.1",
@@ -105,6 +166,8 @@ export const core_capacities = [
   }
 ];
 
+// Core capacities grouped by core elements
+// TODO move this to API/db
 export const core_capacities_grouped = [
   {
     label: "Prevent",

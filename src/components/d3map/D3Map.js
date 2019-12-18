@@ -4,9 +4,11 @@ import classNames from "classnames";
 import TableInstance from "../chart/table/TableInstance.js";
 import Util from "../misc/Util.js";
 import {
+  getMapMetricValue,
   getMapTooltipLabel,
   getUnknownValueExplanation
 } from "../map/MapUtil.js";
+import { getJeeScores } from "../misc/Data.js";
 
 // FC for D3Map.
 const d3Map = ({
@@ -16,6 +18,8 @@ const d3Map = ({
   entityRole,
   minYear,
   maxYear,
+  supportType,
+  coreCapacities,
   ...props
 }) => {
   // Define hatch mark pattern.
@@ -59,14 +63,13 @@ const d3Map = ({
             func: d => d.focus_node_id
           },
           {
+            // TODO special for jee and needs_met
             title: "Map metric value",
             prop: "value",
             type: "num",
-            render: d => Util.formatValue(d, flowType),
+            render: d => Util.formatValue(d, supportType),
             func: d =>
-              d.flow_types[flowType]
-                ? d.flow_types[flowType].focus_node_weight
-                : undefined
+              getMapMetricValue({ d, supportType, flowType, coreCapacities })
           },
           {
             title: "Unknown value explanation (if applicable)",
@@ -74,13 +77,16 @@ const d3Map = ({
             type: "text",
             render: d => Util.formatValue(d, "text"),
             func: d =>
-              d.flow_types[flowType]
-                ? getUnknownValueExplanation({
-                    datum: d,
-                    value: d.flow_types[flowType].focus_node_weight,
-                    entityRole: entityRole
-                  })
-                : undefined
+              getUnknownValueExplanation({
+                datum: d,
+                value: getMapMetricValue({
+                  d,
+                  supportType,
+                  flowType,
+                  coreCapacities
+                }),
+                entityRole: entityRole
+              })
           },
           {
             title: "Map tooltip label",
@@ -89,15 +95,14 @@ const d3Map = ({
             render: d =>
               getMapTooltipLabel({
                 val: d,
-                flowType: flowType,
-                minYear: minYear,
-                maxYear: maxYear,
-                entityRole: entityRole
+                supportType,
+                flowType,
+                minYear,
+                maxYear,
+                entityRole
               }),
             func: d =>
-              d.flow_types[flowType]
-                ? d.flow_types[flowType].focus_node_weight
-                : undefined
+              getMapMetricValue({ d, supportType, flowType, coreCapacities })
           },
           {
             title: "Color",
@@ -115,9 +120,7 @@ const d3Map = ({
               </svg>
             ),
             func: d =>
-              d.flow_types[flowType]
-                ? d.flow_types[flowType].focus_node_weight
-                : undefined
+              getMapMetricValue({ d, supportType, flowType, coreCapacities })
           }
         ]}
         tableData={data}

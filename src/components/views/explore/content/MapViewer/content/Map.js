@@ -14,6 +14,7 @@ const Map = ({
   entityRole,
   minYear,
   maxYear,
+  coreCapacities,
   ...props
 }) => {
   // Get map color scale to use.
@@ -32,6 +33,8 @@ const Map = ({
         entityRole={entityRole}
         minYear={minYear}
         maxYear={maxYear}
+        supportType={supportType}
+        coreCapacities={coreCapacities}
       />
       <Legend />
     </div>

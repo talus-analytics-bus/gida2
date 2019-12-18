@@ -112,6 +112,7 @@ const MapViewer = ({
           data={data.flowBundlesMap.flow_bundles}
           minYear={minYear}
           maxYear={maxYear}
+          coreCapacities={coreCapacities}
         />
       </div>
       <div className={styles.menu}>
@@ -308,8 +309,8 @@ const getComponentData = async ({
   const queries = {
     // Information about the entity
     flowBundlesMap: await FlowBundleFocusQuery({
-      ...baseQueryParams,
-      node_category: ["country"]
+      ...baseQueryParams
+      // node_category: ["country"]
     })
   };
 
