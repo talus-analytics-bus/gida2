@@ -182,15 +182,16 @@ const remountComponent = ({
   entityRole,
   ghsaOnly
 }) => {
-  return (
+  const remount =
     component.props.id !== id ||
     component.props.minYear !== minYear ||
     component.props.maxYear !== maxYear ||
     component.props.entityRole !== entityRole ||
     component.props.ghsaOnly !== ghsaOnly ||
     component.props.coreCapacities.toString() !==
-      props.coreCapacities.toString()
-  );
+      props.coreCapacities.toString();
+  console.log("remount = " + remount);
+  return remount;
 };
 
 export const renderMapViewer = ({
@@ -215,7 +216,9 @@ export const renderMapViewer = ({
         props: props,
         id: id,
         entityRole: entityRole,
-        ghsaOnly: ghsaOnly
+        ghsaOnly: ghsaOnly,
+        minYear: props.minYear,
+        maxYear: props.maxYear
       }))
   ) {
     getComponentData({
