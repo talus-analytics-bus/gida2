@@ -44,6 +44,10 @@ const Explore = ({
   const [minYear, setMinYear] = React.useState(Settings.startYear);
   const [maxYear, setMaxYear] = React.useState(Settings.endYear);
 
+  // Set value filters
+  const [coreCapacities, setCoreCapacities] = React.useState([]);
+  const [outbreakResponses, setOutbreakResponses] = React.useState([]);
+
   // Define content tabs
   const sections = [
     {
@@ -57,6 +61,10 @@ const Explore = ({
         flowTypeInfo: flowTypeInfo,
         ghsaOnly: ghsaOnly,
         setGhsaOnly: setGhsaOnly,
+        coreCapacities: coreCapacities,
+        setCoreCapacities: setCoreCapacities,
+        outbreakResponses: outbreakResponses,
+        setOutbreakResponses: setOutbreakResponses,
         minYear: minYear,
         setMinYear: setMinYear,
         maxYear: maxYear,

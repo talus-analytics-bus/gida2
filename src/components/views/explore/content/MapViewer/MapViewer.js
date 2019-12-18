@@ -109,6 +109,21 @@ const getComponentData = async ({
     include_master_summary: false
   };
 
+  // If core capacity filters provided, use those
+  if (props.coreCapacities.length > 0) {
+    baseQueryParams.filters.parent_flow_info_filters = [
+      ["core_capacities"].concat(props.coreCapacities)
+    ];
+  }
+
+  // If outbreak response filters provided, use those
+  // TODO
+  if (props.outbreakResponses.length > 0) {
+    baseQueryParams.filters.parent_flow_info_filters = [
+      "outbreak_responses"
+    ].concat(props.outbreakResponses);
+  }
+
   // If GHSA page, then filter by GHSA projects.
   if (id === "ghsa" || ghsaOnly === "true")
     baseQueryParams.filters.parent_flow_info_filters = [
@@ -145,6 +160,10 @@ const getComponentData = async ({
       maxYear={props.maxYear}
       setMinYear={props.setMinYear}
       setMaxYear={props.setMaxYear}
+      coreCapacities={props.coreCapacities}
+      setCoreCapacities={props.setCoreCapacities}
+      outbreakResponses={props.outbreakResponses}
+      setOutbreakResponses={props.setOutbreakResponses}
     />
   );
 };
