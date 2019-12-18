@@ -34,6 +34,9 @@ const Explore = ({
     }
   };
 
+  // Track whether styling is dark or light
+  const [isDark, setIsDark] = React.useState(true);
+
   // Track tab content components
   const [mapViewerComponent, setMapViewerComponent] = React.useState(null);
 
