@@ -30,6 +30,28 @@ const Map = ({ data, flowType, entityRole, minYear, maxYear, ...props }) => {
       );
     }
   };
+
+  /**
+   * Returns an explanation for an unknown value if applicable
+   * @method getUnknownValueExplanation
+   * @param  {[type]}                   datum      [description]
+   * @param  {[type]}                   entityRole [description]
+   * @return {[type]}                              [description]
+   */
+  const getUnknownValueExplanation = ({ datum, value, entityRole }) => {
+    if (value === "unknown") {
+      const nodeType = entityRole === "funder" ? "source" : "target";
+      const nodesToShow =
+        datum[nodeType].length > 1 ? "multilateral group" : datum[nodeType][0];
+      return (
+        <span>
+          {datum.focus_node_id} included as {entityRole} for {nodesToShow}{" "}
+          projects
+        </span>
+      );
+    } else return "";
+  };
+
   return (
     <div className={styles.map}>
       <TableInstance
@@ -52,19 +74,34 @@ const Map = ({ data, flowType, entityRole, minYear, maxYear, ...props }) => {
                 : undefined
           },
           {
+            title: "Unknown value explanation (if applicable)",
+            prop: "unknown_explanation",
+            type: "text",
+            render: d => Util.formatValue(d, "text"),
+            func: d =>
+              d.flow_types[flowType]
+                ? getUnknownValueExplanation({
+                    datum: d,
+                    value: d.flow_types[flowType].focus_node_weight,
+                    entityRole: entityRole
+                  })
+                : undefined
+          },
+          {
             title: "Map tooltip label",
             prop: "tooltip_label",
             type: "text",
-            render: d => d,
-            func: d =>
+            render: d =>
               getMapTooltipLabel({
-                val: d.flow_types[flowType]
-                  ? d.flow_types[flowType].focus_node_weight
-                  : undefined,
+                val: d,
                 flowType: flowType,
                 minYear: minYear,
                 maxYear: maxYear
-              })
+              }),
+            func: d =>
+              d.flow_types[flowType]
+                ? d.flow_types[flowType].focus_node_weight
+                : undefined
           }
         ]}
         tableData={data}
