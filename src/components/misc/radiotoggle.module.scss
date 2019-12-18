@@ -1,6 +1,9 @@
 @import "../../assets/styles/colors.scss";
 
 .radioToggle {
+  > div {
+    font-weight: bold;
+  }
   form {
     display: flex;
     flex-flow: column;

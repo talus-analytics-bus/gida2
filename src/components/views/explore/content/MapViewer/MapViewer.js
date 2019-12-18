@@ -5,15 +5,12 @@ import GhsaToggle from "../../../../misc/GhsaToggle.js";
 import RadioToggle from "../../../../misc/RadioToggle.js";
 import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
-import { core_capacities_grouped } from "../../../../misc/Data.js";
+import TimeSlider from "../../../../misc/TimeSlider.js";
+import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
-import Slider from "rc-slider";
-import "rc-slider/assets/index.css";
-import "rc-tooltip/assets/bootstrap.css";
 
 // Local content components
 import Map from "./content/Map.js";
-import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes";
 
 // FC for MapViewer.
 const MapViewer = ({
@@ -77,14 +74,6 @@ const MapViewer = ({
   const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
     .display_name;
 
-  // Setup year slider components.
-  // TODO make a component so we can reuse it.
-  const Range = Slider.Range;
-  const marks = {};
-  for (let i = Settings.startYear; i <= Settings.endYear; i++) {
-    marks[i] = i;
-  }
-
   const getMapTitle = ({ supportType, entityRole }) => {
     if (supportType === "funds" || supportType === "inkind") {
       if (entityRole === "recipient") {
@@ -128,6 +117,7 @@ const MapViewer = ({
         <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
         {metricHasTransactionType && (
           <RadioToggle
+            label={"Choose"}
             callback={setTransactionType}
             curVal={transactionType}
             choices={[
@@ -143,6 +133,7 @@ const MapViewer = ({
           />
         )}
         <RadioToggle
+          label={"Click to show"}
           callback={setSupportType}
           curVal={supportType}
           choices={[
@@ -174,20 +165,15 @@ const MapViewer = ({
           // TODO: add this tooltip for CC dropdown
           // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
         }
-        <ReactMultiSelectCheckboxes
-          placeholderButtonLabel={"Select core capacities"}
-          options={core_capacities_grouped}
+        <CoreCapacityDropdown
           onChange={vals => {
             setCoreCapacities(vals.map(v => v.value));
           }}
         />
-        <Range
-          className={supportType === "jee" ? styles.hide : ""}
-          min={Settings.startYear}
-          max={Settings.endYear}
-          defaultValue={[Settings.startYear, Settings.endYear]}
-          marks={marks}
-          step={1}
+        <TimeSlider
+          hide={supportType === "jee"}
+          minYearDefault={Settings.startYear}
+          maxYearDefault={Settings.endYear}
           onAfterChange={years => {
             setMinYear(years[0]);
             setMaxYear(years[1]);

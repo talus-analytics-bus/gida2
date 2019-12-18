@@ -6,7 +6,14 @@ import styles from "./radiotoggle.module.scss";
  * TODO implement tooltip
  * @method RadioToggle
  */
-const RadioToggle = ({ choices, curVal, callback, onClick, ...props }) => {
+const RadioToggle = ({
+  choices,
+  curVal,
+  callback,
+  onClick,
+  label,
+  ...props
+}) => {
   /**
    * When radio button changes, set current choice equal to its value.
    * @method onChange
@@ -22,6 +29,7 @@ const RadioToggle = ({ choices, curVal, callback, onClick, ...props }) => {
 
   return (
     <div className={styles.radioToggle}>
+      <div>{label}</div>
       <form>
         {choices.map(c => (
           <span>

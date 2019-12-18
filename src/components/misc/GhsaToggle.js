@@ -9,6 +9,7 @@ import RadioToggle from "./RadioToggle.js";
 const GhsaToggle = ({ ghsaOnly, setGhsaOnly }) => {
   return (
     <RadioToggle
+      label={"Click to show"}
       choices={[
         {
           name: "All funding",
