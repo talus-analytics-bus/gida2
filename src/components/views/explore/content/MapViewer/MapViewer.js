@@ -144,6 +144,16 @@ const MapViewer = ({
   );
 };
 
+const remountComponent = ({ component, props, id, entityRole, ghsaOnly }) => {
+  return (
+    component.props.id !== id ||
+    component.props.entityRole !== entityRole ||
+    component.props.ghsaOnly !== ghsaOnly ||
+    component.props.coreCapacities.toString() !==
+      props.coreCapacities.toString()
+  );
+};
+
 export const renderMapViewer = ({
   component,
   setComponent,
@@ -161,11 +171,13 @@ export const renderMapViewer = ({
   } else if (
     component === null ||
     (component &&
-      (component.props.id !== id ||
-        component.props.entityRole !== entityRole ||
-        component.props.ghsaOnly !== ghsaOnly ||
-        component.props.coreCapacities.toString() !==
-          props.coreCapacities.toString()))
+      remountComponent({
+        component: component,
+        props: props,
+        id: id,
+        entityRole: entityRole,
+        ghsaOnly: ghsaOnly
+      }))
   ) {
     getComponentData({
       setComponent: setComponent,
