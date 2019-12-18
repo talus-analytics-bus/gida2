@@ -5,12 +5,12 @@ import GhsaToggle from "../../../../misc/GhsaToggle.js";
 import RadioToggle from "../../../../misc/RadioToggle.js";
 import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
-import { core_capacities } from "../../../../misc/Data.js";
+import { core_capacities_grouped } from "../../../../misc/Data.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 
 // Local content components
 import Map from "./content/Map.js";
-import { Multiselect } from "react-bootstrap-multiselect";
+import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes";
 
 // FC for MapViewer.
 const MapViewer = ({
@@ -128,7 +128,17 @@ const MapViewer = ({
             }
           ]}
         />
-        <Multiselect data={core_capacities} />
+        <ReactMultiSelectCheckboxes
+          placeholderButtonLabel={"Select core capacities"}
+          options={core_capacities_grouped}
+          onChange={vals => {
+            console.log("setCoreCapacities");
+            console.log(setCoreCapacities);
+            console.log("vals.map(v => v.value)");
+            console.log(vals.map(v => v.value));
+            setCoreCapacities(vals.map(v => v.value));
+          }}
+        />
       </div>
     </div>
   );
@@ -153,7 +163,9 @@ export const renderMapViewer = ({
     (component &&
       (component.props.id !== id ||
         component.props.entityRole !== entityRole ||
-        component.props.ghsaOnly !== ghsaOnly))
+        component.props.ghsaOnly !== ghsaOnly ||
+        component.props.coreCapacities.toString() !==
+          props.coreCapacities.toString()))
   ) {
     getComponentData({
       setComponent: setComponent,
