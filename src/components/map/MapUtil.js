@@ -21,6 +21,16 @@ const purples = [
   "#3c003a"
 ];
 
+const jeeColors = [
+  "#a91726",
+  "#f9a510",
+  "#f9a510",
+  "#f9a510",
+  "#017c47",
+  "#017c47",
+  "#017c47"
+];
+
 /**
  * Given the support type and the data, returns the appropriate D3 map color
  * scale function.
@@ -61,6 +71,11 @@ export const getMapColorScale = ({ supportType, data, flowType }) => {
       domain: values,
       range: purples,
       type: "scaleQuantile"
+    });
+  } else if (supportType === "jee") {
+    return colorScaleMaker({
+      domain: [1.5, 2, 2.5, 3, 3.5, 4, 4.5],
+      range: jeeColors
     });
   } else
     return d3
