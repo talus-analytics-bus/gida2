@@ -13,7 +13,7 @@ export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
   const output = ccsToInclude.map(cc => {
     return {
       value: cc.value,
-      score: 2 // TODO
+      score: 0.5 // TODO
     };
   });
   return output;
