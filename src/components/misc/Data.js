@@ -2,6 +2,109 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Util from "./Util.js";
 
+export const core_capacities = [
+  {
+    id: "P.1",
+    name: "P.1 - National Legislation, Policy, and Financing",
+    cat: "Prevent"
+  },
+  {
+    id: "P.2",
+    name: "P.2 - IHR Coordination, Communicaton and Advocacy",
+    cat: "Prevent"
+  },
+  {
+    id: "P.3",
+    name: "P.3 - Antimicrobial Resistance (AMR)",
+    cat: "Prevent"
+  },
+  {
+    id: "P.4",
+    name: "P.4 - Zoonotic Disease",
+    cat: "Prevent"
+  },
+  {
+    id: "P.5",
+    name: "P.5 - Food Safety",
+    cat: "Prevent"
+  },
+  {
+    id: "P.6",
+    name: "P.6 - Biosafety and Biosecurity",
+    cat: "Prevent"
+  },
+  {
+    id: "P.7",
+    name: "P.7 - Immunization",
+    cat: "Prevent"
+  },
+  {
+    id: "D.1",
+    name: "D.1 - National Laboratory System",
+    cat: "Detect"
+  },
+  {
+    id: "D.2",
+    name: "D.2 - Real Time Surveillance",
+    cat: "Detect"
+  },
+  {
+    id: "D.3",
+    name: "D.3 - Reporting",
+    cat: "Detect"
+  },
+  {
+    id: "D.4",
+    name: "D.4 - Workforce Development",
+    cat: "Detect"
+  },
+  {
+    id: "R.1",
+    name: "R.1 - Preparedness",
+    cat: "Respond"
+  },
+  {
+    id: "R.2",
+    name: "R.2 - Emergency Response Operations",
+    cat: "Respond"
+  },
+  {
+    id: "R.3",
+    name: "R.3 - Linking Public Health and Security Authorities",
+    cat: "Respond"
+  },
+  {
+    id: "R.4",
+    name: "R.4 - Medical Countermeasures and Personnel Deployment",
+    cat: "Respond"
+  },
+  {
+    id: "R.5",
+    name: "R.5 - Risk Communication",
+    cat: "Respond"
+  },
+  {
+    id: "PoE",
+    name: "PoE - Point of Entry (PoE)",
+    cat: "Other"
+  },
+  {
+    id: "CE",
+    name: "CE - Chemical Events",
+    cat: "Other"
+  },
+  {
+    id: "RE",
+    name: "RE - Radiation Emergencies",
+    cat: "Other"
+  },
+  {
+    id: "General IHR",
+    name: "General IHR Implementation",
+    cat: "Other"
+  }
+];
+
 /**
  * Given the parameters, returns a list of links (semicolon-delimited) for the
  * list of nodes. Used mainly in populating table cells.
@@ -261,7 +364,7 @@ export const getWeightsBySummaryAttributeSimple = ({
         outputArr.push({
           attribute: attribute,
           [ft]: v,
-          source: d.source.join("; "),
+          sourcat: d.source.join("; "),
           target: d.target.join("; ")
         });
       }

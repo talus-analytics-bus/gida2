@@ -5,10 +5,12 @@ import GhsaToggle from "../../../../misc/GhsaToggle.js";
 import RadioToggle from "../../../../misc/RadioToggle.js";
 import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
+import { core_capacities } from "../../../../misc/Data.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 
 // Local content components
 import Map from "./content/Map.js";
+import { Multiselect } from "react-bootstrap-multiselect";
 
 // FC for MapViewer.
 const MapViewer = ({
@@ -126,6 +128,7 @@ const MapViewer = ({
             }
           ]}
         />
+        <Multiselect data={core_capacities} />
       </div>
     </div>
   );
