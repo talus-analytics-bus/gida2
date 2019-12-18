@@ -63,13 +63,31 @@ const d3Map = ({
             func: d => d.focus_node_id
           },
           {
-            // TODO special for jee and needs_met
-            title: "Map metric value",
+            title: "Map metric raw value",
+            prop: "value_raw",
+            type: "num",
+            func: d =>
+              getMapMetricValue({
+                d,
+                supportType,
+                flowType,
+                coreCapacities,
+                forTooltip: false
+              })
+          },
+          {
+            title: "Map metric display value",
             prop: "value",
             type: "num",
             render: d => Util.formatValue(d, supportType),
             func: d =>
-              getMapMetricValue({ d, supportType, flowType, coreCapacities })
+              getMapMetricValue({
+                d,
+                supportType,
+                flowType,
+                coreCapacities,
+                forTooltip: true
+              })
           },
           {
             title: "Unknown value explanation (if applicable)",
@@ -102,7 +120,12 @@ const d3Map = ({
                 entityRole
               }),
             func: d =>
-              getMapMetricValue({ d, supportType, flowType, coreCapacities })
+              getMapMetricValue({
+                d,
+                supportType,
+                flowType,
+                coreCapacities
+              })
           },
           {
             title: "Color",

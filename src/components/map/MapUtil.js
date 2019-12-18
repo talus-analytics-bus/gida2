@@ -42,17 +42,30 @@ const blues = [
   "#32649f"
 ].reverse();
 
+/**
+ * Given the support type, datum (d), flow type, and core capacities (if
+ * applicable), returns the metric value that is used for the map.
+ * @method getMapMetricValue
+ * @param  {[type]}          supportType    [description]
+ * @param  {[type]}          d              [description]
+ * @param  {[type]}          flowType       [description]
+ * @param  {[type]}          coreCapacities [description]
+ * @return {[type]}                         [description]
+ */
 export const getMapMetricValue = ({
   supportType,
   d,
   flowType,
-  coreCapacities
+  coreCapacities,
+  forTooltip = false
 }) => {
   if (["funds", "inkind"].includes(supportType)) {
+    // Get assistance flow values
     return d.flow_types[flowType]
       ? d.flow_types[flowType].focus_node_weight
       : undefined;
   } else if (supportType === "jee") {
+    // Get JEE score values.
     const jeeScores = getJeeScores({
       scores: undefined, // TODO
       iso2: undefined, // TODO
@@ -61,7 +74,17 @@ export const getMapMetricValue = ({
     const avgJeeScore = d3.mean(jeeScores, d => d.score);
     return avgJeeScore;
   } else if (supportType === "needs_met") {
-    return 3;
+    // Get "needs met" values
+    if (forTooltip) {
+      return d.flow_types["disbursed_funds"]
+        ? d.flow_types["disbursed_funds"].focus_node_weight
+        : undefined;
+    } else {
+      return calculateNeedsMet({
+        datum: d,
+        avgCapScores: undefined // TODO
+      });
+    }
   }
   return -9999;
 };
@@ -122,9 +145,6 @@ export const getMapColorScale = ({ supportType, data, flowType }) => {
         });
       })
       .filter(d => d !== null && d !== "unknown");
-
-    console.log("values");
-    console.log(values);
 
     return colorScaleMaker({
       domain: values,

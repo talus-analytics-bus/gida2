@@ -766,6 +766,7 @@ Util.formatValue = (val, cn) => {
       case "disbursed_funds":
       case "committed_funds":
       case "funds":
+      case "needs_met":
         return Util.money(val); // TODO units
       default:
         return val;
