@@ -1,18 +1,9 @@
 import React from "react";
 import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom";
-import axios from "axios";
-import Modal from "reactjs-popup";
-import classNames from "classnames";
-import * as d3 from "d3/dist/d3.min";
-import ReactTooltip from "react-tooltip";
-import BrowserDetection from "react-browser-detection";
 
 // layout
 import Nav from "./components/layout/nav/Nav.js";
 import Footer from "./components/layout/footer/Footer.js";
-
-// map
-import Map from "./components/map/Map";
 import Util from "./components/misc/Util.js";
 
 // views
@@ -23,18 +14,10 @@ import { renderEntityTable } from "./components/views/entitytable/EntityTable.js
 // styles
 import styles from "./App.module.scss";
 import "./components/views/details/details.module.scss";
-import infoTooltipStyles from "./components/misc/infotooltip.module.scss";
 import "material-design-icons/iconfont/material-icons.css";
 
 // queries
-import FlowBundleFocusQuery from "./components/misc/FlowBundleFocusQuery.js";
-import FlowQuery from "./components/misc/FlowQuery.js";
 import FlowTypeQuery from "./components/misc/FlowTypeQuery.js";
-
-// charts
-import MiniLine from "./components/views/global/content/MiniLine.js";
-import Scatter from "./components/views/global/content/Scatter.js";
-import PagingBar from "./components/views/global/content/PagingBar.js";
 
 // testing components
 import SimpleTable from "./components/chart/table/SimpleTable.js";

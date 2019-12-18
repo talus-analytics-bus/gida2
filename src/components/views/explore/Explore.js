@@ -89,7 +89,9 @@ const Explore = ({
 
   // Return JSX
   return (
-    <div className={classNames("pageContainer", styles.explore)}>
+    <div
+      className={classNames("pageContainer", styles.explore, { dark: isDark })}
+    >
       <div className={styles.header}>
         <h1>{headerData.header}</h1>
         <span>{headerData.instructions}</span>

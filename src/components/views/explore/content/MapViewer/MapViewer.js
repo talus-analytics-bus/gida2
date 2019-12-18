@@ -19,6 +19,8 @@ const MapViewer = ({
   setGhsaOnly,
   minYear,
   maxYear,
+  coreCapacities,
+  setCoreCapacities,
   ...props
 }) => {
   // Track transaction type selected for the map
@@ -99,6 +101,28 @@ const MapViewer = ({
             {
               name: "Disbursed",
               value: "disbursed"
+            }
+          ]}
+        />
+        <RadioToggle
+          callback={setSupportType}
+          curVal={supportType}
+          choices={[
+            {
+              name: "Financial support",
+              value: "funds"
+            },
+            {
+              name: "In-kind support",
+              value: "inkind"
+            },
+            {
+              name: "JEE score",
+              value: "jee"
+            },
+            {
+              name: "Combined financial resources and need metric",
+              value: "needs_met"
             }
           ]}
         />
