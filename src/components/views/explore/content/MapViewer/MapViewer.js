@@ -28,6 +28,7 @@ const MapViewer = ({
   maxYear,
   coreCapacities,
   setCoreCapacities,
+  flowTypeInfo,
   ...props
 }) => {
   // Track transaction type selected for the map
@@ -69,22 +70,19 @@ const MapViewer = ({
     supportType: supportType
   });
 
-  const Range = Slider.Range;
+  // Get pretty name for flow type
+  const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
+    .display_name;
 
+  // Setup year slider components.
+  // TODO make a component so we can reuse it.
+  const Range = Slider.Range;
   const marks = {};
   for (let i = Settings.startYear; i <= Settings.endYear; i++) {
     marks[i] = i;
   }
 
-  // // Setup slider for year selection (TODO in a component)
-  // const Handle = Slider.Handle
-  //
-  //   const handle = propsHandle => {
-  //     const { value, dragging, index, ...restProps } = propsHandle
-  //     return (
-  //       <Handle data-tip={true} data-for={'sliderTooltip'} {...restProps} />
-  //     )
-  //   }
+  // Get map title and flow type text.
 
   // TODO:
   // map
@@ -95,7 +93,7 @@ const MapViewer = ({
       <div className={styles.header}>
         <div className={styles.labels}>
           <div>Map title placeholder</div>
-          <div>Map flow type placeholder</div>
+          <div>{flowTypeDisplayName}</div>
         </div>
         <div className={styles.toggle}>
           <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
