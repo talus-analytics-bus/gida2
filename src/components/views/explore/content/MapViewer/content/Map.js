@@ -22,10 +22,11 @@ const Map = ({ data, flowType, entityRole, minYear, maxYear, ...props }) => {
     if (val === -8888 || val === "yyy") {
       return <span className={"text-sm"}>Specific amounts not indicated</span>;
     } else {
+      const timeString =
+        minYear === maxYear ? `in ${minYear}` : `from ${minYear} to ${maxYear}`;
       return (
         <span>
-          Total <b>{Util.formatLabel(flowType)}</b> from {minYear} to {maxYear}{" "}
-          ({entityRole})
+          Total <b>{Util.formatLabel(flowType)}</b> {timeString} ({entityRole})
         </span>
       );
     }

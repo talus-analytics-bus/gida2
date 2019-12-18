@@ -7,6 +7,9 @@ import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
 import { core_capacities_grouped } from "../../../../misc/Data.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+import "rc-tooltip/assets/bootstrap.css";
 
 // Local content components
 import Map from "./content/Map.js";
@@ -20,6 +23,8 @@ const MapViewer = ({
   ghsaOnly,
   setGhsaOnly,
   minYear,
+  setMaxYear,
+  setMinYear,
   maxYear,
   coreCapacities,
   setCoreCapacities,
@@ -63,6 +68,23 @@ const MapViewer = ({
     transactionType: transactionType,
     supportType: supportType
   });
+
+  const Range = Slider.Range;
+
+  const marks = {};
+  for (let i = Settings.startYear; i <= Settings.endYear; i++) {
+    marks[i] = i;
+  }
+
+  // // Setup slider for year selection (TODO in a component)
+  // const Handle = Slider.Handle
+  //
+  //   const handle = propsHandle => {
+  //     const { value, dragging, index, ...restProps } = propsHandle
+  //     return (
+  //       <Handle data-tip={true} data-for={'sliderTooltip'} {...restProps} />
+  //     )
+  //   }
 
   // TODO:
   // header with title and funder/recipient toggle
@@ -132,11 +154,18 @@ const MapViewer = ({
           placeholderButtonLabel={"Select core capacities"}
           options={core_capacities_grouped}
           onChange={vals => {
-            console.log("setCoreCapacities");
-            console.log(setCoreCapacities);
-            console.log("vals.map(v => v.value)");
-            console.log(vals.map(v => v.value));
             setCoreCapacities(vals.map(v => v.value));
+          }}
+        />
+        <Range
+          min={Settings.startYear}
+          max={Settings.endYear}
+          defaultValue={[Settings.startYear, Settings.endYear]}
+          marks={marks}
+          step={1}
+          onAfterChange={years => {
+            setMinYear(years[0]);
+            setMaxYear(years[1]);
           }}
         />
       </div>
@@ -144,9 +173,19 @@ const MapViewer = ({
   );
 };
 
-const remountComponent = ({ component, props, id, entityRole, ghsaOnly }) => {
+const remountComponent = ({
+  component,
+  minYear,
+  maxYear,
+  props,
+  id,
+  entityRole,
+  ghsaOnly
+}) => {
   return (
     component.props.id !== id ||
+    component.props.minYear !== minYear ||
+    component.props.maxYear !== maxYear ||
     component.props.entityRole !== entityRole ||
     component.props.ghsaOnly !== ghsaOnly ||
     component.props.coreCapacities.toString() !==
