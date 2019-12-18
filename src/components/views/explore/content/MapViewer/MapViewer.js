@@ -182,6 +182,7 @@ const MapViewer = ({
           }}
         />
         <Range
+          className={supportType === "jee" ? styles.hide : ""}
           min={Settings.startYear}
           max={Settings.endYear}
           defaultValue={[Settings.startYear, Settings.endYear]}
