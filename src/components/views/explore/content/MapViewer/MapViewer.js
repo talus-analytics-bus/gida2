@@ -5,16 +5,56 @@ import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 
+// Local content components
+import Map from "./content/Map.js";
+
 // FC for MapViewer.
-const MapViewer = ({ entityRole, setEntityRole, ...props }) => {
+const MapViewer = ({
+  data,
+  entityRole,
+  setEntityRole,
+  minYear,
+  maxYear,
+  ...props
+}) => {
   // Track transaction type selected for the map
   const [transactionType, setTransactionType] = React.useState("committed");
 
   // Track support type selected for the map
   const [supportType, setSupportType] = React.useState("funds");
 
-  console.log("entityRole");
-  console.log(entityRole);
+  /**
+   * Given the transaction type and the support type, returns the flow type.
+   * @method getFlowTypeFromArgs
+   * @param  {[type]}            transactionType [description]
+   * @param  {[type]}            supportType     [description]
+   * @return {[type]}                            [description]
+   */
+  const getFlowTypeFromArgs = ({ transactionType, supportType }) => {
+    if (transactionType === "disbursed") {
+      switch (supportType) {
+        case "inkind":
+          return "provided_inkind";
+        case "funds":
+        default:
+          return "disbursed_funds";
+      }
+    } else if (transactionType === "committed") {
+      switch (supportType) {
+        case "inkind":
+          return "committed_inkind";
+        case "funds":
+        default:
+          return "committed_funds";
+      }
+    }
+  };
+
+  // Get flow type
+  const flowType = getFlowTypeFromArgs({
+    transactionType: transactionType,
+    supportType: supportType
+  });
 
   // TODO:
   // header with title and funder/recipient toggle
@@ -32,6 +72,15 @@ const MapViewer = ({ entityRole, setEntityRole, ...props }) => {
         <div className={styles.toggle}>
           <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
         </div>
+      </div>
+      <div className={styles.content}>
+        <Map
+          entityRole={entityRole}
+          flowType={flowType}
+          data={data.flowBundlesMap.flow_bundles}
+          minYear={minYear}
+          maxYear={maxYear}
+        />
       </div>
     </div>
   );

@@ -121,13 +121,9 @@ export const getTableRowData = ({
         val: def.func(d),
         type: def.type
       });
-      // row[def.prop] = def.func(d) || noDataVal;
-      // row[def.prop] = def.fmt(def.func(d) || noDataVal);
     });
     if (filterFcn(row)) tableRows.push(row);
   });
-  console.log("tableRows");
-  console.log(tableRows);
   return tableRows;
 };
 
