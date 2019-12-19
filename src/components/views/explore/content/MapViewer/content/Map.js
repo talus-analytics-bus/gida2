@@ -161,6 +161,24 @@ const Map = ({
   // Get data for d3Map
   const mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
 
+  // If a node has been selected, get the info box data for it
+  let infoBoxData = {
+    jeeLabel: undefined,
+    flowValues: undefined
+  };
+  if (nodeData !== undefined) {
+    const nodeMapData = mapData.find(d => d.focus_node_id === nodeData.id);
+    switch (supportType) {
+      case "jee":
+        infoBoxData.jeeLabel = nodeMapData.value;
+        break;
+      default:
+        break;
+    }
+    // If JEE label, then specify
+    // If flow values, then specify
+  }
+
   return (
     <div className={styles.map}>
       <D3Map
@@ -177,7 +195,15 @@ const Map = ({
         }}
       />
       <Legend {...{ colorScale, supportType, flowType }} />
-      <InfoBox {...{ entityRole, supportType, nodeData, setNodeData }} />
+      <InfoBox
+        {...{
+          entityRole,
+          supportType,
+          nodeData,
+          setNodeData,
+          infoBoxData
+        }}
+      />
     </div>
   );
 };

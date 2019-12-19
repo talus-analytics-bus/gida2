@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./infobox.module.scss";
 import classNames from "classnames";
+import Util from "../misc/Util.js";
 
 /**
  * Create the info box to show details about selected map country.
@@ -12,14 +13,13 @@ const InfoBox = ({
   supportType,
   color,
   entityRole = "funder", // For link button to details page
-  jeeLabel = null,
-  flowValues = null, // the value and tooltip text for committment and disburse.
+  infoBoxData = null,
   ...props
 }) => {
   // Track whether info box is visible or not
   const [show, setShow] = React.useState(true);
 
-  const flowValuesKnown = flowValues !== null;
+  const flowValuesKnown = infoBoxData.flowValues !== undefined;
 
   return (
     <div className={classNames(styles.infoBox, { [styles.show]: show })}>
@@ -30,8 +30,10 @@ const InfoBox = ({
         </div>
       </div>
       <div className={styles.content}>
+        {infoBoxData.jeeLabel !== undefined &&
+          Util.getScoreName(infoBoxData.jeeLabel)}
         {flowValuesKnown &&
-          flowValues.map(d => (
+          infoBoxData.flowValues.map(d => (
             <div className={styles.flowValues}>Flow value placeholder</div>
           ))}
         {!flowValuesKnown && (
