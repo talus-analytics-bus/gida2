@@ -4,6 +4,7 @@ import styles from "./map.module.scss";
 // Local content components
 import D3Map from "../../../../../d3map/D3Map.js";
 import Legend from "../../../../../map/Legend.js";
+import InfoBox from "../../../../../map/InfoBox.js";
 import { getMapColorScale } from "../../../../../map/MapUtil.js";
 
 // FC for Map.
@@ -37,6 +38,7 @@ const Map = ({
         coreCapacities={coreCapacities}
       />
       <Legend {...{ colorScale, supportType, flowType }} />
+      <InfoBox />
     </div>
   );
 };
