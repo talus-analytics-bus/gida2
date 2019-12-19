@@ -16,11 +16,12 @@ const InfoBox = ({
   infoBoxData = null,
   ...props
 }) => {
+  console.log("infoBoxData");
+  console.log(infoBoxData);
   // Track whether info box is visible or not
   const [show, setShow] = React.useState(true);
 
-  const flowValuesKnown = infoBoxData.flowValues !== undefined;
-
+  const flowValuesKnown = infoBoxData.unknownValueExplanation === undefined;
   return (
     <div className={classNames(styles.infoBox, { [styles.show]: show })}>
       <div className={styles.header}>
@@ -34,11 +35,15 @@ const InfoBox = ({
           Util.getScoreName(infoBoxData.jeeLabel)}
         {flowValuesKnown &&
           infoBoxData.flowValues.map(d => (
-            <div className={styles.flowValues}>Flow value placeholder</div>
+            <div className={styles.flowValues}>
+              {d.value}
+              <br />
+              {d.label()}
+            </div>
           ))}
         {!flowValuesKnown && (
           <div className={styles.unknownValuesMessage}>
-            <div>Unknown values message placeholder</div>
+            <div>{infoBoxData.unknownValueExplanation}</div>
             <div>Specific amounts not indicated.</div>
           </div>
         )}

@@ -65,7 +65,7 @@ const Map = ({
   );
 
   // Track selected node
-  const [nodeData, setNodeData] = React.useState(getNodeData("Philippines"));
+  const [nodeData, setNodeData] = React.useState(getNodeData("Egypt"));
 
   // Define "columns" for map data.
   const d3MapDataFields = [
@@ -170,9 +170,64 @@ const Map = ({
   };
   if (nodeData !== undefined) {
     const nodeMapData = mapData.find(d => d.focus_node_id === nodeData.id);
+    const d = data.find(d => d.focus_node_id === nodeData.id);
+
+    // If unknown value applies, get the message for it.
+    infoBoxData.unknownValueExplanation = getUnknownValueExplanation({
+      datum: d,
+      value: getMapMetricValue({
+        d,
+        supportType: supportType === "jee" ? "funds" : supportType,
+        flowType,
+        coreCapacities
+      }),
+      entityRole: entityRole
+    });
+    const getFlowValues = (supportTypeForValues = "funds") => {
+      const flows =
+        supportTypeForValues === "funds"
+          ? ["committed_funds", "disbursed_funds"]
+          : ["committed_inkind", "provided_inkind"];
+      return flows.map(f => {
+        console.log("d");
+        console.log(d);
+        return {
+          value: Util.formatValue(
+            getMapMetricValue({
+              d,
+              supportType: supportTypeForValues,
+              flowType: f,
+              coreCapacities
+            }) || 0,
+            f
+          ),
+          label() {
+            return getMapTooltipLabel({
+              val: this.value,
+              supportType: supportTypeForValues,
+              flowType: f,
+              minYear,
+              maxYear,
+              entityRole
+            });
+          }
+        };
+      });
+    };
+
+    // Get other data for info box depending on the support type.
     switch (supportType) {
+      case "funds":
+        infoBoxData.flowValues = getFlowValues();
+        break;
+
+      case "inkind":
+        infoBoxData.flowValues = getFlowValues("inkind");
+        break;
+
       case "jee":
         infoBoxData.jeeLabel = nodeMapData.value;
+        infoBoxData.flowValues = getFlowValues();
         break;
       case "needs_met":
         // Get JEE score (avg) to display.
@@ -183,6 +238,8 @@ const Map = ({
         });
         const avgJeeScore = d3.mean(jeeScores, d => d.score);
         infoBoxData.jeeLabel = avgJeeScore;
+        infoBoxData.flowValues = getFlowValues("funds");
+        break;
 
       default:
         break;

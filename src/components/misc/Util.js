@@ -780,6 +780,11 @@ Util.formatValue = (val, cn, units = true) => {
       case "funds":
       case "needs_met":
         return Util.money(val, units); // TODO units
+      case "provided_inkind":
+      case "committed_inkind":
+      case "inkind":
+        if (val === "unknown") return "Specific amount not reported";
+        return val || 0;
       default:
         return val;
     }

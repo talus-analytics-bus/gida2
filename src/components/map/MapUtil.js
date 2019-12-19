@@ -2,7 +2,6 @@ import React from "react";
 import Util from "../misc/Util.js";
 import * as d3 from "d3/dist/d3.min";
 import { calculateNeedsMet, getJeeScores } from "../misc/Data.js";
-import styles from "./maputil.module.scss";
 const greens = [
   "#eaeff1",
   "#99c2ae",
@@ -226,5 +225,5 @@ export const getUnknownValueExplanation = ({ datum, value, entityRole }) => {
         projects
       </span>
     );
-  } else return "";
+  } else return undefined;
 };
