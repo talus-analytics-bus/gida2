@@ -320,8 +320,6 @@ const Map = ({
       default:
         break;
     }
-    // If JEE label, then specify
-    // If flow values, then specify
   }
 
   return (
