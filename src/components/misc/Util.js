@@ -743,18 +743,29 @@ Util.formatLabel = ft => {
 };
 
 Util.getScoreName = score => {
-  if (score < 1.5) {
+  if (score < 2) {
     return "No Capacity";
-  } else if (score < 2.5) {
+  } else if (score < 3) {
     return "Limited Capacity";
-  } else if (score < 3.5) {
+  } else if (score < 4) {
     return "Developed Capacity";
-  } else if (score < 4.5) return "Demonstrated Capacity";
+  } else if (score < 5) return "Demonstrated Capacity";
   return "Sustained Capacity";
 };
 
+Util.getScoreShortName = score => {
+  if (score < 2) {
+    return "None";
+  } else if (score < 3) {
+    return "Limited";
+  } else if (score < 4) {
+    return "Developed";
+  } else if (score < 5) return "Demonstrated";
+  return "Sustained";
+};
+
 // Formats value based on column name
-Util.formatValue = (val, cn) => {
+Util.formatValue = (val, cn, units = true) => {
   if (val === -9999 || val === "zzz") return "";
   if (val === -8888 || val === "yyy") return "Specific amount not reported";
   if (val === "n/a") return val;
@@ -762,12 +773,13 @@ Util.formatValue = (val, cn) => {
   else {
     switch (cn) {
       case "jee":
-        return Util.getScoreName(val);
+        if (typeof val === "string") return val;
+        else return Util.getScoreName(val);
       case "disbursed_funds":
       case "committed_funds":
       case "funds":
       case "needs_met":
-        return Util.money(val); // TODO units
+        return Util.money(val, units); // TODO units
       default:
         return val;
     }
@@ -775,11 +787,11 @@ Util.formatValue = (val, cn) => {
 };
 
 // Format money as comma number with USD suffix
-Util.money = val => {
+Util.money = (val, units = true) => {
   if (val === "unknown") return "Specific amount not reported";
-  else if (val === 0) return "0 USD";
+  else if (val === 0) return "0" + (units ? " USD" : "");
   else {
-    return `${Util.formatSI(val)} USD`; // TODO units
+    return `${Util.formatSI(val)}${units ? " USD" : ""}`; // TODO units
   }
 };
 

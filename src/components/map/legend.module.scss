@@ -1,2 +1,70 @@
 .legend {
+  .entries {
+    display: flex;
+    flex-flow: row;
+    .entry {
+      $rect-height: 15px;
+      $rect-width: $rect-height * 4;
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      align-items: center;
+
+      &.scaleOrdinal {
+        margin-bottom: $rect-height;
+        .bucket {
+          margin: 0 20px;
+          align-items: center;
+          .label {
+            left: unset;
+            margin-top: $rect-height;
+            position: absolute;
+          }
+        }
+      }
+
+      &.binary {
+        .bucket:first-child {
+          .label {
+            text-align: left;
+            left: unset;
+          }
+        }
+        .bucket:last-child {
+          .label {
+            text-align: right;
+            left: unset;
+          }
+        }
+      }
+
+      .bucket {
+        width: auto;
+        display: flex;
+        flex-flow: column;
+        position: relative;
+
+        &.init {
+          .rect {
+            width: 0;
+          }
+          .label {
+            left: 50%;
+          }
+        }
+
+        .rect {
+          width: $rect-width;
+          height: $rect-height;
+        }
+        .label {
+          // line-height: 1.2;
+          text-align: center;
+          position: relative;
+          left: $rect-width / 2;
+          // left: 0;
+        }
+      }
+    }
+  }
 }

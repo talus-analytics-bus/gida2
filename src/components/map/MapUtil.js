@@ -2,7 +2,9 @@ import React from "react";
 import Util from "../misc/Util.js";
 import * as d3 from "d3/dist/d3.min";
 import { calculateNeedsMet, getJeeScores } from "../misc/Data.js";
-
+import styles from "./maputil.module.scss";
+console.log("styles");
+console.log(styles);
 const greens = [
   "#eaeff1",
   "#99c2ae",
@@ -22,15 +24,7 @@ const purples = [
   "#3c003a"
 ];
 
-const jeeColors = [
-  "#a91726",
-  "#f9a510",
-  "#f9a510",
-  "#f9a510",
-  "#017c47",
-  "#017c47",
-  "#017c47"
-];
+const jeeColors = ["#ac1329", "#ecb97e", "#d28831", "#00995e", "#006840"];
 
 const blues = [
   "#e0eed8",
@@ -102,16 +96,32 @@ export const getMapColorScale = ({ supportType, data, flowType }) => {
       .domain(domain)
       .range(range);
 
-    return v => {
+    const colorScale = v => {
       const noData = v === "zzz" || v === -9999;
       const unknownVal = v === "yyy" || v === -8888;
       if (noData) return "#cccccc";
       else if (unknownVal) return "#cccccc";
       else {
-        // const valueFunc = supportType === 'needs_met' ? ’’;
-        return baseScale(v);
+        if (supportType === "jee") {
+          console.log("Util.getScoreShortName(v)");
+          console.log(Util.getScoreShortName(v));
+          console.log("baseScale(Util.getScoreShortName(v))");
+          console.log(baseScale(Util.getScoreShortName(v)));
+          console.log("v");
+          console.log(v);
+          return baseScale(v);
+          // return baseScale(Util.getScoreShortName(v));
+        } else return baseScale(v);
       }
     };
+
+    // Define d3 variables that are needed (not real versions!)
+    colorScale.type = type;
+    colorScale.values =
+      type === "scaleQuantile" ? baseScale.quantiles() : baseScale.domain();
+    colorScale.domain = () => baseScale.domain();
+    colorScale.range = () => baseScale.range();
+    return colorScale;
   };
 
   if (supportType === "inkind") {
@@ -153,8 +163,9 @@ export const getMapColorScale = ({ supportType, data, flowType }) => {
     });
   } else if (supportType === "jee") {
     return colorScaleMaker({
-      domain: [1.5, 2, 2.5, 3, 3.5, 4, 4.5],
-      range: jeeColors
+      domain: ["None", "Limited", "Developed", "Demonstrated", "Sustained"],
+      range: jeeColors,
+      type: "scaleOrdinal"
     });
   } else
     return d3
