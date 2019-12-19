@@ -1,3 +1,24 @@
 @import "../../assets/styles/colors.scss";
 .infoBox {
+  display: none;
+  flex-flow: column;
+  border: 1px solid #666666;
+  &.show {
+    display: flex;
+  }
+  .header {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: gray;
+  }
+  .content {
+    display: flex;
+    flex-flow: column;
+    a {
+      position: relative;
+      margin-left: auto;
+    }
+  }
 }
