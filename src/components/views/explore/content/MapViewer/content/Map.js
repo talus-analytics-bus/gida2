@@ -167,7 +167,10 @@ const Map = ({
 
   // Get data for d3Map
   const mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
-  const d = data.find(d => d.focus_node_id === nodeData.id);
+  const d =
+    nodeData !== undefined
+      ? data.find(d => d.focus_node_id === nodeData.id)
+      : undefined;
 
   const getFlowValues = ({
     supportTypeForValues = "funds",

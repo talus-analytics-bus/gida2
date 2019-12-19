@@ -11,6 +11,7 @@ import * as d3 from "d3/dist/d3.min";
  */
 const InfoBox = ({
   nodeData,
+  setNodeData,
   supportType,
   color,
   colorIdx,
@@ -30,45 +31,54 @@ const InfoBox = ({
     supportType === "jee"
       ? infoBoxData.colorScale(Util.getScoreShortName(infoBoxData.jeeLabel))
       : infoBoxData.colorScale(infoBoxData.colorValue);
-
-  return (
-    <div className={classNames(styles.infoBox, { [styles.show]: show })}>
-      <div
-        style={{
-          backgroundColor: headerColor
-        }}
-        className={classNames(styles.header, {
-          [styles.darkFont]: Util.isLightColor(headerColor)
-        })}
-      >
-        <div className={styles.name}>{nodeData.name}</div>
-        <div className={styles.close}>
-          <button onClick={() => setShow(false)}>Close</button>
+  if (nodeData === undefined) return "";
+  // TODO slide up somehow
+  else
+    return (
+      <div className={classNames(styles.infoBox, { [styles.show]: show })}>
+        <div
+          style={{
+            backgroundColor: headerColor
+          }}
+          className={classNames(styles.header, {
+            [styles.darkFont]: Util.isLightColor(headerColor)
+          })}
+        >
+          <div className={styles.name}>{nodeData.name}</div>
+          <div className={styles.close}>
+            <button
+              onClick={() => {
+                setShow(false);
+                setNodeData(undefined);
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+        <div className={styles.content}>
+          {infoBoxData.jeeLabel !== undefined &&
+            Util.getScoreName(infoBoxData.jeeLabel)}
+          {flowValuesKnown &&
+            infoBoxData.flowValues.map(d => (
+              <div className={styles.flowValues}>
+                {d.value}
+                <br />
+                {d.label()}
+              </div>
+            ))}
+          {!flowValuesKnown && (
+            <div className={styles.unknownValuesMessage}>
+              <div>{infoBoxData.unknownValueExplanation}</div>
+              <div>Specific amounts not indicated.</div>
+            </div>
+          )}
+          <Link to={`/details/${nodeData.id}/${entityRole}`}>
+            <button>View funding details</button>
+          </Link>
         </div>
       </div>
-      <div className={styles.content}>
-        {infoBoxData.jeeLabel !== undefined &&
-          Util.getScoreName(infoBoxData.jeeLabel)}
-        {flowValuesKnown &&
-          infoBoxData.flowValues.map(d => (
-            <div className={styles.flowValues}>
-              {d.value}
-              <br />
-              {d.label()}
-            </div>
-          ))}
-        {!flowValuesKnown && (
-          <div className={styles.unknownValuesMessage}>
-            <div>{infoBoxData.unknownValueExplanation}</div>
-            <div>Specific amounts not indicated.</div>
-          </div>
-        )}
-        <Link to={`/details/${nodeData.id}/${entityRole}`}>
-          <button>View funding details</button>
-        </Link>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default InfoBox;

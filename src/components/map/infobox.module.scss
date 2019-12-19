@@ -12,7 +12,9 @@
     justify-content: space-between;
     align-items: center;
     background-color: gray;
-
+    div {
+      color: white;
+    }
     &.darkFont div {
       color: black !important;
     }
