@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./map.module.scss";
 import classNames from "classnames";
+import * as d3 from "d3/dist/d3.min";
 
 // Local content components
 import D3Map from "../../../../../d3map/D3Map.js";
@@ -14,6 +15,7 @@ import {
 } from "../../../../../map/MapUtil.js";
 import { getNodeData, getTableRowData } from "../../../../../misc/Data.js";
 import Util from "../../../../../misc/Util.js";
+import { getJeeScores } from "../../../../../misc/Data.js";
 
 // FC for Map.
 const Map = ({
@@ -172,6 +174,16 @@ const Map = ({
       case "jee":
         infoBoxData.jeeLabel = nodeMapData.value;
         break;
+      case "needs_met":
+        // Get JEE score (avg) to display.
+        const jeeScores = getJeeScores({
+          scores: undefined, // TODO
+          iso2: undefined, // TODO
+          coreCapacities
+        });
+        const avgJeeScore = d3.mean(jeeScores, d => d.score);
+        infoBoxData.jeeLabel = avgJeeScore;
+
       default:
         break;
     }
