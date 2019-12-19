@@ -1,4 +1,11 @@
 .legend {
+  .content {
+    display: none;
+    flex-flow: column;
+    &.show {
+      display: flex;
+    }
+  }
   .entries {
     display: flex;
     flex-flow: row;
