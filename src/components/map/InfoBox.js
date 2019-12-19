@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./infobox.module.scss";
 import classNames from "classnames";
 import Util from "../misc/Util.js";
-import * as d3 from "d3/dist/d3.min";
+// import * as d3 from "d3/dist/d3.min";
 
 /**
  * Create the info box to show details about selected map country.
@@ -29,7 +29,9 @@ const InfoBox = ({
   // Define header color
   const headerColor =
     supportType === "jee"
-      ? infoBoxData.colorScale(Util.getScoreShortName(infoBoxData.jeeLabel))
+      ? infoBoxData.colorScale(
+          Util.getScoreShortName(infoBoxData.jeeScoreOfNode)
+        )
       : infoBoxData.colorScale(infoBoxData.colorValue);
   if (nodeData === undefined) return "";
   // TODO slide up somehow
@@ -57,8 +59,8 @@ const InfoBox = ({
           </div>
         </div>
         <div className={styles.content}>
-          {infoBoxData.jeeLabel !== undefined &&
-            Util.getScoreName(infoBoxData.jeeLabel)}
+          {infoBoxData.jeeScoreOfNode !== undefined &&
+            Util.getScoreName(infoBoxData.jeeScoreOfNode)}
           {flowValuesKnown &&
             infoBoxData.flowValues.map(d => (
               <div className={styles.flowValues}>
