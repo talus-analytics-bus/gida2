@@ -148,7 +148,12 @@ const Map = ({
       render: d => (
         <svg width="20" height="20">
           <rect
-            style={{ fill: colorScale(d) }}
+            style={{
+              fill:
+                supportType === "jee"
+                  ? colorScale(Util.getScoreShortName(d))
+                  : colorScale(d)
+            }}
             className={classNames(styles.square, {
               [styles.hatch]: d === "yyy" || d === -8888
             })}
@@ -162,40 +167,82 @@ const Map = ({
 
   // Get data for d3Map
   const mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
+  const d = data.find(d => d.focus_node_id === nodeData.id);
 
+  const getFlowValues = ({
+    supportTypeForValues = "funds",
+    valueOverride = undefined
+  }) => {
+    const flows =
+      supportTypeForValues === "funds"
+        ? ["committed_funds", "disbursed_funds"]
+        : ["committed_inkind", "provided_inkind"];
+
+    if (d === undefined) {
+      return flows.map(f => {
+        return {
+          value: Util.formatValue(0, f),
+          label() {
+            return getMapTooltipLabel({
+              val: this.value,
+              supportType: supportTypeForValues,
+              flowType: f,
+              minYear,
+              maxYear,
+              entityRole
+            });
+          }
+        };
+      });
+    }
+
+    return flows.map(f => {
+      return {
+        value: Util.formatValue(
+          getMapMetricValue({
+            d,
+            supportType: supportTypeForValues,
+            flowType: f,
+            coreCapacities
+          }) || 0,
+          f
+        ),
+        label() {
+          return getMapTooltipLabel({
+            val: this.value,
+            supportType: supportTypeForValues,
+            flowType: f,
+            minYear,
+            maxYear,
+            entityRole
+          });
+        }
+      };
+    });
+  };
   // If a node has been selected, get the info box data for it
+  let jeeLabel;
+  if (
+    nodeData !== undefined &&
+    (supportType === "jee" || supportType === "needs_met")
+  ) {
+    // Get JEE score (avg) to display.
+    const jeeScores = getJeeScores({
+      scores: undefined, // TODO
+      iso2: undefined, // TODO
+      coreCapacities
+    });
+
+    const avgJeeScore = d3.mean(jeeScores, d => d.score);
+    jeeLabel = avgJeeScore;
+  }
+
   let infoBoxData = {
-    jeeLabel: undefined,
-    flowValues: [
-      {
-        value: 0,
-        label() {
-          return getMapTooltipLabel({
-            val: this.value,
-            supportType: supportType !== "inkind" ? "funds" : "inkind",
-            flowType:
-              supportType !== "inkind" ? "committed_funds" : "committed_inkind",
-            minYear,
-            maxYear,
-            entityRole
-          });
-        }
-      },
-      {
-        value: 0,
-        label() {
-          return getMapTooltipLabel({
-            val: this.value,
-            supportType: supportType !== "inkind" ? "funds" : "inkind",
-            flowType:
-              supportType !== "inkind" ? "disbursed_funds" : "provided_inkind",
-            minYear,
-            maxYear,
-            entityRole
-          });
-        }
-      }
-    ],
+    jeeLabel: jeeLabel,
+    flowValues: getFlowValues({
+      supportTypeForValues: "funds",
+      valueOverride: 0
+    }),
     colorScale: colorScale
   };
   const nodeMapData =
@@ -203,8 +250,7 @@ const Map = ({
       ? mapData.find(d => d.focus_node_id === nodeData.id)
       : undefined;
 
-  if (nodeMapData !== undefined) {
-    const d = data.find(d => d.focus_node_id === nodeData.id);
+  if (nodeMapData !== undefined && d !== undefined) {
     infoBoxData.colorValue = nodeMapData.value_raw;
 
     // If unknown value applies, get the message for it.
@@ -218,60 +264,28 @@ const Map = ({
       }),
       entityRole: entityRole
     });
-    const getFlowValues = (supportTypeForValues = "funds") => {
-      const flows =
-        supportTypeForValues === "funds"
-          ? ["committed_funds", "disbursed_funds"]
-          : ["committed_inkind", "provided_inkind"];
-      return flows.map(f => {
-        return {
-          value: Util.formatValue(
-            getMapMetricValue({
-              d,
-              supportType: supportTypeForValues,
-              flowType: f,
-              coreCapacities
-            }) || 0,
-            f
-          ),
-          label() {
-            return getMapTooltipLabel({
-              val: this.value,
-              supportType: supportTypeForValues,
-              flowType: f,
-              minYear,
-              maxYear,
-              entityRole
-            });
-          }
-        };
-      });
-    };
 
     // Get other data for info box depending on the support type.
     switch (supportType) {
       case "funds":
-        infoBoxData.flowValues = getFlowValues();
+        infoBoxData.flowValues = getFlowValues({
+          supportTypeForValues: "funds"
+        });
         break;
 
       case "inkind":
-        infoBoxData.flowValues = getFlowValues("inkind");
+        infoBoxData.flowValues = getFlowValues({
+          supportTypeForValues: "inkind"
+        });
         break;
 
       case "jee":
         infoBoxData.jeeLabel = nodeMapData.value;
-        infoBoxData.flowValues = getFlowValues();
+        infoBoxData.flowValues = getFlowValues({
+          supportTypeForValues: "funds"
+        });
         break;
       case "needs_met":
-        // Get JEE score (avg) to display.
-        const jeeScores = getJeeScores({
-          scores: undefined, // TODO
-          iso2: undefined, // TODO
-          coreCapacities
-        });
-
-        const avgJeeScore = d3.mean(jeeScores, d => d.score);
-        infoBoxData.jeeLabel = avgJeeScore;
         infoBoxData.flowValues = getFlowValues("funds");
         break;
 

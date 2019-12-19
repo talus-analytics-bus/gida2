@@ -18,6 +18,8 @@ const InfoBox = ({
   infoBoxData = null,
   ...props
 }) => {
+  console.log("infoBoxData");
+  console.log(infoBoxData);
   // Track whether info box is visible or not
   const [show, setShow] = React.useState(true);
 
@@ -26,7 +28,10 @@ const InfoBox = ({
     infoBoxData.flowValues !== undefined;
 
   // Define header color
-  const headerColor = infoBoxData.colorScale(infoBoxData.colorValue);
+  const headerColor =
+    supportType === "jee"
+      ? infoBoxData.colorScale(Util.getScoreShortName(infoBoxData.jeeLabel))
+      : infoBoxData.colorScale(infoBoxData.colorValue);
 
   return (
     <div className={classNames(styles.infoBox, { [styles.show]: show })}>

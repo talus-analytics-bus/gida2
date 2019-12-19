@@ -100,14 +100,7 @@ export const getMapColorScale = ({ supportType, data, flowType }) => {
       else if (unknownVal) return "#cccccc";
       else {
         if (supportType === "jee") {
-          console.log("Util.getScoreShortName(v)");
-          console.log(Util.getScoreShortName(v));
-          console.log("baseScale(Util.getScoreShortName(v))");
-          console.log(baseScale(Util.getScoreShortName(v)));
-          console.log("v");
-          console.log(v);
           return baseScale(v);
-          // return baseScale(Util.getScoreShortName(v));
         } else return baseScale(v);
       }
     };
