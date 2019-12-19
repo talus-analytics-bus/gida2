@@ -13,6 +13,7 @@ const TableInstance = ({
   tableColumns,
   tableData,
   sortByProp,
+  useRowDataAsIs,
   filterFcn = d => true,
   ...props
 }) => {
@@ -33,11 +34,15 @@ const TableInstance = ({
       <div className={classNames("tableInstance", "noPaging")}>
         <DataTable
           columns={tableColumns}
-          initialData={getTableRowData({
-            tableRowDefs: tableColumns,
-            data: tableData,
-            filterFcn: filterFcn
-          })}
+          initialData={
+            useRowDataAsIs
+              ? tableData
+              : getTableRowData({
+                  tableRowDefs: tableColumns,
+                  data: tableData,
+                  filterFcn: filterFcn
+                })
+          }
           initialPageLength={props.initialPageLength || 1e6}
           paging={props.paging || false}
           pageLengthOptions={[5, 20, 50]}

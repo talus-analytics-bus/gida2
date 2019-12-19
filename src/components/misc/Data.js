@@ -293,6 +293,10 @@ export const getTableRowData = ({
   data,
   filterFcn = d => true
 }) => {
+  console.log("tableRowDefs");
+  console.log(tableRowDefs);
+  console.log("data");
+  console.log(data);
   const tableRows = [];
   data.forEach(d => {
     const row = {};
@@ -309,6 +313,8 @@ export const getTableRowData = ({
     });
     if (filterFcn(row)) tableRows.push(row);
   });
+  console.log("tableRows");
+  console.log(tableRows);
   return tableRows;
 };
 

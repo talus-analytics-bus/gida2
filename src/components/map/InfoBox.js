@@ -2,14 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import styles from "./infobox.module.scss";
 import classNames from "classnames";
-import Util from "../misc/Util.js";
 
 /**
  * Create the info box to show details about selected map country.
  * @method InfoBox
  */
 const InfoBox = ({
-  nodeData = { id: "Smithsonian Institution", name: "Undefined name" },
+  nodeData,
   supportType,
   color,
   entityRole = "funder", // For link button to details page
