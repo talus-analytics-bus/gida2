@@ -35,17 +35,39 @@ const getLegendTitle = ({ supportType, flowType }) => {
   }
 };
 
+/**
+ * Create the main legend buckets based on the type of support that is being
+ * plotted on the map. Note that the "unspecified" legend entry is created
+ * separately.
+ * @method getMainLegendBuckets
+ * @param  {[type]}             colorScale  [description]
+ * @param  {[type]}             supportType [description]
+ * @return {[type]}                         [description]
+ */
 const getMainLegendBuckets = ({ colorScale, supportType }) => {
   // TODO setup so if fewer quantiles than colors in range, only use the ones
   // that make sense (otherwise you get repeated bucket labels).
+
+  // Show units like USD in value label?
   const units = false;
+
+  // Get colors of legend rectangles based on color scale.
   const colors = colorScale.range();
+
+  // Is the "needs met" metric the one being plotted? Its legend is a little
+  // special.
   const needsMetMetric = supportType === "needs_met";
+
+  // Define JSX for value labels that are invisible which are used as spacers
+  // in binary legends like the "needs met" legend.
   const legendSpacer = (
     <span style={{ color: "transparent" }}>
       .<br />.
     </span>
   );
+
+  // Get the legend values that label each color rectangle in the legend
+  // entry's "buckets" (one rectangle and one label per bucket).
   const legendVals = needsMetMetric
     ? [
         <span>
@@ -64,6 +86,8 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
         </span>
       ]
     : colorScale.values;
+
+  // Get the buckets (rectangles and labels) for this legend entry.
   const buckets = legendVals.map((d, i) => (
     <div className={styles.bucket}>
       <div style={{ backgroundColor: colors[i] }} className={styles.rect} />
@@ -73,6 +97,9 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
       </div>
     </div>
   ));
+
+  // If an initial value (usually zero) needs to be appended to the far left
+  // side of the first rectangle, add it. This only applies to quantile scales.
   const initLabelVal =
     colorScale.type === "scaleOrdinal" || needsMetMetric ? undefined : 0;
   const initLabel = initLabelVal !== undefined && (
@@ -84,6 +111,7 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
     </div>
   );
 
+  // Return the full set of legend entry buckets.
   return (
     <div
       className={classNames(styles.entry, styles[colorScale.type], {
@@ -95,6 +123,14 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
     </div>
   );
 };
+
+/**
+ * Create the legend for the map
+ * @method Legend
+ * @param  {[type]} colorScale  [description]
+ * @param  {[type]} supportType [description]
+ * @param  {[type]} flowType    [description]
+ */
 const Legend = ({ colorScale, supportType, flowType }) => {
   return (
     <div className={styles.legend}>

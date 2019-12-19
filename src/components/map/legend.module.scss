@@ -24,6 +24,10 @@
       }
 
       &.binary {
+        line-height: 1.2;
+        .label {
+          margin-top: 2px;
+        }
         .bucket:first-child {
           .label {
             text-align: left;
