@@ -2,7 +2,7 @@ import React from "react";
 import Util from "../misc/Util.js";
 import * as d3 from "d3/dist/d3.min";
 import { calculateNeedsMet, getJeeScores } from "../misc/Data.js";
-const greens = [
+export const greens = [
   "#eaeff1",
   "#99c2ae",
   "#569778",
@@ -11,7 +11,7 @@ const greens = [
   "#045f32"
 ];
 
-const purples = [
+export const purples = [
   "#bfd3e6",
   "#88aac3",
   "#757fb6",
@@ -23,7 +23,7 @@ const purples = [
 
 const jeeColors = ["#ac1329", "#ecb97e", "#d28831", "#00995e", "#006840"];
 
-const blues = [
+export const blues = [
   "#e0eed8",
   "#d0e4c3",
   "#a3cfca",

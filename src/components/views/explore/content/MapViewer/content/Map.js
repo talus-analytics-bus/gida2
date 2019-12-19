@@ -65,7 +65,7 @@ const Map = ({
   );
 
   // Track selected node
-  const [nodeData, setNodeData] = React.useState(getNodeData("Egypt"));
+  const [nodeData, setNodeData] = React.useState(getNodeData("Philippines"));
 
   // Define "columns" for map data.
   const d3MapDataFields = [
@@ -166,11 +166,46 @@ const Map = ({
   // If a node has been selected, get the info box data for it
   let infoBoxData = {
     jeeLabel: undefined,
-    flowValues: undefined
+    flowValues: [
+      {
+        value: 0,
+        label() {
+          return getMapTooltipLabel({
+            val: this.value,
+            supportType: supportType !== "inkind" ? "funds" : "inkind",
+            flowType:
+              supportType !== "inkind" ? "committed_funds" : "committed_inkind",
+            minYear,
+            maxYear,
+            entityRole
+          });
+        }
+      },
+      {
+        value: 0,
+        label() {
+          return getMapTooltipLabel({
+            val: this.value,
+            supportType: supportType !== "inkind" ? "funds" : "inkind",
+            flowType:
+              supportType !== "inkind" ? "disbursed_funds" : "provided_inkind",
+            minYear,
+            maxYear,
+            entityRole
+          });
+        }
+      }
+    ],
+    colorScale: colorScale
   };
-  if (nodeData !== undefined) {
-    const nodeMapData = mapData.find(d => d.focus_node_id === nodeData.id);
+  const nodeMapData =
+    nodeData !== undefined
+      ? mapData.find(d => d.focus_node_id === nodeData.id)
+      : undefined;
+
+  if (nodeMapData !== undefined) {
     const d = data.find(d => d.focus_node_id === nodeData.id);
+    infoBoxData.colorValue = nodeMapData.value_raw;
 
     // If unknown value applies, get the message for it.
     infoBoxData.unknownValueExplanation = getUnknownValueExplanation({
@@ -189,8 +224,6 @@ const Map = ({
           ? ["committed_funds", "disbursed_funds"]
           : ["committed_inkind", "provided_inkind"];
       return flows.map(f => {
-        console.log("d");
-        console.log(d);
         return {
           value: Util.formatValue(
             getMapMetricValue({
@@ -236,6 +269,7 @@ const Map = ({
           iso2: undefined, // TODO
           coreCapacities
         });
+
         const avgJeeScore = d3.mean(jeeScores, d => d.score);
         infoBoxData.jeeLabel = avgJeeScore;
         infoBoxData.flowValues = getFlowValues("funds");

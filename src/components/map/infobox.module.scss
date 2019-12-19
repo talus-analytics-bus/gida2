@@ -12,6 +12,10 @@
     justify-content: space-between;
     align-items: center;
     background-color: gray;
+
+    &.darkFont div {
+      color: black !important;
+    }
   }
   .content {
     display: flex;
