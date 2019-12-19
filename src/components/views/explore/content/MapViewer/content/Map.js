@@ -66,7 +66,7 @@ const Map = ({
 
   // Track selected node (i.e., the clicked country whose info box is also
   // visible).
-  const [nodeData, setNodeData] = React.useState(getNodeData("Philippines"));
+  const [nodeData, setNodeData] = React.useState(getNodeData("Egypt"));
 
   // Define "columns" for map data.
   const d3MapDataFields = [

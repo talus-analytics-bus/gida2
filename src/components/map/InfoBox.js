@@ -6,7 +6,7 @@ import Util from "../misc/Util.js";
 // import * as d3 from "d3/dist/d3.min";
 
 /**
- * Create the info box to show details about selected map country.
+ * Create the info box to show details about selected map country (node).
  * @method InfoBox
  */
 const InfoBox = ({
@@ -22,11 +22,14 @@ const InfoBox = ({
   // Track whether info box is visible or not
   const [show, setShow] = React.useState(true);
 
+  // Define whether the flow values are known or not (defined or not).
+  // If they're not defined, will display a message explaining.
   const flowValuesKnown =
     infoBoxData.unknownValueExplanation === undefined &&
     infoBoxData.flowValues !== undefined;
 
-  // Define header color
+  // Define header color -- use JEE color if JEE is view, otherwise use
+  // color scale of selected metric.
   const headerColor =
     supportType === "jee"
       ? infoBoxData.colorScale(
