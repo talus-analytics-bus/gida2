@@ -18,8 +18,6 @@ const InfoBox = ({
   infoBoxData = null,
   ...props
 }) => {
-  console.log("infoBoxData");
-  console.log(infoBoxData);
   // Track whether info box is visible or not
   const [show, setShow] = React.useState(true);
 
