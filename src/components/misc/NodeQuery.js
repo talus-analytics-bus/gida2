@@ -10,7 +10,7 @@ import { getNodeData } from "./Data.js";
 const NodeQuery = async function({ node_id }) {
   // Define URL parameters //
   const params = {
-    node_id: node_id
+    id: parseInt(node_id)
   };
 
   // Define URL params
@@ -19,7 +19,8 @@ const NodeQuery = async function({ node_id }) {
   };
 
   // Placeholder: Return data
-  return getNodeData(node_id);
+  const res = await axios.get(`${Util.API_URL}/place`, config);
+  return res.data;
 
   // // Send request
   // // Await response

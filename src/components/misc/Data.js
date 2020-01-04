@@ -448,12 +448,13 @@ export const getWeightsBySummaryAttributeSimple = ({
       for (let [kTmp, v] of Object.entries(summaries[field])) {
         // Format key
         const attribute = format(kTmp);
-
+        console.log('d')
+        console.log(d)
         outputArr.push({
           attribute: attribute,
           [ft]: v,
-          sourcat: d.source.join("; "),
-          target: d.target.join("; ")
+          source: d.source.map(dd => dd.name).join("; "),
+          target: d.target.map(dd => dd.name).join("; ")
         });
       }
     });

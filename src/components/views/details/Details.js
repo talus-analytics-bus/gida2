@@ -43,9 +43,7 @@ const Details = ({
 
   // Get page type from id
   let pageType;
-  if (id.toLowerCase() === "ghsa") pageType = "ghsa";
-  else if (id.toLowerCase() === "outbreak-response")
-    pageType = "outbreak-response";
+  if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
 
   // If entity role is not defined, let it be funder as a placeholder.
@@ -260,6 +258,8 @@ const Details = ({
   ];
 
   // Return JSX
+  console.log('data.nodeData')
+  console.log(data.nodeData)
   return (
     <div className={classNames("pageContainer", styles.details)}>
       <div className={styles.header}>
@@ -353,6 +353,7 @@ const getComponentData = async ({
   ghsaOnly,
   setGhsaOnly
 }) => {
+  console.log('did it')
   // Define typical base query parameters used in FlowQuery,
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
   // modified in code below.
@@ -365,7 +366,7 @@ const getComponentData = async ({
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
     by_neighbor: false,
-    filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType, id]] } : {},
+    filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType + 's', id]] } : {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
       datetime_summary: ["year"]

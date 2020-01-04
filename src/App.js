@@ -42,7 +42,7 @@ const App = () => {
   const [ghsaOnly, setGhsaOnly] = React.useState("false");
 
   // Track whether styling is dark or light
-  const [isDark, setIsDark] = React.useState(true);
+  const [isDark, setIsDark] = React.useState(false);
 
   async function getAppData() {
     const queries = {
@@ -251,7 +251,7 @@ const App = () => {
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
                     setGhsaOnly: setGhsaOnly,
-                    isDark: isDark,
+                    isDark: d.match.params.activeTab === 'map',
                     setIsDark: setIsDark
                   });
                 }}
@@ -262,6 +262,7 @@ const App = () => {
                 render={d => {
                   return renderDetails({
                     ...d.match.params,
+                    id: parseInt(d.match.params.id),
                     detailsComponent: detailsComponent,
                     setDetailsComponent: setDetailsComponent,
                     loading: loading,
