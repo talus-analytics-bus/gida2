@@ -75,7 +75,7 @@ const Details = ({
     data: data.flowBundlesFocusOther.flow_bundles,
     field: "core_elements",
     flowTypes: ["disbursed_funds", "committed_funds"],
-    nodeType: null
+    nodeType: pageType === 'ghsa' ? 'focus_node' : otherNodeType
   });
 
   // If on GHSA page, get "other" top table to display.
@@ -85,7 +85,7 @@ const Details = ({
           data: data.flowBundlesFocus.flow_bundles,
           field: "core_elements",
           flowTypes: ["disbursed_funds", "committed_funds"],
-          nodeType: null
+          nodeType: pageType === 'ghsa' ? 'focus_node' : nodeType
         })
       : null;
 
@@ -123,7 +123,7 @@ const Details = ({
       return {
         func: d => (d[curFlowType] ? d[curFlowType][c[0]] : undefined),
         type: "num",
-        title: "Prevent",
+        title: c[1],
         prop: c[1],
         render: v => Util.formatValue(v, "disbursed_funds")
       };
@@ -200,12 +200,12 @@ const Details = ({
                   role: otherEntityRole
                 })
               ),
-              prop: "focus_node_id",
+              prop: otherNodeType,
               type: "text",
               func: d =>
                 getNodeLinkList({
                   urlType: "details",
-                  nodeList: [d.focus_node_id],
+                  nodeList: d['focus_node'] ? [d['focus_node']] : d[otherNodeType],
                   entityRole: otherEntityRole,
                   id: id
                 })
@@ -234,12 +234,12 @@ const Details = ({
                   role: entityRole
                 })
               ),
-              prop: "focus_node_id",
+              prop: "focus_node",
               type: "text",
               func: d =>
                 getNodeLinkList({
                   urlType: "details",
-                  nodeList: [d.focus_node_id],
+                  nodeList: d['focus_node'] ? [d['focus_node']] : d[nodeType],
                   entityRole: entityRole,
                   id: id
                 })
@@ -258,8 +258,6 @@ const Details = ({
   ];
 
   // Return JSX
-  console.log('data.nodeData')
-  console.log(data.nodeData)
   return (
     <div className={classNames("pageContainer", styles.details)}>
       <div className={styles.header}>
@@ -353,20 +351,20 @@ const getComponentData = async ({
   ghsaOnly,
   setGhsaOnly
 }) => {
-  console.log('did it')
   // Define typical base query parameters used in FlowQuery,
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
   // modified in code below.
   const nodeType = entityRole === "recipient" ? "target" : "source";
   const otherNodeType = entityRole === "recipient" ? "source" : "target";
   const baseQueryParams = {
-    focus_node_ids: [id],
+    focus_node_ids: id === "ghsa" ? null : [id],
     focus_node_type: nodeType,
     flow_type_ids: [1, 2, 3, 4],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
     by_neighbor: false,
-    filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType + 's', id]] } : {},
+    filters: {},
+    // filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType + 's', id]] } : {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
       datetime_summary: ["year"]
@@ -398,8 +396,9 @@ const getComponentData = async ({
     // row per target node it has a flow with)
     flowBundlesFocusOther: await FlowBundleFocusQuery({
       ...baseQueryParams,
-      focus_node_type: otherNodeType,
-      focus_node_ids: null
+      by_neighbor: true
+      // focus_node_type: otherNodeType,
+      // focus_node_ids: null
     })
   };
 
@@ -422,8 +421,6 @@ const getComponentData = async ({
 
   // Get query results.
   const results = await Util.getQueryResults(queries);
-  console.log("results - Details.js");
-  console.log(results);
 
   // Feed results and other data to the details component and mount it.
   setDetailsComponent(

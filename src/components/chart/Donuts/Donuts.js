@@ -22,7 +22,7 @@ const Donuts = ({ data, flowType, attributeType, ...props }) => {
           <Donut
             numerator={
               flowTypeHasData
-                ? flowTypeData.summaries[attributeType][d] || 0
+                ? parseFloat(flowTypeData.summaries[attributeType][d]) || 0
                 : 0
             }
             denominator={flowTypeHasData ? flowTypeData.focus_node_weight : 0}

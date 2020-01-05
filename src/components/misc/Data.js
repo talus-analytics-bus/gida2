@@ -226,18 +226,18 @@ export const getNodeLinkList = ({
     };
   }
   return nodeList.map((node, i) => {
-    const url = urlFunc(node);
+    const url = urlFunc(node.id);
     return (
       <span>
-        {(otherId || id) !== node && id !== node && (
+        {(otherId || id) !== node.id && id !== node.id && (
           <span>
-            <Link to={url}>{node}</Link>
+            <Link to={url}>{node.name}</Link>
             {i !== nodeList.length - 1 && <span>; </span>}
           </span>
         )}
-        {((otherId || id) === node || id === node) && (
+        {((otherId || id) === node.id || id === node.id) && (
           <span>
-            <span>{node}</span>
+            <span>{node.name}</span>
             {i !== nodeList.length - 1 && <span>; </span>}
           </span>
         )}
@@ -293,10 +293,6 @@ export const getTableRowData = ({
   data,
   filterFcn = d => true
 }) => {
-  console.log("tableRowDefs");
-  console.log(tableRowDefs);
-  console.log("data");
-  console.log(data);
   const tableRows = [];
   data.forEach(d => {
     const row = {};
@@ -313,8 +309,6 @@ export const getTableRowData = ({
     });
     if (filterFcn(row)) tableRows.push(row);
   });
-  console.log("tableRows");
-  console.log(tableRows);
   return tableRows;
 };
 
@@ -364,8 +358,8 @@ export const getSummaryAttributeWeightsByNode = ({
   data.forEach(d => {
     // Create output object
     const output = {
-      [nodeType !== null ? nodeType : "focus_node_id"]:
-        nodeType === null ? d["focus_node_id"] : d[nodeType].join("; ")
+      [nodeType !== null ? nodeType : "focus_node"]:
+        nodeType === null ? d["focus_node"] : d[nodeType]
     };
 
     // Flag false if no data for any flow type, true otherwise
@@ -448,8 +442,6 @@ export const getWeightsBySummaryAttributeSimple = ({
       for (let [kTmp, v] of Object.entries(summaries[field])) {
         // Format key
         const attribute = format(kTmp);
-        console.log('d')
-        console.log(d)
         outputArr.push({
           attribute: attribute,
           [ft]: v,
