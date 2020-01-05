@@ -953,7 +953,7 @@ Util.getAttrFormatter = name => {
             return "Detect";
           case "R":
             return "Respond";
-          case "O":
+          case "Other":
             return "Other";
           default:
             return v;

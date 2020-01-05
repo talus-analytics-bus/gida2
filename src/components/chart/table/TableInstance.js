@@ -17,10 +17,10 @@ const TableInstance = ({
   filterFcn = d => true,
   ...props
 }) => {
-  console.log('tableColumns')
-  console.log(tableColumns)
-  console.log('tableData')
-  console.log(tableData)
+  // console.log('tableColumns')
+  // console.log(tableColumns)
+  // console.log('tableData')
+  // console.log(tableData)
   const buildTable = tableData => {
     // // set table columns render functions if not set
     // tableColumns.forEach(col => {

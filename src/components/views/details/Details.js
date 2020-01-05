@@ -40,7 +40,8 @@ const Details = ({
   //          "Global Health Security Agenda (GHSA)" and entityRole is always
   //          funder.
   // "outbreak-response" - TBD
-
+  console.log('data')
+  console.log(data)
   // Get page type from id
   let pageType;
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
@@ -116,7 +117,7 @@ const Details = ({
       ["P", "Prevent"],
       ["D", "Detect"],
       ["R", "Respond"],
-      ["O", "Other"],
+      ["Other", "Other"],
       ["General IHR", "General IHR Implementation"],
       ["Unspecified", "Unspecified"]
     ].map(c => {
