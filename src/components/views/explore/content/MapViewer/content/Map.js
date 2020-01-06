@@ -15,7 +15,7 @@ import {
 } from "../../../../../map/MapUtil.js";
 import { getNodeData, getTableRowData } from "../../../../../misc/Data.js";
 import Util from "../../../../../misc/Util.js";
-import { getJeeScores } from "../../../../../misc/Data.js";
+import { getJeeScores, getNodeLinkList } from "../../../../../misc/Data.js";
 
 // FC for Map.
 const Map = ({
@@ -78,8 +78,14 @@ const Map = ({
       prop: nodeType,
       type: "text",
       render: d => d,
-      func: d => d[nodeType][0].name
-      // func: d => d[nodeType]
+      func: d =>
+        getNodeLinkList({
+          urlType: "details",
+          nodeList: d[nodeType],
+          entityRole: entityRole,
+          id: undefined,
+          otherId: undefined
+        })
     },
     {
       title: "Map metric raw value",
