@@ -27,6 +27,7 @@ const d3Map = ({
         useRowDataAsIs={true}
         tableColumns={d3MapDataFields}
         tableData={mapData}
+        sortByProp={"value_raw"}
       />
     </div>
   );
