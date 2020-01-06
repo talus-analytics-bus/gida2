@@ -76,7 +76,7 @@ const Details = ({
     data: data.flowBundlesFocusOther.flow_bundles,
     field: "core_elements",
     flowTypes: ["disbursed_funds", "committed_funds"],
-    nodeType: pageType === 'ghsa' ? 'focus_node' : otherNodeType
+    nodeType: otherNodeType
   });
 
   // If on GHSA page, get "other" top table to display.
@@ -86,7 +86,7 @@ const Details = ({
           data: data.flowBundlesFocus.flow_bundles,
           field: "core_elements",
           flowTypes: ["disbursed_funds", "committed_funds"],
-          nodeType: pageType === 'ghsa' ? 'focus_node' : nodeType
+          nodeType: nodeType
         })
       : null;
 
@@ -206,7 +206,7 @@ const Details = ({
               func: d =>
                 getNodeLinkList({
                   urlType: "details",
-                  nodeList: d['focus_node'] ? [d['focus_node']] : d[otherNodeType],
+                  nodeList: d[otherNodeType],
                   entityRole: otherEntityRole,
                   id: id
                 })
@@ -235,12 +235,12 @@ const Details = ({
                   role: entityRole
                 })
               ),
-              prop: "focus_node",
+              prop: nodeType,
               type: "text",
               func: d =>
                 getNodeLinkList({
                   urlType: "details",
-                  nodeList: d['focus_node'] ? [d['focus_node']] : d[nodeType],
+                  nodeList: d[nodeType],
                   entityRole: entityRole,
                   id: id
                 })
