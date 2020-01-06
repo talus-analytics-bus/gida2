@@ -251,7 +251,7 @@ const App = () => {
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
                     setGhsaOnly: setGhsaOnly,
-                    isDark: d.match.params.activeTab === 'map',
+                    isDark: d.match.params.activeTab === "map",
                     setIsDark: setIsDark
                   });
                 }}
@@ -294,8 +294,8 @@ const App = () => {
                 path="/pair-table/:funderId/:recipientId"
                 render={d => {
                   return renderEntityTable({
-                    id: d.match.params.funderId,
-                    otherId: d.match.params.recipientId,
+                    id: parseInt(d.match.params.funderId),
+                    otherId: parseInt(d.match.params.recipientId),
                     component: entityTableComponent,
                     setComponent: setEntityTableComponent,
                     loading: loading,

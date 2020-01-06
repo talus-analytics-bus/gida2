@@ -33,9 +33,7 @@ const EntityTable = ({
 }) => {
   // Get page type from id
   let pageType;
-  if (id.toLowerCase() === "ghsa") pageType = "ghsa";
-  else if (id.toLowerCase() === "outbreak-response")
-    pageType = "outbreak-response";
+  if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
 
   // Get master summary
@@ -345,7 +343,7 @@ const EntityTable = ({
             }
           ]}
           tableData={data.flows.filter(f =>
-            f.flow_info.assistance_type.toLowerCase().includes("in-kind")
+            f.flow_info.assistance_type.toLowerCase().includes("inkind")
           )}
         />
       )
@@ -431,6 +429,10 @@ export const renderEntityTable = ({
   ghsaOnly,
   setGhsaOnly
 }) => {
+  // Set ID values to correct types
+  if (id !== "ghsa" && id !== undefined) id = parseInt(id);
+  if (otherId !== undefined) otherId = parseInt(otherId);
+
   // Get data
   if (loading) {
     return <div>Loading...</div>;
@@ -454,7 +456,6 @@ export const renderEntityTable = ({
 
     return component ? component : <div />;
   } else {
-    console.log("COMPONENT EXISTS");
     return component;
   }
 };
@@ -479,6 +480,11 @@ const getComponentData = async ({
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
   const nodeType = entityRole === "recipient" ? "target" : "source";
   const otherNodeType = entityRole === "recipient" ? "source" : "target";
+  const filterNodeType = nodeType + "s";
+  const filterNodeTypeOther = otherNodeType + "s";
+
+  if (isNaN(otherId)) otherId = undefined;
+
   const baseQueryParams = {
     focus_node_ids: id !== "ghsa" ? [id] : null,
     focus_node_type: nodeType,
@@ -493,10 +499,15 @@ const getComponentData = async ({
       id !== "ghsa"
         ? // And the "other ID" (recipient) of a pair has been defined,
           otherId !== undefined
-          ? // Then include filters for source and target as appropriate
-            { flow_attr_filters: [[nodeType, id], [otherNodeType, otherId]] }
+          ? // Then include filters for source and target as appropriate TODO confirm this works
+            {
+              flow_attr_filters: [
+                [filterNodeType, id],
+                [filterNodeTypeOther, otherId]
+              ]
+            }
           : // Otherwise, only filter by one of those (source or target)
-            { flow_attr_filters: [[nodeType, id]] }
+            { flow_attr_filters: [[filterNodeType, id]] }
         : {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
