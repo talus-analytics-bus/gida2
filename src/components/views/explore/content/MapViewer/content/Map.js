@@ -28,6 +28,9 @@ const Map = ({
   coreCapacities,
   ...props
 }) => {
+  // Get node type from entity role
+  const nodeType = entityRole === "funder" ? "source" : "target";
+
   // Get map color scale to use.
   const colorScale = getMapColorScale({
     supportType: supportType,
@@ -72,10 +75,10 @@ const Map = ({
   const d3MapDataFields = [
     {
       title: "Location",
-      prop: "focus_node_id",
+      prop: nodeType,
       type: "text",
-      render: d => d,
-      func: d => d.focus_node_id
+      render: d => d[0].name,
+      func: d => d[nodeType]
     },
     {
       title: "Map metric raw value",
@@ -172,7 +175,7 @@ const Map = ({
   // Get datum for the selected node, if it exists.
   const d =
     nodeData !== undefined
-      ? data.find(d => d.focus_node_id === nodeData.id)
+      ? data.find(d => d[nodeType].find(dd => dd.id === nodeData.id))
       : undefined;
 
   /**
@@ -270,7 +273,7 @@ const Map = ({
   // Get the node data that is in the table of values for display in the map.
   const nodeMapData =
     nodeData !== undefined
-      ? mapData.find(d => d.focus_node_id === nodeData.id)
+      ? mapData.find(d => d[nodeType].find(dd => dd.id === nodeData.id))
       : undefined;
 
   // If we have data to put in the InfoBox:

@@ -202,7 +202,6 @@ const remountComponent = ({
     component.props.ghsaOnly !== ghsaOnly ||
     component.props.coreCapacities.toString() !==
       props.coreCapacities.toString();
-  console.log("remount = " + remount);
   return remount;
 };
 
@@ -307,7 +306,7 @@ const getComponentData = async ({
     baseQueryParams.filters.parent_flow_info_filters = [
       ["ghsa_funding", "true"]
     ];
-  console.log("Getting mapViewer component data");
+
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
