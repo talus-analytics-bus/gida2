@@ -77,8 +77,9 @@ const Map = ({
       title: "Location",
       prop: nodeType,
       type: "text",
-      render: d => d[0].name,
-      func: d => d[nodeType]
+      render: d => d,
+      func: d => d[nodeType][0].name
+      // func: d => d[nodeType]
     },
     {
       title: "Map metric raw value",
@@ -272,9 +273,7 @@ const Map = ({
 
   // Get the node data that is in the table of values for display in the map.
   const nodeMapData =
-    nodeData !== undefined
-      ? mapData.find(d => d[nodeType].find(dd => dd.id === nodeData.id))
-      : undefined;
+    nodeData !== undefined ? mapData.find(d => d === nodeData.name) : undefined;
 
   // If we have data to put in the InfoBox:
   if (nodeMapData !== undefined && d !== undefined) {
