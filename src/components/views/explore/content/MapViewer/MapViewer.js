@@ -308,7 +308,7 @@ const getComponentData = async ({
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
-    flowBundlesMap: await FlowBundleFocusQuery({
+    flowBundlesMap: FlowBundleFocusQuery({
       ...baseQueryParams
       // node_category: ["country"]
     })

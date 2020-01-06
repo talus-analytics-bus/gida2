@@ -519,19 +519,19 @@ const getComponentData = async ({
   // Define queries for typical entityTable page.
   const queries = {
     // Information about the entity
-    nodeData: await NodeQuery({ node_id: id }),
+    nodeData: NodeQuery({ node_id: id }),
 
     // Project-specific data
-    flows: await FlowQuery({
+    flows: FlowQuery({
       ...baseFlowQueryParams,
       flow_type_ids: [5]
     }),
 
     // // Flow bundles (either focus or general depending on the page type)
-    // flowBundles: await FlowBundleGeneralQuery(baseQueryParams),
+    // flowBundles: FlowBundleGeneralQuery(baseQueryParams),
 
     // General flow bundles by neighbor, for funder/recipient tables.
-    flowBundlesByNeighbor: await FlowBundleGeneralQuery({
+    flowBundlesByNeighbor: FlowBundleGeneralQuery({
       ...baseQueryParams,
       by_neighbor: true
     })
@@ -539,16 +539,16 @@ const getComponentData = async ({
 
   // If "other ID" specified, get its node data as well.
   if (otherId !== undefined) {
-    queries["nodeDataOther"] = await NodeQuery({ node_id: otherId });
+    queries["nodeDataOther"] = NodeQuery({ node_id: otherId });
   }
 
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
   if (id === "ghsa") {
-    queries["flowBundles"] = await FlowBundleGeneralQuery(baseQueryParams);
+    queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
   } else {
     // Flow bundles (either focus or general depending on the page type)
-    queries["flowBundles"] = await FlowBundleFocusQuery({
+    queries["flowBundles"] = FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: true
     });

@@ -46,7 +46,7 @@ const App = () => {
 
   async function getAppData() {
     const queries = {
-      flowTypeInfo: await FlowTypeQuery({
+      flowTypeInfo: FlowTypeQuery({
         flow_type_ids: null
       })
     };
