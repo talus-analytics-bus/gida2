@@ -210,12 +210,14 @@ export const getMapTooltipLabel = ({
 export const getUnknownValueExplanation = ({ datum, value, entityRole }) => {
   if (value === "unknown") {
     const nodeType = entityRole === "funder" ? "source" : "target";
-    const nodesToShow =
-      datum[nodeType].length > 1 ? "multilateral group" : datum[nodeType][0];
+    // const nodesToShow =
+    //   datum[nodeType].length > 1
+    //     ? "multilateral group"
+    //     : datum[nodeType][0].name;
     return (
       <span>
-        {datum.focus_node_id} included as {entityRole} for {nodesToShow}{" "}
-        projects
+        {datum[nodeType][0].name} included as {entityRole} for multilateral
+        group projects
       </span>
     );
   } else return undefined;

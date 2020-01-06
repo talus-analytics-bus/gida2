@@ -87,9 +87,9 @@ const Explore = ({
   // When Explore is mounted, set to dark mode.
   // When Explore is unmounted (we leave the page) return to light mode.
   React.useEffect(() => {
-    props.setIsDark(true);
+    // props.setIsDark(true);
     return () => {
-      props.setIsDark(false);
+      // props.setIsDark(false);
     };
   }, []);
 

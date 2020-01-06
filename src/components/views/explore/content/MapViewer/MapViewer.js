@@ -196,13 +196,13 @@ const remountComponent = ({
   ghsaOnly
 }) => {
   const remount =
-    component.props.id !== id ||
     component.props.minYear !== minYear ||
     component.props.maxYear !== maxYear ||
     component.props.entityRole !== entityRole ||
     component.props.ghsaOnly !== ghsaOnly ||
     component.props.coreCapacities.toString() !==
       props.coreCapacities.toString();
+  console.log("remount = " + remount);
   return remount;
 };
 
@@ -218,6 +218,9 @@ export const renderMapViewer = ({
   setGhsaOnly,
   ...props
 }) => {
+  // Set IDs
+  id = parseInt(id);
+
   if (loading) {
     return <div>Loading...</div>;
   } else if (
@@ -304,7 +307,7 @@ const getComponentData = async ({
     baseQueryParams.filters.parent_flow_info_filters = [
       ["ghsa_funding", "true"]
     ];
-
+  console.log("Getting mapViewer component data");
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
@@ -316,8 +319,8 @@ const getComponentData = async ({
 
   // Get query results.
   const results = await Util.getQueryResults(queries);
-  // console.log("results - MapViewer.js");
-  // console.log(results);
+  console.log("results - MapViewer.js");
+  console.log(results);
 
   // Feed results and other data to the details component and mount it.
   setComponent(

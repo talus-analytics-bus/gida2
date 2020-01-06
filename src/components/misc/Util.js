@@ -67,6 +67,7 @@ Util.getRoleTerm = ({ type, role }) => {
 Util.getQueryResults = async queries => {
   const results = {};
   for (let q in queries) {
+    console.log("Running query: " + q);
     results[q] = await queries[q];
   }
   return results;
