@@ -14,14 +14,16 @@ const FlowBundleGeneralQuery = async function({
   end_date,
   filters = {},
   summaries = {},
-  include_master_summary = false
+  include_master_summary = false,
+  pair_node_id
 }) {
   // Define URL parameters //
   const params = {
     node_category:
       node_category !== null ? node_category.join(",") : node_category,
     flow_type_ids: flow_type_ids.join(","),
-    include_master_summary: include_master_summary
+    include_master_summary: include_master_summary,
+    pair_node_id: pair_node_id
   };
 
   // Send start and end dates if they are provided, otherwise do not send.

@@ -544,7 +544,8 @@ const getComponentData = async ({
     // flowBundles: FlowBundleGeneralQuery(baseQueryParams),
 
     // General flow bundles by neighbor, for funder/recipient tables.
-    flowBundlesByNeighbor: FlowBundleGeneralQuery({
+    flowBundlesByNeighbor: FlowBundleFocusQuery({
+      // flowBundlesByNeighbor: FlowBundleGeneralQuery({
       ...baseQueryParams,
       by_neighbor: true
     })
