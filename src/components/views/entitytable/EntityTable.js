@@ -318,7 +318,7 @@ const EntityTable = ({
               prop: "project_name"
             },
             {
-              title: "Years project provided",
+              title: "Total years project provided",
               func: d =>
                 d.master_summary.flow_types.provided_inkind
                   ? d.master_summary.flow_types.provided_inkind
@@ -330,7 +330,7 @@ const EntityTable = ({
               defaultContent: "n/a"
             },
             {
-              title: "Years project committed",
+              title: "Total years project committed",
               func: d =>
                 d.master_summary.flow_types.committed_inkind
                   ? d.master_summary.flow_types.committed_inkind
