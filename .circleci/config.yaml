@@ -37,12 +37,12 @@ jobs:
           command: echo ${MY_ENV_VAR}
 
       - run:
-          name: yarn build dash
-          command: cd dash; rm yarn.lock; yarn install --network-timeout 1000000
+          name: yarn build
+          command: rm yarn.lock; yarn install --network-timeout 1000000
 
       - run:
           name: deploy
-          command: cd dash; yarn run deploy
+          command: yarn run deploy
 
       - run:
           name: Notify Slack
