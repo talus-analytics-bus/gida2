@@ -16,7 +16,8 @@ const FlowQuery = async function({
   return_child_flows = true,
   bundle_child_flows = true,
   bundle_child_flows_by_neighbor = true,
-  filters = {}
+  filters = {},
+  pair_node_id
 }) {
   // Define URL parameters //
   const params = {
@@ -28,7 +29,8 @@ const FlowQuery = async function({
     flow_type_ids: flow_type_ids.join(","),
     return_child_flows: return_child_flows,
     bundle_child_flows: bundle_child_flows,
-    bundle_child_flows_by_neighbor: bundle_child_flows_by_neighbor
+    bundle_child_flows_by_neighbor: bundle_child_flows_by_neighbor,
+    pair_node_id: pair_node_id
   };
 
   // Send start and end dates if they are provided, otherwise do not send.

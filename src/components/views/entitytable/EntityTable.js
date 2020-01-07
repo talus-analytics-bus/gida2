@@ -484,7 +484,8 @@ const getComponentData = async ({
   const filterNodeTypeOther = otherNodeType + "s";
 
   if (isNaN(otherId)) otherId = undefined;
-
+  console.log("otherId - EntityTable.js");
+  console.log(otherId);
   const baseQueryParams = {
     focus_node_ids: id !== "ghsa" ? [id] : null,
     focus_node_type: nodeType,
@@ -492,6 +493,7 @@ const getComponentData = async ({
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
     by_neighbor: false,
+    pair_node_id: otherId,
 
     // Add filters as appropriate.
     filters:
