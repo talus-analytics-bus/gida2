@@ -77,11 +77,11 @@ const Map = ({
       title: "Location",
       prop: nodeType,
       type: "text",
-      render: d => d,
-      func: d =>
+      func: d => JSON.stringify(d[nodeType]),
+      render: d =>
         getNodeLinkList({
           urlType: "details",
-          nodeList: d[nodeType],
+          nodeList: JSON.parse(d),
           entityRole: entityRole,
           id: undefined,
           otherId: undefined

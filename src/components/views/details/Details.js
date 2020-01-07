@@ -203,10 +203,11 @@ const Details = ({
               ),
               prop: otherNodeType,
               type: "text",
-              func: d =>
+              func: d => JSON.stringify(d[otherNodeType]),
+              render: d =>
                 getNodeLinkList({
                   urlType: "details",
-                  nodeList: d[otherNodeType],
+                  nodeList: JSON.parse(d),
                   entityRole: otherEntityRole,
                   id: id
                 })
@@ -237,10 +238,11 @@ const Details = ({
               ),
               prop: nodeType,
               type: "text",
-              func: d =>
+              func: d => JSON.stringify(d[nodeType]),
+              render: d =>
                 getNodeLinkList({
                   urlType: "details",
-                  nodeList: d[nodeType],
+                  nodeList: JSON.parse(d),
                   entityRole: entityRole,
                   id: id
                 })

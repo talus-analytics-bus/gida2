@@ -77,13 +77,14 @@ const EntityTable = ({
     title: "Funder",
     prop: "source",
     type: "text",
-    func: d =>
+    func: d => JSON.stringify(d.source),
+    render: d =>
       getNodeLinkList({
         urlType:
           entityRole === "funder" || pageType === "ghsa"
             ? "table"
             : "pair-table",
-        nodeList: d["source"],
+        nodeList: JSON.parse(d),
         entityRole: "funder",
         id: id,
         otherId: otherId
@@ -94,13 +95,14 @@ const EntityTable = ({
     title: "Recipient",
     prop: "target",
     type: "text",
-    func: d =>
+    func: d => JSON.stringify(d.target),
+    render: d =>
       getNodeLinkList({
         urlType:
           entityRole === "recipient" || pageType === "ghsa"
             ? "table"
             : "pair-table",
-        nodeList: d["target"],
+        nodeList: JSON.parse(d),
         entityRole: "recipient",
         id: id,
         otherId: otherId
@@ -118,13 +120,14 @@ const EntityTable = ({
               title: "Funder",
               prop: "source",
               type: "text",
-              func: d =>
+              func: d => JSON.stringify(d["source"]),
+              render: d =>
                 getNodeLinkList({
                   urlType:
                     entityRole === "funder" || pageType === "ghsa"
                       ? "table"
                       : "pair-table",
-                  nodeList: d["source"],
+                  nodeList: JSON.parse(d),
                   entityRole: "funder",
                   id: id,
                   otherId: otherId
@@ -134,13 +137,14 @@ const EntityTable = ({
               title: "Recipient",
               prop: "target",
               type: "text",
-              func: d =>
+              func: d => JSON.stringify(d["target"]),
+              render: d =>
                 getNodeLinkList({
                   urlType:
                     entityRole === "recipient" || pageType === "ghsa"
                       ? "table"
                       : "pair-table",
-                  nodeList: d["target"],
+                  nodeList: JSON.parse(d),
                   entityRole: "recipient",
                   id: id,
                   otherId: otherId
@@ -283,13 +287,14 @@ const EntityTable = ({
               title: "Provider",
               prop: "source",
               type: "text",
-              func: d =>
+              func: d => JSON.stringify(d["source"]),
+              render: d =>
                 getNodeLinkList({
                   urlType:
                     entityRole === "funder" || pageType === "ghsa"
                       ? "table"
                       : "pair-table",
-                  nodeList: d["source"],
+                  nodeList: JSON.parse(d),
                   entityRole: "funder",
                   id: id,
                   otherId: otherId
@@ -299,13 +304,14 @@ const EntityTable = ({
               title: "Recipient",
               prop: "target",
               type: "text",
-              func: d =>
+              func: d => JSON.stringify(d["target"]),
+              render: d =>
                 getNodeLinkList({
                   urlType:
                     entityRole === "recipient" || pageType === "ghsa"
                       ? "table"
                       : "pair-table",
-                  nodeList: d["target"],
+                  nodeList: JSON.parse(d),
                   entityRole: "recipient",
                   id: id,
                   otherId: otherId
