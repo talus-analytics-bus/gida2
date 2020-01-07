@@ -225,17 +225,22 @@ export const getNodeLinkList = ({
       return url;
     };
   }
+
+  // Do not list URLs unless the node belongs to any of these types
+  const urlTypes = ["country", "organization", "agency"];
   return nodeList.map((node, i) => {
     const url = urlFunc(node.id);
+    const type = node.type;
+    const doUrl = urlTypes.includes(type);
     return (
       <span>
-        {(otherId || id) !== node.id && id !== node.id && (
+        {doUrl && (otherId || id) !== node.id && id !== node.id && (
           <span>
             <Link to={url}>{node.name}</Link>
             {i !== nodeList.length - 1 && <span>; </span>}
           </span>
         )}
-        {((otherId || id) === node.id || id === node.id) && (
+        {(!doUrl || (otherId || id) === node.id || id === node.id) && (
           <span>
             <span>{node.name}</span>
             {i !== nodeList.length - 1 && <span>; </span>}
