@@ -232,15 +232,27 @@ export const getNodeLinkList = ({
     const url = urlFunc(node.id);
     const type = node.type;
     const doUrl = urlTypes.includes(type);
+    const skipUrlBecauseIsTargetInRecipientCol =
+      otherId && node.id === otherId && entityRole === "recipient";
+    const skipUrlBecauseIsSourceInFunderCol =
+      id && node.id === id && entityRole === "funder";
+    const skipUrlBecauseIsOnlyNode =
+      otherId === undefined && id && node.id === id;
     return (
       <span>
-        {doUrl && (otherId || id) !== node.id && id !== node.id && (
-          <span>
-            <Link to={url}>{node.name}</Link>
-            {i !== nodeList.length - 1 && <span>; </span>}
-          </span>
-        )}
-        {(!doUrl || (otherId || id) === node.id || id === node.id) && (
+        {doUrl &&
+          !skipUrlBecauseIsOnlyNode &&
+          !skipUrlBecauseIsTargetInRecipientCol &&
+          !skipUrlBecauseIsSourceInFunderCol && (
+            <span>
+              <Link to={url}>{node.name}</Link>
+              {i !== nodeList.length - 1 && <span>; </span>}
+            </span>
+          )}
+        {(!doUrl ||
+          skipUrlBecauseIsOnlyNode ||
+          skipUrlBecauseIsTargetInRecipientCol ||
+          skipUrlBecauseIsSourceInFunderCol) && (
           <span>
             <span>{node.name}</span>
             {i !== nodeList.length - 1 && <span>; </span>}
