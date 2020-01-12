@@ -40,8 +40,6 @@ const Details = ({
   //          "Global Health Security Agenda (GHSA)" and entityRole is always
   //          funder.
   // "outbreak-response" - TBD
-  console.log("data");
-  console.log(data);
   // Get page type from id
   let pageType;
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
@@ -77,8 +75,11 @@ const Details = ({
     field: "core_elements",
     flowTypes: ["disbursed_funds", "committed_funds"],
     nodeType: otherNodeType
-  });
-
+  }).filter(
+    d =>
+      d[otherNodeType][0].name !== "Not reported" &&
+      d[otherNodeType].length == 1
+  );
   // If on GHSA page, get "other" top table to display.
   const topTableDataOther =
     pageType === "ghsa"
@@ -87,7 +88,7 @@ const Details = ({
           field: "core_elements",
           flowTypes: ["disbursed_funds", "committed_funds"],
           nodeType: nodeType
-        })
+        }).filter(d => d[nodeType].name !== "Not reported")
       : null;
 
   // True if there are no data to show for the entire page, false otherwise.

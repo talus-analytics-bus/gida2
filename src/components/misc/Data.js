@@ -391,10 +391,16 @@ export const getSummaryAttributeWeightsByNode = ({
       if (curFtData === undefined) return;
 
       // get summaries for the current flow type (e.g., total weights by year)
-      const summaries = curFtData.summaries;
 
-      // If summaries not defined, skip this flow type
-      if (summaries === undefined) return;
+      // If summaries not defined, set it to unspecified
+      if (curFtData.summaries === undefined) {
+        curFtData.summaries = {
+          [field]: {
+            Unspecified: curFtData["focus_node_weight"]
+          }
+        };
+      }
+      const summaries = curFtData.summaries;
 
       // If summary not provided for field, skip this flow type
       if (
