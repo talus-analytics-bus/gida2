@@ -67,7 +67,10 @@ const Details = ({
     .display_name;
 
   // Get master summary
-  const masterSummary = data.flowBundles.master_summary;
+  console.log("data");
+  console.log(data);
+  const masterSummary = data.focusSummary.master_summary;
+  // const masterSummary = data.flowBundles.master_summary;
 
   // Track the Top Recipients/Funders table data
   const topTableData = getSummaryAttributeWeightsByNode({
@@ -77,8 +80,9 @@ const Details = ({
     nodeType: otherNodeType
   }).filter(
     d =>
-      d[otherNodeType][0].name !== "Not reported" &&
-      d[otherNodeType].length == 1
+      d[otherNodeType] !== undefined &&
+      (d[otherNodeType][0].name !== "Not reported" ||
+        d[otherNodeType].length > 1)
   );
   // If on GHSA page, get "other" top table to display.
   const topTableDataOther =
@@ -396,7 +400,9 @@ const getComponentData = async ({
     focusSummary: FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: false,
-      summaries: { flow_info_summary: ["year"] }
+      summaries: {
+        flow_info_summary: ["core_capacities", "core_elements", "year"]
+      }
     })
   };
 

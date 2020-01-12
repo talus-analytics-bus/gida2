@@ -15,7 +15,8 @@ const Donuts = ({ data, flowType, attributeType, ...props }) => {
   const flowTypeData = data.flow_types[flowType];
   const flowTypeHasData =
     data.flow_types[flowType] !== undefined &&
-    data.flow_types[flowType]["summaries"] !== undefined;
+    data.flow_types[flowType]["summaries"] !== undefined &&
+    data.flow_types[flowType]["summaries"][attributeType] !== undefined;
   return (
     <div className={styles.donuts}>
       {!noData &&

@@ -77,7 +77,7 @@ const EntityTable = ({
     title: "Funder",
     prop: "source",
     type: "text",
-    func: d => JSON.stringify(d.source),
+    func: d => (d.source ? JSON.stringify(d.source) : "[]"),
     render: d =>
       getNodeLinkList({
         urlType:
@@ -95,7 +95,7 @@ const EntityTable = ({
     title: "Recipient",
     prop: "target",
     type: "text",
-    func: d => JSON.stringify(d.target),
+    func: d => (d.target ? JSON.stringify(d.target) : "[]"),
     render: d =>
       getNodeLinkList({
         urlType:
@@ -120,7 +120,7 @@ const EntityTable = ({
               title: "Funder",
               prop: "source",
               type: "text",
-              func: d => JSON.stringify(d["source"]),
+              func: d => (d.source ? JSON.stringify(d.source) : "[]"),
               render: d =>
                 getNodeLinkList({
                   urlType:
@@ -137,7 +137,7 @@ const EntityTable = ({
               title: "Recipient",
               prop: "target",
               type: "text",
-              func: d => JSON.stringify(d["target"]),
+              func: d => (d.target ? JSON.stringify(d.target) : "[]"),
               render: d =>
                 getNodeLinkList({
                   urlType:
@@ -162,9 +162,8 @@ const EntityTable = ({
                 Settings.endYear
               })`,
               func: d =>
-                d.master_summary.flow_types.disbursed_funds
-                  ? d.master_summary.flow_types.disbursed_funds
-                      .focus_node_weight
+                d.flow_types.disbursed_funds
+                  ? d.flow_types.disbursed_funds.focus_node_weight
                   : undefined,
               type: "num",
               prop: "disbursed_funds",
@@ -176,9 +175,8 @@ const EntityTable = ({
                 Settings.endYear
               })`,
               func: d =>
-                d.master_summary.flow_types.committed_funds
-                  ? d.master_summary.flow_types.committed_funds
-                      .focus_node_weight
+                d.flow_types.committed_funds
+                  ? d.flow_types.committed_funds.focus_node_weight
                   : undefined,
               type: "num",
               prop: "committed_funds",
@@ -287,7 +285,7 @@ const EntityTable = ({
               title: "Provider",
               prop: "source",
               type: "text",
-              func: d => JSON.stringify(d["source"]),
+              func: d => (d.source ? JSON.stringify(d.source) : "[]"),
               render: d =>
                 getNodeLinkList({
                   urlType:
@@ -304,7 +302,7 @@ const EntityTable = ({
               title: "Recipient",
               prop: "target",
               type: "text",
-              func: d => JSON.stringify(d["target"]),
+              func: d => (d.target ? JSON.stringify(d.target) : "[]"),
               render: d =>
                 getNodeLinkList({
                   urlType:
@@ -326,9 +324,8 @@ const EntityTable = ({
             {
               title: "Total years project provided",
               func: d =>
-                d.master_summary.flow_types.provided_inkind
-                  ? d.master_summary.flow_types.provided_inkind
-                      .focus_node_weight
+                d.flow_types.provided_inkind
+                  ? d.flow_types.provided_inkind.focus_node_weight
                   : undefined,
               type: "num",
               prop: "provided_inkind",
@@ -338,9 +335,8 @@ const EntityTable = ({
             {
               title: "Total years project committed",
               func: d =>
-                d.master_summary.flow_types.committed_inkind
-                  ? d.master_summary.flow_types.committed_inkind
-                      .focus_node_weight
+                d.flow_types.committed_inkind
+                  ? d.flow_types.committed_inkind.focus_node_weight
                   : undefined,
               type: "num",
               prop: "committed_inkind",

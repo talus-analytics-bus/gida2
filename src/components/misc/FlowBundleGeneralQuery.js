@@ -51,7 +51,7 @@ const FlowBundleGeneralQuery = async function({
   );
 
   // Return response data
-  return res.data.data;
+  return res.data;
 };
 
 export default FlowBundleGeneralQuery;

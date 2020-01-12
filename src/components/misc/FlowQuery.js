@@ -51,7 +51,7 @@ const FlowQuery = async function({
   const res = await axios.post(`${Util.API_URL}/flows`, data, config);
 
   // Return response data
-  return res.data.flows;
+  return res.data;
 };
 
 export default FlowQuery;

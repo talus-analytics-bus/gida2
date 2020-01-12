@@ -366,7 +366,7 @@ export const getSummaryAttributeWeightsByNode = ({
   ...props
 }) => {
   // If no data, return null
-  if (data === undefined || data.length === 0) return null;
+  if (data === undefined || data.length === 0) return [];
 
   // Define output array
   const outputArr = [];
