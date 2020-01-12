@@ -13,8 +13,9 @@ const Donuts = ({ data, flowType, attributeType, ...props }) => {
 
   // Check if the flow type selected has data to show.
   const flowTypeData = data.flow_types[flowType];
-  const flowTypeHasData = data.flow_types[flowType] !== undefined;
-
+  const flowTypeHasData =
+    data.flow_types[flowType] !== undefined &&
+    data.flow_types[flowType]["summaries"] !== undefined;
   return (
     <div className={styles.donuts}>
       {!noData &&

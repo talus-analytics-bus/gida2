@@ -458,12 +458,17 @@ export const getWeightsBySummaryAttributeSimple = ({
       for (let [kTmp, v] of Object.entries(summaries[field])) {
         // Format key
         const attribute = format(kTmp);
-        outputArr.push({
+        const outputObj = {
           attribute: attribute,
-          [ft]: v,
-          source: d.source.map(dd => dd.name).join("; "),
-          target: d.target.map(dd => dd.name).join("; ")
+          [ft]: v
+        };
+        const nodeTypes = [("source", "target")];
+        nodeTypes.forEach(nodeType => {
+          if (d[nodeType] !== undefined) {
+            outputObj[nodeType] = d[nodeType].map(dd => dd.name).join("; ");
+          }
         });
+        outputArr.push(outputObj);
       }
     });
   });

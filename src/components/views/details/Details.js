@@ -145,7 +145,7 @@ const Details = ({
         <FundsByYear
           id={id}
           entityRole={entityRole}
-          data={masterSummary.flow_types}
+          data={data.focusSummary.master_summary.flow_types}
           unknownDataOnly={unknownDataOnly}
           noFinancialData={noFinancialData}
           flowTypeInfo={flowTypeInfo}
@@ -369,8 +369,7 @@ const getComponentData = async ({
     filters: {},
     // filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType + 's', id]] } : {},
     summaries: {
-      parent_flow_info_summary: ["core_capacities", "core_elements"],
-      datetime_summary: ["year"]
+      flow_info_summary: ["core_capacities", "core_elements"]
     },
     include_master_summary: true
   };
@@ -378,7 +377,7 @@ const getComponentData = async ({
   // If GHSA page, then filter by GHSA projects.
   if (id === "ghsa" || ghsaOnly === "true")
     baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "true"]
+      ["ghsa_funding", "True"]
     ];
 
   // Define queries for typical details page.
@@ -392,6 +391,11 @@ const getComponentData = async ({
     flowBundlesFocusOther: FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: true
+    }),
+    focusSummary: FlowBundleFocusQuery({
+      ...baseQueryParams,
+      by_neighbor: false,
+      summaries: { flow_info_summary: ["year"] }
     })
   };
 
