@@ -304,7 +304,7 @@ const getComponentData = async ({
   // If GHSA page, then filter by GHSA projects.
   if (id === "ghsa" || ghsaOnly === "true")
     baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "true"]
+      ["ghsa_funding", "True"]
     ];
 
   // Define queries for typical details page.
