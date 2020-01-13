@@ -199,7 +199,6 @@ const EntityTable = ({
           sortByProp={"disbursed_funds"}
           tableColumns={[
             otherEntityRole === "funder" ? funderCol : recipientCol,
-            otherEntityRole === "funder" ? recipientCol : funderCol,
             {
               title: `Disbursed funds (${Settings.startYear} - ${
                 Settings.endYear
@@ -231,6 +230,53 @@ const EntityTable = ({
           tableData={data.flowBundlesByNeighbor.flow_bundles.filter(
             f => f.flow_types.committed_funds || f.flow_types.disbursed_funds
           )}
+        />
+      )
+    },
+    {
+      header: "Funds by " + entityRole, // TODO other role
+      slug: "funds_by_same",
+      show: id === "ghsa",
+      content: (
+        <TableInstance
+          sortByProp={"disbursed_funds"}
+          tableColumns={[
+            otherEntityRole === "funder" ? recipientCol : funderCol,
+            {
+              title: `Disbursed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d =>
+                d.flow_types.disbursed_funds
+                  ? d.flow_types.disbursed_funds.focus_node_weight
+                  : undefined,
+              type: "num",
+              prop: "disbursed_funds",
+              render: val => Util.formatValue(val, "disbursed_funds"),
+              defaultContent: "n/a"
+            },
+            {
+              title: `Committed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d =>
+                d.flow_types.committed_funds
+                  ? d.flow_types.committed_funds.focus_node_weight
+                  : undefined,
+              type: "num",
+              prop: "committed_funds",
+              render: val => Util.formatValue(val, "committed_funds"),
+              defaultContent: "n/a"
+            }
+          ]}
+          tableData={
+            data.flowBundlesByNeighborOther
+              ? data.flowBundlesByNeighborOther.flow_bundles.filter(
+                  f =>
+                    f.flow_types.committed_funds || f.flow_types.disbursed_funds
+                )
+              : []
+          }
         />
       )
     },
@@ -372,7 +418,13 @@ const EntityTable = ({
                 data.nodeData.name
               }
             </h1>
-            <Link to={`/details/${id}/${entityRole || "funder"}`}>
+            <Link
+              to={
+                id !== "ghsa"
+                  ? `/details/${id}/${entityRole}` || "funder"
+                  : "/details/ghsa"
+              }
+            >
               <button>Back to summary</button>
             </Link>
           </div>
@@ -407,9 +459,11 @@ const EntityTable = ({
         </div>
       )}
       <div className={styles.tabs}>
-        {sections.map(s => (
-          <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
-        ))}
+        {sections
+          .filter(s => s.show !== false)
+          .map(s => (
+            <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
+          ))}
       </div>
       <div className={styles.content}>
         {sections.map(s => (
@@ -480,17 +534,25 @@ const getComponentData = async ({
   setGhsaOnly
 }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
-  const nodeType = entityRole === "recipient" ? "target" : "source";
+  const nodeType =
+    entityRole === undefined
+      ? "target"
+      : entityRole === "recipient"
+      ? "target"
+      : "source";
   const otherNodeType = entityRole === "recipient" ? "source" : "target";
   const filterNodeType = nodeType + "s";
   const filterNodeTypeOther = otherNodeType + "s";
+
+  console.log("nodeType");
+  console.log(nodeType);
 
   if (isNaN(otherId)) otherId = undefined;
   console.log("otherId - EntityTable.js");
   console.log(otherId);
   const baseQueryParams = {
     focus_node_ids: id !== "ghsa" ? [id] : null,
-    focus_node_type: nodeType,
+    focus_node_type: id !== "ghsa" ? nodeType : otherNodeType,
     flow_type_ids: [1, 2, 3, 4],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
@@ -531,9 +593,6 @@ const getComponentData = async ({
     baseFlowQueryParams.filters.flow_info_filters = [["ghsa_funding", "True"]];
   }
 
-  console.log("baseFlowQueryParams");
-  console.log(baseFlowQueryParams);
-
   // Define queries for typical entityTable page.
   const queries = {
     // Information about the entity
@@ -565,6 +624,12 @@ const getComponentData = async ({
   // recipients.
   if (id === "ghsa") {
     queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
+    queries["flowBundlesByNeighborOther"] = FlowBundleFocusQuery({
+      // flowBundlesByNeighbor: FlowBundleGeneralQuery({
+      ...baseQueryParams,
+      focus_node_type: nodeType,
+      by_neighbor: true
+    });
   } else {
     // Flow bundles (either focus or general depending on the page type)
     queries["flowBundles"] = FlowBundleFocusQuery({
