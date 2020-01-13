@@ -9,6 +9,7 @@ import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import { Settings } from "../../../App.js";
 import Tab from "../../misc/Tab.js";
 import { renderMapViewer } from "./content/MapViewer/MapViewer.js";
+import { renderOrgs } from "./content/Orgs/Orgs.js";
 
 // FC for Explore.
 const Explore = ({
@@ -36,6 +37,7 @@ const Explore = ({
 
   // Track tab content components
   const [mapViewerComponent, setMapViewerComponent] = React.useState(null);
+  const [orgComponent, setOrgComponent] = React.useState(null);
 
   // Track entity role selected for the map
   const [entityRole, setEntityRole] = React.useState("recipient");
@@ -74,7 +76,23 @@ const Explore = ({
     {
       header: "Organizations",
       slug: "org",
-      content: <div>Organization placeholder</div>
+      content: renderOrgs({
+        component: orgComponent,
+        setComponent: setOrgComponent,
+        entityRole: entityRole,
+        setEntityRole: setEntityRole,
+        flowTypeInfo: flowTypeInfo,
+        ghsaOnly: ghsaOnly,
+        setGhsaOnly: setGhsaOnly,
+        coreCapacities: coreCapacities,
+        setCoreCapacities: setCoreCapacities,
+        outbreakResponses: outbreakResponses,
+        setOutbreakResponses: setOutbreakResponses,
+        minYear: minYear,
+        setMinYear: setMinYear,
+        maxYear: maxYear,
+        setMaxYear: setMaxYear
+      })
     }
   ];
 
