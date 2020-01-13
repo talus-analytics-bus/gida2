@@ -10,6 +10,7 @@ import Util from "./components/misc/Util.js";
 import { renderExplore } from "./components/views/explore/Explore.js";
 import { renderDetails } from "./components/views/details/Details.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
+import { renderExport } from "./components/views/export/Export.js";
 
 // styles
 import styles from "./App.module.scss";
@@ -37,6 +38,7 @@ const App = () => {
   const [detailsComponent, setDetailsComponent] = React.useState(null);
   const [entityTableComponent, setEntityTableComponent] = React.useState(null);
   const [exploreComponent, setExploreComponent] = React.useState(null);
+  const [exportComponent, setExportComponent] = React.useState(null);
 
   // Track data selections
   const [ghsaOnly, setGhsaOnly] = React.useState("false");
@@ -286,6 +288,17 @@ const App = () => {
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
                     setGhsaOnly: setGhsaOnly
+                  });
+                }}
+              />
+              <Route
+                exact
+                path="/data"
+                render={d => {
+                  return renderExport({
+                    ...d.match.params,
+                    component: exportComponent,
+                    setComponent: setExportComponent
                   });
                 }}
               />
