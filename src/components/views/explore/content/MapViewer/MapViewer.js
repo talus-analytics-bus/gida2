@@ -295,14 +295,14 @@ const getComponentData = async ({
 
   // If outbreak response filters provided, use those
   // TODO
-  if (props.outbreakResponses.length > 0) {
+  if (props.outbreakResponses && props.outbreakResponses.length > 0) {
     baseQueryParams.filters.parent_flow_info_filters.push(
       ["outbreak_responses"].concat(props.outbreakResponses)
     );
   }
 
   // If GHSA page, then filter by GHSA projects.
-  if (id === "ghsa" || ghsaOnly === "true")
+  if (ghsaOnly === "true")
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
       "True"

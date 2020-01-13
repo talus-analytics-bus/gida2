@@ -117,7 +117,7 @@ const getComponentData = async ({
     start_date: `${props.minYear}-01-01`, // TODO check these two
     end_date: `${props.maxYear}-12-31`,
     by_neighbor: false,
-    filters: {},
+    filters: { parent_flow_info_filters: [] },
     summaries: {},
     include_master_summary: false,
     single_source_and_target: true
@@ -125,24 +125,25 @@ const getComponentData = async ({
 
   // If core capacity filters provided, use those
   if (props.coreCapacities.length > 0) {
-    baseQueryParams.filters.flow_info_filters = [
+    baseQueryParams.filters.parent_flow_info_filters.push(
       ["core_capacities"].concat(props.coreCapacities)
-    ];
+    );
   }
 
   // If outbreak response filters provided, use those
   // TODO
   if (props.outbreakResponses && props.outbreakResponses.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters = [
-      "outbreak_responses"
-    ].concat(props.outbreakResponses);
+    baseQueryParams.filters.parent_flow_info_filters.push(
+      ["outbreak_responses"].concat(props.outbreakResponses)
+    );
   }
 
   // If GHSA page, then filter by GHSA projects.
   if (ghsaOnly === "true")
-    baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "True"]
-    ];
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "ghsa_funding",
+      "True"
+    ]);
 
   // Define queries for typical details page.
   const queries = {
