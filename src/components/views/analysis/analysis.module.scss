@@ -1,4 +1,16 @@
 @import "../../../assets/styles/colors.scss";
 
 .analysis {
+  .content {
+    display: flex;
+    flex-flow: column;
+    .chordDiagram {
+      display: flex;
+      flex-flow: row;
+    }
+    .tables {
+      display: flex;
+      flex-flow: row;
+    }
+  }
 }

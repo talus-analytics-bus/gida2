@@ -6,9 +6,10 @@ import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import TimeSlider from "../../misc/TimeSlider.js";
 import CoreCapacityDropdown from "../../misc/CoreCapacityDropdown.js";
+import TableInstance from "../../chart/table/TableInstance.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
-import Chord from "./content/Chord.js";
+import { renderChord } from "./content/Chord.js";
 
 // FC for Analysis.
 const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
@@ -18,9 +19,14 @@ const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
   // Track min and max year of data (consistent across tabs)
   const [minYear, setMinYear] = React.useState(Settings.startYear);
   const [maxYear, setMaxYear] = React.useState(Settings.endYear);
+  console.log("minYear:" + minYear);
+  console.log("maxYear:" + maxYear);
 
   // Set value filters
   const [coreCapacities, setCoreCapacities] = React.useState([]);
+
+  // Track chord component
+  const [chordComponent, setChordComponent] = React.useState(null);
 
   // Get flow type
   const flowType =
@@ -29,6 +35,67 @@ const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
   // Get pretty name for flow type
   const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
     .display_name;
+
+  // Get top funder table and top recipient table
+  const tableInstances = [];
+
+  const tables = [
+    ["Top funders", "Funder", "source", "flowBundlesFocusSources"],
+    ["Top recipients", "Recipient", "target", "flowBundlesFocusTargets"]
+  ];
+
+  tables.forEach(table => {
+    tableInstances.push(
+      <div>
+        <h2>{table[0]}</h2>
+        <TableInstance
+          tableColumns={[
+            {
+              title: table[1],
+              prop: table[2],
+              type: "text",
+              func: d => d[table[2]][0].name
+            },
+            {
+              title: "Committed",
+              prop: "committed_funds",
+              type: "num",
+              func: d =>
+                d.flow_types.committed_funds !== undefined
+                  ? d.flow_types.committed_funds.focus_node_weight
+                  : "",
+              render: d => Util.formatValue(d, "committed_funds")
+            },
+            {
+              title: "Disbursed",
+              prop: "disbursed_funds",
+              type: "num",
+              func: d =>
+                d.flow_types.disbursed_funds !== undefined
+                  ? d.flow_types.disbursed_funds.focus_node_weight
+                  : "",
+              render: d => Util.formatValue(d, "disbursed_funds")
+            }
+          ]}
+          tableData={data[table[3]].flow_bundles}
+        />
+      </div>
+    );
+  });
+
+  const chordContent = renderChord({
+    component: chordComponent,
+    setComponent: setChordComponent,
+    flowTypeInfo: flowTypeInfo,
+    ghsaOnly: ghsaOnly,
+    setGhsaOnly: setGhsaOnly,
+    coreCapacities: coreCapacities,
+    setCoreCapacities: setCoreCapacities,
+    minYear: minYear,
+    setMinYear: setMinYear,
+    maxYear: maxYear,
+    setMaxYear: setMaxYear
+  });
 
   // legend (maybe part of map?)
   return (
@@ -39,42 +106,66 @@ const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
         </div>
       </div>
       <div className={styles.content}>
-        {<Chord data={data.flowBundlesGeneral.flow_bundles} />}
-      </div>
-      <div className={styles.menu}>
-        <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-        <RadioToggle
-          label={"Choose"}
-          callback={setTransactionType}
-          curVal={transactionType}
-          choices={[
+        <h1>International funding network</h1>
+        <p>
+          The figure below illustrates the flow of funds from funder to
+          recipient. Countries and non-country funders are grouped along the
+          outside of the circle, and lines through the center of the circle
+          correspond to the transfer of funds from funder to recipient. Thicker
+          lines represent larger amounts of funding commitments or
+          disbursements. Hover over any line to see additional details on the
+          funding amount or funders and recipients involved. Amounts shown here
+          may differ from those shown elsewhere in this site because additional,
+          estimated commitments and disbursements are included to enable
+          visualization of more reported funding flows.
+        </p>
+        <div className={styles.chordDiagram}>
+          {chordContent}
+          <div className={styles.menu}>
+            <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+            <RadioToggle
+              label={"Choose"}
+              callback={setTransactionType}
+              curVal={transactionType}
+              choices={[
+                {
+                  name: "Committed",
+                  value: "committed"
+                },
+                {
+                  name: "Disbursed",
+                  value: "disbursed"
+                }
+              ]}
+            />
             {
-              name: "Committed",
-              value: "committed"
-            },
-            {
-              name: "Disbursed",
-              value: "disbursed"
+              // TODO: add this tooltip for CC dropdown
+              // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
             }
-          ]}
-        />
-        {
-          // TODO: add this tooltip for CC dropdown
-          // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-        }
-        <CoreCapacityDropdown
-          onChange={vals => {
-            setCoreCapacities(vals.map(v => v.value));
-          }}
-        />
-        <TimeSlider
-          minYearDefault={Settings.startYear}
-          maxYearDefault={Settings.endYear}
-          onAfterChange={years => {
-            setMinYear(years[0]);
-            setMaxYear(years[1]);
-          }}
-        />
+            <CoreCapacityDropdown
+              onChange={vals => {
+                setCoreCapacities(vals.map(v => v.value));
+              }}
+            />
+            <TimeSlider
+              minYearDefault={Settings.startYear}
+              maxYearDefault={Settings.endYear}
+              onAfterChange={years => {
+                setMinYear(years[0]);
+                setMaxYear(years[1]);
+              }}
+            />
+          </div>
+        </div>
+        <h1>International funding by funder/recipient</h1>
+        <p>
+          The tables below identify the funders that have committed the most
+          funds, and the recipients that have recieved the most funds. Click on
+          any entry in the tables for additional detail on that funder or
+          recipient's activities. For information on a funder or recipient not
+          included on this list, search for that country or organization below.
+        </p>
+        <div className={styles.tables}>{tableInstances.map(d => d)}</div>
       </div>
     </div>
   );
@@ -89,6 +180,7 @@ const remountComponent = ({
   ghsaOnly
 }) => {
   const remount = component.props.ghsaOnly !== ghsaOnly;
+  console.log("Remount component = " + remount);
   return remount;
 };
 
@@ -190,6 +282,14 @@ const getComponentData = async ({
     // Information about the entity
     flowBundlesGeneral: FlowBundleGeneralQuery({
       ...baseQueryParams
+    }),
+    flowBundlesFocusSources: FlowBundleFocusQuery({
+      ...baseQueryParams,
+      focus_node_type: "source"
+    }),
+    flowBundlesFocusTargets: FlowBundleFocusQuery({
+      ...baseQueryParams,
+      focus_node_type: "target"
     })
   };
 
@@ -208,7 +308,7 @@ const getComponentData = async ({
       setGhsaOnly={setGhsaOnly}
       setComponent={setComponent}
       activeTab={props.activeTab}
-      outbreakResponses={props.outbreakResponses}
+      outbreakResponses={props.outbreakResponses || []}
       setOutbreakResponses={props.setOutbreakResponses}
     />
   );
