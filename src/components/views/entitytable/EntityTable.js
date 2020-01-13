@@ -526,10 +526,13 @@ const getComponentData = async ({
   // If GHSA page, then filter by GHSA.
   if (id === "ghsa" || ghsaOnly === "true") {
     baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "true"]
+      ["ghsa_funding", "True"]
     ];
-    baseFlowQueryParams.filters.flow_info_filters = [["ghsa_funding", "true"]];
+    baseFlowQueryParams.filters.flow_info_filters = [["ghsa_funding", "True"]];
   }
+
+  console.log("baseFlowQueryParams");
+  console.log(baseFlowQueryParams);
 
   // Define queries for typical entityTable page.
   const queries = {
