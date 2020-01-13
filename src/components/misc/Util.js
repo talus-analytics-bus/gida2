@@ -812,13 +812,13 @@ Util.formatValue = (val, cn, units = true) => {
       case "committed_funds":
       case "funds":
       case "needs_met":
-        if (val === -9999 || val === "zzz") return val;
+        if (val === -9999 || val === "zzz") return undefined;
         else return Util.money(val, units); // TODO units
       case "provided_inkind":
       case "committed_inkind":
       case "inkind":
         if (val === "unknown") return "Specific amount not reported";
-        else if (val === -9999 || val === "zzz") return val;
+        else if (val === -9999 || val === "zzz") return undefined;
         else return val || 0;
       default:
         return val;

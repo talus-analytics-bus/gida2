@@ -375,7 +375,7 @@ const EntityTable = ({
                   : undefined,
               type: "num",
               prop: "provided_inkind",
-              render: val => Util.formatValue(val, "yes_no"),
+              render: val => Util.formatValue(val, "inkind"),
               defaultContent: "n/a"
             },
             {
@@ -386,7 +386,7 @@ const EntityTable = ({
                   : undefined,
               type: "num",
               prop: "committed_inkind",
-              render: val => Util.formatValue(val, "yes_no"),
+              render: val => Util.formatValue(val, "inkind"),
               defaultContent: "n/a"
             }
           ]}
