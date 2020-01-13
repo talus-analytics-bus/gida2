@@ -534,22 +534,24 @@ const getComponentData = async ({
   setGhsaOnly
 }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
-  const nodeType =
-    entityRole === undefined
-      ? "target"
-      : entityRole === "recipient"
-      ? "target"
-      : "source";
-  const otherNodeType = entityRole === "recipient" ? "source" : "target";
+  let nodeType;
+  if (entityRole === undefined) {
+    if (id === "ghsa") {
+      nodeType = "target";
+    } else if (otherId !== undefined) {
+      nodeType = "source";
+    } else {
+      console.log("[ERROR] Node type is undefined! EntityTable.js");
+    }
+  } else {
+    nodeType = entityRole === "funder" ? "source" : "target";
+  }
+
+  const otherNodeType = nodeType === "target" ? "source" : "target";
   const filterNodeType = nodeType + "s";
   const filterNodeTypeOther = otherNodeType + "s";
 
-  console.log("nodeType");
-  console.log(nodeType);
-
   if (isNaN(otherId)) otherId = undefined;
-  console.log("otherId - EntityTable.js");
-  console.log(otherId);
   const baseQueryParams = {
     focus_node_ids: id !== "ghsa" ? [id] : null,
     focus_node_type: id !== "ghsa" ? nodeType : otherNodeType,
