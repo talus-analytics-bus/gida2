@@ -385,12 +385,16 @@ const getComponentData = async ({
     include_master_summary: true
   };
 
-  // If GHSA page, then filter by GHSA projects.
-  if (id === "ghsa" || ghsaOnly === "true")
+  // If GHSA page, then filter by GHSA projects, and add "year" filter to the
+  // summaries.
+  // TODO ADD summaries to FlowBundleGeneralQuery so we don't need this hack.
+  if (id === "ghsa" || ghsaOnly === "true") {
+    baseQueryParams.summaries.flow_info_summary.push("year");
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
       "True"
     ]);
+  }
 
   // Define queries for typical details page.
   const queries = {
@@ -403,13 +407,6 @@ const getComponentData = async ({
     flowBundlesFocusOther: FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: true
-    }),
-    focusSummary: FlowBundleFocusQuery({
-      ...baseQueryParams,
-      by_neighbor: false,
-      summaries: {
-        flow_info_summary: ["core_capacities", "core_elements", "year"]
-      }
     })
   };
 
@@ -422,11 +419,23 @@ const getComponentData = async ({
       focus_node_ids: null
     });
     queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
+    queries["focusSummary"] = FlowBundleFocusQuery({
+      ...baseQueryParams,
+      focus_node_type: entityRole === "recipient" ? "target" : "source",
+      focus_node_ids: null
+    });
   } else {
     // Flow bundles (either focus or general depending on the page type)
     queries["flowBundles"] = FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: true
+    });
+    queries["focusSummary"] = FlowBundleFocusQuery({
+      ...baseQueryParams,
+      by_neighbor: false,
+      summaries: {
+        flow_info_summary: ["core_capacities", "core_elements", "year"]
+      }
     });
   }
 
