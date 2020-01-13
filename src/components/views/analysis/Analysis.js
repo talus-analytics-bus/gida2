@@ -154,7 +154,7 @@ const getComponentData = async ({
   const baseQueryParams = {
     focus_node_ids: null,
     focus_node_type: nodeType,
-    flow_type_ids: [1, 2, 3, 4],
+    flow_type_ids: [1, 2],
     start_date: `${props.minYear}-01-01`, // TODO check these two
     end_date: `${props.maxYear}-12-31`,
     by_neighbor: false,

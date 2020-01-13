@@ -10,16 +10,52 @@ const Chord = ({ data, ...props }) => {
     <TableInstance
       tableColumns={[
         {
+          title: "Source region",
+          prop: "source_region",
+          type: "text",
+          func: d => d.source[0].region
+        },
+        {
+          title: "Source sub-region",
+          prop: "source_subregion",
+          type: "text",
+          func: d => d.source[0].subregion
+        },
+        {
           title: "Source",
           prop: "source",
           type: "text",
           func: d => d.source.map(dd => dd.name).join("; ")
         },
         {
+          title: "Source type",
+          prop: "source_type",
+          type: "text",
+          func: d => d.source[0].type
+        },
+        {
+          title: "Target region",
+          prop: "target_region",
+          type: "text",
+          func: d => d.target[0].region
+        },
+        {
+          title: "Target sub-region",
+          prop: "target_subregion",
+          type: "text",
+          func: d => d.target[0].subregion
+        },
+        {
           title: "Target",
           prop: "target",
           type: "text",
           func: d => d.target.map(dd => dd.name).join("; ")
+        },
+        {
+          title: "Target type",
+          prop: "target_type",
+          type: "text",
+          func: d => d.target[0].type
         },
         {
           title: `Amount committed (${Settings.startYear} - ${
