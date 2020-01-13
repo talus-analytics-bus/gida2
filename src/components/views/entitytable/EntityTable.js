@@ -606,12 +606,8 @@ const getComponentData = async ({
       flow_type_ids: [5]
     }),
 
-    // // Flow bundles (either focus or general depending on the page type)
-    // flowBundles: FlowBundleGeneralQuery(baseQueryParams),
-
     // General flow bundles by neighbor, for funder/recipient tables.
     flowBundlesByNeighbor: FlowBundleFocusQuery({
-      // flowBundlesByNeighbor: FlowBundleGeneralQuery({
       ...baseQueryParams,
       by_neighbor: true
     })

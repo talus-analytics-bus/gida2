@@ -401,6 +401,12 @@ const getComponentData = async ({
     // Information about the entity
     nodeData: NodeQuery({ node_id: id }),
 
+    outbreakFlowBundles: FlowBundleFocusQuery({
+      ...baseQueryParams,
+      by_neighbor: true,
+      by_outbreak: id !== "ghsa"
+    }),
+
     // Flow bundles by source/target specific pairing, oriented from the other
     // node type (e.g., for a given source node whose page this is, return one
     // row per target node it has a flow with)

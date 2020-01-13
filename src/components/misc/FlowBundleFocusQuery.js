@@ -19,6 +19,7 @@ const FlowBundleFocusQuery = async function({
   include_master_summary = false,
   pair_node_id,
   by_node_categories = null,
+  by_outbreak = false,
   ...props
 }) {
   // Define URL parameters //
@@ -32,6 +33,7 @@ const FlowBundleFocusQuery = async function({
     by_neighbor: by_neighbor,
     include_master_summary: include_master_summary,
     pair_node_id: pair_node_id,
+    by_outbreak: by_outbreak,
     by_node_categories:
       by_node_categories !== null
         ? by_node_categories.join(",")
