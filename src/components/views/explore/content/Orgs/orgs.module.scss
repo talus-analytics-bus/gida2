@@ -3,4 +3,8 @@
   .hide {
     display: none;
   }
+  .tables {
+    display: flex;
+    flex-flow: row;
+  }
 }

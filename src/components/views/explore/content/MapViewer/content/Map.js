@@ -178,6 +178,7 @@ const Map = ({
 
   // Get data for d3Map
   const mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
+
   // Get datum for the selected node, if it exists.
   const d =
     nodeData !== undefined

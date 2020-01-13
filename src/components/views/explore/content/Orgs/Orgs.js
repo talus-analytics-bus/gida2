@@ -8,6 +8,14 @@ import TimeSlider from "../../../../misc/TimeSlider.js";
 import TableInstance from "../../../../chart/table/TableInstance.js";
 import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
+import {
+  getMapTooltipLabel,
+  getUnknownValueExplanation,
+  getMapColorScale,
+  getMapMetricValue
+} from "../../../../map/MapUtil.js";
+import { getNodeData, getTableRowData } from "../../../../misc/Data.js";
+import { getNodeLinkList } from "../../../../misc/Data.js";
 
 // FC for Orgs.
 const Orgs = ({
@@ -86,6 +94,92 @@ const Orgs = ({
   // Get whether metric has transaction type
   const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
 
+  // Get data for tables and tooltips.
+  // Define "columns" for map data.
+  const getTableColDefs = (nodeTypeForColDef, entityRoleForColDef) => {
+    return [
+      {
+        title: "Organization",
+        prop: nodeTypeForColDef,
+        type: "text",
+        func: d => JSON.stringify(d[nodeTypeForColDef]),
+        render: d =>
+          getNodeLinkList({
+            urlType: "details",
+            nodeList: JSON.parse(d),
+            entityRole: entityRoleForColDef,
+            id: undefined,
+            otherId: undefined
+          })
+      },
+      {
+        title: "Map metric raw value",
+        prop: "value_raw",
+        type: "num",
+        func: d =>
+          getMapMetricValue({
+            d,
+            supportType,
+            flowType,
+            coreCapacities,
+            forTooltip: false
+          })
+      },
+      {
+        title: "Map metric display value",
+        prop: "value",
+        type: "num",
+        render: d => Util.formatValue(d, supportType),
+        func: d =>
+          getMapMetricValue({
+            d,
+            supportType,
+            flowType,
+            coreCapacities,
+            forTooltip: true
+          })
+      },
+      {
+        title: "Unknown value explanation (if applicable)",
+        prop: "unknown_explanation",
+        type: "text",
+        render: d => Util.formatValue(d, "text"),
+        func: d =>
+          getUnknownValueExplanation({
+            datum: d,
+            value: getMapMetricValue({
+              d,
+              supportType,
+              flowType,
+              coreCapacities
+            }),
+            entityRole: entityRoleForColDef
+          })
+      },
+      {
+        title: "Map tooltip label",
+        prop: "tooltip_label",
+        type: "text",
+        render: d =>
+          getMapTooltipLabel({
+            val: d,
+            supportType,
+            flowType,
+            minYear,
+            maxYear,
+            entityRoleForColDef
+          }),
+        func: d =>
+          getMapMetricValue({
+            d,
+            supportType,
+            flowType,
+            coreCapacities
+          })
+      }
+    ];
+  };
+
   // Get top funder table and top recipient table
   const tableInstances = [];
 
@@ -95,6 +189,10 @@ const Orgs = ({
   ];
 
   tables.forEach(table => {
+    const orgTableData = getTableRowData({
+      tableRowDefs: getTableColDefs(table[2], table[1].toLowerCase()),
+      data: data[table[3]].flow_bundles
+    });
     tableInstances.push(
       <div>
         <h2>{table[0]}</h2>
@@ -104,31 +202,26 @@ const Orgs = ({
               title: table[1],
               prop: table[2],
               type: "text",
-              func: d => d[table[2]][0].name
+              func: d => d[table[2]],
+              render: d =>
+                getNodeLinkList({
+                  urlType: "details",
+                  nodeList: JSON.parse(d),
+                  entityRole: table[1].toLowerCase(),
+                  id: undefined,
+                  otherId: undefined
+                })
             },
             {
-              title: "Committed",
-              prop: "committed_funds",
+              title: flowTypeDisplayName,
+              prop: "value",
               type: "num",
-              func: d =>
-                d.flow_types.committed_funds !== undefined
-                  ? d.flow_types.committed_funds.focus_node_weight
-                  : "",
-              render: d => Util.formatValue(d, "committed_funds")
-            },
-            {
-              title: "Disbursed",
-              prop: "disbursed_funds",
-              type: "num",
-              func: d =>
-                d.flow_types.disbursed_funds !== undefined
-                  ? d.flow_types.disbursed_funds.focus_node_weight
-                  : "",
-              render: d => Util.formatValue(d, "disbursed_funds")
+              func: d => d.value_raw,
+              render: d => Util.formatValue(d, flowType)
             }
           ]}
-          tableData={data[table[3]].flow_bundles}
-          sortByProp={"disbursed_funds"}
+          tableData={orgTableData}
+          sortByProp={"value"}
         />
       </div>
     );
