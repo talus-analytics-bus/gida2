@@ -11,6 +11,7 @@ import { renderExplore } from "./components/views/explore/Explore.js";
 import { renderDetails } from "./components/views/details/Details.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
 import { renderExport } from "./components/views/export/Export.js";
+import { renderAnalysis } from "./components/views/analysis/Analysis.js";
 
 // styles
 import styles from "./App.module.scss";
@@ -39,6 +40,7 @@ const App = () => {
   const [entityTableComponent, setEntityTableComponent] = React.useState(null);
   const [exploreComponent, setExploreComponent] = React.useState(null);
   const [exportComponent, setExportComponent] = React.useState(null);
+  const [analysisComponent, setAnalysisComponent] = React.useState(null);
 
   // Track data selections
   const [ghsaOnly, setGhsaOnly] = React.useState("false");
@@ -299,6 +301,22 @@ const App = () => {
                     ...d.match.params,
                     component: exportComponent,
                     setComponent: setExportComponent
+                  });
+                }}
+              />
+              <Route
+                exact
+                path="/analysis"
+                render={d => {
+                  return renderAnalysis({
+                    ...d.match.params,
+                    component: analysisComponent,
+                    setComponent: setAnalysisComponent,
+                    flowTypeInfo: flowTypeInfo,
+                    ghsaOnly: ghsaOnly,
+                    setGhsaOnly: setGhsaOnly,
+                    coreCapacities: [],
+                    outbreakResponses: []
                   });
                 }}
               />
