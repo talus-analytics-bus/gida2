@@ -72,7 +72,6 @@ export const getMapMetricValue = ({
       iso2: iso2, // TODO
       coreCapacities
     });
-
     const avgJeeScore = d3.mean(jeeScores, d => d.score);
     return avgJeeScore;
   } else if (supportType === "needs_met") {

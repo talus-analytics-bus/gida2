@@ -12,17 +12,19 @@ export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
   const scoresForPlace = scores[iso2];
   if (scoresForPlace === undefined) return [];
   const ccsToInclude =
-    coreCapacities.length > 0 ? coreCapacities : core_capacities;
+    coreCapacities.length > 0
+      ? coreCapacities
+      : core_capacities.map(cc => cc.value);
   const output = ccsToInclude.map(cc => {
-    const scoreForPlace = scoresForPlace[cc.value];
+    const scoreForPlace = scoresForPlace[cc];
     if (scoreForPlace === undefined)
       return {
-        value: cc.value,
+        value: cc,
         score: null
       };
     else
       return {
-        value: cc.value,
+        value: cc,
         score: scoreForPlace // TODO
       };
   });
