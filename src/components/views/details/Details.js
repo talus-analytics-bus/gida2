@@ -274,12 +274,14 @@ const Details = ({
           {pageType === "entity" && <span>({entityRoleNoun} profile)</span>}
         </h1>
         {pageType !== "ghsa" && (
-          <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+          <div className={styles.radioToggles}>
+            <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+            <EntityRoleToggle
+              entityRole={entityRole}
+              redirectUrlFunc={v => `/details/${id}/${v}`}
+            />
+          </div>
         )}
-        <EntityRoleToggle
-          entityRole={entityRole}
-          redirectUrlFunc={v => `/details/${id}/${v}`}
-        />
         {pageType !== "ghsa" && (
           <Link to={"/details/ghsa"}>
             <button>GHSA project details</button>
@@ -362,7 +364,12 @@ const getComponentData = async ({
   // Define typical base query parameters used in FlowQuery,
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
   // modified in code below.
-  const nodeType = entityRole === "recipient" ? "target" : "source";
+  const nodeType =
+    entityRole === undefined
+      ? "target"
+      : entityRole === "recipient"
+      ? "target"
+      : "source";
   const otherNodeType = entityRole === "recipient" ? "source" : "target";
   const baseQueryParams = {
     focus_node_ids: id === "ghsa" ? null : [id],
@@ -371,8 +378,7 @@ const getComponentData = async ({
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
     by_neighbor: false,
-    filters: {},
-    // filters: id !== "ghsa" ? { flow_attr_filters: [[nodeType + 's', id]] } : {},
+    filters: { parent_flow_info_filters: [] },
     summaries: {
       flow_info_summary: ["core_capacities", "core_elements"]
     },
@@ -381,9 +387,10 @@ const getComponentData = async ({
 
   // If GHSA page, then filter by GHSA projects.
   if (id === "ghsa" || ghsaOnly === "true")
-    baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "True"]
-    ];
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "ghsa_funding",
+      "True"
+    ]);
 
   // Define queries for typical details page.
   const queries = {
