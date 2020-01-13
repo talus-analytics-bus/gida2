@@ -17,7 +17,8 @@ const FlowBundleFocusQuery = async function({
   filters = {},
   summaries = {},
   include_master_summary = false,
-  pair_node_id
+  pair_node_id,
+  ...props
 }) {
   // Define URL parameters //
   const params = {
@@ -55,6 +56,17 @@ const FlowBundleFocusQuery = async function({
     data,
     config
   );
+
+  // Post-processing (move to API though)
+  if (props.single_source_and_target === true) {
+    res.data.flow_bundles = res.data.flow_bundles.filter(d => {
+      return (
+        ((d.sources === undefined || d.sources.length === 1) &&
+          d.targets === undefined) ||
+        d.targets.length === 1
+      );
+    });
+  }
 
   // Return response data
   return res.data;

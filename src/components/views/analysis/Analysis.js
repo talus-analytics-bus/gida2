@@ -8,6 +8,7 @@ import TimeSlider from "../../misc/TimeSlider.js";
 import CoreCapacityDropdown from "../../misc/CoreCapacityDropdown.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
+import Chord from "./content/Chord.js";
 
 // FC for Analysis.
 const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
@@ -37,7 +38,9 @@ const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
           <div>International funding network</div>
         </div>
       </div>
-      <div className={styles.content}>Analysis placeholder</div>
+      <div className={styles.content}>
+        {<Chord data={data.flowBundlesGeneral.flow_bundles} />}
+      </div>
       <div className={styles.menu}>
         <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
         <RadioToggle
@@ -157,7 +160,8 @@ const getComponentData = async ({
     by_neighbor: false,
     filters: {},
     summaries: {},
-    include_master_summary: false
+    include_master_summary: false,
+    single_source_and_target: true
   };
 
   // If core capacity filters provided, use those
@@ -184,7 +188,7 @@ const getComponentData = async ({
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
-    flowBundles: FlowBundleFocusQuery({
+    flowBundlesGeneral: FlowBundleGeneralQuery({
       ...baseQueryParams
     })
   };
