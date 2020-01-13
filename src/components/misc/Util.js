@@ -786,7 +786,8 @@ Util.getScoreName = score => {
 };
 
 Util.getScoreShortName = score => {
-  if (score < 2) {
+  if (score === -9999 || score === "zzz") return "Unspecified";
+  else if (score < 2) {
     return "None";
   } else if (score < 3) {
     return "Limited";
@@ -798,25 +799,27 @@ Util.getScoreShortName = score => {
 
 // Formats value based on column name
 Util.formatValue = (val, cn, units = true) => {
-  if (val === -9999 || val === "zzz") return "";
   if (val === -8888 || val === "yyy") return "Specific amount not reported";
   if (val === "n/a") return val;
   if (val === undefined || val === null) val = 0;
   else {
     switch (cn) {
       case "jee":
-        if (typeof val === "string") return val;
+        if (val === -9999 || val === "zzz") return val;
+        else if (typeof val === "string") return val;
         else return Util.getScoreName(val);
       case "disbursed_funds":
       case "committed_funds":
       case "funds":
       case "needs_met":
-        return Util.money(val, units); // TODO units
+        if (val === -9999 || val === "zzz") return val;
+        else return Util.money(val, units); // TODO units
       case "provided_inkind":
       case "committed_inkind":
       case "inkind":
         if (val === "unknown") return "Specific amount not reported";
-        return val || 0;
+        else if (val === -9999 || val === "zzz") return val;
+        else return val || 0;
       default:
         return val;
     }

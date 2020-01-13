@@ -21,7 +21,14 @@ export const purples = [
   "#3c003a"
 ];
 
-const jeeColors = ["#ac1329", "#ecb97e", "#d28831", "#00995e", "#006840"];
+const jeeColors = [
+  "gray",
+  "#ac1329",
+  "#ecb97e",
+  "#d28831",
+  "#00995e",
+  "#006840"
+];
 
 export const blues = [
   "#e0eed8",
@@ -58,13 +65,14 @@ export const getMapMetricValue = ({
       : undefined;
   } else if (supportType === "jee") {
     // Get JEE score values.
+    const nodes = d.target ? d.target : d.source;
+    const iso2 = nodes[0].id.toString();
     const jeeScores = getJeeScores({
-      scores: undefined, // TODO
-      iso2: undefined, // TODO
+      scores: scores, // TODO
+      iso2: iso2, // TODO
       coreCapacities
     });
-    console.log("d - getMapMetricValue");
-    console.log(d);
+
     const avgJeeScore = d3.mean(jeeScores, d => d.score);
     return avgJeeScore;
   } else if (supportType === "needs_met") {
@@ -74,9 +82,20 @@ export const getMapMetricValue = ({
         ? d.flow_types["disbursed_funds"].focus_node_weight
         : undefined;
     } else {
+      // Get JEE score values.
+      const nodes = d.target ? d.target : d.source;
+      const iso2 = nodes[0].id.toString();
+      const jeeScores = getJeeScores({
+        scores: scores, // TODO
+        iso2: iso2, // TODO
+        coreCapacities
+      });
+
+      const avgJeeScore = d3.mean(jeeScores, d => d.score);
+
       return calculateNeedsMet({
         datum: d,
-        avgCapScores: undefined // TODO
+        avgCapScores: avgJeeScore
       });
     }
   }
@@ -90,7 +109,13 @@ export const getMapMetricValue = ({
  * @method getMapColorScale
  */
 // TODO
-export const getMapColorScale = ({ supportType, data, flowType }) => {
+export const getMapColorScale = ({
+  supportType,
+  data,
+  flowType,
+  jeeScores,
+  coreCapacities
+}) => {
   const colorScaleMaker = ({ domain, range, type }) => {
     const baseScale = d3[type || "scaleThreshold"]()
       .domain(domain)
@@ -139,15 +164,25 @@ export const getMapColorScale = ({ supportType, data, flowType }) => {
     });
   } else if (supportType === "needs_met") {
     // Get values for use in calculating quantile scales.
-    // TODO perform calculation with JEE scores.
     const values = data
       .map(d => {
+        // Get JEE score values.
+        const nodes = d.target ? d.target : d.source;
+        const iso2 = nodes[0].id.toString();
+        const allScores = getJeeScores({
+          scores: jeeScores, // TODO
+          iso2: iso2, // TODO
+          coreCapacities
+        });
+
+        const avgJeeScore = d3.mean(allScores, d => d.score);
+
         return calculateNeedsMet({
           datum: d,
-          avgCapScores: undefined // TODO
+          avgCapScores: avgJeeScore // TODO
         });
       })
-      .filter(d => d !== null && d !== "unknown");
+      .filter(d => d !== null && d !== "unknown" && d >= 0);
 
     return colorScaleMaker({
       domain: values,
@@ -156,7 +191,14 @@ export const getMapColorScale = ({ supportType, data, flowType }) => {
     });
   } else if (supportType === "jee") {
     return colorScaleMaker({
-      domain: ["None", "Limited", "Developed", "Demonstrated", "Sustained"],
+      domain: [
+        "Unspecified",
+        "None",
+        "Limited",
+        "Developed",
+        "Demonstrated",
+        "Sustained"
+      ],
       range: jeeColors,
       type: "scaleOrdinal"
     });
@@ -185,18 +227,23 @@ export const getMapTooltipLabel = ({
   minYear,
   maxYear
 }) => {
-  if (val === -9999 || val === "zzz" || val === undefined) return "";
   if (val === -8888 || val === "yyy") {
     return <span className={"text-sm"}>Specific amounts not indicated</span>;
   } else {
     if (supportType === "jee") {
-      return <b>{Util.getScoreName(val)}</b>;
-    } else {
+      if (val === -9999 || val === "zzz") {
+        return <span>No JEE score data currently available</span>;
+      } else return <b>{Util.getScoreName(val)}</b>;
+    } else if (val === -9999 || val === "zzz" || val === undefined) return "";
+    else {
       const timeString =
         minYear === maxYear ? `in ${minYear}` : `from ${minYear} to ${maxYear}`;
+      const flowTypeToUse =
+        supportType === "needs_met" ? "disbursed_funds" : flowType;
       return (
         <span>
-          Total <b>{Util.formatLabel(flowType)}</b> {timeString} ({entityRole})
+          Total <b>{Util.formatLabel(flowTypeToUse)}</b> {timeString} (
+          {entityRole})
         </span>
       );
     }
@@ -211,7 +258,7 @@ export const getMapTooltipLabel = ({
  * @return {[type]}                              [description]
  */
 export const getUnknownValueExplanation = ({ datum, value, entityRole }) => {
-  if (value === "unknown") {
+  if (value === "unknown" || value === -8888) {
     const nodeType = entityRole === "funder" ? "source" : "target";
     // const nodesToShow =
     //   datum[nodeType].length > 1

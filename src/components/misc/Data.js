@@ -8,13 +8,23 @@ import * as d3 from "d3/dist/d3.min";
 // the location with the provided ISO2 code.
 export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
   // TODO
+  if (iso2 === undefined) return [];
+  const scoresForPlace = scores[iso2];
+  if (scoresForPlace === undefined) return [];
   const ccsToInclude =
     coreCapacities.length > 0 ? coreCapacities : core_capacities;
   const output = ccsToInclude.map(cc => {
-    return {
-      value: cc.value,
-      score: 4.5 // TODO
-    };
+    const scoreForPlace = scoresForPlace[cc.value];
+    if (scoreForPlace === undefined)
+      return {
+        value: cc.value,
+        score: null
+      };
+    else
+      return {
+        value: cc.value,
+        score: scoreForPlace // TODO
+      };
   });
   return output;
 };
@@ -28,7 +38,7 @@ export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
  * @param  {[type]}          avgCapScores           [description]
  * @return {[type]}                                 [description]
  */
-const debugNeedsMet = true;
+const debugNeedsMet = false;
 export const calculateNeedsMet = ({ datum, avgCapScores }) => {
   // Get the disbursed funds received for this datum.
   const disbursedFundsReceived = datum.flow_types["disbursed_funds"]
@@ -36,24 +46,16 @@ export const calculateNeedsMet = ({ datum, avgCapScores }) => {
     : undefined;
 
   // If undefined, then return null for the needs met value.
-  if (disbursedFundsReceived === undefined) return null;
+  if (disbursedFundsReceived === undefined) return -9999;
+  if (disbursedFundsReceived === "unknown") return -8888;
+  if (avgCapScores === undefined) return -9999;
   else {
-    // Otherwise, continue.
-    // If the average core capacity scores are undefined and we're in debug
-    // mode, then define a placeholder value.
-    if (avgCapScores === undefined && debugNeedsMet)
-      avgCapScores = [{ value: 1 }];
-    // Otherwise, return null.
-    else if (avgCapScores === undefined) return null;
     // Finally, perform the needs met calculation if needed data are avail.
-    // Get the average of the core capacity scores (filtered).
-    const score = d3.mean(avgCapScores, d => d.value);
-
     // The numerator.
     const numerator = 10 + Math.log10(1 + disbursedFundsReceived);
 
     // The denominator.
-    const denominator = 5.01 - score;
+    const denominator = 5.01 - avgCapScores;
 
     // Needs met is the numerator divided by the denominator.
     const needsMet = numerator / denominator;

@@ -26,6 +26,7 @@ const Map = ({
   minYear,
   maxYear,
   coreCapacities,
+  jeeScores,
   ...props
 }) => {
   // Get node type from entity role
@@ -35,7 +36,9 @@ const Map = ({
   const colorScale = getMapColorScale({
     supportType: supportType,
     data: data,
-    flowType: flowType
+    flowType: flowType,
+    jeeScores,
+    coreCapacities
   });
 
   // Define hatch mark pattern.
@@ -97,7 +100,8 @@ const Map = ({
           supportType,
           flowType,
           coreCapacities,
-          forTooltip: false
+          forTooltip: false,
+          scores: jeeScores
         })
     },
     {
@@ -111,7 +115,8 @@ const Map = ({
           supportType,
           flowType,
           coreCapacities,
-          forTooltip: true
+          forTooltip: true,
+          scores: jeeScores
         })
     },
     {
@@ -126,7 +131,8 @@ const Map = ({
             d,
             supportType,
             flowType,
-            coreCapacities
+            coreCapacities,
+            scores: jeeScores
           }),
           entityRole: entityRole
         })
@@ -149,7 +155,8 @@ const Map = ({
           d,
           supportType,
           flowType,
-          coreCapacities
+          coreCapacities,
+          scores: jeeScores
         })
     },
     {
@@ -172,7 +179,14 @@ const Map = ({
           {defs}
         </svg>
       ),
-      func: d => getMapMetricValue({ d, supportType, flowType, coreCapacities })
+      func: d =>
+        getMapMetricValue({
+          d,
+          supportType,
+          flowType,
+          coreCapacities,
+          scores: jeeScores
+        })
     }
   ];
 

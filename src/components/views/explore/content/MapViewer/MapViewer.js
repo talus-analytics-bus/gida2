@@ -8,6 +8,7 @@ import Util from "../../../../misc/Util.js";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
+import ScoreQuery from "../../../../misc/ScoreQuery.js";
 
 // Local content components
 import Map from "./content/Map.js";
@@ -110,6 +111,7 @@ const MapViewer = ({
           entityRole={entityRole}
           flowType={flowType}
           data={data.flowBundlesMap.flow_bundles}
+          jeeScores={data.jeeScores}
           minYear={minYear}
           maxYear={maxYear}
           coreCapacities={coreCapacities}
@@ -315,6 +317,9 @@ const getComponentData = async ({
     // Information about the entity
     flowBundlesMap: FlowBundleFocusQuery({
       ...baseQueryParams
+    }),
+    jeeScores: ScoreQuery({
+      type: "jee_v1"
     })
   };
 
