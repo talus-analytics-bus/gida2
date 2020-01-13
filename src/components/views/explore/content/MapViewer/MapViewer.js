@@ -109,7 +109,7 @@ const MapViewer = ({
           supportType={supportType}
           entityRole={entityRole}
           flowType={flowType}
-          data={data.flowBundlesMap.flow_bundles}
+          data={data.flowBundlesMap.country_flow_bundles}
           minYear={minYear}
           maxYear={maxYear}
           coreCapacities={coreCapacities}
@@ -283,7 +283,8 @@ const getComponentData = async ({
     by_neighbor: false,
     filters: { parent_flow_info_filters: [] },
     summaries: {},
-    include_master_summary: false
+    include_master_summary: false,
+    by_node_categories: ["country", "organization"]
   };
 
   // If core capacity filters provided, use those
@@ -313,7 +314,6 @@ const getComponentData = async ({
     // Information about the entity
     flowBundlesMap: FlowBundleFocusQuery({
       ...baseQueryParams
-      // node_category: ["country"]
     })
   };
 

@@ -18,6 +18,7 @@ const FlowBundleFocusQuery = async function({
   summaries = {},
   include_master_summary = false,
   pair_node_id,
+  by_node_categories,
   ...props
 }) {
   // Define URL parameters //
@@ -30,7 +31,11 @@ const FlowBundleFocusQuery = async function({
     flow_type_ids: flow_type_ids.join(","),
     by_neighbor: by_neighbor,
     include_master_summary: include_master_summary,
-    pair_node_id: pair_node_id
+    pair_node_id: pair_node_id,
+    by_node_categories:
+      by_node_categories !== null
+        ? by_node_categories.join(",")
+        : by_node_categories
   };
 
   // Send start and end dates if they are provided, otherwise do not send.
