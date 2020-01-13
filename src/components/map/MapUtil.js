@@ -48,7 +48,8 @@ export const getMapMetricValue = ({
   d,
   flowType,
   coreCapacities,
-  forTooltip = false
+  forTooltip = false,
+  scores = {}
 }) => {
   if (["funds", "inkind"].includes(supportType)) {
     // Get assistance flow values
@@ -62,6 +63,8 @@ export const getMapMetricValue = ({
       iso2: undefined, // TODO
       coreCapacities
     });
+    console.log("d - getMapMetricValue");
+    console.log(d);
     const avgJeeScore = d3.mean(jeeScores, d => d.score);
     return avgJeeScore;
   } else if (supportType === "needs_met") {
