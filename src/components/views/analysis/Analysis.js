@@ -19,8 +19,6 @@ const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
   // Track min and max year of data (consistent across tabs)
   const [minYear, setMinYear] = React.useState(Settings.startYear);
   const [maxYear, setMaxYear] = React.useState(Settings.endYear);
-  console.log("minYear:" + minYear);
-  console.log("maxYear:" + maxYear);
 
   // Set value filters
   const [coreCapacities, setCoreCapacities] = React.useState([]);
@@ -78,6 +76,7 @@ const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
             }
           ]}
           tableData={data[table[3]].flow_bundles}
+          sortByProp={"disbursed_funds"}
         />
       </div>
     );
