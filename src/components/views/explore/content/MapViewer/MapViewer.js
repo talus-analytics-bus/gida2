@@ -109,7 +109,7 @@ const MapViewer = ({
           supportType={supportType}
           entityRole={entityRole}
           flowType={flowType}
-          data={data.flowBundlesMap.country_flow_bundles}
+          data={data.flowBundlesMap.flow_bundles}
           minYear={minYear}
           maxYear={maxYear}
           coreCapacities={coreCapacities}
@@ -284,7 +284,8 @@ const getComponentData = async ({
     filters: { parent_flow_info_filters: [] },
     summaries: {},
     include_master_summary: false,
-    by_node_categories: ["country", "organization"]
+    node_category: ["country"]
+    // by_node_categories: ["country", "organization"]
   };
 
   // If core capacity filters provided, use those
