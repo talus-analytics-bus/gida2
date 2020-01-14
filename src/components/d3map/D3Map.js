@@ -5,13 +5,6 @@ import WorldMap from "./worldMap.js";
 import Util from "../misc/Util.js";
 import axios from "axios";
 
-// import {
-//   getMapMetricValue,
-//   getMapTooltipLabel,
-//   getUnknownValueExplanation
-// } from "../map/MapUtil.js";
-// import { getJeeScores } from "../misc/Data.js";
-
 // FC
 const D3Map = ({
   mapData,
@@ -88,7 +81,6 @@ const D3Map = ({
 
   return (
     <div className={styles.d3Map}>
-      Active country = {activeCountry}
       {
         // placeholderTable
       }
