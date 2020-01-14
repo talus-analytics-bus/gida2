@@ -78,11 +78,20 @@ class WorldMap extends Chart {
       .selectAll("g")
       .selectAll("." + styles.country)
       .style("fill", "")
+      .classed(styles.hatched, false)
       .transition()
       .duration(1000)
-      .style("fill", d => {
-        const match = data.find(dd => dd.id === d.properties.NAME);
+      .style("fill", function(d) {
+        const match = data.find(dd => dd.id === d.properties.place_id);
+        console.log(match);
         if (match !== undefined) {
+          // Set hatch if needed
+          d3.select(this).classed(
+            styles.hatched,
+            match.value === "yyy" || match.value === -8888
+          );
+
+          // Return color
           return match.color;
         } else return "";
       });
@@ -132,6 +141,9 @@ class WorldMap extends Chart {
     if (this.mapSelector != ".funding-recipient-map") {
       this.addButtons();
     }
+
+    // Add hatch def link
+    this.svg.append("use").attr("xlink:href", "#hatchDefs");
   }
 
   addOverlay() {

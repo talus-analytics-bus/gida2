@@ -92,10 +92,10 @@ const Map = ({
         })
     },
     {
-      title: "Location (Name)",
-      prop: "name",
+      title: "Location (ID)",
+      prop: "id",
       type: "text",
-      func: d => d[nodeType][0].name,
+      func: d => d[nodeType][0].id,
       render: d => d
     },
     {
@@ -200,7 +200,8 @@ const Map = ({
 
   // Get data for d3Map
   const mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
-
+  console.log("mapData");
+  console.log(mapData);
   // Get datum for the selected node, if it exists.
   const d =
     nodeData !== undefined
