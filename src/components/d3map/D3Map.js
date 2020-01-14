@@ -37,6 +37,8 @@ const D3Map = ({
   // Update map coloring and tooltips etc. whenever flowtype is updated.
   React.useEffect(() => {
     if (mapLoaded) {
+      console.log("colorScale");
+      console.log(colorScale);
       worldMap.colorCountries(
         mapData.map(dd => {
           return { id: dd.id, value: dd.value, color: colorScale(dd.color) };

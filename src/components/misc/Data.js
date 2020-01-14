@@ -48,6 +48,7 @@ export const calculateNeedsMet = ({ datum, avgCapScores }) => {
     : undefined;
 
   // If undefined, then return null for the needs met value.
+  if (disbursedFundsReceived === undefined && avgCapScores < 4) return 0;
   if (disbursedFundsReceived === undefined) return -9999;
   if (disbursedFundsReceived === "unknown") return -8888;
   if (avgCapScores === undefined) return -9999;

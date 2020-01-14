@@ -73,7 +73,7 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
         <span>
           Needs
           <br />
-          met
+          unmet
         </span>,
         legendSpacer,
         legendSpacer,
@@ -82,7 +82,7 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
         <span>
           Needs
           <br />
-          unmet
+          met
         </span>
       ]
     : colorScale.values;

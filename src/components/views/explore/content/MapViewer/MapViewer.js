@@ -101,7 +101,7 @@ const MapViewer = ({
           <div>{getMapTitle({ supportType, entityRole })}</div>
           {metricHasTransactionType && <div>{flowTypeDisplayName}</div>}
         </div>
-        {supportType !== "needs_met" && (
+        {supportType !== "needs_met" && supportType !== "jee" && (
           <div className={styles.toggle}>
             <EntityRoleToggle
               entityRole={entityRole}

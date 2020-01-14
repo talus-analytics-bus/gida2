@@ -127,6 +127,9 @@ export const getMapColorScale = ({
       else if (unknownVal) return "#cccccc";
       else {
         if (supportType === "jee") {
+          if (typeof v === "number") {
+            v = Util.getScoreShortName(v);
+          }
           return baseScale(v);
         } else return baseScale(v);
       }

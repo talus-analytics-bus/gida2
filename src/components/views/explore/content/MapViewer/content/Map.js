@@ -199,7 +199,26 @@ const Map = ({
   ];
 
   // Get data for d3Map
-  const mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
+  let mapData;
+  if (supportType !== "jee") {
+    mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
+  } else {
+    const jeeScoreData = [];
+    // if place not in data...
+    for (let place_id in jeeScores) {
+      jeeScoreData.push({
+        [nodeType]: [
+          {
+            id: parseInt(place_id)
+          }
+        ]
+      });
+    }
+    mapData = getTableRowData({
+      tableRowDefs: d3MapDataFields,
+      data: jeeScoreData
+    });
+  }
   console.log("mapData");
   console.log(mapData);
   // Get datum for the selected node, if it exists.
