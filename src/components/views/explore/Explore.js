@@ -50,57 +50,61 @@ const Explore = ({
   const [coreCapacities, setCoreCapacities] = React.useState([]);
   const [outbreakResponses, setOutbreakResponses] = React.useState([]);
 
-  // Define content tabs
-  const sections = [
-    {
-      header: "Countries",
-      slug: "map",
-      content: renderMapViewer({
-        component: mapViewerComponent,
-        setComponent: setMapViewerComponent,
-        entityRole: entityRole,
-        setEntityRole: setEntityRole,
-        flowTypeInfo: flowTypeInfo,
-        ghsaOnly: ghsaOnly,
-        setGhsaOnly: setGhsaOnly,
-        coreCapacities: coreCapacities,
-        setCoreCapacities: setCoreCapacities,
-        outbreakResponses: outbreakResponses,
-        setOutbreakResponses: setOutbreakResponses,
-        minYear: minYear,
-        setMinYear: setMinYear,
-        maxYear: maxYear,
-        setMaxYear: setMaxYear
-      })
-    },
-    {
-      header: "Organizations",
-      slug: "org",
-      content: renderOrgs({
-        component: orgComponent,
-        setComponent: setOrgComponent,
-        entityRole: entityRole,
-        setEntityRole: setEntityRole,
-        flowTypeInfo: flowTypeInfo,
-        ghsaOnly: ghsaOnly,
-        setGhsaOnly: setGhsaOnly,
-        coreCapacities: coreCapacities,
-        setCoreCapacities: setCoreCapacities,
-        outbreakResponses: outbreakResponses,
-        setOutbreakResponses: setOutbreakResponses,
-        minYear: minYear,
-        setMinYear: setMinYear,
-        maxYear: maxYear,
-        setMaxYear: setMaxYear
-      })
-    }
-  ];
+  // Define content
+  const getContent = slug => {
+    switch (slug) {
+      default:
+      case "map":
+        return {
+          header: "Countries",
+          slug: "map",
+          content: renderMapViewer({
+            component: mapViewerComponent,
+            setComponent: setMapViewerComponent,
+            entityRole: entityRole,
+            setEntityRole: setEntityRole,
+            flowTypeInfo: flowTypeInfo,
+            ghsaOnly: ghsaOnly,
+            setGhsaOnly: setGhsaOnly,
+            coreCapacities: coreCapacities,
+            setCoreCapacities: setCoreCapacities,
+            outbreakResponses: outbreakResponses,
+            setOutbreakResponses: setOutbreakResponses,
+            minYear: minYear,
+            setMinYear: setMinYear,
+            maxYear: maxYear,
+            setMaxYear: setMaxYear
+          })
+        };
 
-  // Track current tab
-  const [curTab, setCurTab] = React.useState(activeTab || sections[0].slug);
+      case "org":
+        return {
+          header: "Organizations",
+          slug: "org",
+          content: renderOrgs({
+            component: orgComponent,
+            setComponent: setOrgComponent,
+            entityRole: entityRole,
+            setEntityRole: setEntityRole,
+            flowTypeInfo: flowTypeInfo,
+            ghsaOnly: ghsaOnly,
+            setGhsaOnly: setGhsaOnly,
+            coreCapacities: coreCapacities,
+            setCoreCapacities: setCoreCapacities,
+            outbreakResponses: outbreakResponses,
+            setOutbreakResponses: setOutbreakResponses,
+            minYear: minYear,
+            setMinYear: setMinYear,
+            maxYear: maxYear,
+            setMaxYear: setMaxYear
+          })
+        };
+    }
+  };
+  const section = getContent(activeTab);
 
   // Get header data
-  const headerData = getHeaderData(curTab);
+  const headerData = getHeaderData(activeTab);
 
   // When Explore is mounted, set to dark mode.
   // When Explore is unmounted (we leave the page) return to light mode.
@@ -122,11 +126,6 @@ const Explore = ({
         <h1>{headerData.header}</h1>
         <span>{headerData.instructions}</span>
         <div className={styles.controls}>
-          <div className={styles.tabs}>
-            {sections.map(s => (
-              <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
-            ))}
-          </div>
           <div className={styles.buttons}>
             <Link to={"/details/ghsa"}>
               <button>GHSA project details</button>
@@ -137,11 +136,7 @@ const Explore = ({
           </div>
         </div>
       </div>
-      <div className={styles.content}>
-        {sections.map(s => (
-          <Tab selected={curTab === s.slug} content={s.content} />
-        ))}
-      </div>
+      <div className={styles.content}>{section.content}</div>
     </div>
   );
 };
