@@ -318,7 +318,7 @@ const Map = ({
   let infoBoxData = {
     jeeScoreOfNode: jeeScoreOfNode,
     flowValues: getFlowValues({
-      supportTypeForValues: "funds"
+      supportTypeForValues: supportType
     }),
     colorScale: colorScale
   };

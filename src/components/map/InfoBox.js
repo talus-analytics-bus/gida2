@@ -69,7 +69,8 @@ const InfoBox = ({
         <div className={styles.content}>
           {infoBoxData.jeeScoreOfNode !== undefined &&
             Util.getScoreName(infoBoxData.jeeScoreOfNode)}
-          {flowValuesKnown &&
+          {supportType !== "jee" &&
+            flowValuesKnown &&
             infoBoxData.flowValues.map(d => (
               <div className={styles.flowValues}>
                 {d.value}
