@@ -160,7 +160,15 @@ class WorldMap extends Chart {
       .selectAll("g")
       .data(this.countryData)
       .enter()
-      .append("g");
+      .append("g")
+      .on("click", d => {
+        if (this.params.activeCountry !== d.properties.place_id) {
+          this.params.setActiveCountry(d.properties.place_id);
+          this.zoomTo(d);
+        } else {
+          this.reset();
+        }
+      });
 
     countryGroup
       .append("path")
@@ -237,6 +245,7 @@ class WorldMap extends Chart {
   }
 
   reset() {
+    this.params.setActiveCountry(null);
     this.svg
       .transition()
       .duration(750)

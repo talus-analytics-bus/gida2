@@ -24,21 +24,30 @@ const D3Map = ({
   ghsaOnly,
   ...props
 }) => {
-  console.log("Flow type: " + flowType);
   const [mapLoaded, setMapLoaded] = React.useState(false);
   const [worldMap, setWorldMap] = React.useState(null);
+  const [activeCountry, setActiveCountry] = React.useState(null);
 
   // Create map the first time it's loaded.
   React.useEffect(() => {
-    const worldMapNew = new WorldMap("." + styles.worldMap, { setMapLoaded });
+    const worldMapNew = new WorldMap("." + styles.worldMap, {
+      setMapLoaded,
+      setActiveCountry,
+      activeCountry
+    });
     setWorldMap(worldMapNew);
   }, []);
+
+  // Update active country if it changes
+  React.useEffect(() => {
+    if (worldMap !== null) {
+      worldMap.params.activeCountry = activeCountry;
+    }
+  }, [activeCountry]);
 
   // Update map coloring and tooltips etc. whenever flowtype is updated.
   React.useEffect(() => {
     if (mapLoaded) {
-      console.log("colorScale");
-      console.log(colorScale);
       worldMap.colorCountries(
         mapData.map(dd => {
           return { id: dd.id, value: dd.value, color: colorScale(dd.color) };
@@ -67,6 +76,7 @@ const D3Map = ({
 
   return (
     <div className={styles.d3Map}>
+      Active country = {activeCountry}
       {
         // placeholderTable
       }
