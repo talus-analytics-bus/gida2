@@ -1,6 +1,8 @@
 import React from "react";
 import styles from "./d3map.module.scss";
 import TableInstance from "../chart/table/TableInstance.js";
+import WorldMap from "./worldMap.js";
+
 // import {
 //   getMapMetricValue,
 //   getMapTooltipLabel,
@@ -8,8 +10,8 @@ import TableInstance from "../chart/table/TableInstance.js";
 // } from "../map/MapUtil.js";
 // import { getJeeScores } from "../misc/Data.js";
 
-// FC for D3Map.
-const d3Map = ({
+// FC
+const D3Map = ({
   mapData,
   colorScale,
   flowType,
@@ -21,16 +23,27 @@ const d3Map = ({
   d3MapDataFields,
   ...props
 }) => {
+  React.useEffect(() => {
+    const worldMap = new WorldMap("." + styles.worldMap, {});
+  }, []);
+
+  const placeholderTable = (
+    <TableInstance
+      useRowDataAsIs={true}
+      tableColumns={d3MapDataFields}
+      tableData={mapData}
+      sortByProp={"value_raw"}
+    />
+  );
+
   return (
     <div className={styles.d3Map}>
-      <TableInstance
-        useRowDataAsIs={true}
-        tableColumns={d3MapDataFields}
-        tableData={mapData}
-        sortByProp={"value_raw"}
-      />
+      {
+        // placeholderTable
+      }
+      {<div className={styles.worldMap} />}
     </div>
   );
 };
 
-export default d3Map;
+export default D3Map;
