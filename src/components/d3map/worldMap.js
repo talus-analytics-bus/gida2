@@ -5,8 +5,6 @@ import Chart from "../chart/Chart.js";
 import Util from "../misc/Util.js";
 import axios from "axios";
 import styles from "./worldmap.module.scss";
-// import stylesDetails from '../details.module.scss'
-// import ReactTooltip from 'react-tooltip'
 
 /**
  * Creates a D3.js world map in the container provided
@@ -23,10 +21,12 @@ class WorldMap extends Chart {
     // Load world JSON data
     axios.get(`${Util.API_URL}/world_json`).then(d => {
       this.world = d.data;
+      console.log("\nGetting topo...");
       this.topoworld = topojson.feature(
         this.world,
         this.world.objects.countries
       );
+      console.log("Got topo.");
 
       // Define transform that support map navigation
       this.transform = {
@@ -40,10 +40,12 @@ class WorldMap extends Chart {
 
       // Artificially hide Antarctica
       // TODO at dataset level
+      console.log("\nGetting features...");
       this.countryData = this.topoworld.features.filter(
         // d => d.properties.NAME === "France"
         d => d.properties.NAME !== "Antarctica"
       );
+      console.log("Got features.");
 
       // Set data variable
       this.data = undefined;
@@ -65,7 +67,25 @@ class WorldMap extends Chart {
 
       // Draw map
       this.draw();
+
+      // Set map as loaded
+      params.setMapLoaded(true);
     });
+  }
+
+  colorCountries(data) {
+    this[styles.countries]
+      .selectAll("g")
+      .selectAll("." + styles.country)
+      .style("fill", "")
+      .transition()
+      .duration(1000)
+      .style("fill", d => {
+        const match = data.find(dd => dd.id === d.properties.NAME);
+        if (match !== undefined) {
+          return match.color;
+        } else return "";
+      });
   }
 
   /**
@@ -104,7 +124,10 @@ class WorldMap extends Chart {
     this.svg.call(this.zoom);
 
     this.addOverlay();
+
+    console.log("\nAdding countries...");
     this.addCountries();
+    console.log("Added countries.");
 
     if (this.mapSelector != ".funding-recipient-map") {
       this.addButtons();

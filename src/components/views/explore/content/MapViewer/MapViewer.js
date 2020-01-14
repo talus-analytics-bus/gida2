@@ -30,7 +30,7 @@ const MapViewer = ({
   ...props
 }) => {
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = React.useState("committed");
+  const [transactionType, setTransactionType] = React.useState("disbursed");
 
   // Track support type selected for the map
   const [supportType, setSupportType] = React.useState("funds");
@@ -120,6 +120,7 @@ const MapViewer = ({
           minYear={minYear}
           maxYear={maxYear}
           coreCapacities={coreCapacities}
+          ghsaOnly={ghsaOnly}
         />
       </div>
       <div className={styles.menu}>

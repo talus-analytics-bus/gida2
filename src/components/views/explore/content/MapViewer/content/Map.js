@@ -27,6 +27,7 @@ const Map = ({
   maxYear,
   coreCapacities,
   jeeScores,
+  ghsaOnly,
   ...props
 }) => {
   // Get node type from entity role
@@ -77,7 +78,7 @@ const Map = ({
   // Define "columns" for map data.
   const d3MapDataFields = [
     {
-      title: "Location",
+      title: "Location (JSON)",
       prop: nodeType,
       type: "text",
       func: d => JSON.stringify(d[nodeType]),
@@ -89,6 +90,13 @@ const Map = ({
           id: undefined,
           otherId: undefined
         })
+    },
+    {
+      title: "Location (Name)",
+      prop: "name",
+      type: "text",
+      func: d => d[nodeType][0].name,
+      render: d => d
     },
     {
       title: "Map metric raw value",
@@ -356,7 +364,8 @@ const Map = ({
           maxYear,
           supportType,
           coreCapacities,
-          d3MapDataFields
+          d3MapDataFields,
+          ghsaOnly
         }}
       />
       <Legend {...{ colorScale, supportType, flowType }} />
