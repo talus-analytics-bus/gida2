@@ -46,7 +46,7 @@ const App = () => {
   const [ghsaOnly, setGhsaOnly] = React.useState("false");
 
   // Track whether styling is dark or light
-  const [isDark, setIsDark] = React.useState(true);
+  const [isDark, setIsDark] = React.useState(false);
 
   async function getAppData() {
     const queries = {

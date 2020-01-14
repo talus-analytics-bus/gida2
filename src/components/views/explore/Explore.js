@@ -20,9 +20,6 @@ const Explore = ({
   setGhsaOnly,
   ...props
 }) => {
-  // Set isDark defaults.
-  if (activeTab !== "map") props.setIsDark(false);
-
   // Returns correct header content given the active tab
   const getHeaderData = tab => {
     if (tab === "org") {
@@ -52,6 +49,18 @@ const Explore = ({
   // Set value filters
   const [coreCapacities, setCoreCapacities] = React.useState([]);
   const [outbreakResponses, setOutbreakResponses] = React.useState([]);
+
+  React.useEffect(() => {
+    // Set isDark defaults.
+    props.setIsDark(activeTab === "map");
+  }, []);
+
+  React.useEffect(() => {
+    // Set isDark defaults.
+    return () => {
+      props.setIsDark(false);
+    };
+  }, []);
 
   // Define content
   const getContent = slug => {
