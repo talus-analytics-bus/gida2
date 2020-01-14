@@ -73,7 +73,8 @@ const Details = ({
   // const masterSummary = data.flowBundles.master_summary;
 
   // Track outbreak funding
-  const outbreakTableData = data.flowBundlesFocusOther.by_outbreak;
+  const outbreakTableData =
+    id !== "ghsa" ? data.flowBundlesFocusOther.by_outbreak : [];
 
   // Track the Top Recipients/Funders table data
   const topTableData = getSummaryAttributeWeightsByNode({
