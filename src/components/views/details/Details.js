@@ -72,6 +72,9 @@ const Details = ({
   const masterSummary = data.focusSummary.master_summary;
   // const masterSummary = data.flowBundles.master_summary;
 
+  // Track outbreak funding
+  const outbreakTableData = data.flowBundlesFocusOther.by_outbreak;
+
   // Track the Top Recipients/Funders table data
   const topTableData = getSummaryAttributeWeightsByNode({
     data: data.flowBundlesFocusOther.flow_bundles,
@@ -158,6 +161,39 @@ const Details = ({
       ),
       toggleFlowType: false,
       hide: noData
+    },
+    {
+      header: <h2>Response funding by outbreak event</h2>,
+      content: (
+        <TableInstance
+          sortByProp={"amount"}
+          tableColumns={[
+            {
+              title: "Outbreak event",
+              prop: "event",
+              type: "text",
+              func: d => d.outbreak.name,
+              render: d => d
+            },
+            {
+              title: curFlowTypeName,
+              prop: "amount",
+              type: "num",
+              func: d => {
+                const ft = d.flow_bundles.flow_types[curFlowType];
+                if (ft === undefined) return -9999;
+                else return ft.focus_node_weight;
+              },
+              render: d => Util.formatValue(d, curFlowType)
+            }
+          ]}
+          tableData={outbreakTableData.filter(
+            d => d.flow_bundles.flow_types[curFlowType] !== undefined
+          )}
+        />
+      ),
+      toggleFlowType: true,
+      hide: noData || unknownDataOnly || noFinancialData
     },
     {
       header: <h2>Funding by core element</h2>,
