@@ -51,6 +51,8 @@ const D3Map = ({
         }).then(d => {
           setNodeData(d.data);
         });
+      } else {
+        setNodeData(undefined);
       }
     }
   }, [activeCountry]);

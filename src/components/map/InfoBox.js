@@ -20,8 +20,9 @@ const InfoBox = ({
   ...props
 }) => {
   // Track whether info box is visible or not
-  const [show, setShow] = React.useState(true);
+  const [show, setShow] = React.useState(nodeData !== undefined);
 
+  React.useEffect(() => setShow(nodeData !== undefined), [nodeData]);
   // Define whether the flow values are known or not (defined or not).
   // If they're not defined, will display a message explaining.
   const flowValuesKnown =
