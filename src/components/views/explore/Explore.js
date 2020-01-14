@@ -20,6 +20,9 @@ const Explore = ({
   setGhsaOnly,
   ...props
 }) => {
+  // Set isDark defaults.
+  if (activeTab !== "map") props.setIsDark(false);
+
   // Returns correct header content given the active tab
   const getHeaderData = tab => {
     if (tab === "org") {
@@ -130,9 +133,11 @@ const Explore = ({
             <Link to={"/details/ghsa"}>
               <button>GHSA project details</button>
             </Link>
-            <button onClick={() => props.setIsDark(!props.isDark)}>
-              {props.isDark ? `Dark` : "Light"}
-            </button>
+            {activeTab === "map" && (
+              <button onClick={() => props.setIsDark(!props.isDark)}>
+                {props.isDark ? `Dark` : "Light"}
+              </button>
+            )}
           </div>
         </div>
       </div>
