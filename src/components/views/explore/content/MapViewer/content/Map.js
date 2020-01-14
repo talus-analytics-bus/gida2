@@ -298,19 +298,23 @@ const Map = ({
     (supportType === "jee" || supportType === "needs_met")
   ) {
     // Get JEE score (avg) to display.
-    const jeeScores = getJeeScores({
-      scores: undefined, // TODO
-      iso2: undefined, // TODO
+    const jeeScoresToAvg = getJeeScores({
+      scores: jeeScores, // TODO
+      iso2: nodeData.id, // TODO
       coreCapacities
     });
 
     // Average JEE score is mean.
-    const avgJeeScore = d3.mean(jeeScores, d => d.score);
+    const avgJeeScore = d3.mean(jeeScoresToAvg, d => d.score);
     jeeScoreOfNode = avgJeeScore;
   }
 
   // Define the InfoBox data passed to the InfoBox component. By default the
   // flow values are all zeroes.
+  const nodeMapData =
+    nodeData !== undefined
+      ? mapData.find(d => d.id === nodeData.id)
+      : undefined;
   let infoBoxData = {
     jeeScoreOfNode: jeeScoreOfNode,
     flowValues: getFlowValues({
@@ -320,8 +324,6 @@ const Map = ({
   };
 
   // Get the node data that is in the table of values for display in the map.
-  const nodeMapData =
-    nodeData !== undefined ? mapData.find(d => d === nodeData.name) : undefined;
 
   // If we have data to put in the InfoBox:
   if (nodeMapData !== undefined && d !== undefined) {
@@ -385,7 +387,8 @@ const Map = ({
           supportType,
           coreCapacities,
           d3MapDataFields,
-          ghsaOnly
+          ghsaOnly,
+          setNodeData
         }}
       />
       <Legend {...{ colorScale, supportType, flowType }} />

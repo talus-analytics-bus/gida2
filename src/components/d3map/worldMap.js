@@ -83,7 +83,6 @@ class WorldMap extends Chart {
       .duration(1000)
       .style("fill", function(d) {
         const match = data.find(dd => dd.id === d.properties.place_id);
-        console.log(match);
         if (match !== undefined) {
           // Set hatch if needed
           d3.select(this).classed(

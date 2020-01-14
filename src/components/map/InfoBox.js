@@ -36,6 +36,11 @@ const InfoBox = ({
           Util.getScoreShortName(infoBoxData.jeeScoreOfNode)
         )
       : infoBoxData.colorScale(infoBoxData.colorValue);
+
+  console.log("infoBoxData");
+  console.log(infoBoxData);
+  console.log("nodeData");
+  console.log(nodeData);
   if (nodeData === undefined) return "";
   // TODO slide up somehow
   else

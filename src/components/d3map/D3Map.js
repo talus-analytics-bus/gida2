@@ -2,6 +2,8 @@ import React from "react";
 import styles from "./d3map.module.scss";
 import TableInstance from "../chart/table/TableInstance.js";
 import WorldMap from "./worldMap.js";
+import Util from "../misc/Util.js";
+import axios from "axios";
 
 // import {
 //   getMapMetricValue,
@@ -22,6 +24,7 @@ const D3Map = ({
   coreCapacities,
   d3MapDataFields,
   ghsaOnly,
+  setNodeData,
   ...props
 }) => {
   const [mapLoaded, setMapLoaded] = React.useState(false);
@@ -42,6 +45,13 @@ const D3Map = ({
   React.useEffect(() => {
     if (worldMap !== null) {
       worldMap.params.activeCountry = activeCountry;
+      if (activeCountry !== null) {
+        axios(`${Util.API_URL}/place`, {
+          params: { id: activeCountry }
+        }).then(d => {
+          setNodeData(d.data);
+        });
+      }
     }
   }, [activeCountry]);
 
