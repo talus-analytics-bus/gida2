@@ -17,8 +17,6 @@ class WorldMap extends Chart {
   constructor(selector, params = {}) {
     super(selector, params);
 
-    console.log("Creating WorldMap...");
-
     // Define map selector
     this.mapSelector = selector;
 
@@ -43,6 +41,7 @@ class WorldMap extends Chart {
       // Artificially hide Antarctica
       // TODO at dataset level
       this.countryData = this.topoworld.features.filter(
+        // d => d.properties.NAME === "France"
         d => d.properties.NAME !== "Antarctica"
       );
 
@@ -122,7 +121,7 @@ class WorldMap extends Chart {
   }
 
   addCountries() {
-    const countryGroup = this.newGroup("countries")
+    const countryGroup = this.newGroup(styles.countries)
       .selectAll("g")
       .data(this.countryData)
       .enter()
@@ -130,7 +129,8 @@ class WorldMap extends Chart {
 
     countryGroup
       .append("path")
-      .attr("class", "country")
+      .attr("class", styles.country)
+      // .style("fill", "blue")
       .attr("d", d => this.path(d));
 
     countryGroup
@@ -142,7 +142,7 @@ class WorldMap extends Chart {
           (a, b) => a !== b
         )
       )
-      .attr("class", "boundary")
+      .attr("class", styles.boundary)
       .attr("d", d => this.path(d));
   }
 
@@ -161,8 +161,11 @@ class WorldMap extends Chart {
       d3.event.transform.y = 0;
     }
 
-    this.countries.style("stroke-width", `${1.5 / d3.event.transform.k}px`);
-    this.countries.attr("transform", d3.event.transform);
+    this[styles.countries].style(
+      "stroke-width",
+      `${1.5 / d3.event.transform.k}px`
+    );
+    this[styles.countries].attr("transform", d3.event.transform);
 
     this.toggleResetButton();
   }
@@ -327,116 +330,4 @@ class WorldMap extends Chart {
     });
   }
 }
-
-// OLD
-export const createWorldMap = (selector, world, params = {}) => {
-  const map = new WorldMap(selector, { world, ...params });
-  map.addHatchDefs();
-  // map.addShadowDefs();
-
-  return map;
-
-  // --- old ---
-  // prepare map
-  const width = 1200;
-  const height = 640;
-  // const scale = 170;
-  const scale = 220;
-
-  // define projection and path
-  const projection = d3
-    .geoNaturalEarth2()
-    .translate([width / 2, height / 2])
-    .scale(scale)
-    .precision(0.1);
-  const path = d3.geoPath().projection(projection);
-
-  // define zoom
-  const zoom = d3
-    .zoom()
-    // .translateExtent([0, 0], [20000, 20000])
-    .scaleExtent([1, 8])
-    .on("zoom", zoomed);
-
-  // set map width and height
-  const svg = d3
-    .selectAll(selector)
-    .append("svg")
-    .classed("map", true)
-    .attr("preserveAspectRatio", "xMinYMin meet")
-    .attr("viewBox", `0 0 ${width} ${height}`)
-    .append("g")
-    .on("click", stopped, true);
-
-  // add overlay: where zoom and pan events are
-  svg
-    .append("rect")
-    .attr("class", "overlay")
-    .attr("width", width)
-    .attr("height", height);
-
-  const g = svg.append("g");
-  const nodeG = g.append("g").attr("class", "countries");
-  g.append("g").attr("class", "links");
-
-  // attach zoom
-  svg.call(zoom);
-
-  // add world data, and exclude Antarctica until we can get it to
-  // display correctly on the map.
-  const countries = topojson
-    .feature(world, world.objects.countries)
-    .features.filter(d => d.properties.NAME !== "Antarctica");
-  nodeG
-    .selectAll(".country")
-    .data(countries)
-    .enter()
-    .append("path")
-    .attr("class", "country")
-    .attr("d", path);
-  nodeG
-    .append("path")
-    .datum(topojson.mesh(world, world.objects.countries, (a, b) => a !== b))
-    .attr("class", "boundary")
-    .attr("d", path);
-
-  // pan and zoom function
-  function zoomed() {
-    g.style("stroke-width", `${1.5 / d3.event.transform.k}px`);
-    g.attr("transform", d3.event.transform);
-  }
-
-  function zoomTo(d) {
-    // move country to top of layer
-    // TODO
-    // $(this.parentNode).append(this);
-
-    // call zoom
-    const bounds = path.bounds(d);
-    const dx = bounds[1][0] - bounds[0][0];
-    const dy = bounds[1][1] - bounds[0][1];
-    const x = (bounds[0][0] + bounds[1][0]) / 2;
-    const y = (bounds[0][1] + bounds[1][1]) / 2;
-    const s = Math.max(1, Math.min(8, 0.7 / Math.max(dx / width, dy / height)));
-    const t = [width / 2 - s * x, height / 2 - s * y - 90];
-    return svg
-      .transition()
-      .duration(750)
-      .call(zoom.transform, d3.zoomIdentity.translate(t[0], t[1]).scale(s));
-  }
-
-  function reset() {
-    svg
-      .transition()
-      .duration(750)
-      .call(zoom.transform, d3.zoomIdentity);
-  }
-
-  function stopped() {
-    if (d3.event.defaultPrevented) d3.event.stopPropagation();
-  }
-
-  return { element: svg, projection, path, zoomTo, reset };
-};
-
 export default WorldMap;

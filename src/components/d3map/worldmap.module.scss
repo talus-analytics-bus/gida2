@@ -4,3 +4,16 @@
     fill: none;
   }
 }
+.countries {
+  g {
+    path.country {
+      fill: #cccccc;
+      stroke: #333333;
+      stroke-width: 0.5px;
+    }
+    path.boundary {
+      stroke: none;
+      fill: none;
+    }
+  }
+}
