@@ -4,6 +4,7 @@ import TableInstance from "../../../chart/table/TableInstance.js";
 import Util from "../../../misc/Util.js";
 import FlowBundleGeneralQuery from "../../../misc/FlowBundleGeneralQuery.js";
 import { Settings } from "../../../../App.js";
+import D3Chord from "../../../chart/D3Chord/D3Chord.js";
 
 // FC for Chord.
 const Chord = ({ data, ...props }) => {
