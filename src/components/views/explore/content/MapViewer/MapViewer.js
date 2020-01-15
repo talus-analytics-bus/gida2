@@ -164,6 +164,11 @@ const MapViewer = ({
                 "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
             },
             {
+              name: "PVS score",
+              value: "pvs",
+              tooltip: ""
+            },
+            {
               name: "Combined financial resources and need metric",
               value: "needs_met",
               tooltip:
