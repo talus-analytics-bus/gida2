@@ -21,6 +21,10 @@ class D3Chord extends Chart {
     // Initialize chart
     this.init();
 
+    // Set dimensions
+    this.width = this.containerwidth;
+    this.height = this.containerheight;
+
     // Draw map
     this.drawChordManual();
 
@@ -253,10 +257,25 @@ class D3Chord extends Chart {
       .domain([0, 1]);
 
     // Get data for entity arcs, then subregion, then region
+    const innerRadiusRegion = this.height * 0.35;
+    const outerRadiusRegion = this.height * 0.4;
+
     const regionArcGenerator = d3
       .arc()
-      .innerRadius(80)
-      .outerRadius(100)
+      .innerRadius(innerRadiusRegion)
+      .outerRadius(outerRadiusRegion)
+      .startAngle(d => d.theta1)
+      .endAngle(d => d.theta2);
+    const subregionArcGenerator = d3
+      .arc()
+      .innerRadius(innerRadiusRegion * 0.8)
+      .outerRadius(outerRadiusRegion * 0.8)
+      .startAngle(d => d.theta1)
+      .endAngle(d => d.theta2);
+    const entityArcGenerator = d3
+      .arc()
+      .innerRadius(innerRadiusRegion * 0.8 * 0.8)
+      .outerRadius(outerRadiusRegion * 0.8 * 0.8)
       .startAngle(d => d.theta1)
       .endAngle(d => d.theta2);
 
@@ -277,49 +296,170 @@ class D3Chord extends Chart {
             regionTotals[focusRegion] = {
               [type[0]]: weight,
               [type[1]]: 0,
-              total: weight
+              total: weight,
+              subregions: {}
             };
           } else {
             regionTotals[focusRegion][type[0]] += weight;
             regionTotals[focusRegion].total += weight;
           }
           total += weight;
+
+          // Now check focus subregion
+          const focusSubregion = d[type[0]][0].subregion || "Other";
+          if (
+            regionTotals[focusRegion].subregions[focusSubregion] === undefined
+          ) {
+            regionTotals[focusRegion].subregions[focusSubregion] = {
+              [type[0]]: weight,
+              [type[1]]: 0,
+              total: weight,
+              entities: {}
+            };
+          } else {
+            regionTotals[focusRegion].subregions[focusSubregion][
+              type[0]
+            ] += weight;
+            regionTotals[focusRegion].subregions[
+              focusSubregion
+            ].total += weight;
+          }
+
+          // Now check focus entity
+          const focusEntity = d[type[0]][0].name || "Other";
+          if (
+            regionTotals[focusRegion].subregions[focusSubregion].entities[
+              focusEntity
+            ] === undefined
+          ) {
+            regionTotals[focusRegion].subregions[focusSubregion].entities[
+              focusEntity
+            ] = {
+              [type[0]]: weight,
+              [type[1]]: 0,
+              total: weight,
+              data: d[type[0]][0]
+            };
+          } else {
+            regionTotals[focusRegion].subregions[focusSubregion].entities[
+              focusEntity
+            ][type[0]] += weight;
+            regionTotals[focusRegion].subregions[focusSubregion].entities[
+              focusEntity
+            ].total += weight;
+          }
         });
       }
     });
 
+    console.log("regionTotals");
+    console.log(regionTotals);
     // Get region data for arc drawing.
-    const regionArcsData = [];
+    const arcsData = {
+      region: [],
+      subregion: [],
+      entity: []
+    };
 
     // Compute arc region sizes.
-    const circle = 2 * Math.PI;
-    let currentTheta1 = 0;
+    const currentTheta1 = {
+      region: 0,
+      subregion: 0,
+      entity: 0
+    };
+    const thetaChunk = {
+      region: 2 * Math.PI,
+      subregion: undefined,
+      entity: undefined
+    };
     for (let key in regionTotals) {
       const region = regionTotals[key];
-      region.theta1 = currentTheta1;
-      region.theta2 = circle * (region.total / total) + region.theta1;
+      region.theta1 = currentTheta1.region;
+      region.theta2 =
+        thetaChunk.region * (region.total / total) + region.theta1;
       region.color = color(region.target / region.total);
-      currentTheta1 = region.theta2;
-      regionArcsData.push({
+
+      arcsData.region.push({
         ...region,
         name: key
       });
+
+      // Process subregions
+      currentTheta1.subregion = currentTheta1.region;
+      thetaChunk.subregion = region.theta2 - region.theta1;
+      for (let focusSubregion in region.subregions) {
+        const subregion = regionTotals[key].subregions[focusSubregion];
+        subregion.theta1 = currentTheta1.subregion;
+        subregion.theta2 =
+          thetaChunk.subregion * (subregion.total / region.total) +
+          subregion.theta1;
+        subregion.color = color(subregion.target / subregion.total);
+        // currentTheta1.subregion = subregion.theta2;
+
+        arcsData.subregion.push({
+          ...subregion,
+          name: focusSubregion
+        });
+
+        // Process entities
+        currentTheta1.entity = currentTheta1.subregion;
+        thetaChunk.entity = subregion.theta2 - subregion.theta1;
+        for (let focusEntity in subregion.entities) {
+          const entity = subregion.entities[focusEntity];
+          entity.theta1 = currentTheta1.entity;
+          entity.theta2 =
+            thetaChunk.entity * (entity.total / subregion.total) +
+            entity.theta1;
+          entity.color = color(entity.target / entity.total);
+          currentTheta1.entity = entity.theta2;
+
+          arcsData.entity.push({
+            ...entity,
+            name: entity.data.name
+          });
+        }
+        currentTheta1.subregion = subregion.theta2;
+      }
+      currentTheta1.region = region.theta2;
     }
 
-    console.log("regionTotals");
-    console.log(regionTotals);
+    console.log("arcsData");
+    console.log(arcsData);
 
-    this.chart
-      .attr("transform", "translate(220,220)")
-      .append("g")
-      .attr("class", styles.regionArcs)
-      .selectAll("path")
-      .data(regionArcsData)
-      .enter()
-      .append("path")
-      .attr("class", styles.region)
-      .style("fill", d => d.color)
-      .attr("d", d => regionArcGenerator(d));
+    this.chart.attr("transform", "translate(220,220)");
+
+    const arcTypes = [
+      {
+        name: "regionArcs",
+        type: "region",
+        generator: regionArcGenerator
+      },
+      {
+        name: "subregionArcs",
+        type: "subregion",
+        generator: subregionArcGenerator
+      },
+      {
+        name: "entityArcs",
+        type: "entity",
+        generator: entityArcGenerator
+      }
+    ];
+    arcTypes.forEach(arcType => {
+      arcTypes.type = this.chart
+        .append("g")
+        .attr("class", styles[arcType.type])
+        .selectAll("path")
+        .data(arcsData[arcType.type])
+        .enter()
+        .append("path")
+        .attr("class", styles[arcType.type])
+        .style("fill", d => d.color)
+        .attr("d", d => arcType.generator(d))
+        .on("click", d => {
+          this.params.setSelectedEntity(d.name);
+        });
+    });
 
     // Profit.
   }
