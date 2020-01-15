@@ -22,7 +22,7 @@ class D3Chord extends Chart {
     this.init();
 
     // Draw map
-    this.drawViz();
+    this.drawChordManual();
 
     // // Set map as loaded
     // params.setMapLoaded(true);
@@ -32,25 +32,62 @@ class D3Chord extends Chart {
 
   drawViz() {
     const chart = this;
+
+    const entityData = getData(chart);
+    const subregionData = getSubregionData(entityData);
+
+    // // Get function to sort by attribute of array.
+    // const getSortFuncByAttr = func => {
+    //   return (a, b) => {
+    //     return d3.ascending(func(a), func(b));
+    //   };
+    // };
+
+    // Get sort orders.
+    const sortedSubregions = [
+      ...new Set(entityData.map(d => d[3]).concat(entityData.map(d => d[4])))
+    ].sort();
+    console.log("sortedSubregions");
+    console.log(sortedSubregions);
+    // const sortOrder = {
+    //   entity: entityData
+    // };
+    const sortEntityNodes = (a, b) => {
+      return d3.ascending(
+        sortedSubregions.indexOf(a[3]),
+        sortedSubregions.indexOf(b[3])
+      );
+    };
+    const sortEntityNodes2 = (a, b) => {
+      return d3.ascending(
+        sortedSubregions.indexOf(a[4]),
+        sortedSubregions.indexOf(b[4])
+      );
+    };
+    entityData.sort(sortEntityNodes).sort(sortEntityNodes2);
+    console.log("entityData");
+    console.log(entityData);
+
     var chord = window.viz
       .chord()
-      .data(getData(chart))
+      .data(entityData)
       .source(function(d) {
-        return d[1];
+        return d[0];
       })
       .target(function(d) {
-        return d[0];
+        return d[1];
       })
       .value(function(d) {
         return d[2];
       })
       .innerRadius(120)
-      .outerRadius(130);
+      .outerRadius(130)
+      .sort(sortEntityNodes);
 
     // Build middle ring for subregion
     const chordSubRegion = window.viz
       .chord()
-      .data(getData(chart))
+      .data(subregionData)
       .source(function(d) {
         return d[1];
       })
@@ -67,7 +104,7 @@ class D3Chord extends Chart {
     // Build outer ring for region
     const chordRegion = window.viz
       .chord()
-      .data(getData(chart))
+      .data(subregionData)
       .source(function(d) {
         return d[1];
       })
@@ -87,19 +124,23 @@ class D3Chord extends Chart {
       .attr("transform", "translate(220,220)")
       .call(chord);
 
-    // Draw second chord diagram for regions
-    chordGroups
-      .append("g")
-      .attr("class", "chord-subregion")
-      .attr("transform", "translate(220,220)")
-      .call(chordSubRegion);
+    // // Draw second chord diagram for regions
+    // chordGroups
+    //   .append("g")
+    //   .attr("class", "chord-subregion")
+    //   .attr("transform", "translate(220,220)")
+    //   .call(chordSubRegion)
+    //   .selectAll(".chord")
+    //   .remove();
 
-    // Draw third chord diagram for regions
-    chordGroups
-      .append("g")
-      .attr("class", "chord-region")
-      .attr("transform", "translate(220,220)")
-      .call(chordRegion);
+    // // Draw third chord diagram for regions
+    // chordGroups
+    //   .append("g")
+    //   .attr("class", "chord-region")
+    //   .attr("transform", "translate(220,220)")
+    //   .call(chordRegion)
+    //   .selectAll(".chord")
+    //   .remove();
 
     // Stop default mouseover event on hovering.
     // this.svg
@@ -107,27 +148,54 @@ class D3Chord extends Chart {
     //   .selectAll("text")
     //   .style("display", "none");
 
-    this.svg.selectAll("*").on("mouseover", null);
+    // this.svg.selectAll("*").on("mouseover", null);
     this.svg
-      .select(".viz-chord-groups")
+      .selectAll(".viz-chord-groups")
       .selectAll("path")
-      .on("mouseover", function(d) {
+      .on("click", d => {
+        this.params.setSelectedEntity(d.source);
         console.log(d);
       });
 
-    // Check what data are bound to each chord
+    // // Check what data are bound to each chord
+    // console.log(
+    //   this.svg
+    //     .select(".viz-chord-groups")
+    //     .selectAll("path")
+    //     .data()
+    // );
+    console.log("Chord data");
     console.log(
       this.svg
-        .select(".viz-chord-groups")
+        .select(".viz-chord-chords")
         .selectAll("path")
         .data()
     );
-    console.log(
-      this.svg
-        .select(".viz-chord-labels")
-        .selectAll("text")
-        .data()
-    );
+
+    function getSubregionData(entityData) {
+      const flows = {};
+      entityData.forEach(d => {
+        const sourceKey = d[3];
+        const targetKey = d[4];
+        const weight = d[2];
+        if (flows[sourceKey] === undefined) {
+          flows[sourceKey] = {
+            [targetKey]: weight
+          };
+        } else if (flows[sourceKey][targetKey] === undefined) {
+          flows[sourceKey][targetKey] = weight;
+        } else {
+          flows[sourceKey][targetKey] += weight;
+        }
+      });
+      const dataOut = [];
+      for (let sourceKey in flows) {
+        for (let targetKey in flows[sourceKey]) {
+          dataOut.push([sourceKey, targetKey, flows[sourceKey][targetKey]]);
+        }
+      }
+      return dataOut;
+    }
 
     function getData(chart) {
       const dataOut = [];
@@ -136,7 +204,16 @@ class D3Chord extends Chart {
         dataOut.push([
           d.source[0].name,
           d.target[0].name,
-          d.flow_types.disbursed_funds.focus_node_weight
+          d.flow_types.disbursed_funds.focus_node_weight,
+          d.source[0].subregion || "Other",
+          d.target[0].subregion || "Other"
+        ]);
+        dataOut.push([
+          d.target[0].name,
+          d.source[0].name,
+          d.flow_types.disbursed_funds.focus_node_weight,
+          d.source[0].subregion || "Other",
+          d.target[0].subregion || "Other"
         ]);
       });
       console.log(dataOut);
@@ -164,6 +241,87 @@ class D3Chord extends Chart {
         ["India", "US", 1969000]
       ];
     }
+  }
+
+  drawChordManual() {
+    // Define color scale.
+    const red = "#67001f";
+    const blue = "#053061";
+    const color = d3
+      .scaleLinear()
+      .range([red, blue])
+      .domain([0, 1]);
+
+    // Get data for entity arcs, then subregion, then region
+    const regionArcGenerator = d3
+      .arc()
+      .innerRadius(80)
+      .outerRadius(100)
+      .startAngle(d => d.theta1)
+      .endAngle(d => d.theta2);
+
+    // Determine sizes and start/end positions of region arcs (A-Z) based on
+    // share of total pie.
+    const flowTypeName = "disbursed_funds";
+    const regionTotals = {};
+    let total = 0;
+    this.params.data.forEach(d => {
+      if (d.flow_types[flowTypeName] === undefined) return;
+      else {
+        const weight = d.flow_types[flowTypeName].focus_node_weight;
+        // source
+        const types = [["source", "target"], ["target", "source"]];
+        types.forEach(type => {
+          const focusRegion = d[type[0]][0].region || "Other";
+          if (regionTotals[focusRegion] === undefined) {
+            regionTotals[focusRegion] = {
+              [type[0]]: weight,
+              [type[1]]: 0,
+              total: weight
+            };
+          } else {
+            regionTotals[focusRegion][type[0]] += weight;
+            regionTotals[focusRegion].total += weight;
+          }
+          total += weight;
+        });
+      }
+    });
+
+    // Get region data for arc drawing.
+    const regionArcsData = [];
+
+    // Compute arc region sizes.
+    const circle = 2 * Math.PI;
+    let currentTheta1 = 0;
+    for (let key in regionTotals) {
+      const region = regionTotals[key];
+      region.theta1 = currentTheta1;
+      region.theta2 = circle * (region.total / total) + region.theta1;
+      region.color = color(region.target / region.total);
+      currentTheta1 = region.theta2;
+      regionArcsData.push({
+        ...region,
+        name: key
+      });
+    }
+
+    console.log("regionTotals");
+    console.log(regionTotals);
+
+    this.chart
+      .attr("transform", "translate(220,220)")
+      .append("g")
+      .attr("class", styles.regionArcs)
+      .selectAll("path")
+      .data(regionArcsData)
+      .enter()
+      .append("path")
+      .attr("class", styles.region)
+      .style("fill", d => d.color)
+      .attr("d", d => regionArcGenerator(d));
+
+    // Profit.
   }
 
   drawChord() {

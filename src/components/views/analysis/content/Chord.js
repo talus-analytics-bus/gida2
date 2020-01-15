@@ -12,6 +12,7 @@ const Chord = ({ data, ...props }) => {
   console.log(data);
 
   const [chord, setChord] = React.useState(null);
+  const [selectedEntity, setSelectedEntity] = React.useState("None");
 
   const chordPlaceholder = (
     <TableInstance
@@ -94,11 +95,15 @@ const Chord = ({ data, ...props }) => {
   );
 
   React.useEffect(() => {
-    const chordNew = new D3Chord("." + styles.chordChart, { data });
+    const chordNew = new D3Chord("." + styles.chordChart, {
+      data,
+      setSelectedEntity
+    });
     setChord(chordNew);
   }, []);
   return (
     <div className={styles.chord}>
+      <b>Selected entity: {selectedEntity}</b>
       <div className={styles.chordChart} />
       {chordPlaceholder}
     </div>
