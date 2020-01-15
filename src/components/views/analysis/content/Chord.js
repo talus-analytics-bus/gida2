@@ -94,7 +94,7 @@ const Chord = ({ data, ...props }) => {
   );
 
   React.useEffect(() => {
-    const chordNew = new D3Chord("." + styles.chordChart, {});
+    const chordNew = new D3Chord("." + styles.chordChart, { data });
     setChord(chordNew);
   }, []);
   return (
