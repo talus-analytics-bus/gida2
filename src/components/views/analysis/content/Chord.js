@@ -10,6 +10,9 @@ import D3Chord from "../../../chart/D3Chord/D3Chord.js";
 const Chord = ({ data, ...props }) => {
   console.log("data - chord.js");
   console.log(data);
+
+  const [chord, setChord] = React.useState(null);
+
   const chordPlaceholder = (
     <TableInstance
       tableColumns={[
@@ -90,7 +93,16 @@ const Chord = ({ data, ...props }) => {
     />
   );
 
-  return <div className={styles.chord}>{chordPlaceholder}</div>;
+  React.useEffect(() => {
+    const chordNew = new D3Chord("." + styles.chordChart, {});
+    setChord(chordNew);
+  }, []);
+  return (
+    <div className={styles.chord}>
+      <div className={styles.chordChart} />
+      {chordPlaceholder}
+    </div>
+  );
 };
 
 /**

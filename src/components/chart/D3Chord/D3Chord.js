@@ -1,5 +1,5 @@
 import * as d3 from "d3/dist/d3.min";
-import Chart from "../chart/Chart.js";
+import Chart from "../../chart/Chart.js";
 // import Util from "../misc/Util.js";
 import styles from "./d3chord.module.scss";
 
@@ -11,6 +11,9 @@ import styles from "./d3chord.module.scss";
 class D3Chord extends Chart {
   constructor(selector, params = {}) {
     super(selector, params);
+
+    // Define margins
+    this.margin = {};
 
     // Initialize chart
     this.init();
