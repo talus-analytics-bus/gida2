@@ -35,6 +35,7 @@ class D3Chord extends Chart {
   exampleInstanceMethod(data) {}
 
   draw() {
+    console.log("\nDrawing chord diagram...");
     // radius
     const radius = this.params.radius || 300;
 
@@ -76,7 +77,7 @@ class D3Chord extends Chart {
     const flowTypeName = "disbursed_funds";
     const regionTotals = {};
     let total = 0;
-    this.params.data.forEach(d => {
+    this.params.chordData.forEach(d => {
       if (d.flow_types[flowTypeName] === undefined) return;
       else {
         const weight = d.flow_types[flowTypeName].focus_node_weight;
@@ -228,9 +229,6 @@ class D3Chord extends Chart {
       currentTheta1.region = region.theta2;
     }
 
-    console.log("arcsData");
-    console.log(arcsData);
-
     this.chart.attr(
       "transform",
       `translate(${this.width / 2},${this.height / 2})`
@@ -353,30 +351,6 @@ class D3Chord extends Chart {
       });
     });
 
-    // this.params.data.forEach(d => {
-    //   if (d.flow_types[flowTypeName] === undefined) return;
-    //   const info = {
-    //     source: {
-    //       region: d.source[0].region || "Other",
-    //       subregion: d.source[0].subregion || "Other",
-    //       entity: d.source[0].name || "Other"
-    //     },
-    //     target: {
-    //       region: d.target[0].region || "Other",
-    //       subregion: d.target[0].subregion || "Other",
-    //       entity: d.target[0].name || "Other"
-    //     }
-    //   };
-    //   flows.push({
-    //     weight: d.flow_types[flowTypeName].focus_node_weight,
-    //     source:
-    //       regionTotals[info.source.region].subregions[info.source.subregion]
-    //         .entities[info.source.entity],
-    //     target:
-    //       regionTotals[info.target.region].subregions[info.target.subregion]
-    //         .entities[info.target.entity]
-    //   });
-    // });
     flows.sort((a, b) => {
       return d3.ascending(a.weight, b.weight);
     });
@@ -390,6 +364,7 @@ class D3Chord extends Chart {
       .append("path")
       .attr("class", styles.flow)
       .attr("d", d => ribbon(d));
+    console.log("Drawn.");
   }
 }
 export default D3Chord;

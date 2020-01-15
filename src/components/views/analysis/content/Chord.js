@@ -7,10 +7,7 @@ import { Settings } from "../../../../App.js";
 import D3Chord from "../../../chart/D3Chord/D3Chord.js";
 
 // FC for Chord.
-const Chord = ({ data, ...props }) => {
-  console.log("data - chord.js");
-  console.log(data);
-
+const Chord = ({ chordData, transactionType, ...props }) => {
   const [chord, setChord] = React.useState(null);
   const [selectedEntity, setSelectedEntity] = React.useState("None");
 
@@ -90,17 +87,31 @@ const Chord = ({ data, ...props }) => {
           render: d => Util.formatValue(d, "disbursed_funds")
         }
       ]}
-      tableData={data}
+      tableData={chordData}
     />
   );
 
+  // Initial load: draw chord diagram
   React.useEffect(() => {
+    console.log("Making chord with this data:");
+    console.log(chordData);
     const chordNew = new D3Chord("." + styles.chordChart, {
-      data,
+      chordData,
       setSelectedEntity
     });
     setChord(chordNew);
-  }, []);
+  }, [chordData]);
+
+  // If flow type changes, update chord diagram
+  React.useEffect(() => {
+    console.log("transactionType = " + transactionType);
+    // const chordNew = new D3Chord("." + styles.chordChart, {
+    //   data,
+    //   setSelectedEntity
+    // });
+    // setChord(chordNew);
+  }, [transactionType]);
+
   return (
     <div className={styles.chord}>
       <b>Selected entity: {selectedEntity}</b>
@@ -110,139 +121,147 @@ const Chord = ({ data, ...props }) => {
   );
 };
 
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for response funding page
- * @method getComponentData
- * @param  {[type]}       setComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setComponent,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
-  ...props
-}) => {
-  // Define typical base query parameters used in FlowQuery,
-  // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
-  // modified in code below.
-  const baseQueryParams = {
-    focus_node_ids: null,
-    focus_node_type: null,
-    flow_type_ids: [1, 2],
-    start_date: `${props.minYear}-01-01`, // TODO check these two
-    end_date: `${props.maxYear}-12-31`,
-    by_neighbor: false,
-    filters: { parent_flow_info_filters: [] },
-    summaries: {},
-    include_master_summary: false,
-    single_source_and_target: true
-  };
-
-  // If core capacity filters provided, use those
-  if (props.coreCapacities.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters.push(
-      ["core_capacities"].concat(props.coreCapacities)
-    );
-  }
-
-  // If outbreak response filters provided, use those
-  // TODO
-  if (props.outbreakResponses && props.outbreakResponses.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters.push(
-      ["outbreak_responses"].concat(props.outbreakResponses)
-    );
-  }
-
-  // If GHSA page, then filter by GHSA projects.
-  if (ghsaOnly === "true")
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "ghsa_funding",
-      "True"
-    ]);
-
-  // Define queries for typical details page.
-  const queries = {
-    // Information about the entity
-    flowBundlesGeneral: FlowBundleGeneralQuery({
-      ...baseQueryParams
-    })
-  };
-
-  // Get query results.
-  const results = await Util.getQueryResults(queries);
-  console.log("results - Chord.js");
-  console.log(results);
-
-  // Feed results and other data to the details component and mount it.
-  setComponent(
-    <Chord
-      data={results.flowBundlesGeneral.flow_bundles}
-      flowTypeInfo={flowTypeInfo}
-      ghsaOnly={ghsaOnly}
-      setGhsaOnly={setGhsaOnly}
-      setComponent={setComponent}
-      activeTab={props.activeTab}
-      outbreakResponses={props.outbreakResponses}
-      coreCapacities={props.coreCapacities}
-      minYear={props.minYear}
-      maxYear={props.maxYear}
-    />
-  );
-};
-
-const remountComponent = ({ component, minYear, maxYear, ghsaOnly, props }) => {
-  const remount =
-    component.props.minYear !== minYear ||
-    component.props.maxYear !== maxYear ||
-    component.props.ghsaOnly !== ghsaOnly ||
-    component.props.coreCapacities.toString() !==
-      props.coreCapacities.toString();
-
-  console.log(component.props.minYear);
-  console.log(minYear);
-  console.log("remount = " + remount);
-  return remount;
-};
-
-export const renderChord = ({
-  component,
-  setComponent,
-  loading,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
-  ...props
-}) => {
-  if (loading) {
-    return <div>Loading...</div>;
-  } else if (
-    component === null ||
-    (component &&
-      remountComponent({
-        component: component,
-        props: props,
-        ghsaOnly: ghsaOnly,
-        minYear: props.minYear,
-        maxYear: props.maxYear,
-        coreCapacities: props.coreCapacities
-      }))
-  ) {
-    getComponentData({
-      setComponent: setComponent,
-      flowTypeInfo: flowTypeInfo,
-      ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly,
-      coreCapacities: props.coreCapacities,
-      ...props
-    });
-
-    return component ? component : <div />;
-  } else {
-    return component;
-  }
-};
+// /**
+//  * Returns data for the details page given the entity type and id.
+//  * TODO make this work for response funding page
+//  * @method getComponentData
+//  * @param  {[type]}       setComponent [description]
+//  * @param  {[type]}       id                  [description]
+//  * @param  {[type]}       entityRole          [description]
+//  */
+// const getComponentData = async ({
+//   setComponent,
+//   flowTypeInfo,
+//   ghsaOnly,
+//   setGhsaOnly,
+//   transactionType,
+//   ...props
+// }) => {
+//   // Define typical base query parameters used in FlowQuery,
+//   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
+//   // modified in code below.
+//   const baseQueryParams = {
+//     focus_node_ids: null,
+//     focus_node_type: null,
+//     flow_type_ids: [1, 2],
+//     start_date: `${props.minYear}-01-01`, // TODO check these two
+//     end_date: `${props.maxYear}-12-31`,
+//     by_neighbor: false,
+//     filters: { parent_flow_info_filters: [] },
+//     summaries: {},
+//     include_master_summary: false,
+//     single_source_and_target: true
+//   };
+//
+//   // If core capacity filters provided, use those
+//   if (props.coreCapacities.length > 0) {
+//     baseQueryParams.filters.parent_flow_info_filters.push(
+//       ["core_capacities"].concat(props.coreCapacities)
+//     );
+//   }
+//
+//   // If outbreak response filters provided, use those
+//   // TODO
+//   if (props.outbreakResponses && props.outbreakResponses.length > 0) {
+//     baseQueryParams.filters.parent_flow_info_filters.push(
+//       ["outbreak_responses"].concat(props.outbreakResponses)
+//     );
+//   }
+//
+//   // If GHSA page, then filter by GHSA projects.
+//   if (ghsaOnly === "true")
+//     baseQueryParams.filters.parent_flow_info_filters.push([
+//       "ghsa_funding",
+//       "True"
+//     ]);
+//
+//   // Define queries for typical details page.
+//   const queries = {
+//     // Information about the entity
+//     flowBundlesGeneral: FlowBundleGeneralQuery({
+//       ...baseQueryParams
+//     })
+//   };
+//
+//   // Get query results.
+//   const results = await Util.getQueryResults(queries);
+//   console.log("results - Chord.js");
+//   console.log(results);
+//
+//   // Feed results and other data to the details component and mount it.
+//   setComponent(
+//     <Chord
+//       data={results.flowBundlesGeneral.flow_bundles}
+//       flowTypeInfo={flowTypeInfo}
+//       ghsaOnly={ghsaOnly}
+//       setGhsaOnly={setGhsaOnly}
+//       setComponent={setComponent}
+//       activeTab={props.activeTab}
+//       outbreakResponses={props.outbreakResponses}
+//       coreCapacities={props.coreCapacities}
+//       minYear={props.minYear}
+//       maxYear={props.maxYear}
+//       transactionType={transactionType}
+//     />
+//   );
+// };
+//
+// const remountComponent = ({
+//   component,
+//   minYear,
+//   maxYear,
+//   ghsaOnly,
+//   transactionType,
+//   props
+// }) => {
+//   const remount =
+//     component.props.minYear !== minYear ||
+//     component.props.maxYear !== maxYear ||
+//     component.props.ghsaOnly !== ghsaOnly ||
+//     component.props.coreCapacities.toString() !==
+//       props.coreCapacities.toString();
+//
+//   return remount;
+// };
+//
+// export const renderChord = ({
+//   component,
+//   setComponent,
+//   loading,
+//   flowTypeInfo,
+//   ghsaOnly,
+//   setGhsaOnly,
+//   transactionType,
+//   ...props
+// }) => {
+//   if (loading) {
+//     return <div>Loading...</div>;
+//   } else if (
+//     component === null ||
+//     (component &&
+//       remountComponent({
+//         component: component,
+//         props: props,
+//         ghsaOnly: ghsaOnly,
+//         minYear: props.minYear,
+//         maxYear: props.maxYear,
+//         coreCapacities: props.coreCapacities
+//       }))
+//   ) {
+//     getComponentData({
+//       setComponent: setComponent,
+//       flowTypeInfo: flowTypeInfo,
+//       ghsaOnly: ghsaOnly,
+//       setGhsaOnly: setGhsaOnly,
+//       coreCapacities: props.coreCapacities,
+//       transactionType: transactionType,
+//       ...props
+//     });
+//
+//     return component ? component : <div />;
+//   } else {
+//     return component;
+//   }
+// };
 
 export default Chord;

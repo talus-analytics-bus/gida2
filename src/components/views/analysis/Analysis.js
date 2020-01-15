@@ -9,21 +9,22 @@ import CoreCapacityDropdown from "../../misc/CoreCapacityDropdown.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
-import { renderChord } from "./content/Chord.js";
+import Chord from "./content/Chord.js";
 
 // FC for Analysis.
-const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
+const Analysis = ({
+  data,
+  ghsaOnly,
+  setGhsaOnly,
+  flowTypeInfo,
+  coreCapacities,
+  setCoreCapacities,
+  setMinYear,
+  setMaxYear,
+  ...props
+}) => {
   // Track transaction type selected for the map
   const [transactionType, setTransactionType] = React.useState("committed");
-
-  // Track min and max year of data (consistent across tabs)
-  const [minYear, setMinYear] = React.useState(Settings.startYear);
-  const [maxYear, setMaxYear] = React.useState(Settings.endYear);
-
-  // Set value filters
-  const [coreCapacities, setCoreCapacities] = React.useState([]);
-
-  // Track chord component
   const [chordComponent, setChordComponent] = React.useState(null);
 
   // Get flow type
@@ -82,19 +83,35 @@ const Analysis = ({ data, ghsaOnly, setGhsaOnly, flowTypeInfo, ...props }) => {
     );
   });
 
-  const chordContent = renderChord({
-    component: chordComponent,
-    setComponent: setChordComponent,
-    flowTypeInfo: flowTypeInfo,
-    ghsaOnly: ghsaOnly,
-    setGhsaOnly: setGhsaOnly,
-    coreCapacities: coreCapacities,
-    setCoreCapacities: setCoreCapacities,
-    minYear: minYear,
-    setMinYear: setMinYear,
-    maxYear: maxYear,
-    setMaxYear: setMaxYear
-  });
+  // const chordContent = renderChord({
+  //   component: chordComponent,
+  //   setComponent: setChordComponent,
+  //   flowTypeInfo: flowTypeInfo,
+  //   transactionType: transactionType,
+  //   ghsaOnly: ghsaOnly,
+  //   setGhsaOnly: setGhsaOnly,
+  //   coreCapacities: coreCapacities,
+  //   setCoreCapacities: setCoreCapacities,
+  //   minYear: minYear,
+  //   setMinYear: setMinYear,
+  //   maxYear: maxYear,
+  //   setMaxYear: setMaxYear
+  // });
+
+  const chordContent = (
+    <Chord
+      chordData={data.flowBundlesGeneral.flow_bundles}
+      flowTypeInfo={flowTypeInfo}
+      ghsaOnly={ghsaOnly}
+      setGhsaOnly={setGhsaOnly}
+      activeTab={props.activeTab}
+      outbreakResponses={props.outbreakResponses}
+      coreCapacities={coreCapacities}
+      minYear={props.minYear}
+      maxYear={props.maxYear}
+      transactionType={transactionType}
+    />
+  );
 
   // legend (maybe part of map?)
   return (
@@ -176,10 +193,14 @@ const remountComponent = ({
   maxYear,
   props,
   id,
-  ghsaOnly
+  ghsaOnly,
+  coreCapacities
 }) => {
-  const remount = component.props.ghsaOnly !== ghsaOnly;
-  console.log("Remount component = " + remount);
+  const remount =
+    component.props.minYear !== minYear ||
+    component.props.maxYear !== maxYear ||
+    component.props.ghsaOnly !== ghsaOnly ||
+    component.props.coreCapacities.toString() !== coreCapacities.toString();
   return remount;
 };
 
@@ -190,6 +211,12 @@ export const renderAnalysis = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  setCoreCapacities,
+  coreCapacities,
+  minYear,
+  setMinYear,
+  setMaxYear,
+  maxYear,
   ...props
 }) => {
   if (loading) {
@@ -200,10 +227,10 @@ export const renderAnalysis = ({
       remountComponent({
         component: component,
         props: props,
-        ghsaOnly: ghsaOnly
-        // coreCapacities: props.coreCapacities,
-        // minYear: props.minYear,
-        // maxYear: props.maxYear
+        ghsaOnly: ghsaOnly,
+        coreCapacities: coreCapacities,
+        minYear: minYear,
+        maxYear: maxYear
       }))
   ) {
     getComponentData({
@@ -211,6 +238,12 @@ export const renderAnalysis = ({
       flowTypeInfo: flowTypeInfo,
       ghsaOnly: ghsaOnly,
       setGhsaOnly: setGhsaOnly,
+      setCoreCapacities: setCoreCapacities,
+      coreCapacities: coreCapacities,
+      minYear: minYear,
+      maxYear: maxYear,
+      setMinYear: setMinYear,
+      setMaxYear: setMaxYear,
       ...props
     });
 
@@ -236,6 +269,12 @@ const getComponentData = async ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  coreCapacities,
+  setCoreCapacities,
+  minYear,
+  maxYear,
+  setMinYear,
+  setMaxYear,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -246,8 +285,8 @@ const getComponentData = async ({
     focus_node_ids: null,
     focus_node_type: nodeType,
     flow_type_ids: [1, 2],
-    start_date: `${props.minYear}-01-01`, // TODO check these two
-    end_date: `${props.maxYear}-12-31`,
+    start_date: `${minYear}-01-01`, // TODO check these two
+    end_date: `${maxYear}-12-31`,
     by_neighbor: false,
     filters: {},
     summaries: {},
@@ -256,18 +295,10 @@ const getComponentData = async ({
   };
 
   // If core capacity filters provided, use those
-  if (props.coreCapacities.length > 0) {
+  if (coreCapacities.length > 0) {
     baseQueryParams.filters.parent_flow_info_filters = [
-      ["core_capacities"].concat(props.coreCapacities)
+      ["core_capacities"].concat(coreCapacities)
     ];
-  }
-
-  // If outbreak response filters provided, use those
-  // TODO
-  if (props.outbreakResponses.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters = [
-      "outbreak_responses"
-    ].concat(props.outbreakResponses);
   }
 
   // If GHSA page, then filter by GHSA projects.
@@ -280,7 +311,8 @@ const getComponentData = async ({
   const queries = {
     // Information about the entity
     flowBundlesGeneral: FlowBundleGeneralQuery({
-      ...baseQueryParams
+      ...baseQueryParams,
+      focus_node_type: null
     }),
     flowBundlesFocusSources: FlowBundleFocusQuery({
       ...baseQueryParams,
@@ -296,7 +328,7 @@ const getComponentData = async ({
   const results = await Util.getQueryResults(queries);
   console.log("results - Analysis.js");
   console.log(results);
-
+  if (props.returnDataOnly === true) return results;
   // Feed results and other data to the details component and mount it.
   setComponent(
     <Analysis
@@ -307,8 +339,12 @@ const getComponentData = async ({
       setGhsaOnly={setGhsaOnly}
       setComponent={setComponent}
       activeTab={props.activeTab}
-      outbreakResponses={props.outbreakResponses || []}
-      setOutbreakResponses={props.setOutbreakResponses}
+      coreCapacities={coreCapacities}
+      setCoreCapacities={setCoreCapacities}
+      minYear={minYear}
+      maxYear={maxYear}
+      setMinYear={setMinYear}
+      setMaxYear={setMaxYear}
     />
   );
 };

@@ -11,7 +11,7 @@ import { renderExplore } from "./components/views/explore/Explore.js";
 import { renderDetails } from "./components/views/details/Details.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
 import { renderExport } from "./components/views/export/Export.js";
-import { renderAnalysis } from "./components/views/analysis/Analysis.js";
+import { renderAnalysisData } from "./components/views/analysis/AnalysisData.js";
 
 // styles
 import styles from "./App.module.scss";
@@ -40,7 +40,9 @@ const App = () => {
   const [entityTableComponent, setEntityTableComponent] = React.useState(null);
   const [exploreComponent, setExploreComponent] = React.useState(null);
   const [exportComponent, setExportComponent] = React.useState(null);
-  const [analysisComponent, setAnalysisComponent] = React.useState(null);
+  const [analysisDataComponent, setAnalysisDataComponent] = React.useState(
+    null
+  );
 
   // Track data selections
   const [ghsaOnly, setGhsaOnly] = React.useState("false");
@@ -309,15 +311,13 @@ const App = () => {
                 exact
                 path="/analysis"
                 render={d => {
-                  return renderAnalysis({
+                  return renderAnalysisData({
                     ...d.match.params,
-                    component: analysisComponent,
-                    setComponent: setAnalysisComponent,
+                    component: analysisDataComponent,
+                    setComponent: setAnalysisDataComponent,
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly,
-                    coreCapacities: [],
-                    outbreakResponses: []
+                    setGhsaOnly: setGhsaOnly
                   });
                 }}
               />
