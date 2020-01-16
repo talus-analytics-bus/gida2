@@ -65,32 +65,29 @@ const StackBar = ({
     }
   }, [sort]);
 
-  React.useEffect(() => {
-    return () => {
-      console.log("UNMOUNTING STACKBAR");
-    };
-  }, []);
-
   // Show chart?
   const display = chartData.length > 0;
 
   return (
     <div className={styles.stackbar}>
-      <RadioToggle
-        label={"Sort by"}
-        callback={setSort}
-        curVal={sort}
-        choices={[
-          {
-            name: "Amount",
-            value: "amount"
-          },
-          {
-            name: "JEE score",
-            value: "jee"
-          }
-        ]}
-      />
+      {id !== "ghsa" && nodeType !== "source" && (
+        <RadioToggle
+          label={"Sort by"}
+          callback={setSort}
+          curVal={sort}
+          choices={[
+            {
+              name: "Amount",
+              value: "amount"
+            },
+            {
+              name: "JEE score",
+              value: "jee"
+            }
+          ]}
+        />
+      )}
+
       <div
         style={{
           visibility: display ? "visible" : "hidden",
