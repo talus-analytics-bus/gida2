@@ -389,6 +389,25 @@ class D3StackBar extends Chart {
         .duration(1000)
         .attr("y", getYLabelPos(coreCapacitiesInData2));
 
+      // Update y-axis label tooltips
+      chart
+        .selectAll(".y.axis .tick")
+        .attr("data-tip", true)
+        .attr("data-for", "chartTooltip")
+        .on("mouseover", function updateTooltip(d) {
+          const match = barGroupData.find(dd => dd.name === d);
+          params.setTooltipData([
+            {
+              field: "Core capacity",
+              value: match.data.info.label
+            },
+            {
+              field: `Total ${params.flowTypeName.toLowerCase()}`,
+              value: Util.money(match.value)
+            }
+          ]);
+        });
+
       ReactTooltip.rebuild();
     };
     this.updateStackBar(params.data, params.flowType, {

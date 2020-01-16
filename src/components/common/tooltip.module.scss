@@ -1,0 +1,21 @@
+@import "../../assets/styles/colors.scss";
+
+.tooltip {
+  opacity: 1 !important;
+
+  box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+  -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+  table {
+    td:first-child {
+      font-weight: bold;
+      padding-right: 5px;
+    }
+    td {
+      vertical-align: top;
+    }
+    td {
+      padding: 2px 0;
+    }
+  }
+  max-width: 500px;
+}

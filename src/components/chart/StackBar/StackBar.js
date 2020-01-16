@@ -1,6 +1,7 @@
 import React from "react";
 import Util from "../../misc/Util.js";
 import styles from "./stackbar.module.scss";
+import tooltipStyles from "../../common/tooltip.module.scss";
 import * as d3 from "d3/dist/d3.min";
 import D3StackBar from "./D3StackBar.js";
 import ReactTooltip from "react-tooltip";
@@ -89,7 +90,7 @@ const StackBar = ({
         <ReactTooltip
           id={"chartTooltip"}
           type="light"
-          className={styles.stackBarTooltip}
+          className={tooltipStyles.tooltip}
           place="top"
           effect="float"
           getContent={() =>
