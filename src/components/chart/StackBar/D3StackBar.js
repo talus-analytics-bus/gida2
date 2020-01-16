@@ -90,7 +90,7 @@ class D3StackBar extends Chart {
           core_capacities.find(cc => cc.value === v || cc.label === v).label
         );
       })
-      .tickPadding(45);
+      .tickPadding(50);
 
     const allBars = chart.append("g");
 
@@ -110,7 +110,7 @@ class D3StackBar extends Chart {
     let xAxisLabel = "";
     chart
       .append("text")
-      .attr("class", "axis-label")
+      .attr("class", styles["axis-label"])
       .attr("x", width / 2)
       .attr("y", -70)
       // .style("font-size", "1.25em")
@@ -122,6 +122,7 @@ class D3StackBar extends Chart {
       .attr("y", -30)
       .style("font-weight", 600)
       .style("text-anchor", "middle")
+      .attr("class", styles["axis-label"])
       // .style("font-size", "14px")
       .text("Funds");
 
@@ -142,12 +143,12 @@ class D3StackBar extends Chart {
 
     const yLabel = chart
       .append("text")
-      .attr("class", "y-label-text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0)
       .attr("x", -height / 2)
       .style("font-weight", 600)
       .style("text-anchor", "middle")
+      .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
       // .style("font-size", "14px")
       .text("Core capacity");
 
@@ -367,8 +368,8 @@ class D3StackBar extends Chart {
             .attr("transform", `translate(${axisGap}, 0)`)
             .classed(styles.unscored, !showJee);
 
-          const badgeHeight = 16;
-          const badgeWidth = 30;
+          const badgeHeight = 16 * 1.25;
+          const badgeWidth = 30 * 1.25;
           const badgeDim = {
             width: badgeWidth,
             height: badgeHeight,

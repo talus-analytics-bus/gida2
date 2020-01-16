@@ -6,6 +6,8 @@ import * as d3 from "d3/dist/d3.min";
 import D3StackBar from "./D3StackBar.js";
 import ReactTooltip from "react-tooltip";
 import RadioToggle from "../../misc/RadioToggle.js";
+import Legend from "../../map/Legend.js";
+import { getMapColorScale } from "../../map/MapUtil.js";
 
 // TEMP components
 import SimpleTable from "../table/SimpleTable.js";
@@ -26,12 +28,37 @@ const StackBar = ({
   const [sort, setSort] = React.useState("amount"); // or jee
   const [tooltipData, setTooltipData] = React.useState(undefined);
 
+  const jeeColorScale = getMapColorScale({
+    supportType: "jee"
+  });
+
   const chartData = data.filter(
     d =>
       d[flowType] !== undefined &&
       d[flowType] !== "unknown" &&
       d.attribute !== "Unspecified"
   );
+
+  // Show chart?
+  const display = chartData.length > 0;
+
+  const legend = display ? (
+    <Legend
+      className={styles.legend}
+      colorScale={jeeColorScale}
+      supportType={"jee"}
+      flowType={flowType}
+      toggle={false}
+      title={
+        <div className={styles.legendTitle}>
+          Average JEE score for core capacity
+        </div>
+      }
+    />
+  ) : (
+    <div />
+  );
+
   const stackBarParams = {
     flowType,
     flowTypeName,
@@ -65,12 +92,9 @@ const StackBar = ({
     }
   }, [sort]);
 
-  // Show chart?
-  const display = chartData.length > 0;
-
   return (
     <div className={styles.stackbar}>
-      {id !== "ghsa" && nodeType !== "source" && (
+      {display && id !== "ghsa" && nodeType !== "source" && (
         <RadioToggle
           label={"Sort by"}
           callback={setSort}
@@ -87,7 +111,6 @@ const StackBar = ({
           ]}
         />
       )}
-
       <div
         style={{
           visibility: display ? "visible" : "hidden",
@@ -95,6 +118,7 @@ const StackBar = ({
         }}
         className={styles.stackBarChart}
       />
+      {legend}
       {!display && <div>No data to show</div>}
       {
         // Tooltip for info tooltip icons.

@@ -131,22 +131,34 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
  * @param  {[type]} supportType [description]
  * @param  {[type]} flowType    [description]
  */
-const Legend = ({ colorScale, supportType, flowType }) => {
+const Legend = ({
+  colorScale,
+  supportType,
+  flowType,
+  toggle,
+  title,
+  className
+}) => {
   // Track whether legend is visible or not
   const [show, setShow] = React.useState(true);
 
   return (
-    <div className={styles.legend}>
-      <div className={styles.toggle}>
-        <button onClick={() => setShow(!show)}>
-          {show ? "hide" : "show"} legend
-        </button>
-      </div>
+    <div className={classNames(styles.legend, className)}>
+      {toggle !== false && (
+        <div className={styles.toggle}>
+          <button onClick={() => setShow(!show)}>
+            {show ? "hide" : "show"} legend
+          </button>
+        </div>
+      )}
       <div className={classNames(styles.content, { [styles.show]: show })}>
+        <div>
+          {title === undefined && getLegendTitle({ supportType, flowType })}
+          {title !== undefined && title}
+        </div>
         <div className={styles.entries}>
           {getMainLegendBuckets({ colorScale, supportType })}
         </div>
-        <div>{getLegendTitle({ supportType, flowType })}</div>
       </div>
     </div>
   );

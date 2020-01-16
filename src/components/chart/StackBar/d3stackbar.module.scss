@@ -1,11 +1,19 @@
 @import "../../../assets/styles/colors.scss";
 
-.fakeText {
-  font-size: 12px;
+.axis-label {
+  font-size: 15.4px;
+}
+.fakeText,
+.tick text,
+.axis-label {
+  font-family: "Open Sans", sans;
+}
+.fakeText,
+.tick text {
+  font-size: 14px;
 }
 .tick {
   text {
-    font-size: 12px;
     cursor: default;
   }
 }
