@@ -227,6 +227,7 @@ const Details = ({
           nodeType={nodeType}
           otherNodeType={otherNodeType}
           jeeScores={data.jeeScores[data.nodeData.id]}
+          id={id}
         />
       ),
       toggleFlowType: true,

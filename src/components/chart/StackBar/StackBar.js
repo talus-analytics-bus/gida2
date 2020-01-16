@@ -17,6 +17,7 @@ const StackBar = ({
   otherNodeType,
   nodeType,
   jeeScores,
+  id,
   ...props
 }) => {
   const [stackBar, setStackBar] = React.useState(null);
@@ -41,7 +42,7 @@ const StackBar = ({
       data: chartData
     });
     setStackBar(stackBarNew);
-  }, []);
+  }, [id]);
 
   React.useEffect(() => {
     if (stackBar !== null) {
@@ -51,40 +52,15 @@ const StackBar = ({
     }
   }, [flowType]);
 
+  React.useEffect(() => {
+    return () => {
+      console.log("UNMOUNTING STACKBAR");
+    };
+  }, []);
+
   return (
     <div className={styles.stackbar}>
       <div className={styles.stackBarChart} />
-      {
-        // // TEMP table representing stack bar chart data
-        // <SimpleTable
-        //   colInfo={[
-        //     {
-        //       fmtName: "attribute",
-        //       get: d => d.attribute,
-        //       display_name: "Core capacity"
-        //     },
-        //     {
-        //       fmtName: nodeType,
-        //       get: d => d[nodeType],
-        //       display_name: nodeType === "target" ? "Recipient" : "Funder"
-        //     },
-        //     {
-        //       fmtName: otherNodeType,
-        //       get: d => d[otherNodeType],
-        //       display_name: otherNodeType === "target" ? "Recipient" : "Funder"
-        //     },
-        //     {
-        //       fmtName: flowType,
-        //       get: d => d[flowType],
-        //       display_name: flowTypeName
-        //     }
-        //   ]}
-        //   data={data}
-        //   hide={d => {
-        //     return d[flowType] !== undefined;
-        //   }}
-        // />
-      }
       {
         // Tooltip for info tooltip icons.
         <ReactTooltip
