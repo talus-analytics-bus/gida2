@@ -5,4 +5,12 @@
     height: 500px;
     width: auto;
   }
+  .stackBarTooltip {
+    div {
+      span:first-child {
+        font-weight: bold;
+      }
+    }
+    max-width: 300px;
+  }
 }

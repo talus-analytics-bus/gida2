@@ -3,6 +3,7 @@ import Util from "../../misc/Util.js";
 import styles from "./stackbar.module.scss";
 import * as d3 from "d3/dist/d3.min";
 import D3StackBar from "./D3StackBar.js";
+import ReactTooltip from "react-tooltip";
 
 // TEMP components
 import SimpleTable from "../table/SimpleTable.js";
@@ -18,43 +19,37 @@ const StackBar = ({
   ...props
 }) => {
   const [stackBar, setStackBar] = React.useState(null);
+  const [tooltipData, setTooltipData] = React.useState(undefined);
   const chartData = data.filter(
     d =>
       d[flowType] !== undefined &&
       d[flowType] !== "unknown" &&
       d.attribute !== "Unspecified"
   );
+  const stackBarParams = {
+    flowType,
+    flowTypeName,
+    jeeScores,
+    nodeType,
+    setTooltipData,
+    tooltipClassName: styles.stackBarTooltip
+  };
   React.useEffect(() => {
     const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
-      data: chartData,
-      flowType,
-      jeeScores,
-      nodeType
-      // oppNoun: nodeType === "target" ? "Funder" : "Recipient"
+      ...stackBarParams,
+      data: chartData
     });
     setStackBar(stackBarNew);
   }, []);
 
   React.useEffect(() => {
     if (stackBar !== null) {
-      console.log("flowType = " + flowType);
-      console.log("stackBar.update");
-      console.log(stackBar.update);
-      stackBar.updateStackBar(chartData, flowType, { jeeScores });
+      stackBar.updateStackBar(chartData, flowType, {
+        ...stackBarParams
+      });
     }
   }, [flowType]);
 
-  // React.useEffect(() => {
-  //   if (stackBar !== null) {
-  //     const chartData = data.filter(
-  //       d =>
-  //         d[flowType] !== undefined &&
-  //         d[flowType] !== "unknown" &&
-  //         d.attribute !== "Unspecified"
-  //     );
-  //     stackBar.update(chartData, flowType);
-  //   }
-  // }, [stackBar]);
   return (
     <div className={styles.stackbar}>
       <div className={styles.stackBarChart} />
@@ -87,6 +82,27 @@ const StackBar = ({
           hide={d => {
             return d[flowType] !== undefined;
           }}
+        />
+      }
+      {
+        // Tooltip for info tooltip icons.
+        <ReactTooltip
+          id={"chartTooltip"}
+          type="light"
+          className={styles.stackBarTooltip}
+          place="top"
+          effect="float"
+          getContent={() =>
+            tooltipData && (
+              <div>
+                {tooltipData.map(d => (
+                  <div>
+                    <span>{d.field}:</span>&nbsp;<span>{d.value}</span>
+                  </div>
+                ))}
+              </div>
+            )
+          }
         />
       }
     </div>

@@ -1,3 +1,4 @@
+import React from "react";
 import * as d3 from "d3/dist/d3.min";
 import Chart from "../../chart/Chart.js";
 import Util from "../../misc/Util.js";
@@ -9,6 +10,7 @@ import {
   purples,
   greens
 } from "../../map/MapUtil.js";
+import ReactTooltip from "react-tooltip";
 
 /**
  * Creates a D3.js world map in the container provided
@@ -124,8 +126,6 @@ class D3StackBar extends Chart {
       .text("Funds");
 
     const getYLabelPos = data => {
-      console.log("data");
-      console.log(data);
       const fakeText = chart
         .selectAll(".fake-text")
         .data(data)
@@ -198,15 +198,9 @@ class D3StackBar extends Chart {
         .attr("class", styles.tick)
         // .style("font-size", "12px")
         .each(function(d) {
-          console.log("this");
-          console.log(this);
           d.tickTextWidth = this.getBBox().width;
-          console.log("this.getBBox().width");
-          console.log(this.getBBox().width);
         });
       fakeText.remove();
-      console.log("coreCapacitiesInData2");
-      console.log(coreCapacitiesInData2);
 
       const newHeight = 30 * coreCapacitiesInData2.length;
       d3.select(".category-chart").attr(
@@ -244,9 +238,6 @@ class D3StackBar extends Chart {
       });
       this.getRunningValues(barGroupData, newFlowType);
 
-      console.log("barGroupData");
-      console.log(barGroupData);
-
       // remove first
       let barGroups = allBars
         .selectAll(".bar-group")
@@ -263,9 +254,34 @@ class D3StackBar extends Chart {
       barGroups = newGroups.merge(barGroups);
       barGroups
         .selectAll("rect")
-        .data(d => d.children.map(c => ({ cc: d.name, country: c })))
+        .data(d =>
+          d.children.map(c => ({
+            cc: d.name,
+            ccFull: d.data.info.label,
+            country: c
+          }))
+        )
         .enter()
         .append("rect")
+        .attr("data-tip", true)
+        .attr("data-for", "chartTooltip")
+        .on("mouseover", function updateTooltip(d) {
+          params.setTooltipData([
+            {
+              field: "Core capacity",
+              value: d.ccFull
+            },
+            {
+              field: params.nodeType === "target" ? "Funder" : "Recipient",
+              value:
+                d.country[params.nodeType === "target" ? "source" : "target"]
+            },
+            {
+              field: `Total ${params.flowTypeName.toLowerCase()}`,
+              value: Util.money(d.country[params.flowType])
+            }
+          ]);
+        })
         .attr("height", bandwidth)
         .style("fill", d => colorScale(d.country[newFlowType]))
         .transition()
@@ -322,20 +338,7 @@ class D3StackBar extends Chart {
       chart
         .selectAll(".y.axis .tick:not(.badged)")
         .each(function addJeeIcons(d) {
-          console.log("d");
-          console.log(d);
-          // const scoreData = {
-          //   info: core_capacities.find(dd => dd.value === d),
-          //   avgScore: params.jeeScores ? params.jeeScores[d] : 0,
-          //   avgScoreRounded: params.jeeScores
-          //     ? Math.round(params.jeeScores[d])
-          //     : 0,
-          //   tickTextWidth: 100,
-          //   value: d
-          // };
           const scoreData = barGroupData.find(dd => dd.name === d);
-          console.log("scoreData");
-          console.log(scoreData);
           const score = scoreData.data.avgScoreRounded;
           const g = d3.select(this).classed("badged", true);
           const xOffset = -1 * (scoreData.data.tickTextWidth + 7) - 5 - 5;
@@ -385,9 +388,11 @@ class D3StackBar extends Chart {
         .transition()
         .duration(1000)
         .attr("y", getYLabelPos(coreCapacitiesInData2));
+
+      ReactTooltip.rebuild();
     };
     this.updateStackBar(params.data, params.flowType, {
-      jeeScores: params.jeeScores
+      ...params
     });
   }
 
