@@ -86,7 +86,6 @@ class D3StackBar extends Chart {
         if (v === undefined) return "";
         return core_capacities.find(cc => cc.value === v).label;
       })
-      // .tickFormat(Util.getScoreShortName)
       .tickPadding(45);
 
     const allBars = chart.append("g");
@@ -153,48 +152,15 @@ class D3StackBar extends Chart {
       newFlowType = params.flowType,
       params = {}
     ) => {
-      console.log("Running update function!");
       // Get JEE scolor scale.
       const jeeColorScale = getMapColorScale({
         supportType: "jee"
       });
+
       // determine whether this is a country with jee scores available
       const showJee = params.showJee;
       const scores = params.jeeScores; // undefined if not available
-
       let data = rawData; // TODO check
-      console.log("scores");
-      console.log(scores);
-      console.log("data");
-      console.log(data);
-      // let data = this.getRunningValues(rawData, newFlowType)
-      //   .sort((a, b) => {
-      //     if (a[newFlowType] < b[newFlowType]) {
-      //       return 1;
-      //     } else {
-      //       return -1;
-      //     }
-      //   })
-      //   .filter(d => showJee || d[newFlowType] !== 0);
-      //
-      // data = data.map(d => {
-      //   return { ...d, displayName: d.name.split(" - ").reverse()[0] };
-      // });
-      //
-      // if (scores !== undefined) {
-      //   data.forEach(datum => {
-      //     datum.jeeIdx = capacities.find(
-      //       capacity => capacity.id === datum.id
-      //     ).idx;
-      //
-      //     // get average score for this CC
-      //     const avgScore = d3.mean(
-      //       _.pluck(scores.indScores[datum.id], "score")
-      //     );
-      //     datum.avgScore = avgScore;
-      //     datum.avgScoreRounded = Math.round(avgScore);
-      //   });
-      // }
 
       const sort = this.params.sort;
       // const sort = $('input[name="jee-sort"]:checked').attr("ind");
@@ -202,6 +168,7 @@ class D3StackBar extends Chart {
         // TODO sorting algorithm
         // data = _.sortBy(_.sortBy(data, "jeeIdx"), d => -1 * d.avgScore);
       }
+      const coreCapacitiesInData = [...new Set(data.map(d => d.attribute))];
 
       data.forEach(datum => {
         datum.tickText = yAxis.tickFormat()(datum.displayName);
@@ -219,7 +186,7 @@ class D3StackBar extends Chart {
         });
       fakeText.remove();
 
-      const newHeight = 30 * data.length;
+      const newHeight = 30 * coreCapacitiesInData.length;
       d3.select(".category-chart").attr(
         "height",
         newHeight + margin.top + margin.bottom
@@ -234,8 +201,8 @@ class D3StackBar extends Chart {
       x.domain([0, xMax]);
 
       // TODO check this
-      const coreCapacitiesInData = [...new Set(data.map(d => d.attribute))];
       y.domain(coreCapacitiesInData).range([0, newHeight]);
+
       colorScale.domain([0, maxVal]);
       const bandwidth = y.bandwidth();
 
@@ -287,23 +254,18 @@ class D3StackBar extends Chart {
       let xLabelPreText = "Disbursed";
       if (params.nodeType === "recipient") {
         if (newFlowType === "disbursed_funds") {
-          // legendTitle.text(`Funds disbursed (${Util.money(0).split(' ')[1]})`);
           xLabelPreText = "Disbursed";
         } else {
-          // legendTitle.text(`Funds Committed (${Util.money(0).split(' ')[1]})`);
           xLabelPreText = "Committed";
         }
       } else {
         if (newFlowType === "disbursed_funds") {
-          //legendTitle.text(`Funds disbursed (${Util.money(0).split(' ')[1]})`);
           xLabelPreText = "Disbursed";
         } else {
-          //legendTitle.text(`Funds Committed (${Util.money(0).split(' ')[1]})`);
           xLabelPreText = "Committed";
         }
       }
       xLabel.text(`${xLabelPreText} funds (${Util.money(0).split(" ")[1]})`);
-      //chart.select('.axis-label').text('Funds by core capacity');
 
       chart.select(".y-label-text").attr("x", -newHeight / 2);
 
@@ -318,13 +280,6 @@ class D3StackBar extends Chart {
         .transition()
         .duration(1000)
         .call(yAxis);
-      //
-      // yAxisG.selectAll('text').transition().duration(1000).text(function(d) {
-      // 	// const readableName = / - (.*)$/.exec(d)[1];
-      // 	const readableName = d;
-      // 	const shortName = getShortName(readableName);
-      // 	return shortName;
-      // });
 
       barGroups
         .append("text")
@@ -340,27 +295,16 @@ class D3StackBar extends Chart {
         .duration(1000)
         .attr("x", d => x(d.value) + 5);
 
-      // // Add JEE score icon
-      // const jeeColorScale = d3
-      //   .scaleThreshold()
-      //   .domain([1.5, 2, 2.5, 3, 3.5, 4, 4.5])
-      //   .range([
-      //     jeeColors[0],
-      //     d3.color(jeeColors[1]).darker(0.5),
-      //     d3.color(jeeColors[2]).darker(0.5),
-      //     d3.color(jeeColors[3]).darker(0.5),
-      //     d3.color(jeeColors[4]).darker(0.5),
-      //     jeeColors[5],
-      //     jeeColors[6]
-      //   ]);
       chart
         .selectAll(".y.axis .tick:not(.badged)")
         .each(function addJeeIcons(d) {
           const scoreData = {
             info: core_capacities.find(dd => dd.value === d),
-            avgScore: params.jeeScores[d],
-            avgScoreRounded: Math.round(params.jeeScores[d]),
-            tickTextWidth: 10,
+            avgScore: params.jeeScores ? params.jeeScores[d] : 0,
+            avgScoreRounded: params.jeeScores
+              ? Math.round(params.jeeScores[d])
+              : 0,
+            tickTextWidth: 100,
             value: d
           };
           const score = scoreData.avgScore;
@@ -410,6 +354,7 @@ class D3StackBar extends Chart {
 
       // if no data, hide chart and show message
       // TODO
+
       yLabel
         .transition()
         .duration(1000)
