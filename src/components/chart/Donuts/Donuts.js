@@ -32,6 +32,7 @@ const Donuts = ({ data, flowType, nodeType, attributeType, ...props }) => {
             attrFormatter={Util.getAttrFormatter(attributeType)}
             attribute={d}
             nodeType={nodeType}
+            flowType={flowType}
           />
         ))}
       {noData && <span>No data available.</span>}

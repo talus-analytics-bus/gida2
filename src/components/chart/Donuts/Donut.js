@@ -12,12 +12,11 @@ const Donut = ({
   attribute,
   attrFormatter,
   nodeType,
+  flowType,
   idx,
   ...props
 }) => {
   const [chart, setChart] = React.useState(null);
-  console.log("nodeType");
-  console.log(nodeType);
   React.useEffect(() => {
     const chartNew = new D3Donut(`.${styles.donutChart}.${idx}`, {
       pct: numerator / denominator,
@@ -27,7 +26,7 @@ const Donut = ({
           : greens[greens.length - 1]
     });
     setChart(chartNew);
-  }, []);
+  }, [flowType]);
 
   return (
     <div className={styles.donut}>

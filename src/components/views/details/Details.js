@@ -68,8 +68,6 @@ const Details = ({
     .display_name;
 
   // Get master summary
-  console.log("data");
-  console.log(data);
   const masterSummary = data.focusSummary.master_summary;
   // const masterSummary = data.flowBundles.master_summary;
 

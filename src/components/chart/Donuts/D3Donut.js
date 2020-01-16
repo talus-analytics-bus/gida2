@@ -87,6 +87,7 @@ class D3Donut extends Chart {
       .append("text")
       .attr("class", styles["progress-circle-value"])
       .attr("dy", ".35em")
+      .classed(styles.zero, this.params.pct === 0)
       .text(
         this.params.pct !== undefined
           ? Util.percentize(100 * this.params.pct)
