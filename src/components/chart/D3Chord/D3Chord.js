@@ -15,6 +15,10 @@ class D3Chord extends Chart {
     // Define data
     this.params = params;
 
+    // Define padding between arcs
+    this.arcPadding = params.arcPadding || 0.02;
+    this.arcPaddingSub = params.arcPaddingSub || 0.01;
+
     // Define margins
     this.margin = {};
 
@@ -35,9 +39,8 @@ class D3Chord extends Chart {
   exampleInstanceMethod(data) {}
 
   draw() {
-    console.log("\nDrawing chord diagram...");
     // radius
-    const radius = this.params.radius || 300;
+    const radius = this.containerheight * 0.4;
 
     // Define color scale.
     const red = "#67001f";
@@ -51,24 +54,34 @@ class D3Chord extends Chart {
     const innerRadiusRegion = this.height * 0.35;
     const outerRadiusRegion = this.height * 0.4;
 
+    // const pie = d3.pie();
+    // const innerRadius = outerRadius * padAngle / sin(θ);
+    const padRadius = 20;
+    const padAngle = 0.1;
     const regionArcGenerator = d3
       .arc()
       .innerRadius(radius + 28)
       .outerRadius(radius + 28 + 12)
       .startAngle(d => d.theta1)
-      .endAngle(d => d.theta2);
+      .endAngle(d => d.theta2)
+      .padRadius(padRadius)
+      .padAngle(padAngle);
     const subregionArcGenerator = d3
       .arc()
       .innerRadius(radius + 14)
       .outerRadius(radius + 14 + 12)
       .startAngle(d => d.theta1)
-      .endAngle(d => d.theta2);
+      .endAngle(d => d.theta2)
+      .padRadius(padRadius)
+      .padAngle(padAngle);
     const entityArcGenerator = d3
       .arc()
-      .innerRadius(radius)
+      .innerRadius(radius - 12)
       .outerRadius(radius + 12)
       .startAngle(d => d.theta1)
-      .endAngle(d => d.theta2);
+      .endAngle(d => d.theta2)
+      .padRadius(padRadius)
+      .padAngle(padAngle);
 
     const padding = 0;
 
@@ -158,8 +171,7 @@ class D3Chord extends Chart {
         ].flows.all.push(d);
       });
     });
-    console.log("regionTotals");
-    console.log(regionTotals);
+
     // Get region data for arc drawing.
     const arcsData = {
       region: [],
@@ -183,33 +195,26 @@ class D3Chord extends Chart {
     };
     for (let key in regionTotals) {
       const region = regionTotals[key];
-      region.theta1 = currentTheta1.region + padding / 2;
+      region.theta1 = currentTheta1.region;
       region.theta2 =
-        thetaChunk.region * (region.total / total) +
-        region.theta1 -
-        padding / 2;
+        thetaChunk.region * (region.total / total) + region.theta1;
       region.color = color(region.source / region.total);
-
-      arcsData.region.push({
-        ...region,
-        name: key
-      });
 
       // Process subregions
       currentTheta1.subregion = currentTheta1.region;
+      const nSubregions = Object.values(region.subregions).length;
       thetaChunk.subregion = region.theta2 - region.theta1;
+      let nSubregion = 0;
+      const subregionValues = Object.values(region.subregions);
+
+      // For each subregion:
       for (let focusSubregion in region.subregions) {
         const subregion = regionTotals[key].subregions[focusSubregion];
-        subregion.theta1 = currentTheta1.subregion + padding / 2;
+        subregion.theta1 = currentTheta1.subregion;
         subregion.theta2 =
           thetaChunk.subregion * (subregion.total / region.total) +
           subregion.theta1;
         subregion.color = color(subregion.source / subregion.total);
-
-        arcsData.subregion.push({
-          ...subregion,
-          name: focusSubregion
-        });
 
         // Process entities
         currentTheta1.entity = currentTheta1.subregion;
@@ -230,8 +235,21 @@ class D3Chord extends Chart {
           currentTheta1.entity = entity.theta2;
         }
         currentTheta1.subregion = subregion.theta2;
+
+        // subregion.theta1 += this.arcPadding;
+        // subregion.theta2 += this.arcPadding;
+        arcsData.subregion.push({
+          ...subregion,
+          name: focusSubregion
+        });
+        nSubregion++;
       }
       currentTheta1.region = region.theta2;
+
+      arcsData.region.push({
+        ...region,
+        name: key
+      });
     }
 
     this.chart.attr(
@@ -279,7 +297,7 @@ class D3Chord extends Chart {
       .target(d => d.target)
       .startAngle(d => d.theta1)
       .endAngle(d => d.theta2)
-      .radius(radius);
+      .radius(radius - 12);
 
     const flows = [];
 
@@ -348,7 +366,6 @@ class D3Chord extends Chart {
           1 - updatedFracArcLengthAlreadyUsedT;
 
         // Add flow path data
-        // console.log(flowThetas);
         flows.push(flowThetas);
       });
     });
@@ -366,7 +383,6 @@ class D3Chord extends Chart {
       .append("path")
       .attr("class", styles.flow)
       .attr("d", d => ribbon(d));
-    console.log("Drawn.");
   }
 }
 export default D3Chord;
