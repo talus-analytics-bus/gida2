@@ -86,8 +86,6 @@ class D3StackBar extends Chart {
       .tickSizeOuter(5)
       .tickFormat(v => {
         if (v === undefined) return "";
-        console.log("v");
-        console.log(v);
         return this.getShortName(
           core_capacities.find(cc => cc.value === v || cc.label === v).label
         );
@@ -139,7 +137,7 @@ class D3StackBar extends Chart {
       const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
       fakeText.remove();
       const margin = 60;
-      return -(maxLabelWidth + margin);
+      return -(maxLabelWidth + margin) || -this.margin.left + 10;
     };
 
     const yLabel = chart
@@ -167,7 +165,7 @@ class D3StackBar extends Chart {
       const showJee =
         params.jeeScores !== undefined && params.nodeType !== "source";
       const scores = params.jeeScores; // undefined if not available
-      let data = rawData; // TODO check
+      let data = rawData;
 
       const sort = this.params.sort;
       // const sort = $('input[name="jee-sort"]:checked').attr("ind");
@@ -198,10 +196,8 @@ class D3StackBar extends Chart {
         .enter()
         .append("text")
         .text(d => {
-          console.log("d - fakeText");
-          console.log(d);
           return d.info.label;
-        }) // TODO ellipsis
+        })
         .attr("class", styles.tick)
         // .style("font-size", "12px")
         .each(function(d) {
@@ -219,8 +215,6 @@ class D3StackBar extends Chart {
       // );
       const xMax = 1.1 * maxVal;
       x.domain([0, xMax]);
-
-      // TODO check this
       y.domain(coreCapacitiesInData2.map(d => d.value)).range([0, newHeight]);
 
       colorScale.domain([0, maxVal]);
