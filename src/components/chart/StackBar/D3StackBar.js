@@ -29,5 +29,58 @@ class D3StackBar extends Chart {
   }
 
   draw() {}
+
+  getRunningValues(data, selected) {
+    data
+      .map(d => {
+        let runningValue = 0;
+        d.children = d3.shuffle(
+          d.children.map(c => {
+            c.value0 = runningValue;
+            runningValue += c[selected];
+            c.value1 = runningValue;
+            return c;
+          })
+        );
+        return d;
+      })
+      .sort((a, b) => a[selected] > b[selected]);
+    return data;
+  }
+
+  getShortName(s) {
+    if (s === "General IHR Implementation") return s;
+    const maxLen = 20;
+    if (s.length > maxLen) {
+      const shortened = s
+        .split(" ")
+        .slice(0, 4)
+        .join(" ");
+      if (/[^a-z]$/.test(shortened.toLowerCase())) {
+        return `${shortened.slice(0, shortened.length - 1)}...`;
+      }
+      return `${shortened}...`;
+    } else {
+      return s;
+    }
+  }
+
+  getTickValues(maxVal, numTicks) {
+    const magnitude = Math.floor(Math.log10(maxVal)) - 1;
+    var vals = [0];
+    for (var i = 1; i <= numTicks; i++) {
+      if (i === numTicks) {
+        vals.push(maxVal);
+      } else {
+        vals.push(this.precisionRound((i / numTicks) * maxVal, -magnitude));
+      }
+    }
+    return vals;
+  }
+
+  precisionRound(number, precision) {
+    const factor = Math.pow(10, precision);
+    return Math.round(number * factor) / factor;
+  }
 }
 export default D3StackBar;
