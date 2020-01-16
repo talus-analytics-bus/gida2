@@ -43,7 +43,7 @@ const StackBar = ({
       data: chartData
     });
     setStackBar(stackBarNew);
-  }, [id, ghsaOnly]);
+  }, [id, nodeType, ghsaOnly]);
 
   React.useEffect(() => {
     if (stackBar !== null) {

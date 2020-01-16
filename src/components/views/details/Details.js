@@ -203,6 +203,7 @@ const Details = ({
           flowType={curFlowType}
           attributeType={"core_elements"}
           nodeType={nodeType}
+          id={id}
         />
       ),
       toggleFlowType: true,

@@ -7,7 +7,7 @@ import styles from "./donuts.module.scss";
 import Donut from "./Donut.js";
 
 // FC
-const Donuts = ({ data, flowType, nodeType, attributeType, ...props }) => {
+const Donuts = ({ data, id, flowType, nodeType, attributeType, ...props }) => {
   // If no data, return message to that effect.
   const noData = data === null;
 

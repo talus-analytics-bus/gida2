@@ -14,6 +14,7 @@ const Donut = ({
   nodeType,
   flowType,
   idx,
+  id,
   ...props
 }) => {
   const [chart, setChart] = React.useState(null);
@@ -26,7 +27,7 @@ const Donut = ({
           : greens[greens.length - 1]
     });
     setChart(chartNew);
-  }, [flowType]);
+  }, [flowType, id, nodeType]);
 
   return (
     <div className={styles.donut}>
