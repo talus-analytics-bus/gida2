@@ -93,24 +93,13 @@ const Chord = ({ chordData, transactionType, ...props }) => {
 
   // Initial load: draw chord diagram
   React.useEffect(() => {
-    console.log("Making chord with this data:");
-    console.log(chordData);
     const chordNew = new D3Chord("." + styles.chordChart, {
       chordData,
-      setSelectedEntity
+      setSelectedEntity,
+      transactionType
     });
     setChord(chordNew);
-  }, [chordData]);
-
-  // If flow type changes, update chord diagram
-  React.useEffect(() => {
-    console.log("transactionType = " + transactionType);
-    // const chordNew = new D3Chord("." + styles.chordChart, {
-    //   data,
-    //   setSelectedEntity
-    // });
-    // setChord(chordNew);
-  }, [transactionType]);
+  }, [chordData, transactionType]);
 
   return (
     <div className={styles.chord}>

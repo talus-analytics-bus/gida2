@@ -74,7 +74,7 @@ class D3Chord extends Chart {
 
     // Determine sizes and start/end positions of region arcs (A-Z) based on
     // share of total pie.
-    const flowTypeName = "disbursed_funds";
+    const flowTypeName = this.params.transactionType + "_funds";
     this.params.chordData = this.params.chordData.filter(
       d =>
         d.flow_types[flowTypeName] !== undefined &&
