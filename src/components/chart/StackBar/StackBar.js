@@ -17,6 +17,7 @@ const StackBar = ({
   otherNodeType,
   nodeType,
   jeeScores,
+  ghsaOnly,
   id,
   ...props
 }) => {
@@ -42,7 +43,7 @@ const StackBar = ({
       data: chartData
     });
     setStackBar(stackBarNew);
-  }, [id]);
+  }, [id, ghsaOnly]);
 
   React.useEffect(() => {
     if (stackBar !== null) {
