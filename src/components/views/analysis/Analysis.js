@@ -181,7 +181,9 @@ const Analysis = ({
           recipient's activities. For information on a funder or recipient not
           included on this list, search for that country or organization below.
         </p>
-        <div className={styles.tables}>{tableInstances.map(d => d)}</div>
+        {
+          // <div className={styles.tables}>{tableInstances.map(d => d)}</div>
+        }
       </div>
     </div>
   );

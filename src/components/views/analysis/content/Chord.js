@@ -116,7 +116,9 @@ const Chord = ({ chordData, transactionType, ...props }) => {
     <div className={styles.chord}>
       <b>Selected entity: {selectedEntity}</b>
       <div className={styles.chordChart} />
-      {chordPlaceholder}
+      {
+        // chordPlaceholder
+      }
     </div>
   );
 };

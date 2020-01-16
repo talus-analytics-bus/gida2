@@ -75,84 +75,89 @@ class D3Chord extends Chart {
     // Determine sizes and start/end positions of region arcs (A-Z) based on
     // share of total pie.
     const flowTypeName = "disbursed_funds";
+    this.params.chordData = this.params.chordData.filter(
+      d =>
+        d.flow_types[flowTypeName] !== undefined &&
+        d.source.length === 1 &&
+        d.target.length === 1
+    );
+
     const regionTotals = {};
     let total = 0;
     this.params.chordData.forEach(d => {
-      if (d.flow_types[flowTypeName] === undefined) return;
-      else {
-        const weight = d.flow_types[flowTypeName].focus_node_weight;
-        // source
-        const types = [["source", "target"], ["target", "source"]];
-        types.forEach(type => {
-          const focusRegion = d[type[0]][0].region || "Other";
-          if (regionTotals[focusRegion] === undefined) {
-            regionTotals[focusRegion] = {
-              [type[0]]: weight,
-              [type[1]]: 0,
-              total: weight,
-              subregions: {}
-            };
-          } else {
-            regionTotals[focusRegion][type[0]] += weight;
-            regionTotals[focusRegion].total += weight;
-          }
-          total += weight;
+      const weight = d.flow_types[flowTypeName].focus_node_weight;
+      // source
+      const types = [["source", "target"], ["target", "source"]];
+      types.forEach(type => {
+        const focusRegion = d[type[0]][0].region || "Other";
+        if (regionTotals[focusRegion] === undefined) {
+          regionTotals[focusRegion] = {
+            [type[0]]: weight,
+            [type[1]]: 0,
+            total: weight,
+            subregions: {}
+          };
+        } else {
+          regionTotals[focusRegion][type[0]] += weight;
+          regionTotals[focusRegion].total += weight;
+        }
+        total += weight;
 
-          // Now check focus subregion
-          const focusSubregion = d[type[0]][0].subregion || "Other";
-          if (
-            regionTotals[focusRegion].subregions[focusSubregion] === undefined
-          ) {
-            regionTotals[focusRegion].subregions[focusSubregion] = {
-              [type[0]]: weight,
-              [type[1]]: 0,
-              total: weight,
-              entities: {}
-            };
-          } else {
-            regionTotals[focusRegion].subregions[focusSubregion][
-              type[0]
-            ] += weight;
-            regionTotals[focusRegion].subregions[
-              focusSubregion
-            ].total += weight;
-          }
+        // Now check focus subregion
+        const focusSubregion = d[type[0]][0].subregion || "Other";
+        if (
+          regionTotals[focusRegion].subregions[focusSubregion] === undefined
+        ) {
+          regionTotals[focusRegion].subregions[focusSubregion] = {
+            [type[0]]: weight,
+            [type[1]]: 0,
+            total: weight,
+            entities: {}
+          };
+        } else {
+          regionTotals[focusRegion].subregions[focusSubregion][
+            type[0]
+          ] += weight;
+          regionTotals[focusRegion].subregions[focusSubregion].total += weight;
+        }
 
-          // Now check focus entity
-          const focusEntity = d[type[0]][0].name || "Other";
-          if (
-            regionTotals[focusRegion].subregions[focusSubregion].entities[
-              focusEntity
-            ] === undefined
-          ) {
-            regionTotals[focusRegion].subregions[focusSubregion].entities[
-              focusEntity
-            ] = {
-              [type[0]]: weight,
-              [type[1]]: 0,
-              total: weight,
-              data: d[type[0]][0],
-              remainingFlowThetaFraction: 1,
-              flows: {
-                target: [],
-                source: []
-              }
-            };
-          } else {
-            regionTotals[focusRegion].subregions[focusSubregion].entities[
-              focusEntity
-            ][type[0]] += weight;
-            regionTotals[focusRegion].subregions[focusSubregion].entities[
-              focusEntity
-            ].total += weight;
-          }
+        // Now check focus entity
+        const focusEntity = d[type[0]][0].name || "Other";
+        if (
           regionTotals[focusRegion].subregions[focusSubregion].entities[
             focusEntity
-          ].flows[type[0]].push(d);
-        });
-      }
+          ] === undefined
+        ) {
+          regionTotals[focusRegion].subregions[focusSubregion].entities[
+            focusEntity
+          ] = {
+            [type[0]]: weight,
+            [type[1]]: 0,
+            total: weight,
+            data: d[type[0]][0],
+            remainingFlowThetaFraction: 1,
+            flows: {
+              target: [],
+              source: [],
+              all: []
+            }
+          };
+        } else {
+          regionTotals[focusRegion].subregions[focusSubregion].entities[
+            focusEntity
+          ][type[0]] += weight;
+          regionTotals[focusRegion].subregions[focusSubregion].entities[
+            focusEntity
+          ].total += weight;
+        }
+        regionTotals[focusRegion].subregions[focusSubregion].entities[
+          focusEntity
+        ].flows[type[0]].push(d);
+        regionTotals[focusRegion].subregions[focusSubregion].entities[
+          focusEntity
+        ].flows.all.push(d);
+      });
     });
-
     console.log("regionTotals");
     console.log(regionTotals);
     // Get region data for arc drawing.
@@ -304,50 +309,47 @@ class D3Chord extends Chart {
           regionTotals[info.target.region].subregions[info.target.subregion]
             .entities[info.target.entity];
 
-        // Flow theta1 is equal to target theta2 minus the remaining chunk
-        const totalTheta = target.theta2 - target.theta1;
+        // Math for target
+        const arcLengthT = target.theta2 - target.theta1;
+        const fracArcLengthToUseT = weight / target.total;
+        const fracArcLengthAlreadyUsedT = 1 - target.remainingFlowThetaFraction;
+        const arcLengthToUseT = fracArcLengthToUseT * arcLengthT;
+        const arcLengthAlreadyUsedT = fracArcLengthAlreadyUsedT * arcLengthT;
+        const updatedArcLengthAlreadyUsedT =
+          arcLengthToUseT + arcLengthAlreadyUsedT;
+        const updatedFracArcLengthAlreadyUsedT =
+          updatedArcLengthAlreadyUsedT / arcLengthT;
 
-        const thetaChunkRemaining =
-          target.remainingFlowThetaFraction * (target.theta2 - target.theta1);
+        // Math for source
+        const arcLengthS = source.theta2 - source.theta1;
+        const fracArcLengthToUseS = weight / source.total;
+        const fracArcLengthAlreadyUsedS = 1 - source.remainingFlowThetaFraction;
+        const arcLengthToUseS = fracArcLengthToUseS * arcLengthS;
+        const arcLengthAlreadyUsedS = fracArcLengthAlreadyUsedS * arcLengthS;
+        const updatedArcLengthAlreadyUsedS =
+          arcLengthToUseS + arcLengthAlreadyUsedS;
+        const updatedFracArcLengthAlreadyUsedS =
+          updatedArcLengthAlreadyUsedS / arcLengthS;
 
-        const thetaChunkOccupied = totalTheta - thetaChunkRemaining;
+        // Math for source flow thetas
+        const flowThetas = { source: {}, target: {}, weight: weight };
 
-        const thetaChunk = thetaChunkRemaining * (weight / target.total);
+        // Source: Go from original theta 1 plus already used...
+        // ...to original theta 1 plus updated already used.
+        flowThetas.source.theta1 = source.theta1 + arcLengthAlreadyUsedS;
+        flowThetas.source.theta2 = source.theta1 + updatedArcLengthAlreadyUsedS;
+        source.remainingFlowThetaFraction =
+          1 - updatedFracArcLengthAlreadyUsedS;
 
-        // Theta 1, theta 2 for target
-        const theta1 = target.theta1 + thetaChunkOccupied;
-        const theta2 = target.theta1 + thetaChunkOccupied + thetaChunk;
+        // Same for target
+        flowThetas.target.theta1 = target.theta1 + arcLengthAlreadyUsedT;
+        flowThetas.target.theta2 = target.theta1 + updatedArcLengthAlreadyUsedT;
+        target.remainingFlowThetaFraction =
+          1 - updatedFracArcLengthAlreadyUsedT;
 
-        const used = (thetaChunkOccupied + thetaChunk) / totalTheta;
-        target.remainingFlowThetaFraction = 1 - used;
-
-        const sourceTotalTheta = source.theta2 - source.theta1;
-        const sourceThetaChunkRemaining =
-          source.remainingFlowThetaFraction * sourceTotalTheta;
-        const sourceThetaChunkOccupied =
-          sourceTotalTheta - sourceThetaChunkRemaining;
-
-        const sourceThetaChunk = sourceTotalTheta * (weight / source.total);
-
-        const sourceTheta1 = source.theta1 + sourceThetaChunkOccupied;
-        const sourceTheta2 =
-          source.theta1 + sourceThetaChunkOccupied + sourceThetaChunk;
-
-        const sourceUsed =
-          (sourceThetaChunkOccupied + sourceThetaChunk) / sourceTotalTheta;
-        source.remainingFlowThetaFraction = 1 - sourceUsed;
-
-        flows.push({
-          source: {
-            theta1: sourceTheta1,
-            theta2: sourceTheta2
-          },
-          target: {
-            theta1: theta1,
-            theta2: theta2
-          },
-          weight: weight
-        });
+        // Add flow path data
+        // console.log(flowThetas);
+        flows.push(flowThetas);
       });
     });
 
