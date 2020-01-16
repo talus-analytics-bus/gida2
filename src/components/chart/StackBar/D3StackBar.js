@@ -167,7 +167,6 @@ class D3StackBar extends Chart {
       const scores = params.jeeScores; // undefined if not available
       let data = rawData;
 
-      console.log("sort - " + params.sort);
       const sort = params.sort;
       const coreCapacitiesInData = [...new Set(data.map(d => d.attribute))];
       const coreCapacitiesInData2 = [];
@@ -219,6 +218,7 @@ class D3StackBar extends Chart {
       coreCapacitiesInData2.forEach(attribute => {
         const barGroupDatum = {
           name: attribute.value,
+          id: attribute.value + "-" + newFlowType,
           data: attribute,
           children: data.filter(d => d.attribute === attribute.value)
         };
@@ -244,22 +244,31 @@ class D3StackBar extends Chart {
       // Update y scale to match sorting order.
       y.domain(barGroupData.map(d => d.name));
 
-      console.log(params.jeeScores);
       // remove first
       let barGroups = allBars
         .selectAll(".bar-group")
-        .remove()
-        .exit()
-        .data(barGroupData, d => d.name);
+        .data(barGroupData, d => d.id);
+      barGroups.exit().remove();
 
       const newGroups = barGroups
         .enter()
         .append("g")
         .attr("class", "bar-group")
-        .each(d => console.log(d));
+        .attr("id", d => {
+          return d ? d.name + " - " + newFlowType : this.id;
+        });
 
       barGroups = newGroups.merge(barGroups);
-      barGroups.attr("transform", d => `translate(0, ${y(d.name)})`);
+      if (params.sortOnly) {
+        barGroups
+          .transition()
+          .duration(1000)
+          .attr("transform", d => `translate(0, ${y(d.name)})`);
+      } else {
+        barGroups.attr("transform", d => `translate(0, ${y(d.name)})`);
+      }
+
+      const durationHorizontal = params.sortOnly ? 0 : 1000;
 
       barGroups
         .selectAll("rect")
@@ -294,7 +303,7 @@ class D3StackBar extends Chart {
         .attr("height", bandwidth)
         .style("fill", d => colorScale(d.country[newFlowType]))
         .transition()
-        .duration(1000)
+        .duration(durationHorizontal)
         .attr("x", d => x(d.country.value0))
         .attr("width", d => x(d.country.value1) - x(d.country.value0));
 
@@ -320,7 +329,7 @@ class D3StackBar extends Chart {
       xAxis.scale(x);
       xAxisG
         .transition()
-        .duration(1000)
+        .duration(durationHorizontal)
         .call(xAxis.tickValues(this.getTickValues(xMax, 7)));
 
       yAxis.scale(y);
@@ -329,7 +338,7 @@ class D3StackBar extends Chart {
         .duration(1000)
         .call(yAxis);
 
-      barGroups
+      newGroups
         .append("text")
         .attr("class", "bar-label")
         .attr("y", y.bandwidth() / 2)
@@ -340,7 +349,7 @@ class D3StackBar extends Chart {
           }
         })
         .transition()
-        .duration(1000)
+        .duration(durationHorizontal)
         .attr("x", d => x(d.value) + 5);
 
       chart.selectAll(".tick").classed(styles.tick, true);

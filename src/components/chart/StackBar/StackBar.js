@@ -55,7 +55,15 @@ const StackBar = ({
         ...stackBarParams
       });
     }
-  }, [flowType, sort]);
+  }, [flowType]);
+  React.useEffect(() => {
+    if (stackBar !== null) {
+      stackBar.updateStackBar(chartData, flowType, {
+        ...stackBarParams,
+        sortOnly: true
+      });
+    }
+  }, [sort]);
 
   React.useEffect(() => {
     return () => {
