@@ -11,6 +11,14 @@
     fill: rgb(5, 48, 97);
     fill-opacity: 0.3;
     stroke: none;
-    // stroke-width: 1px;
   }
+}
+.textCircle,
+.textCircleRev {
+  fill: none;
+}
+.regionLabel {
+  text-anchor: middle;
+  font-size: 1.1em;
+  font-weight: 600;
 }

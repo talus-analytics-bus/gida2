@@ -52,7 +52,7 @@ class D3Chord extends Chart {
 
     // Get data for entity arcs, then subregion, then region
     const innerRadiusRegion = this.height * 0.35;
-    const outerRadiusRegion = this.height * 0.4;
+    const outerRadiusRegion = radius + 28 + 12;
 
     // const pie = d3.pie();
     // const innerRadius = outerRadius * padAngle / sin(θ);
@@ -61,7 +61,7 @@ class D3Chord extends Chart {
     const regionArcGenerator = d3
       .arc()
       .innerRadius(radius + 28)
-      .outerRadius(radius + 28 + 12)
+      .outerRadius(outerRadiusRegion)
       .startAngle(d => d.theta1)
       .endAngle(d => d.theta2)
       .padRadius(padRadius)
@@ -275,7 +275,7 @@ class D3Chord extends Chart {
       }
     ];
     arcTypes.forEach(arcType => {
-      arcTypes.type = this.chart
+      arcTypes[arcType.type] = this.chart
         .append("g")
         .attr("class", styles[arcType.type])
         .selectAll("path")
@@ -383,6 +383,140 @@ class D3Chord extends Chart {
       .append("path")
       .attr("class", styles.flow)
       .attr("d", d => ribbon(d));
+
+    // Add labels
+    // Create text circle.
+    const circleGen = () => {
+      const radius = outerRadiusRegion;
+
+      //set defaults
+      var r = function(d) {
+          return d.radius;
+        },
+        x = function(d) {
+          return d.x;
+        },
+        y = function(d) {
+          return d.y;
+        };
+
+      //returned function to generate circle path
+      function circle(d) {
+        var cx = 0,
+          cy = 0,
+          myr = radius;
+
+        return (
+          "M" +
+          cx +
+          " " +
+          cy +
+          " " +
+          "m" +
+          " 0 " +
+          myr +
+          "a" +
+          myr +
+          " " +
+          myr +
+          " 0 0 1 " +
+          " 0 " +
+          -myr * 2 +
+          "a" +
+          myr +
+          " " +
+          myr +
+          " 0 0 1 " +
+          " 0 " +
+          myr * 2 +
+          "Z"
+        );
+      }
+
+      //getter-setter methods
+      circle.r = function(value) {
+        if (!arguments.length) return r;
+        r = value;
+        return circle;
+      };
+      circle.x = function(value) {
+        if (!arguments.length) return x;
+        x = value;
+        return circle;
+      };
+      circle.y = function(value) {
+        if (!arguments.length) return y;
+        y = value;
+        return circle;
+      };
+
+      return circle;
+    };
+    const textCircle = circleGen()
+      .x(function(d) {
+        return 0;
+      })
+      .y(function(d) {
+        return 0;
+      })
+      .r(function(d) {
+        return outerRadiusRegion;
+      });
+
+    this.chart
+      .append("g")
+      .append("path")
+      .attr("class", styles.textCircle)
+      .attr("id", "textCircle")
+      .attr("d", textCircle);
+
+    this.chart
+      .append("g")
+      .append("path")
+      .attr("class", styles.textCircleRev)
+      .attr("id", "textCircleRev")
+      .attr("d", textCircle)
+      .attr("transform", "scale(-1, 1)");
+
+    // Add region labels.
+    console.log("arcsData");
+    console.log(arcsData);
+    console.log("arcTypes");
+    console.log(arcTypes);
+
+    arcsData.region.forEach(d => {
+      d.center = d.theta1 + (d.theta2 - d.theta1) / 2;
+      d.needToFlip = d.center > Math.PI / 2 && d.center < (3 * Math.PI) / 2;
+    });
+
+    const usingFirefox = navigator.userAgent.search("Firefox") > -1;
+    this.chart
+      // .select(`g.${styles.region}`)
+      // .selectAll("path")
+      .selectAll("text")
+      .data(arcsData.region)
+      .enter()
+      .append("text")
+      .attr("class", styles.regionLabel)
+      // .attr("textLength", d => {
+      //   console.log("d");
+      //   console.log(regionArcGenerator.centroid(d));
+      //   return usingFirefox ? "MVM Test".length * 1.25 * 12.5 : undefined;
+      // })
+      .attr("transform", "rotate(180)")
+      .attr("dy", d => (d.needToFlip ? "1em" : -5))
+      .style("text-anchor", "middle")
+      .append("textPath")
+      .attr("href", d => (d.needToFlip ? "#textCircleRev" : "#textCircle"))
+      .attr("startOffset", d => {
+        if (d.needToFlip) {
+          return `${100 - (100 * d.center) / (2 * Math.PI)}%`;
+        } else {
+          return `${(100 * d.center) / (2 * Math.PI)}%`;
+        }
+      })
+      // .attr('startOffset', d => `${(100 * (d.labelAngle / 360))}%`)
+      .text(d => d.name);
   }
 }
 export default D3Chord;
