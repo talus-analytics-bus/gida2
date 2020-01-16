@@ -21,7 +21,7 @@ export const purples = [
   "#3c003a"
 ];
 
-const jeeColors = [
+export const jeeColors = [
   "gray",
   "#ac1329",
   "#ecb97e",

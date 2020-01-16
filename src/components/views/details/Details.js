@@ -13,6 +13,7 @@ import Util from "../../misc/Util.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
+import ScoreQuery from "../../misc/ScoreQuery.js";
 
 // Content components
 import DetailsSection from "../../views/details/content/DetailsSection.js";
@@ -437,6 +438,10 @@ const getComponentData = async ({
   const queries = {
     // Information about the entity
     nodeData: NodeQuery({ node_id: id }),
+
+    jeeScores: ScoreQuery({
+      type: "jee_v1"
+    }),
 
     // Flow bundles by source/target specific pairing, oriented from the other
     // node type (e.g., for a given source node whose page this is, return one

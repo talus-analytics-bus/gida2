@@ -18,8 +18,15 @@ const StackBar = ({
 }) => {
   const [stackBar, setStackBar] = React.useState(null);
   React.useEffect(() => {
+    const chartData = data.filter(
+      d =>
+        d[flowType] !== undefined &&
+        d[flowType] !== "unknown" &&
+        d.attribute !== "Unspecified"
+    );
     const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
-      data
+      data: chartData,
+      flowType
     });
     setStackBar(stackBarNew);
   }, []);
