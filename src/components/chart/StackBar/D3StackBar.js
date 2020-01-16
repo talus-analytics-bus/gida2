@@ -84,7 +84,9 @@ class D3StackBar extends Chart {
       .tickSizeOuter(5)
       .tickFormat(v => {
         if (v === undefined) return "";
-        return core_capacities.find(cc => cc.value === v).label;
+        return this.getShortName(
+          core_capacities.find(cc => cc.value === v).label
+        );
       })
       .tickPadding(45);
 
@@ -129,7 +131,8 @@ class D3StackBar extends Chart {
         .data(data)
         .enter()
         .append("text")
-        .text(d => d.info.label)
+        .text(d => d.tickText)
+        // .text(d => d.info.label)
         .attr("class", [styles.tick, styles.fakeText].join(" "));
       const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
       fakeText.remove();
@@ -159,7 +162,7 @@ class D3StackBar extends Chart {
       });
 
       // determine whether this is a country with jee scores available
-      const showJee = params.showJee;
+      const showJee = params.jeeScores !== undefined;
       const scores = params.jeeScores; // undefined if not available
       let data = rawData; // TODO check
 
@@ -333,7 +336,7 @@ class D3StackBar extends Chart {
           const scoreData = barGroupData.find(dd => dd.name === d);
           console.log("scoreData");
           console.log(scoreData);
-          const score = scoreData.avgScore;
+          const score = scoreData.data.avgScoreRounded;
           const g = d3.select(this).classed("badged", true);
           const xOffset = -1 * (scoreData.data.tickTextWidth + 7) - 5 - 5;
           const axisGap = -7;
@@ -341,7 +344,7 @@ class D3StackBar extends Chart {
             .append("g")
             .attr("class", "score-badge")
             .attr("transform", `translate(${axisGap}, 0)`)
-            .classed("unscored", !showJee);
+            .classed(styles.unscored, !showJee);
 
           const badgeHeight = 16;
           const badgeWidth = 30;
@@ -354,10 +357,7 @@ class D3StackBar extends Chart {
           };
           badgeGroup
             .append("rect")
-            .style(
-              "fill",
-              scoreData.avgScoreRounded ? jeeColorScale(score) : "gray"
-            )
+            .style("fill", score ? jeeColorScale(score) : "gray")
             .attr("width", badgeDim.width)
             .attr("height", badgeDim.height)
             .attr("rx", badgeDim.rx)
