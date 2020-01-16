@@ -86,8 +86,10 @@ class D3StackBar extends Chart {
       .tickSizeOuter(5)
       .tickFormat(v => {
         if (v === undefined) return "";
+        console.log("v");
+        console.log(v);
         return this.getShortName(
-          core_capacities.find(cc => cc.value === v).label
+          core_capacities.find(cc => cc.value === v || cc.label === v).label
         );
       })
       .tickPadding(45);
@@ -162,7 +164,8 @@ class D3StackBar extends Chart {
       });
 
       // determine whether this is a country with jee scores available
-      const showJee = params.jeeScores !== undefined;
+      const showJee =
+        params.jeeScores !== undefined && params.nodeType !== "source";
       const scores = params.jeeScores; // undefined if not available
       let data = rawData; // TODO check
 
@@ -176,7 +179,7 @@ class D3StackBar extends Chart {
       const coreCapacitiesInData2 = [];
       coreCapacitiesInData.forEach(cc => {
         coreCapacitiesInData2.push({
-          info: core_capacities.find(dd => dd.value === cc),
+          info: core_capacities.find(dd => dd.value === cc || dd.label === cc),
           avgScore: params.jeeScores ? params.jeeScores[cc] : 0,
           avgScoreRounded: params.jeeScores
             ? Math.round(params.jeeScores[cc])
@@ -194,7 +197,11 @@ class D3StackBar extends Chart {
         .data(coreCapacitiesInData2)
         .enter()
         .append("text")
-        .text(d => d.info.label) // TODO ellipsis
+        .text(d => {
+          console.log("d - fakeText");
+          console.log(d);
+          return d.info.label;
+        }) // TODO ellipsis
         .attr("class", styles.tick)
         // .style("font-size", "12px")
         .each(function(d) {
@@ -365,7 +372,9 @@ class D3StackBar extends Chart {
             .attr("y", badgeDim.y);
 
           const badgeLabelText =
-            scoreData.name === "General IHR" ? "GEN" : scoreData.name;
+            scoreData.name === "General IHR Implementation"
+              ? "GEN"
+              : scoreData.name;
           badgeGroup
             .append("text")
             .attr("text-anchor", "middle")
