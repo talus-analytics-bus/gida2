@@ -396,6 +396,7 @@ class D3StackBar extends Chart {
         .attr("data-for", "chartTooltip")
         .on("mouseover", function updateTooltip(d) {
           const match = barGroupData.find(dd => dd.name === d);
+          if (match === undefined) return;
           params.setTooltipData([
             {
               field: "Core capacity",
