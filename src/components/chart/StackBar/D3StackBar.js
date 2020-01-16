@@ -167,21 +167,15 @@ class D3StackBar extends Chart {
       const scores = params.jeeScores; // undefined if not available
       let data = rawData;
 
-      const sort = this.params.sort;
-      // const sort = $('input[name="jee-sort"]:checked').attr("ind");
-      if (sort === "score") {
-        // TODO sorting algorithm
-        // data = _.sortBy(_.sortBy(data, "jeeIdx"), d => -1 * d.avgScore);
-      }
+      console.log("sort - " + params.sort);
+      const sort = params.sort;
       const coreCapacitiesInData = [...new Set(data.map(d => d.attribute))];
       const coreCapacitiesInData2 = [];
       coreCapacitiesInData.forEach(cc => {
         coreCapacitiesInData2.push({
           info: core_capacities.find(dd => dd.value === cc || dd.label === cc),
           avgScore: params.jeeScores ? params.jeeScores[cc] : 0,
-          avgScoreRounded: params.jeeScores
-            ? Math.round(params.jeeScores[cc])
-            : 0,
+          avgScore: params.jeeScores ? Math.round(params.jeeScores[cc]) : 0,
           tickTextWidth: undefined,
           value: cc
         });
@@ -236,20 +230,37 @@ class D3StackBar extends Chart {
       });
       this.getRunningValues(barGroupData, newFlowType);
 
+      // Sort
+      if (sort === "amount") {
+        barGroupData.sort((a, b) => {
+          return d3.descending(a.value, b.value);
+        });
+      } else {
+        barGroupData.sort((a, b) => {
+          return d3.descending(a.data.avgScore, b.data.avgScore);
+        });
+      }
+
+      // Update y scale to match sorting order.
+      y.domain(barGroupData.map(d => d.name));
+
+      console.log(params.jeeScores);
       // remove first
       let barGroups = allBars
         .selectAll(".bar-group")
         .remove()
         .exit()
-        .data(barGroupData);
+        .data(barGroupData, d => d.name);
 
       const newGroups = barGroups
         .enter()
         .append("g")
         .attr("class", "bar-group")
-        .attr("transform", d => `translate(0, ${y(d.name)})`);
+        .each(d => console.log(d));
 
       barGroups = newGroups.merge(barGroups);
+      barGroups.attr("transform", d => `translate(0, ${y(d.name)})`);
+
       barGroups
         .selectAll("rect")
         .data(d =>
@@ -337,7 +348,7 @@ class D3StackBar extends Chart {
         .selectAll(".y.axis .tick:not(.badged)")
         .each(function addJeeIcons(d) {
           const scoreData = barGroupData.find(dd => dd.name === d);
-          const score = scoreData.data.avgScoreRounded;
+          const score = scoreData.data.avgScore;
           const g = d3.select(this).classed("badged", true);
           const xOffset = -1 * (scoreData.data.tickTextWidth + 7) - 5 - 5;
           const axisGap = -7;

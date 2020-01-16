@@ -5,6 +5,7 @@ import tooltipStyles from "../../common/tooltip.module.scss";
 import * as d3 from "d3/dist/d3.min";
 import D3StackBar from "./D3StackBar.js";
 import ReactTooltip from "react-tooltip";
+import RadioToggle from "../../misc/RadioToggle.js";
 
 // TEMP components
 import SimpleTable from "../table/SimpleTable.js";
@@ -22,22 +23,23 @@ const StackBar = ({
   ...props
 }) => {
   const [stackBar, setStackBar] = React.useState(null);
+  const [sort, setSort] = React.useState("amount"); // or jee
   const [tooltipData, setTooltipData] = React.useState(undefined);
+
   const chartData = data.filter(
     d =>
       d[flowType] !== undefined &&
       d[flowType] !== "unknown" &&
       d.attribute !== "Unspecified"
   );
-  console.log("chartData");
-  console.log(chartData);
   const stackBarParams = {
     flowType,
     flowTypeName,
     jeeScores,
     nodeType,
     setTooltipData,
-    tooltipClassName: styles.stackBarTooltip
+    tooltipClassName: styles.stackBarTooltip,
+    sort
   };
   React.useEffect(() => {
     const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
@@ -53,7 +55,7 @@ const StackBar = ({
         ...stackBarParams
       });
     }
-  }, [flowType]);
+  }, [flowType, sort]);
 
   React.useEffect(() => {
     return () => {
@@ -66,6 +68,21 @@ const StackBar = ({
 
   return (
     <div className={styles.stackbar}>
+      <RadioToggle
+        label={"Sort by"}
+        callback={setSort}
+        curVal={sort}
+        choices={[
+          {
+            name: "Amount",
+            value: "amount"
+          },
+          {
+            name: "JEE score",
+            value: "jee"
+          }
+        ]}
+      />
       <div
         style={{
           visibility: display ? "visible" : "hidden",
