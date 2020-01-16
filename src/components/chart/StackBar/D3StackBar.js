@@ -3,7 +3,12 @@ import Chart from "../../chart/Chart.js";
 import Util from "../../misc/Util.js";
 import styles from "./d3stackbar.module.scss";
 import { core_capacities } from "../../misc/Data.js";
-import { jeeColors, purples, greens } from "../../map/MapUtil.js";
+import {
+  getMapColorScale,
+  jeeColors,
+  purples,
+  greens
+} from "../../map/MapUtil.js";
 
 /**
  * Creates a D3.js world map in the container provided
@@ -20,14 +25,15 @@ class D3StackBar extends Chart {
     // Define margins
     this.margin = {};
 
-    // Initialize chart
-    this.init();
-
     // Set dimensions
     this.width = this.containerwidth;
     this.height = this.containerheight;
+    this.margin = { top: 50, right: 20, bottom: 35, left: 350 };
 
-    // Draw map
+    // Initialize chart
+    this.init();
+
+    // Draw chart
     this.draw();
   }
 
@@ -39,29 +45,28 @@ class D3StackBar extends Chart {
     // List of core capacities with display names, etc.
     const capacities = core_capacities;
 
-    const oppNoun = params.moneyType === "r" ? "Funder" : "Recipient";
-    let colors = params.moneyType === "r" ? purples : greens;
+    let colors = params.nodeType === "target" ? purples : greens;
     colors = colors.slice(0, 5);
 
-    const selected = params.selected || "total_spent";
-
-    // start building the chart
-    const margin = { top: 50, right: 20, bottom: 35, left: 350 };
-    const width = 700;
-    const height = 500;
-
+    // define chart accessor
     const chart = this.chart.classed("category-chart", true);
-    chart
-      .append("g")
-      .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+    // define dimension accessors
+    const margin = this.margin;
+    const width = this.width;
+    const height = this.height;
+
+    // whether chart has CC badges on it
     chart.badged = false;
 
+    // Define scales
     const x = d3.scaleLinear().range([0, width]);
     const y = d3.scaleBand().padding(0.25);
 
+    // Define color scale
     const colorScale = d3.scaleOrdinal().range(colors);
 
+    // x-axis
     const xAxis = d3
       .axisTop()
       .ticks(5)
@@ -70,12 +75,18 @@ class D3StackBar extends Chart {
       .tickPadding(8)
       .tickFormat(Util.formatSI)
       .scale(x);
+
+    // y-axis
     const yAxis = d3
       .axisLeft()
       .scale(y)
       .tickSize(0)
       .tickSizeOuter(5)
-      .tickFormat(Util.getScoreShortName)
+      .tickFormat(v => {
+        if (v === undefined) return "";
+        return core_capacities.find(cc => cc.value === v).label;
+      })
+      // .tickFormat(Util.getScoreShortName)
       .tickPadding(45);
 
     const allBars = chart.append("g");
@@ -137,20 +148,34 @@ class D3StackBar extends Chart {
       .style("font-size", "14px")
       .text("Core capacity");
 
-    chart.update = (rawData, newSelector = selected, params = {}) => {
+    this.updateStackBar = (
+      rawData,
+      newFlowType = params.flowType,
+      params = {}
+    ) => {
+      console.log("Running update function!");
+      // Get JEE scolor scale.
+      const jeeColorScale = getMapColorScale({
+        supportType: "jee"
+      });
       // determine whether this is a country with jee scores available
       const showJee = params.showJee;
-      const scores = params.scores; // undefined if not available
+      const scores = params.jeeScores; // undefined if not available
+
       let data = rawData; // TODO check
-      // let data = this.getRunningValues(rawData, newSelector)
+      console.log("scores");
+      console.log(scores);
+      console.log("data");
+      console.log(data);
+      // let data = this.getRunningValues(rawData, newFlowType)
       //   .sort((a, b) => {
-      //     if (a[newSelector] < b[newSelector]) {
+      //     if (a[newFlowType] < b[newFlowType]) {
       //       return 1;
       //     } else {
       //       return -1;
       //     }
       //   })
-      //   .filter(d => showJee || d[newSelector] !== 0);
+      //   .filter(d => showJee || d[newFlowType] !== 0);
       //
       // data = data.map(d => {
       //   return { ...d, displayName: d.name.split(" - ").reverse()[0] };
@@ -201,28 +226,49 @@ class D3StackBar extends Chart {
       );
 
       // set new axes and transition
-      const maxVal = d3.max(data, d => d[newSelector]);
-      const maxChild = d3.max(data, d =>
-        d3.max(d.children, c => c[newSelector])
-      );
+      const maxVal = d3.max(data, d => d[newFlowType]);
+      // const maxChild = d3.max(data, d =>
+      //   d3.max(d.children, c => c[newFlowType])
+      // );
       const xMax = 1.1 * maxVal;
       x.domain([0, xMax]);
-      y.domain(data.map(d => d.displayName)).range([0, newHeight]);
-      colorScale.domain([0, maxChild]);
+
+      // TODO check this
+      const coreCapacitiesInData = [...new Set(data.map(d => d.attribute))];
+      y.domain(coreCapacitiesInData).range([0, newHeight]);
+      colorScale.domain([0, maxVal]);
       const bandwidth = y.bandwidth();
+
+      // Get bar group data
+      const barGroupData = [];
+      coreCapacitiesInData.forEach(attribute => {
+        const barGroupDatum = {
+          name: attribute,
+          children: data.filter(d => d.attribute === attribute)
+        };
+        barGroupDatum.value = d3.sum(
+          barGroupDatum.children,
+          d => d[newFlowType]
+        );
+        barGroupData.push(barGroupDatum);
+      });
+      this.getRunningValues(barGroupData, newFlowType);
+
+      console.log("barGroupData");
+      console.log(barGroupData);
 
       // remove first
       let barGroups = allBars
         .selectAll(".bar-group")
         .remove()
         .exit()
-        .data(data);
+        .data(barGroupData);
 
       const newGroups = barGroups
         .enter()
         .append("g")
         .attr("class", "bar-group")
-        .attr("transform", d => `translate(0, ${y(d.displayName)})`);
+        .attr("transform", d => `translate(0, ${y(d.name)})`);
 
       barGroups = newGroups.merge(barGroups);
       barGroups
@@ -231,7 +277,7 @@ class D3StackBar extends Chart {
         .enter()
         .append("rect")
         .attr("height", bandwidth)
-        .style("fill", d => colorScale(d.country[newSelector]))
+        .style("fill", d => colorScale(d.country[newFlowType]))
         .transition()
         .duration(1000)
         .attr("x", d => x(d.country.value0))
@@ -239,8 +285,8 @@ class D3StackBar extends Chart {
 
       // set axes labels
       let xLabelPreText = "Disbursed";
-      if (params.moneyType === "r") {
-        if (newSelector === "total_spent") {
+      if (params.nodeType === "recipient") {
+        if (newFlowType === "disbursed_funds") {
           // legendTitle.text(`Funds disbursed (${Util.money(0).split(' ')[1]})`);
           xLabelPreText = "Disbursed";
         } else {
@@ -248,7 +294,7 @@ class D3StackBar extends Chart {
           xLabelPreText = "Committed";
         }
       } else {
-        if (newSelector === "total_spent") {
+        if (newFlowType === "disbursed_funds") {
           //legendTitle.text(`Funds disbursed (${Util.money(0).split(' ')[1]})`);
           xLabelPreText = "Disbursed";
         } else {
@@ -286,31 +332,37 @@ class D3StackBar extends Chart {
         .attr("y", y.bandwidth() / 2)
         .attr("dy", ".35em")
         .text(d => {
-          if (showJee || d[newSelector] !== 0) {
-            return Util.money(d[newSelector]);
+          if (showJee || d.value !== 0) {
+            return Util.money(d.value);
           }
         })
         .transition()
         .duration(1000)
-        .attr("x", d => x(d[newSelector]) + 5);
+        .attr("x", d => x(d.value) + 5);
 
-      // Add JEE score icon
-      const jeeColorScale = d3
-        .scaleThreshold()
-        .domain([1.5, 2, 2.5, 3, 3.5, 4, 4.5])
-        .range([
-          jeeColors[0],
-          d3.color(jeeColors[1]).darker(0.5),
-          d3.color(jeeColors[2]).darker(0.5),
-          d3.color(jeeColors[3]).darker(0.5),
-          d3.color(jeeColors[4]).darker(0.5),
-          jeeColors[5],
-          jeeColors[6]
-        ]);
+      // // Add JEE score icon
+      // const jeeColorScale = d3
+      //   .scaleThreshold()
+      //   .domain([1.5, 2, 2.5, 3, 3.5, 4, 4.5])
+      //   .range([
+      //     jeeColors[0],
+      //     d3.color(jeeColors[1]).darker(0.5),
+      //     d3.color(jeeColors[2]).darker(0.5),
+      //     d3.color(jeeColors[3]).darker(0.5),
+      //     d3.color(jeeColors[4]).darker(0.5),
+      //     jeeColors[5],
+      //     jeeColors[6]
+      //   ]);
       chart
         .selectAll(".y.axis .tick:not(.badged)")
         .each(function addJeeIcons(d) {
-          const scoreData = data.find(dd => dd.displayName === d);
+          const scoreData = {
+            info: core_capacities.find(dd => dd.value === d),
+            avgScore: params.jeeScores[d],
+            avgScoreRounded: Math.round(params.jeeScores[d]),
+            tickTextWidth: 10,
+            value: d
+          };
           const score = scoreData.avgScore;
           const g = d3.select(this).classed("badged", true);
           const xOffset = -1 * (scoreData.tickTextWidth + 7) - 5 - 5;
@@ -343,9 +395,7 @@ class D3StackBar extends Chart {
             .attr("y", badgeDim.y);
 
           const badgeLabelText =
-            scoreData.id === "General IHR Implementation"
-              ? "GEN"
-              : scoreData.id;
+            scoreData.value === "General IHR" ? "GEN" : scoreData.value;
           badgeGroup
             .append("text")
             .attr("text-anchor", "middle")
@@ -365,23 +415,26 @@ class D3StackBar extends Chart {
         .duration(1000)
         .attr("y", getYLabelPos(data));
     };
+    this.updateStackBar(params.data, params.flowType, {
+      jeeScores: params.jeeScores
+    });
   }
 
-  getRunningValues(data, selected) {
+  getRunningValues(data, flowType) {
     data
       .map(d => {
         let runningValue = 0;
         d.children = d3.shuffle(
           d.children.map(c => {
             c.value0 = runningValue;
-            runningValue += c[selected];
+            runningValue += c[flowType];
             c.value1 = runningValue;
             return c;
           })
         );
         return d;
       })
-      .sort((a, b) => a[selected] > b[selected]);
+      .sort((a, b) => a[flowType] > b[flowType]);
     return data;
   }
 

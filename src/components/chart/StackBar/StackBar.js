@@ -18,20 +18,43 @@ const StackBar = ({
   ...props
 }) => {
   const [stackBar, setStackBar] = React.useState(null);
+  const chartData = data.filter(
+    d =>
+      d[flowType] !== undefined &&
+      d[flowType] !== "unknown" &&
+      d.attribute !== "Unspecified"
+  );
   React.useEffect(() => {
-    const chartData = data.filter(
-      d =>
-        d[flowType] !== undefined &&
-        d[flowType] !== "unknown" &&
-        d.attribute !== "Unspecified"
-    );
     const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
       data: chartData,
       flowType,
-      jeeScores
+      jeeScores,
+      nodeType
+      // oppNoun: nodeType === "target" ? "Funder" : "Recipient"
     });
     setStackBar(stackBarNew);
   }, []);
+
+  React.useEffect(() => {
+    if (stackBar !== null) {
+      console.log("flowType = " + flowType);
+      console.log("stackBar.update");
+      console.log(stackBar.update);
+      stackBar.updateStackBar(chartData, flowType, { jeeScores });
+    }
+  }, [flowType]);
+
+  // React.useEffect(() => {
+  //   if (stackBar !== null) {
+  //     const chartData = data.filter(
+  //       d =>
+  //         d[flowType] !== undefined &&
+  //         d[flowType] !== "unknown" &&
+  //         d.attribute !== "Unspecified"
+  //     );
+  //     stackBar.update(chartData, flowType);
+  //   }
+  // }, [stackBar]);
   return (
     <div className={styles.stackbar}>
       <div className={styles.stackBarChart} />
