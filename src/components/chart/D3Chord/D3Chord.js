@@ -88,19 +88,26 @@ class D3Chord extends Chart {
     // Determine sizes and start/end positions of region arcs (A-Z) based on
     // share of total pie.
     const flowTypeName = this.params.transactionType + "_funds";
-    this.params.chordData = this.params.chordData.filter(
-      d =>
-        d.flow_types[flowTypeName] !== undefined &&
-        d.source.length === 1 &&
-        d.target.length === 1
-    );
+    this.params.chordData = this.params.chordData
+      .filter(
+        d =>
+          d.flow_types[flowTypeName] !== undefined &&
+          d.source.length === 1 &&
+          d.target.length === 1
+      )
+      .sort((a, b) => {
+        return d3.ascending(
+          a.target[0].region || "Other",
+          b.target[0].region || "Other"
+        );
+      });
 
     const regionTotals = {};
     let total = 0;
     this.params.chordData.forEach(d => {
       const weight = d.flow_types[flowTypeName].focus_node_weight;
       // source
-      const types = [["source", "target"], ["target", "source"]];
+      const types = [["target", "source"], ["source", "target"]];
       types.forEach(type => {
         const focusRegion = d[type[0]][0].region || "Other";
         if (regionTotals[focusRegion] === undefined) {
