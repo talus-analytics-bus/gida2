@@ -202,18 +202,6 @@ class D3StackBar extends Chart {
       const newHeight = 30 * coreCapacitiesInData2.length;
       this.svg.attr("height", newHeight + margin.top + margin.bottom);
 
-      // set new axes and transition
-      const maxVal = d3.max(data, d => d[newFlowType]);
-      // const maxChild = d3.max(data, d =>
-      //   d3.max(d.children, c => c[newFlowType])
-      // );
-      const xMax = 1.1 * maxVal;
-      x.domain([0, xMax]);
-      y.domain(coreCapacitiesInData2.map(d => d.value)).range([0, newHeight]);
-
-      colorScale.domain([0, maxVal]);
-      const bandwidth = y.bandwidth();
-
       // Get bar group data
       const barGroupData = [];
       coreCapacitiesInData2.forEach(attribute => {
@@ -230,6 +218,18 @@ class D3StackBar extends Chart {
         barGroupData.push(barGroupDatum);
       });
       this.getRunningValues(barGroupData, newFlowType);
+
+      // set new axes and transition
+      const maxVal = d3.max(barGroupData, d => d.value);
+      // const maxChild = d3.max(data, d =>
+      //   d3.max(d.children, c => c[newFlowType])
+      // );
+      const xMax = 1.1 * maxVal;
+      x.domain([0, xMax]);
+      y.domain(coreCapacitiesInData2.map(d => d.value)).range([0, newHeight]);
+
+      colorScale.domain([0, maxVal]);
+      const bandwidth = y.bandwidth();
 
       // Sort
       if (sort === "amount") {

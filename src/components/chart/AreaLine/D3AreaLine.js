@@ -99,8 +99,6 @@ class D3AreaLine extends Chart {
 
   draw() {
     const chart = this;
-    console.log("chart");
-    console.log(chart);
 
     // Create clipping path
     chart.svg
@@ -125,9 +123,6 @@ class D3AreaLine extends Chart {
       .domain(this.xDomainDefault) // min and max time vary w. window size
       .range([0, chart.width])
       .clamp(true);
-
-    console.log("x");
-    console.log(x);
 
     // y scale: incidence - main chart
     // Never changes
@@ -216,8 +211,6 @@ class D3AreaLine extends Chart {
 
     // Add line to chart
     const valueLineSegments = chart.params.data;
-    console.log("valueLineSegments");
-    console.log(valueLineSegments);
     valueLineSegments.forEach((series, i) => {
       chart
         .newGroup(styles.lineValue + " series-" + i)
@@ -336,8 +329,6 @@ class D3AreaLine extends Chart {
               xDateLineStrComponents.month
             }`;
           }
-          console.log("xDateLineStr");
-          console.log(xDateLineStr);
           const items = [];
           chart.data.forEach(series => {
             const item = series.find(d => d.date_time.startsWith(xDateLineStr));
