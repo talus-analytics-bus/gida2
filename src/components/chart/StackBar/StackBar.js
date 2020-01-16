@@ -94,13 +94,13 @@ const StackBar = ({
           effect="float"
           getContent={() =>
             tooltipData && (
-              <div>
+              <table>
                 {tooltipData.map(d => (
-                  <div>
-                    <span>{d.field}:</span>&nbsp;<span>{d.value}</span>
-                  </div>
+                  <tr>
+                    <td>{d.field}:</td>&nbsp;<td>{d.value}</td>
+                  </tr>
                 ))}
-              </div>
+              </table>
             )
           }
         />
