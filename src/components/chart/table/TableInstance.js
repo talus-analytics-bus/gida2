@@ -30,7 +30,11 @@ const TableInstance = ({
           }
         : {};
     return (
-      <div className={classNames("tableInstance", "noPaging")}>
+      <div
+        className={classNames("tableInstance", {
+          noPaging: props.paging !== true
+        })}
+      >
         <DataTable
           columns={tableColumns}
           initialData={
@@ -42,9 +46,8 @@ const TableInstance = ({
                   filterFcn: filterFcn
                 })
           }
-          initialPageLength={props.initialPageLength || 1e6}
+          initialPageLength={props.paging ? 10 : 1e6}
           paging={props.paging || false}
-          pageLengthOptions={[5, 20, 50]}
           initialSortBy={sortBy}
         />
       </div>

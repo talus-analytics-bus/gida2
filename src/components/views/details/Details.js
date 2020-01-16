@@ -166,6 +166,7 @@ const Details = ({
       header: <h2>Response funding by outbreak event</h2>,
       content: (
         <TableInstance
+          paging={true}
           sortByProp={"amount"}
           tableColumns={[
             {
@@ -239,6 +240,7 @@ const Details = ({
       content: (
         <TableInstance
           sortByProp={"total"}
+          paging={true}
           tableColumns={[
             {
               title: Util.getInitCap(
