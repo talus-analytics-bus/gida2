@@ -1,6 +1,9 @@
 import React from "react";
 import Util from "../../misc/Util.js";
 import styles from "./donut.module.scss";
+import D3Donut from "./D3Donut.js";
+import classNames from "classnames";
+import { greens, purples } from "../../map/MapUtil.js";
 
 // FC
 const Donut = ({
@@ -8,18 +11,28 @@ const Donut = ({
   denominator,
   attribute,
   attrFormatter,
+  nodeType,
+  idx,
   ...props
 }) => {
+  const [chart, setChart] = React.useState(null);
+  console.log("nodeType");
+  console.log(nodeType);
+  React.useEffect(() => {
+    const chartNew = new D3Donut(`.${styles.donutChart}.${idx}`, {
+      pct: numerator / denominator,
+      color:
+        nodeType === "target"
+          ? purples[purples.length - 1]
+          : greens[greens.length - 1]
+    });
+    setChart(chartNew);
+  }, []);
+
   return (
     <div className={styles.donut}>
-      <div className={styles.content}>
-        <div className={styles.value}>
-          {numerator !== 0
-            ? Util.percentize(100 * (numerator / denominator))
-            : "0%"}
-        </div>
-        <div className={styles.label}>{attrFormatter(attribute)}</div>
-      </div>
+      <div className={styles.label}>{attrFormatter(attribute)}</div>
+      <div className={classNames(styles.donutChart, idx)} />
     </div>
   );
 };

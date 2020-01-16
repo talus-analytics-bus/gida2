@@ -956,8 +956,10 @@ Util.getAttrFormatter = name => {
             return "Detect";
           case "R":
             return "Respond";
-          case "Other":
+          case "O":
             return "Other";
+          case "General IHR":
+            return "General IHR Implementation";
           default:
             return v;
         }

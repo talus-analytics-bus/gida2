@@ -204,6 +204,7 @@ const Details = ({
           data={masterSummary}
           flowType={curFlowType}
           attributeType={"core_elements"}
+          nodeType={nodeType}
         />
       ),
       toggleFlowType: true,

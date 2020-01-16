@@ -7,7 +7,7 @@ import styles from "./donuts.module.scss";
 import Donut from "./Donut.js";
 
 // FC
-const Donuts = ({ data, flowType, attributeType, ...props }) => {
+const Donuts = ({ data, flowType, nodeType, attributeType, ...props }) => {
   // If no data, return message to that effect.
   const noData = data === null;
 
@@ -20,8 +20,9 @@ const Donuts = ({ data, flowType, attributeType, ...props }) => {
   return (
     <div className={styles.donuts}>
       {!noData &&
-        ["P", "D", "R", "O", "General IHR", "Unspecified"].map(d => (
+        ["P", "D", "R", "O", "General IHR", "Unspecified"].map((d, idx) => (
           <Donut
+            idx={`num_${idx}`}
             numerator={
               flowTypeHasData
                 ? parseFloat(flowTypeData.summaries[attributeType][d]) || 0
@@ -30,6 +31,7 @@ const Donuts = ({ data, flowType, attributeType, ...props }) => {
             denominator={flowTypeHasData ? flowTypeData.focus_node_weight : 0}
             attrFormatter={Util.getAttrFormatter(attributeType)}
             attribute={d}
+            nodeType={nodeType}
           />
         ))}
       {noData && <span>No data available.</span>}
