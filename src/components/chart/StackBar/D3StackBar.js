@@ -75,7 +75,7 @@ class D3StackBar extends Chart {
       .tickSizeInner(0)
       .tickSizeOuter(5)
       .tickPadding(8)
-      .tickFormat(Util.formatSI)
+      .tickFormat(Util.formatSIInteger)
       .scale(x);
 
     // y-axis
@@ -137,7 +137,7 @@ class D3StackBar extends Chart {
         .attr("class", [styles.tick, styles.fakeText].join(" "));
       const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
       fakeText.remove();
-      const margin = 60;
+      const margin = 65;
       return -(maxLabelWidth + margin) || -this.margin.left + 10;
     };
 

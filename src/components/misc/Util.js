@@ -838,7 +838,10 @@ Util.money = (val, units = true) => {
 Util.formatSIInteger = val => {
   if (val === 0) return "0";
   else if (val <= 999) return val;
-  else return d3.format(".2s")(val);
+  else
+    return d3
+      .format(".2s")(val)
+      .replace(/G/, "B");
 };
 
 // Format using standard suffixes
