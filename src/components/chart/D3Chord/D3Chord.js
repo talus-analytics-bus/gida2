@@ -274,7 +274,15 @@ class D3Chord extends Chart {
         generator: entityArcGenerator
       }
     ];
+
+    console.log("arcsData");
+    console.log(arcsData);
+    const offset = (arcsData.region[0].theta2 - arcsData.region[0].theta1) / 2;
     arcTypes.forEach(arcType => {
+      arcsData[arcType.type].forEach(d => {
+        d.theta1 -= offset;
+        d.theta2 -= offset;
+      });
       arcTypes[arcType.type] = this.chart
         .append("g")
         .attr("class", styles[arcType.type])
@@ -354,14 +362,18 @@ class D3Chord extends Chart {
 
         // Source: Go from original theta 1 plus already used...
         // ...to original theta 1 plus updated already used.
-        flowThetas.source.theta1 = source.theta1 + arcLengthAlreadyUsedS;
-        flowThetas.source.theta2 = source.theta1 + updatedArcLengthAlreadyUsedS;
+        flowThetas.source.theta1 =
+          source.theta1 + arcLengthAlreadyUsedS - offset;
+        flowThetas.source.theta2 =
+          source.theta1 + updatedArcLengthAlreadyUsedS - offset;
         source.remainingFlowThetaFraction =
           1 - updatedFracArcLengthAlreadyUsedS;
 
         // Same for target
-        flowThetas.target.theta1 = target.theta1 + arcLengthAlreadyUsedT;
-        flowThetas.target.theta2 = target.theta1 + updatedArcLengthAlreadyUsedT;
+        flowThetas.target.theta1 =
+          target.theta1 + arcLengthAlreadyUsedT - offset;
+        flowThetas.target.theta2 =
+          target.theta1 + updatedArcLengthAlreadyUsedT - offset;
         target.remainingFlowThetaFraction =
           1 - updatedFracArcLengthAlreadyUsedT;
 
@@ -463,6 +475,7 @@ class D3Chord extends Chart {
         return outerRadiusRegion;
       });
 
+    // Add region labels.
     this.chart
       .append("g")
       .append("path")
@@ -477,45 +490,39 @@ class D3Chord extends Chart {
       .attr("id", "textCircleRev")
       .attr("d", textCircle)
       .attr("transform", "scale(-1, 1)");
-
-    // Add region labels.
-    console.log("arcsData");
-    console.log(arcsData);
-    console.log("arcTypes");
-    console.log(arcTypes);
-
     arcsData.region.forEach(d => {
       d.center = d.theta1 + (d.theta2 - d.theta1) / 2;
       d.needToFlip = d.center > Math.PI / 2 && d.center < (3 * Math.PI) / 2;
     });
-
-    const usingFirefox = navigator.userAgent.search("Firefox") > -1;
     this.chart
-      // .select(`g.${styles.region}`)
-      // .selectAll("path")
       .selectAll("text")
       .data(arcsData.region)
       .enter()
       .append("text")
       .attr("class", styles.regionLabel)
-      // .attr("textLength", d => {
-      //   console.log("d");
-      //   console.log(regionArcGenerator.centroid(d));
-      //   return usingFirefox ? "MVM Test".length * 1.25 * 12.5 : undefined;
-      // })
-      .attr("transform", "rotate(180)")
+      .attr(
+        "transform",
+        d => `rotate(180)rotate(${-180 + (360 * d.center) / (2 * Math.PI)})`
+      )
       .attr("dy", d => (d.needToFlip ? "1em" : -5))
       .style("text-anchor", "middle")
       .append("textPath")
       .attr("href", d => (d.needToFlip ? "#textCircleRev" : "#textCircle"))
       .attr("startOffset", d => {
-        if (d.needToFlip) {
-          return `${100 - (100 * d.center) / (2 * Math.PI)}%`;
-        } else {
-          return `${(100 * d.center) / (2 * Math.PI)}%`;
-        }
+        return "50%";
+        // if (d.needToFlip) {
+        //   return `${100 - (100 * d.center) / (2 * Math.PI)}%`;
+        // } else {
+        //   return `${(100 * d.center) / (2 * Math.PI)}%`;
+        // }
       })
-      // .attr('startOffset', d => `${(100 * (d.labelAngle / 360))}%`)
+      // .attr("startOffset", d => {
+      //   if (d.needToFlip) {
+      //     return `${100 - (100 * d.center) / (2 * Math.PI)}%`;
+      //   } else {
+      //     return `${(100 * d.center) / (2 * Math.PI)}%`;
+      //   }
+      // })
       .text(d => d.name);
   }
 }
