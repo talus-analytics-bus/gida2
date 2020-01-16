@@ -99,8 +99,8 @@ class D3StackBar extends Chart {
     const yAxisG = chart
       .append("g")
       .attr("class", "y axis")
-      .call(yAxis)
-      .style("font-size", "0.4em");
+      .call(yAxis);
+    // .style("font-size", "0.4em");
 
     // add axes labels
     let xAxisLabel = "";
@@ -109,7 +109,7 @@ class D3StackBar extends Chart {
       .attr("class", "axis-label")
       .attr("x", width / 2)
       .attr("y", -70)
-      .style("font-size", "1.25em")
+      // .style("font-size", "1.25em")
       .text(xAxisLabel);
 
     const xLabel = chart
@@ -118,18 +118,19 @@ class D3StackBar extends Chart {
       .attr("y", -30)
       .style("font-weight", 600)
       .style("text-anchor", "middle")
-      .style("font-size", "14px")
+      // .style("font-size", "14px")
       .text("Funds");
 
     const getYLabelPos = data => {
+      console.log("data");
+      console.log(data);
       const fakeText = chart
         .selectAll(".fake-text")
         .data(data)
         .enter()
         .append("text")
-        .text(d => d.tickText)
-        .attr("class", "tick fake-text")
-        .style("font-size", "12px");
+        .text(d => d.info.label)
+        .attr("class", [styles.tick, styles.fakeText].join(" "));
       const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
       fakeText.remove();
       const margin = 60;
@@ -144,7 +145,7 @@ class D3StackBar extends Chart {
       .attr("x", -height / 2)
       .style("font-weight", 600)
       .style("text-anchor", "middle")
-      .style("font-size", "14px")
+      // .style("font-size", "14px")
       .text("Core capacity");
 
     this.updateStackBar = (
@@ -169,24 +170,42 @@ class D3StackBar extends Chart {
         // data = _.sortBy(_.sortBy(data, "jeeIdx"), d => -1 * d.avgScore);
       }
       const coreCapacitiesInData = [...new Set(data.map(d => d.attribute))];
+      const coreCapacitiesInData2 = [];
+      coreCapacitiesInData.forEach(cc => {
+        coreCapacitiesInData2.push({
+          info: core_capacities.find(dd => dd.value === cc),
+          avgScore: params.jeeScores ? params.jeeScores[cc] : 0,
+          avgScoreRounded: params.jeeScores
+            ? Math.round(params.jeeScores[cc])
+            : 0,
+          tickTextWidth: undefined,
+          value: cc
+        });
+      });
 
-      data.forEach(datum => {
-        datum.tickText = yAxis.tickFormat()(datum.displayName);
+      coreCapacitiesInData2.forEach(datum => {
+        datum.tickText = yAxis.tickFormat()(datum.value);
       });
       const fakeText = chart
         .selectAll(".fake-text")
-        .data(data)
+        .data(coreCapacitiesInData2)
         .enter()
         .append("text")
-        .text(d => d.tickText)
-        .attr("class", "tick")
-        .style("font-size", "12px")
+        .text(d => d.info.label) // TODO ellipsis
+        .attr("class", styles.tick)
+        // .style("font-size", "12px")
         .each(function(d) {
+          console.log("this");
+          console.log(this);
           d.tickTextWidth = this.getBBox().width;
+          console.log("this.getBBox().width");
+          console.log(this.getBBox().width);
         });
       fakeText.remove();
+      console.log("coreCapacitiesInData2");
+      console.log(coreCapacitiesInData2);
 
-      const newHeight = 30 * coreCapacitiesInData.length;
+      const newHeight = 30 * coreCapacitiesInData2.length;
       d3.select(".category-chart").attr(
         "height",
         newHeight + margin.top + margin.bottom
@@ -201,17 +220,18 @@ class D3StackBar extends Chart {
       x.domain([0, xMax]);
 
       // TODO check this
-      y.domain(coreCapacitiesInData).range([0, newHeight]);
+      y.domain(coreCapacitiesInData2.map(d => d.value)).range([0, newHeight]);
 
       colorScale.domain([0, maxVal]);
       const bandwidth = y.bandwidth();
 
       // Get bar group data
       const barGroupData = [];
-      coreCapacitiesInData.forEach(attribute => {
+      coreCapacitiesInData2.forEach(attribute => {
         const barGroupDatum = {
-          name: attribute,
-          children: data.filter(d => d.attribute === attribute)
+          name: attribute.value,
+          data: attribute,
+          children: data.filter(d => d.attribute === attribute.value)
         };
         barGroupDatum.value = d3.sum(
           barGroupDatum.children,
@@ -295,21 +315,27 @@ class D3StackBar extends Chart {
         .duration(1000)
         .attr("x", d => x(d.value) + 5);
 
+      chart.selectAll(".tick").classed(styles.tick, true);
       chart
         .selectAll(".y.axis .tick:not(.badged)")
         .each(function addJeeIcons(d) {
-          const scoreData = {
-            info: core_capacities.find(dd => dd.value === d),
-            avgScore: params.jeeScores ? params.jeeScores[d] : 0,
-            avgScoreRounded: params.jeeScores
-              ? Math.round(params.jeeScores[d])
-              : 0,
-            tickTextWidth: 100,
-            value: d
-          };
+          console.log("d");
+          console.log(d);
+          // const scoreData = {
+          //   info: core_capacities.find(dd => dd.value === d),
+          //   avgScore: params.jeeScores ? params.jeeScores[d] : 0,
+          //   avgScoreRounded: params.jeeScores
+          //     ? Math.round(params.jeeScores[d])
+          //     : 0,
+          //   tickTextWidth: 100,
+          //   value: d
+          // };
+          const scoreData = barGroupData.find(dd => dd.name === d);
+          console.log("scoreData");
+          console.log(scoreData);
           const score = scoreData.avgScore;
           const g = d3.select(this).classed("badged", true);
-          const xOffset = -1 * (scoreData.tickTextWidth + 7) - 5 - 5;
+          const xOffset = -1 * (scoreData.data.tickTextWidth + 7) - 5 - 5;
           const axisGap = -7;
           const badgeGroup = g
             .append("g")
@@ -339,7 +365,7 @@ class D3StackBar extends Chart {
             .attr("y", badgeDim.y);
 
           const badgeLabelText =
-            scoreData.value === "General IHR" ? "GEN" : scoreData.value;
+            scoreData.name === "General IHR" ? "GEN" : scoreData.name;
           badgeGroup
             .append("text")
             .attr("text-anchor", "middle")
@@ -358,7 +384,7 @@ class D3StackBar extends Chart {
       yLabel
         .transition()
         .duration(1000)
-        .attr("y", getYLabelPos(data));
+        .attr("y", getYLabelPos(coreCapacitiesInData2));
     };
     this.updateStackBar(params.data, params.flowType, {
       jeeScores: params.jeeScores
