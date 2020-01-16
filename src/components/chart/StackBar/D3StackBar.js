@@ -30,7 +30,7 @@ class D3StackBar extends Chart {
     // Set dimensions
     this.width = this.containerwidth;
     this.height = this.containerheight;
-    this.margin = { top: 50, right: 20, bottom: 35, left: 350 };
+    this.margin = { top: 50, right: 70, bottom: 35, left: 350 };
 
     // Initialize chart
     this.init();
@@ -203,10 +203,7 @@ class D3StackBar extends Chart {
       fakeText.remove();
 
       const newHeight = 30 * coreCapacitiesInData2.length;
-      d3.select(".category-chart").attr(
-        "height",
-        newHeight + margin.top + margin.bottom
-      );
+      this.svg.attr("height", newHeight + margin.top + margin.bottom);
 
       // set new axes and transition
       const maxVal = d3.max(data, d => d[newFlowType]);
