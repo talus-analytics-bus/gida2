@@ -1,12 +1,12 @@
-import * as d3 from 'd3/dist/d3.min'
+import * as d3 from "d3/dist/d3.min";
 
 class Chart {
   constructor(selector, params = {}) {
     this.DEV = false;
 
     this.selector = selector;
-    document.querySelector(selector).innerHTML = '';
-    this.svg = d3.select(selector).append('svg');
+    document.querySelector(selector).innerHTML = "";
+    this.svg = d3.select(selector).append("svg");
 
     if (!this.margin) this.margin = params.margin;
     // this.margin = params.margin || {
@@ -16,12 +16,8 @@ class Chart {
     //   right: 0,
     // };
 
-    this.chart = this.svg
-      .append('g')
-      .classed('chart', true);
-    this.outlines = this.svg
-      .append('g')
-      .classed('outlines', true);
+    this.chart = this.svg.append("g").classed("chart", true);
+    this.outlines = this.svg.append("g").classed("outlines", true);
 
     // Store as function
     this.onResize = onResize;
@@ -33,50 +29,51 @@ class Chart {
     this.alwaysHighlight = params.alwaysHighlight || false;
 
     if (this.DEV) {
-      document.querySelector(selector).classList.add('dev-chart');
+      document.querySelector(selector).classList.add("dev-chart");
 
       let logged = false;
-      this.svg.on('mouseenter', () => {
+      this.svg.on("mouseenter", () => {
         if (!logged) {
           console.log({
             chartType: this.constructor.name,
-            ratio: `Height/Width => ${this.containerheight / this.containerwidth}`,
-            chart: this,
+            ratio: `Height/Width => ${this.containerheight /
+              this.containerwidth}`,
+            chart: this
           });
           logged = true;
         }
       });
-
     }
   }
 
-  draw() {
-  }
+  draw() {}
 
-  update() {
-  }
+  update() {}
 
   setNoData() {
-    this.chart.selectAll('g').remove();
-    this.newGroup('nodata')
-      .attr('transform', `translate(${this.containerwidth * 0.3}, ${this.containerheight * 0.3})`)
-      .append('text')
-      .style('font-size', '20px')
-      .style('text-anchor', 'middle')
-      .style('fill', '#ccc')
-      .style('stroke', 'none')
-      .text('No Data Available')
+    this.chart.selectAll("g").remove();
+    this.newGroup("nodata")
+      .attr(
+        "transform",
+        `translate(${this.containerwidth * 0.3}, ${this.containerheight * 0.3})`
+      )
+      .append("text")
+      .style("font-size", "20px")
+      .style("text-anchor", "middle")
+      .style("fill", "#ccc")
+      .style("stroke", "none")
+      .text("No Data Available");
   }
 
   /* API METHODS */
   newGroup(name, parent = undefined) {
     if (parent === undefined) {
       this.chart.selectAll(`.${name}`).remove();
-      this[name] = this.chart.append('g').classed(name, true);
+      this[name] = this.chart.append("g").classed(name, true);
       return this[name];
     } else {
       parent.selectAll(`.${name}`).remove();
-      parent[name] = parent.append('g').classed(name, true);
+      parent[name] = parent.append("g").classed(name, true);
       return parent[name];
     }
   }
@@ -102,7 +99,7 @@ class Chart {
      */
     const pattern = {
       _duration: 600,
-      _subPatterns: [],
+      _subPatterns: []
     };
     pattern.name = (name, parent = undefined) => {
       pattern._name = name;
@@ -111,7 +108,7 @@ class Chart {
       }
       return pattern;
     };
-    pattern.element = (element) => {
+    pattern.element = element => {
       pattern._element = element;
       pattern.existingStuff = this[pattern._name].selectAll(element);
       return pattern;
@@ -119,9 +116,7 @@ class Chart {
     pattern.data = (data, selectionCallback = undefined) => {
       pattern._data = data;
       pattern.existingStuff = pattern.existingStuff.data(pattern._data);
-      pattern.newStuff = pattern.existingStuff
-        .enter()
-        .append(pattern._element);
+      pattern.newStuff = pattern.existingStuff.enter().append(pattern._element);
       pattern.selection = pattern.newStuff;
       pattern.exit();
 
@@ -132,8 +127,7 @@ class Chart {
       return pattern;
     };
     pattern.pre = (selectionCallback = undefined) => {
-      pattern.selection = this[pattern._name]
-        .selectAll(pattern._element);
+      pattern.selection = this[pattern._name].selectAll(pattern._element);
 
       if (selectionCallback) {
         selectionCallback(pattern.selection, pattern);
@@ -153,15 +147,13 @@ class Chart {
       return pattern;
     };
     pattern.exit = () => {
-      pattern.existingStuff
-        .exit()
-        .remove();
+      pattern.existingStuff.exit().remove();
     };
-    ['style', 'attr', 'html', 'text'].map(command => {
+    ["style", "attr", "html", "text"].map(command => {
       pattern[command] = (...args) => {
         pattern.selection[command](...args);
-        return pattern
-      }
+        return pattern;
+      };
     });
     return pattern;
   }
@@ -170,11 +162,12 @@ class Chart {
    * Defines the x and y axis sections.
    * @method plotAxes
    */
-  plotAxisReact(styles, axis, type = 'y') {
+  plotAxisReact(styles, axis, type = "y") {
     const chart = this;
-    const axisG = chart.newGroup(styles[type + '-axis'])
-      .append('g')
-      .attr('class', styles[type + '-axis'])
+    const axisG = chart
+      .newGroup(styles[type + "-axis"])
+      .append("g")
+      .attr("class", styles[type + "-axis"])
       .call(axis);
     return axisG;
   }
@@ -298,35 +291,36 @@ class Chart {
   // }
 
   ylabel(text, params = {}) {
-    this.newGroup('ylabelgroup');
+    this.newGroup("ylabelgroup");
 
     const bbox = this.getBBox(this.yAxisG);
 
     const yPos = -bbox.width - (params.yTitleShift || 15);
 
     this.ylabelgroup
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .style('text-anchor', 'middle')
-      .style('font-weight', 600)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .style("text-anchor", "middle")
+      .style("font-weight", 600)
       // .style('dominant-baseline', 'hanging')
-      .style('font-size', params.yAxisLabelFontSize || '1.3em')
+      .style("font-size", params.yAxisLabelFontSize || "1.3em")
       .html(wordWrap(text, 50 || params.maxWidth, -this.height / 2, yPos));
   }
 
   xlabel(text, params = {}) {
-    this.newGroup('xlabelgroup');
+    this.newGroup("xlabelgroup");
 
     const bbox = this.getBBox(this.xAxisG);
 
     const xPos = params.xPos || this.width / 2;
     const yPos = this.height + bbox.height + 18;
 
-    this.xlabelgroup.append('text')
-      .style('text-anchor', 'middle')
-      .style('font-weight', 600)
+    this.xlabelgroup
+      .append("text")
+      .style("text-anchor", "middle")
+      .style("font-weight", 600)
       // .style('dominant-baseline', 'middle')
-      .style('font-size', params.xAxisLabelFontSize || '1.3em')
+      .style("font-size", params.xAxisLabelFontSize || "1.3em")
       .html(wordWrap(text, 50 || params.maxWidth, xPos, yPos));
   }
 
@@ -336,17 +330,17 @@ class Chart {
         x: 0,
         y: 0,
         width: 10,
-        height: 10,
-      }
+        height: 10
+      };
     }
     if (this.svg.node() === undefined || this.svg.node() === null) {
-      console.log('Not part of an svg');
+      console.log("Not part of an svg");
       return {
         x: 0,
         y: 0,
         width: 0,
-        height: 0,
-      }
+        height: 0
+      };
     }
     const svgBox = this.svg.node().getBoundingClientRect();
     const bbox = element.node().getBoundingClientRect();
@@ -355,8 +349,8 @@ class Chart {
       x: bbox.x - svgBox.x,
       y: bbox.y - svgBox.y,
       width: Math.max(bbox.width, 1),
-      height: Math.max(bbox.height, 1),
-    }
+      height: Math.max(bbox.height, 1)
+    };
   }
 
   outlineElement(selection) {
@@ -365,7 +359,7 @@ class Chart {
     // http://bl.ocks.org/nitaku/8745933
     const elements = [];
     if (typeof selection === "object") {
-      selection.each(function () {
+      selection.each(function() {
         const element = d3.select(this);
         elements.push(element);
       });
@@ -374,14 +368,15 @@ class Chart {
     elements.forEach(element => {
       const bbox = this.getBBox(element);
 
-      this.outlines.append('rect')
-        .attr('x', bbox.x)
-        .attr('y', bbox.y)
-        .attr('width', bbox.width)
-        .attr('height', bbox.height)
-        .attr('fill', 'none')
-        .style('stroke', 'red')
-        .style('stroke-width', 1);
+      this.outlines
+        .append("rect")
+        .attr("x", bbox.x)
+        .attr("y", bbox.y)
+        .attr("width", bbox.width)
+        .attr("height", bbox.height)
+        .attr("fill", "none")
+        .style("stroke", "red")
+        .style("stroke-width", 1);
     });
   }
 
@@ -393,41 +388,45 @@ class Chart {
       // event listener
       // https://css-tricks.com/snippets/jquery/done-resizing-event/
       let timer;
-      window.addEventListener('resize', () => {
+      window.addEventListener("resize", () => {
         clearTimeout(timer);
         timer = window.setTimeout(() => {
           onResize(this);
         }, 100);
       });
     }
-
   }
 
   // Add axis labels
-  getYLabelPos (y, ordinal = false, labels = [], fontSize = '1em', useDrawnTicks = false) {
+  getYLabelPos(
+    y,
+    ordinal = false,
+    labels = [],
+    fontSize = "1em",
+    useDrawnTicks = false
+  ) {
     const chart = this;
 
     // data: all tick labels shown in chart, as formatted.
     let data, fakeAxis;
     if (useDrawnTicks) {
       data = [];
-      fakeAxis = chart.svg.append('g')
-        .attr('class', 'fakeAxis')
+      fakeAxis = chart.svg
+        .append("g")
+        .attr("class", "fakeAxis")
         .call(chart.yAxis);
 
-      fakeAxis
-        .selectAll('g.tick text').each(function(d) {
-          data.push(this.textContent);
-        })
-      fakeAxis
-        .remove();
-    }
-    else {
+      fakeAxis.selectAll("g.tick text").each(function(d) {
+        data.push(this.textContent);
+      });
+      fakeAxis.remove();
+    } else {
       if (ordinal) {
         data = labels;
-      }
-      else {
-        const tickFormat = chart.yTickFormat ? chart.yTickFormat : y.tickFormat();
+      } else {
+        const tickFormat = chart.yTickFormat
+          ? chart.yTickFormat
+          : y.tickFormat();
         data = [
           tickFormat(
             y.domain()[0] // largest y-value
@@ -437,12 +436,17 @@ class Chart {
     }
 
     // Add fake tick labels
-    const fakeText = chart.svg.selectAll('.fake-text').data(data).enter().append("text").text(d => d)
-      .attr('class','tick fake-text')
-      .style('font-size',fontSize); // TODO same fontsize as chart
+    const fakeText = chart.svg
+      .selectAll(".fake-text")
+      .data(data)
+      .enter()
+      .append("text")
+      .text(d => d)
+      .attr("class", "tick fake-text")
+      .style("font-size", fontSize); // TODO same fontsize as chart
 
     // Calculate position based on fake tick labels and remove them
-    const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
+    const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
     fakeText.remove();
 
     // Return ypos as longest tick label length plus a margin.
@@ -460,24 +464,29 @@ class Chart {
 
     // THEN zero width again
     return marginShift;
-  };
+  }
 
   // Get the width of the longest label in a set of text labels
-  getLongestLabelWidth (labels = [], fontSize = '1em', bold = false) {
+  getLongestLabelWidth(labels = [], fontSize = "1em", bold = false) {
     const chart = this;
 
     // Add fake tick labels
-    const fakeText = chart.svg.selectAll('.fake-text').data(labels).enter().append("text").text(d => d)
-      .attr('class','tick fake-text')
-      .style('font-weight', bold ? 'bold' : 'normal')
-      .style('font-size',fontSize); // TODO same fontsize as chart
+    const fakeText = chart.svg
+      .selectAll(".fake-text")
+      .data(labels)
+      .enter()
+      .append("text")
+      .text(d => d)
+      .attr("class", "tick fake-text")
+      .style("font-weight", bold ? "bold" : "normal")
+      .style("font-size", fontSize); // TODO same fontsize as chart
 
     // Calculate position based on fake tick labels and remove them
-    const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
+    const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
     fakeText.remove();
 
     return maxLabelWidth;
-  };
+  }
 
   setMargin(margin) {
     const chart = this;
@@ -485,22 +494,22 @@ class Chart {
     chart.params.margin = margin;
   }
 
-  fitLeftMargin (initDomain, ordinal = false, useDrawnTicks = false) {
-
+  fitLeftMargin(initDomain, ordinal = false, useDrawnTicks = false) {
     const chart = this;
-    const axisType = 'y';
+    const axisType = "y";
     const labels = ordinal ? initDomain : [];
 
     const yParams = chart.params.yMetricParams;
 
     if (chart[axisType] === undefined) {
-      chart[axisType] = d3.scaleLinear()
+      chart[axisType] = d3
+        .scaleLinear()
         .domain(initDomain)
         .nice()
         .range([0, chart.height]);
       if (chart.yTickFormat) {
-        console.log('chart.yTickFormat - mvm found')
-        console.log(chart.yTickFormat)
+        console.log("chart.yTickFormat - mvm found");
+        console.log(chart.yTickFormat);
         chart[axisType].tickFormat(chart.yTickFormat);
       }
     }
@@ -511,8 +520,8 @@ class Chart {
       chart[axisType], // scale
       ordinal,
       labels,
-      '1em',
-      useDrawnTicks,
+      "1em",
+      useDrawnTicks
     );
     return shift;
   }
@@ -522,13 +531,14 @@ class Chart {
   } // alias
 }
 
-export default Chart
+export default Chart;
 
 function onResize(chart) {
-
   const selector = document.querySelector(chart.selector);
 
-  if (!selector) { return; }
+  if (!selector) {
+    return;
+  }
 
   // get the width and height of the container that we're inside
   chart.containerwidth = selector.clientWidth;
@@ -539,55 +549,61 @@ function onResize(chart) {
   }
 
   // set the contents to be the dimensions minus the margin
-  console.log('chart - Chart.js')
-  console.log(chart)
+  // console.log('chart - Chart.js')
+  // console.log(chart)
   chart.width = chart.containerwidth - chart.margin.left - chart.margin.right;
   chart.height = chart.containerheight - chart.margin.top - chart.margin.bottom;
 
   // set the actual svg width and height
   chart.svg
-    .attr('width', chart.containerwidth)
-    .attr('height', chart.containerheight);
+    .attr("width", chart.containerwidth)
+    .attr("height", chart.containerheight);
 
   // set
-  chart.chart
-    .attr('transform', `translate(${chart.margin.left}, ${chart.margin.top})`);
+  chart.chart.attr(
+    "transform",
+    `translate(${chart.margin.left}, ${chart.margin.top})`
+  );
 
   // chart.draw();
 
   if (chart.DEV) {
-    chart.newGroup('outlines')
-      .lower();
-    chart.outlines.append('rect')
-      .classed('containerbox', true)
-      .attr('transform', `translate(${-chart.margin.left},${-chart.margin.top})`)
-      .style('fill', 'red')
-      .style('fill-opacity', 0)
-      .style('stroke', 'purple')
-      .style('stroke-width', 1)
-      .style('opacity', 0)
-      .attr('height', chart.containerheight)
-      .attr('width', chart.containerwidth);
+    chart.newGroup("outlines").lower();
+    chart.outlines
+      .append("rect")
+      .classed("containerbox", true)
+      .attr(
+        "transform",
+        `translate(${-chart.margin.left},${-chart.margin.top})`
+      )
+      .style("fill", "red")
+      .style("fill-opacity", 0)
+      .style("stroke", "purple")
+      .style("stroke-width", 1)
+      .style("opacity", 0)
+      .attr("height", chart.containerheight)
+      .attr("width", chart.containerwidth);
 
-    chart.outlines.append('rect')
-      .classed('chartbox', true)
-      .style('fill', 'red')
-      .style('fill-opacity', 0)
-      .style('stroke', 'red')
-      .style('stroke-width', 1)
-      .style('opacity', 0)
-      .attr('height', chart.height)
-      .attr('width', chart.width);
+    chart.outlines
+      .append("rect")
+      .classed("chartbox", true)
+      .style("fill", "red")
+      .style("fill-opacity", 0)
+      .style("stroke", "red")
+      .style("stroke-width", 1)
+      .style("opacity", 0)
+      .attr("height", chart.height)
+      .attr("width", chart.width);
 
     if (chart.alwaysHighlight) {
-      chart.chart.selectAll('.chartbox,.containerbox').style('opacity', 1);
+      chart.chart.selectAll(".chartbox,.containerbox").style("opacity", 1);
     } else {
       chart.chart
-        .on('mouseenter', () => {
-          chart.chart.selectAll('.chartbox,.containerbox').style('opacity', 1);
+        .on("mouseenter", () => {
+          chart.chart.selectAll(".chartbox,.containerbox").style("opacity", 1);
         })
-        .on('mouseleave', () => {
-          chart.chart.selectAll('.chartbox,.containerbox').style('opacity', 0);
+        .on("mouseleave", () => {
+          chart.chart.selectAll(".chartbox,.containerbox").style("opacity", 0);
         });
     }
   }
@@ -601,7 +617,8 @@ function onResize(chart) {
 const wordWrap = (str, maxWidth, x = 0, y = 0, yspacing = null) => {
   const dy = yspacing || (i => `${i}em`);
 
-  const newLineStr = (s, yCoord, i) => `<tspan x='${x}' y='${yCoord}' dy=${dy(i)}>${s}</tspan>`;
+  const newLineStr = (s, yCoord, i) =>
+    `<tspan x='${x}' y='${yCoord}' dy=${dy(i)}>${s}</tspan>`;
   if (str.length <= maxWidth) {
     return newLineStr(str, y, 0);
   }
@@ -612,7 +629,7 @@ const wordWrap = (str, maxWidth, x = 0, y = 0, yspacing = null) => {
   }
 
   var done = false;
-  let res = '';
+  let res = "";
   let lineNum = 0;
   var lines = [];
   let i;
@@ -635,30 +652,28 @@ const wordWrap = (str, maxWidth, x = 0, y = 0, yspacing = null) => {
       lines.push([str.slice(0, i), lineNum]);
     }
 
-    if (str.length < maxWidth)
-      done = true;
+    if (str.length < maxWidth) done = true;
     lineNum++;
   } while (!done);
 
   if (lineNum > 1) {
-    let response = '';
+    let response = "";
     lines.push([str, lineNum]);
     lines.forEach(d => {
       let yCoord = y - lineNum * 7;
       response += newLineStr(d[0], yCoord, d[1]);
     });
     return response;
-
   } else {
     return res + newLineStr(str, y, lineNum);
   }
-}
+};
 
-const percentize = function (num, param = {}) {
+const percentize = function(num, param = {}) {
   if (num === undefined || num === null) {
-    return 'NR';
+    return "NR";
   }
-  const d3Format = d3.format(',.0%');
+  const d3Format = d3.format(",.0%");
   const d3FormattedNum = d3Format(num);
   if (d3FormattedNum === "0%" && num !== 0) {
     return "<1%";

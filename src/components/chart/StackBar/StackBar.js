@@ -29,6 +29,8 @@ const StackBar = ({
       d[flowType] !== "unknown" &&
       d.attribute !== "Unspecified"
   );
+  console.log("chartData");
+  console.log(chartData);
   const stackBarParams = {
     flowType,
     flowTypeName,
@@ -59,9 +61,19 @@ const StackBar = ({
     };
   }, []);
 
+  // Show chart?
+  const display = chartData.length > 0;
+
   return (
     <div className={styles.stackbar}>
-      <div className={styles.stackBarChart} />
+      <div
+        style={{
+          visibility: display ? "visible" : "hidden",
+          height: display ? "auto" : 0
+        }}
+        className={styles.stackBarChart}
+      />
+      {!display && <div>No data to show</div>}
       {
         // Tooltip for info tooltip icons.
         <ReactTooltip

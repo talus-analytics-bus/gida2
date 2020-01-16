@@ -14,7 +14,6 @@ class D3Donut extends Chart {
 
     // Define data
     this.params = params;
-    console.log(this.params);
 
     // Define margins
     this.margin = {};
