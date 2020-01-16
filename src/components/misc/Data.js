@@ -473,7 +473,7 @@ export const getWeightsBySummaryAttributeSimple = ({
           attribute: attribute,
           [ft]: v
         };
-        const nodeTypes = [("source", "target")];
+        const nodeTypes = ["source", "target"];
         nodeTypes.forEach(nodeType => {
           if (d[nodeType] !== undefined) {
             outputObj[nodeType] = d[nodeType].map(dd => dd.name).join("; ");

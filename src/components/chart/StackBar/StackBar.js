@@ -14,6 +14,7 @@ const StackBar = ({
   flowTypeName,
   otherNodeType,
   nodeType,
+  jeeScores,
   ...props
 }) => {
   const [stackBar, setStackBar] = React.useState(null);
@@ -26,7 +27,8 @@ const StackBar = ({
     );
     const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
       data: chartData,
-      flowType
+      flowType,
+      jeeScores
     });
     setStackBar(stackBarNew);
   }, []);
