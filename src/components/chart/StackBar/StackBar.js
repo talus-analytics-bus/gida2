@@ -2,6 +2,7 @@ import React from "react";
 import Util from "../../misc/Util.js";
 import styles from "./stackbar.module.scss";
 import * as d3 from "d3/dist/d3.min";
+import D3StackBar from "./D3StackBar.js";
 
 // TEMP components
 import SimpleTable from "../table/SimpleTable.js";
@@ -15,8 +16,16 @@ const StackBar = ({
   nodeType,
   ...props
 }) => {
+  const [stackBar, setStackBar] = React.useState(null);
+  React.useEffect(() => {
+    const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
+      data
+    });
+    setStackBar(stackBarNew);
+  }, []);
   return (
     <div className={styles.stackbar}>
+      <div className={styles.stackBarChart} />
       {
         // TEMP table representing stack bar chart data
         <SimpleTable
