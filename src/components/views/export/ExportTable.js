@@ -104,8 +104,11 @@ const ExportTable = ({ data, ...props }) => {
 const remountComponent = ({ component, ...props }) => {
   const remount =
     component === null ||
-    component.props.funders !== props.funders ||
-    component.props.recipients !== props.recipients;
+    component.props.coreCapacities.toString() !==
+      props.coreCapacities.toString() ||
+    component.props.funders.toString() !== props.funders.toString() ||
+    component.props.supportType.toString() !== props.supportType.toString() ||
+    component.props.recipients.toString() !== props.recipients.toString();
 
   return remount;
 };
@@ -152,7 +155,7 @@ const getComponentData = async ({ setComponent, ...props }) => {
     end_date: `${Settings.endYear}-12-31`,
 
     // Add filters as appropriate.
-    filters: { place_filters: [] }
+    filters: { place_filters: [], flow_info_filters: [] }
   };
 
   // If funders specified, filter
@@ -160,6 +163,19 @@ const getComponentData = async ({ setComponent, ...props }) => {
   placeFilterTypes.forEach(type => {
     if (props[type[0]].length > 0) {
       baseQueryParams.filters.place_filters.push(
+        [type[1]].concat(props[type[0]].map(d => d.value))
+      );
+    }
+  });
+
+  // Flow info filters
+  const flowInfoFilters = [
+    ["supportType", "assistance_type"],
+    ["coreCapacities", "core_capacities"]
+  ];
+  flowInfoFilters.forEach(type => {
+    if (props[type[0]].length > 0) {
+      baseQueryParams.filters.flow_info_filters.push(
         [type[1]].concat(props[type[0]].map(d => d.value))
       );
     }
