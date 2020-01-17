@@ -4,16 +4,18 @@ import styles from "./export.module.scss";
 import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
+import Drawer from "../../common/Drawer/Drawer.js";
+import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
+import { core_capacities } from "../../misc/Data.js";
 
 // Content components
 import TableInstance from "../../chart/table/TableInstance.js";
 
 // FC for Export.
 const Export = ({ data, ...props }) => {
-  console.log("export js");
-
   const dataTable = (
     <TableInstance
+      paging={true}
       tableColumns={[
         {
           title: "Project name",
@@ -97,6 +99,37 @@ const Export = ({ data, ...props }) => {
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.Export)}>
+      <Drawer
+        {...{
+          label: "Select data",
+          content: (
+            <div>
+              <div>Select filters to apply to selected data.</div>
+              <div>
+                <FilterDropdown
+                  {...{
+                    label: "",
+                    options: core_capacities,
+                    placeholder: "Funding by core capacity",
+                    onChange: () => console.log("Changed")
+                  }}
+                />
+                <FilterDropdown
+                  {...{
+                    label: "",
+                    options: [
+                      { value: "financial", label: "Direct financial support" },
+                      { value: "inkind", label: "In-kind support" }
+                    ],
+                    placeholder: "Support type",
+                    onChange: () => console.log("Changed")
+                  }}
+                />
+              </div>
+            </div>
+          )
+        }}
+      />
       {dataTable}
     </div>
   );
