@@ -49,7 +49,7 @@ const AreaLine = ({ data, entityRole, ...props }) => {
     });
     setChart(chartNew);
     setLegend(chartNew.legend);
-  }, [props.id]);
+  }, [props.id, props.ghsaOnly, entityRole]);
 
   return (
     <div className={styles.areaLine}>

@@ -58,6 +58,7 @@ const FundsByYear = ({
               flowTypeInfo={flowTypeInfo}
               data={areaLineData}
               id={id}
+              ghsaOnly={props.ghsaOnly}
             />
           </div>
         </div>

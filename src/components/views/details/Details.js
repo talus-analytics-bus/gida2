@@ -160,6 +160,7 @@ const Details = ({
           unknownDataOnly={unknownDataOnly}
           noFinancialData={noFinancialData}
           flowTypeInfo={flowTypeInfo}
+          ghsaOnly={ghsaOnly}
         />
       ),
       toggleFlowType: false,
