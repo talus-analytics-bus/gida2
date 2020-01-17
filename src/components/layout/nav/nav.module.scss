@@ -5,9 +5,20 @@
   padding: 5px;
 
   .content {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-between;
     height: 70px;
     img {
       height: 70px;
+    }
+    .links {
+      display: flex;
+      flex-flow: row;
+      a {
+        padding: 0 10px;
+      }
     }
   }
 }
