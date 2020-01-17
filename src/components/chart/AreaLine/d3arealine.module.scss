@@ -11,35 +11,23 @@
   width: 0 !important;
   height: auto !important;
 }
-.lineValue,
-.lineVacc,
-.lineNull {
-  path {
-    fill: none;
-    stroke: $value-red;
-    stroke-width: 3px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    clip-path: url("#plotArea");
 
-    &.avg_coverage_mcv1_infant {
-      stroke: $data-blue;
-    }
+.lineValue .line {
+  fill: none;
+  stroke-width: 2px;
+}
+
+.lineValue.series-0 {
+  .line {
+    stroke: green;
+    stroke-dasharray: none;
+    stroke-width: 3px;
   }
 }
-.lineVacc {
-  path {
-    stroke: #333333;
-    stroke-width: 1.5px;
-    stroke-dasharray: 6;
-    stroke-linecap: square;
-  }
-}
-.areaNull {
-  path {
-    // stroke: green;
-    fill: $light-grey-2;
-    clip-path: url("#plotArea");
+.lineValue {
+  .line {
+    stroke: blue;
+    stroke-dasharray: 3, 3;
   }
 }
 
@@ -69,14 +57,14 @@
   }
 }
 
-circle.miniLinePoint {
-  fill: $data-blue;
-  &.incidence_monthly {
-    fill: $value-red;
-  }
-  &:last-child {
-    r: 7;
-  }
+.pointValue circle {
+  fill: white;
+  stroke: gray;
+  stroke-width: 3px;
+  display: none;
+}
+.pointValue.series-0 circle {
+  display: block;
 }
 
 .y-axis-right .label {

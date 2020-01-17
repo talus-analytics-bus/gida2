@@ -3,17 +3,19 @@ import styles from "./arealine.module.scss";
 import tooltipStyles from "../../common/tooltip.module.scss";
 import D3AreaLine from "./D3AreaLine.js";
 import Util from "../../misc/Util.js";
+import { greens, purples } from "../../map/MapUtil.js";
 import ReactTooltip from "react-tooltip";
 
 // TEMP components
 import SimpleTable from "../table/SimpleTable.js";
 
 // FC
-const AreaLine = ({ data, ...props }) => {
+const AreaLine = ({ data, entityRole, ...props }) => {
   const [chart, setChart] = React.useState(null);
   const [tooltipData, setTooltipData] = React.useState(undefined);
 
   const types = ["disbursed_funds", "committed_funds"];
+  const colors = entityRole === "funder" ? greens : purples;
   const ys = [];
   types.forEach(type => {
     const y = [];
@@ -26,6 +28,7 @@ const AreaLine = ({ data, ...props }) => {
       });
     });
     y.yFormat = Util.formatSIInteger;
+    y.lineColor = colors[5];
     y.title = Util.getInitCap(Util.formatLabel(type)) + " funds";
     ys.push(y);
   });

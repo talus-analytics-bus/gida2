@@ -221,11 +221,12 @@ class D3AreaLine extends Chart {
     const valueLineSegments = chart.params.data;
     valueLineSegments.forEach((series, i) => {
       chart
-        .newGroup(styles.lineValue + " series-" + i)
+        .newGroup(styles.lineValue + " " + styles["series-" + i])
         .selectAll("path")
         .data([series])
         .enter()
         .append("path")
+        .style("stroke", series.lineColor)
         .attr("class", d => styles.line)
         .attr("d", d => line(d));
     });
@@ -234,7 +235,7 @@ class D3AreaLine extends Chart {
     if (chart.params.yMetricParams.temporal_resolution === "yearly") {
       valueLineSegments.forEach((series, i) => {
         chart
-          .newGroup(styles.pointValue + " series-" + i)
+          .newGroup(styles.pointValue + " " + styles["series-" + i])
           .selectAll("circle")
           .data(series)
           .enter()
