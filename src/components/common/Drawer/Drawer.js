@@ -11,8 +11,17 @@ const Drawer = ({ label, content, ...props }) => {
   return (
     <div className={styles.drawer}>
       <div className={styles.label}>{label}</div>
-      <div className={styles.toggle} />
-      <div className={styles.content}>{content}</div>
+      <div className={styles.toggle}>
+        <button onClick={() => setOpen(!open)}>
+          {open ? "Close" : "Open"}
+        </button>
+      </div>
+      <div
+        style={{ display: open ? "flex" : "none" }}
+        className={styles.content}
+      >
+        {content}
+      </div>
     </div>
   );
 };
