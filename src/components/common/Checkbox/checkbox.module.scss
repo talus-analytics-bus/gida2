@@ -1,0 +1,18 @@
+@import "../../../assets/styles/colors.scss";
+
+.checkbox {
+  > div {
+    font-weight: bold;
+  }
+  form {
+    display: flex;
+    flex-flow: column;
+  }
+  label {
+    font-weight: normal;
+    color: black;
+  }
+  input {
+    margin-right: 5px;
+  }
+}

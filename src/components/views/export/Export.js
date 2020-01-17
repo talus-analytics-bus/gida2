@@ -6,6 +6,7 @@ import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 import Drawer from "../../common/Drawer/Drawer.js";
+import Checkbox from "../../common/Checkbox/Checkbox.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import { core_capacities } from "../../misc/Data.js";
 
@@ -19,7 +20,58 @@ const Export = ({ data, ...props }) => {
   const [funders, setFunders] = React.useState([]);
   const [recipients, setRecipients] = React.useState([]);
   const [exportTable, setExportTable] = React.useState(null);
-  const [exportCols, setExportCols] = React.useState(["project_name"]);
+  const showClear =
+    coreCapacities.length > 0 ||
+    supportType.length > 0 ||
+    funders.length > 0 ||
+    recipients.length > 0;
+
+  const cols = [
+    ["project_name", "Project name"],
+    ["description", "Project description"],
+    ["data_sources", "Data source"],
+    ["core_capacities", "Core capacities"],
+    ["year_range", "Transaction year range"],
+    ["source", "Funder"],
+    ["target", "Recipient"],
+    ["assistance_type", "Support type"],
+    [
+      "committed_funds",
+      `Amount committed (${Settings.startYear} - ${Settings.endYear})`
+    ],
+    [
+      "disbursed_funds",
+      `Amount committed (${Settings.startYear} - ${Settings.endYear})`
+    ]
+  ];
+
+  const [exportCols, setExportCols] = React.useState(cols.map(d => d[0]));
+
+  const remove = (arr, aTmp) => {
+    const a = aTmp;
+    let what,
+      L = a.length,
+      ax;
+    while (L > 1 && arr.length) {
+      what = a[--L];
+      while ((ax = arr.indexOf(what)) !== -1) {
+        arr.splice(ax, 1);
+      }
+    }
+    return arr;
+  };
+
+  const updateExportCols = value => {
+    const shouldRemove = exportCols.includes(value);
+    const editableExportCols = [...exportCols];
+
+    if (shouldRemove)
+      setExportCols(editableExportCols.filter(d => d !== value));
+    else {
+      editableExportCols.push(value);
+      setExportCols(editableExportCols.sort());
+    }
+  };
 
   const dataTable = renderExportTable({
     ...{
@@ -33,6 +85,24 @@ const Export = ({ data, ...props }) => {
     }
   });
 
+  const filterTest = (
+    <FilterDropdown
+      {...{
+        label: "",
+        options: core_capacities,
+        placeholder: "Funding by core capacity",
+        onChange: setCoreCapacities
+      }}
+    />
+  );
+
+  const clearSelections = () => {
+    setCoreCapacities([]);
+    setSupportType([]);
+    setFunders([]);
+    setRecipients([]);
+  };
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.Export)}>
@@ -41,14 +111,20 @@ const Export = ({ data, ...props }) => {
           label: "Select data",
           content: (
             <div>
-              <div>Select filters to apply to selected data.</div>
+              <div>
+                <div>Select filters to apply to selected data.</div>
+                {showClear && (
+                  <button onClick={clearSelections}>Clear selections</button>
+                )}
+              </div>
               <div>
                 <FilterDropdown
                   {...{
                     label: "",
                     options: core_capacities,
                     placeholder: "Funding by core capacity",
-                    onChange: setCoreCapacities
+                    onChange: setCoreCapacities,
+                    curValues: coreCapacities
                   }}
                 />
                 <FilterDropdown
@@ -59,7 +135,8 @@ const Export = ({ data, ...props }) => {
                       { value: "inkind", label: "In-kind support" }
                     ],
                     placeholder: "Support type",
-                    onChange: setSupportType
+                    onChange: setSupportType,
+                    curValues: supportType
                   }}
                 />
                 <FilterDropdown
@@ -67,7 +144,8 @@ const Export = ({ data, ...props }) => {
                     label: "",
                     options: data.entities,
                     placeholder: "Funder",
-                    onChange: setFunders
+                    onChange: setFunders,
+                    curValues: funders
                   }}
                 />
                 <FilterDropdown
@@ -75,9 +153,26 @@ const Export = ({ data, ...props }) => {
                     label: "",
                     options: data.entities,
                     placeholder: "Recipient",
-                    onChange: setRecipients
+                    onChange: setRecipients,
+                    curValues: recipients
                   }}
                 />
+              </div>
+              <hr />
+              <div>
+                <div>Choose data fields to include in table/download.</div>
+                <div>
+                  {cols.map(d => (
+                    <Checkbox
+                      {...{
+                        label: d[1],
+                        value: d[0],
+                        curChecked: exportCols.includes(d[0]),
+                        callback: updateExportCols
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           )

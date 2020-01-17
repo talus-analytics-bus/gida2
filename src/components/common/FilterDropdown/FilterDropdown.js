@@ -25,6 +25,7 @@ const FilterDropdown = ({ label, options, onChange, ...props }) => {
               value.length
             )} of ${nOptions})`;
         }}
+        value={props.curValues}
       />
     </div>
   );

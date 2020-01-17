@@ -123,6 +123,13 @@ export const renderExportTable = ({
     });
 
     return component ? component : <div />;
+  } else if (
+    component.props.exportCols.toString() !== props.exportCols.toString()
+  ) {
+    console.log("Updating component because export columns were changed.");
+    setComponent(
+      <ExportTable {...{ ...component.props, exportCols: props.exportCols }} />
+    );
   } else {
     return component;
   }
@@ -138,8 +145,6 @@ export const renderExportTable = ({
  */
 const getComponentData = async ({ setComponent, ...props }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
-  console.log("props.funders");
-  console.log(props.funders);
 
   const baseQueryParams = {
     focus_node_ids: null,
