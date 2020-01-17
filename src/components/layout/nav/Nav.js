@@ -2,12 +2,13 @@ import React from "react";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./nav.module.scss";
-import logo from "../../../assets/images/logo-light.png";
+import logoLight from "../../../assets/images/logo-light.png";
+import logoDark from "../../../assets/images/logo-dark.png";
 import ReactTooltip from "react-tooltip";
 
 const Nav = props => {
   const page = props.page;
-
+  const logo = props.isDark ? logoDark : logoLight;
   return (
     <div
       className={classNames(

@@ -168,7 +168,7 @@ const App = () => {
     return (
       <div className={isDark ? "dark" : ""}>
         <BrowserRouter>
-          <Nav />
+          <Nav {...{ isDark }} />
           <Switch>
             <div>
               <Route
