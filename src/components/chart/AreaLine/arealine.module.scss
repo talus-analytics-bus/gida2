@@ -1,8 +1,10 @@
 @import "../../../assets/styles/colors.scss";
 
 .areaLine {
+  width: 100%;
   .areaLineChart {
-    width: 880px;
+    float: right;
+    width: 100%;
     height: 300px;
   }
 }

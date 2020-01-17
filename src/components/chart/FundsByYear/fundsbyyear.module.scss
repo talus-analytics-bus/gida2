@@ -3,6 +3,10 @@
 .fundsByYear {
   display: flex;
   flex-flow: column;
+  width: 100%;
+  .areaLine {
+    width: 100%;
+  }
   .content {
     display: flex;
     flex-flow: row;
