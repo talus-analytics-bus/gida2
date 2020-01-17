@@ -6,6 +6,7 @@ import logoLight from "../../../assets/images/logo-light.png";
 import logoDark from "../../../assets/images/logo-dark.png";
 import ReactTooltip from "react-tooltip";
 import Menu from "./content/Menu/Menu.js";
+import Search from "../../common/Search/Search.js";
 
 const Nav = props => {
   const page = props.page;
@@ -67,6 +68,7 @@ const Nav = props => {
             />
           </div>
         </div>
+        <Search />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-@import '../../../assets/styles/colors.scss';
+@import "../../../assets/styles/colors.scss";
 
 .search {
   .field {
@@ -12,15 +12,17 @@
       color: $grey;
       cursor: default;
     }
-    input, input::placeholder {
+    input,
+    input::placeholder {
       cursor: text !important;
       outline: none;
       border: none;
       font-size: 1em;
       color: $dark-grey-2;
-      font-family: 'Open Sans', sans-serif;
+      font-family: "Open Sans", sans-serif;
 
-      &::placeholder, &::before {
+      &::placeholder,
+      &::before {
         color: red;
       }
     }

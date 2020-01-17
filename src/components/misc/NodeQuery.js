@@ -18,6 +18,7 @@ const NodeQuery = async function({ node_id, ...props }) {
 
   // Other options
   if (props.setKeys !== undefined) params.setKeys = props.setKeys;
+  if (props.search !== undefined) params.search = props.search;
 
   // Define URL params
   const config = {
