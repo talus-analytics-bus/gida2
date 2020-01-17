@@ -118,6 +118,17 @@ const Export = ({ data, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
+                    options: [
+                      { value: "financial", label: "Direct financial support" },
+                      { value: "inkind", label: "In-kind support" }
+                    ],
+                    placeholder: "Support type",
+                    onChange: () => console.log("Changed")
+                  }}
+                />
+                <FilterDropdown
+                  {...{
+                    label: "",
                     options: data.entities,
                     placeholder: "Funder",
                     onChange: () => console.log("Changed")
@@ -126,11 +137,8 @@ const Export = ({ data, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: [
-                      { value: "financial", label: "Direct financial support" },
-                      { value: "inkind", label: "In-kind support" }
-                    ],
-                    placeholder: "Support type",
+                    options: data.entities,
+                    placeholder: "Recipient",
                     onChange: () => console.log("Changed")
                   }}
                 />
