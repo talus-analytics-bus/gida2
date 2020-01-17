@@ -15,6 +15,7 @@ import { renderAnalysisData } from "./components/views/analysis/AnalysisData.js"
 import Background from "./components/views/about/Background.js";
 import DataSources from "./components/views/about/DataSources.js";
 import Research from "./components/views/about/Research.js";
+import Submit from "./components/views/about/Submit.js";
 
 // styles
 import styles from "./App.module.scss";
@@ -367,6 +368,7 @@ const App = () => {
               />
               <Route exact path="/about/data" render={d => <DataSources />} />
               <Route exact path="/about/research" render={d => <Research />} />
+              <Route exact path="/about/submit" render={d => <Submit />} />
             </div>
           </Switch>
         </BrowserRouter>

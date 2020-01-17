@@ -45,5 +45,14 @@
         background: #f5f5f5;
       }
     }
+    &.submitForm {
+      td {
+        background-color: white;
+        color: black;
+      }
+      tr {
+        border: none;
+      }
+    }
   }
 }
