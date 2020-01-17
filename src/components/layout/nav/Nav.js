@@ -17,7 +17,9 @@ const Nav = props => {
       )}
     >
       <div className={classNames(styles.content, "pageContainer", "noPadding")}>
-        <img src={logo} alt="GIDA - Tracker" />
+        <Link to="/">
+          <img src={logo} alt="GIDA - Tracker" />
+        </Link>
         <div className={styles.links}>
           <Link to="/explore/map">Map</Link>
           <Link to="/explore/org">Organizations</Link>

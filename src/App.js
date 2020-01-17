@@ -7,6 +7,7 @@ import Footer from "./components/layout/footer/Footer.js";
 import Util from "./components/misc/Util.js";
 
 // views
+import Home from "./components/views/home/Home.js";
 import { renderExplore } from "./components/views/explore/Explore.js";
 import { renderDetails } from "./components/views/details/Details.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
@@ -172,84 +173,6 @@ const App = () => {
             <div>
               <Route
                 exact
-                path="/"
-                component={() => {
-                  return (
-                    <div>
-                      <h1>Flows of assistance</h1>
-                      <p>
-                        <i>
-                          where specific funder and recipient are able to be
-                          plotted on chord diagram
-                        </i>
-                      </p>
-                      {
-                        <SimpleTable
-                          colInfo={getColInfo({
-                            valueCols: valueColsAssistance,
-                            baseCols: baseColsNetwork,
-                            flowTypeInfo: flowTypeInfo
-                          })}
-                          rows={networkFlows}
-                          limit={limit}
-                        />
-                      }
-                      <h1>Top {limit} funders (sorted by disbursed funds)</h1>
-                      <SimpleTable
-                        colInfo={getColInfo({
-                          valueCols: valueColsAssistance,
-                          baseCols: baseCols,
-                          flowTypeInfo: flowTypeInfo
-                        })}
-                        data={funderData}
-                        limit={limit}
-                      />
-                      <hr />
-                      <h1>
-                        Top {limit} recipients (sorted by disbursed funds)
-                      </h1>
-                      <SimpleTable
-                        colInfo={getColInfo({
-                          valueCols: valueColsAssistance,
-                          baseCols: baseCols,
-                          flowTypeInfo: flowTypeInfo
-                        })}
-                        data={recipientData}
-                        limit={limit}
-                      />
-                      <hr />
-                      <h1>
-                        Top {limit} country funders (sorted by disbursed funds)
-                      </h1>
-                      <SimpleTable
-                        colInfo={getColInfo({
-                          valueCols: valueColsAssistance,
-                          baseCols: baseCols,
-                          flowTypeInfo: flowTypeInfo
-                        })}
-                        data={countryFunderData}
-                        limit={limit}
-                      />
-                      <hr />
-                      <h1>
-                        Top {limit} country recipients (sorted by disbursed
-                        funds)
-                      </h1>
-                      <SimpleTable
-                        colInfo={getColInfo({
-                          valueCols: valueColsAssistance,
-                          baseCols: baseCols,
-                          flowTypeInfo: flowTypeInfo
-                        })}
-                        data={countryRecipientData}
-                        limit={limit}
-                      />
-                    </div>
-                  );
-                }}
-              />
-              <Route
-                exact
                 path="/explore/:activeTab"
                 render={d => {
                   return renderExplore({
@@ -369,6 +292,7 @@ const App = () => {
               <Route exact path="/about/data" render={d => <DataSources />} />
               <Route exact path="/about/research" render={d => <Research />} />
               <Route exact path="/about/submit" render={d => <Submit />} />
+              <Route exact path="/" render={d => <Home />} />
             </div>
           </Switch>
         </BrowserRouter>
