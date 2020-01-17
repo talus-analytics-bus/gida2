@@ -20,9 +20,12 @@
     .links {
       display: flex;
       flex-flow: row;
-      a {
-        padding: 0 10px;
-      }
+      justify-content: space-between;
+      min-width: 400px;
+      // > a,
+      // > div > a {
+      //   padding: 0 20px;
+      // }
     }
   }
 }
