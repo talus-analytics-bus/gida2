@@ -303,8 +303,6 @@ class D3Chord extends Chart {
         .selectAll("path")
         .classed(styles.selected, false)
         .filter(function(d) {
-          console.log("d");
-          console.log(d);
           return d.data.id === id;
         })
         .classed(styles.selected, true)
@@ -316,7 +314,6 @@ class D3Chord extends Chart {
         .classed(styles.hidden, true)
         .filter(dd => {
           return dd.source_id === id || dd.target_id === id;
-          return true;
         })
         .classed(styles.hidden, false);
     };

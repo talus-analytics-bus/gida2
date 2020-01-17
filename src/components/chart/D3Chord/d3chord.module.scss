@@ -8,6 +8,11 @@
     stroke-width: 4px;
   }
 }
+.entity {
+  path {
+    cursor: pointer;
+  }
+}
 .flows {
   path {
     fill: rgb(5, 48, 97);
