@@ -1,3 +1,5 @@
+import React from "react";
+import classNames from "classnames";
 import * as d3 from "d3/dist/d3.min";
 import Chart from "../../chart/Chart.js";
 import Util from "../../misc/Util.js";
@@ -62,7 +64,7 @@ class D3AreaLine extends Chart {
     const marginConst = 40;
     this.margin = {
       left: 200,
-      top: marginConst,
+      top: 10,
       bottom: marginConst,
       right: marginConst
     };
@@ -407,6 +409,54 @@ class D3AreaLine extends Chart {
             chart.params.setTooltipData(items);
           }
         });
+
+      // Define legend
+      const legend = {
+        width: 33,
+        height: 11
+      };
+      chart.legend = (
+        <div className={styles.legend}>
+          <table>
+            {valueLineSegments.map((series, i) => (
+              <tr>
+                <td>
+                  <svg width={legend.width} height={legend.height}>
+                    <g
+                      className={classNames(
+                        styles["series-" + i],
+                        styles.lineValue
+                      )}
+                    >
+                      <line
+                        x1="0"
+                        x2={legend.width}
+                        y1={legend.height / 2}
+                        y2={legend.height / 2}
+                        style={{ stroke: series.lineColor }}
+                        className={styles.line}
+                      />
+                    </g>
+                    <g
+                      className={classNames(
+                        styles["series-" + i],
+                        styles.pointValue
+                      )}
+                    >
+                      <circle
+                        r="4"
+                        cx={legend.width / 2}
+                        cy={legend.height / 2}
+                      />
+                    </g>
+                  </svg>
+                </td>
+                <td>{series.title}</td>
+              </tr>
+            ))}
+          </table>
+        </div>
+      );
     }
 
     // // Reduce width at the end

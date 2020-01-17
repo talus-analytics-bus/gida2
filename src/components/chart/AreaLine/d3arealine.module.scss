@@ -103,3 +103,11 @@
     transition: opacity 0.5s;
   }
 }
+
+.legend {
+  font-size: 0.9em;
+  float: right;
+  td {
+    padding: 0 5px;
+  }
+}

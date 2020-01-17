@@ -12,6 +12,7 @@ import SimpleTable from "../table/SimpleTable.js";
 // FC
 const AreaLine = ({ data, entityRole, ...props }) => {
   const [chart, setChart] = React.useState(null);
+  const [legend, setLegend] = React.useState(null);
   const [tooltipData, setTooltipData] = React.useState(undefined);
 
   const types = ["disbursed_funds", "committed_funds"];
@@ -47,10 +48,12 @@ const AreaLine = ({ data, entityRole, ...props }) => {
       }
     });
     setChart(chartNew);
+    setLegend(chartNew.legend);
   }, [props.id]);
 
   return (
     <div className={styles.areaLine}>
+      {legend}
       <div className={styles.areaLineChart} />
       {
         // Tooltip for info tooltip icons.
