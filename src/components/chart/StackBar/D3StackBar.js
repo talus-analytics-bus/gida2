@@ -48,7 +48,7 @@ class D3StackBar extends Chart {
     const capacities = core_capacities;
 
     let colors = params.nodeType === "target" ? purples : greens;
-    colors = colors.slice(0, 5);
+    colors = colors.slice(1, 6);
 
     // define chart accessor
     const chart = this.chart.classed("category-chart", true);
@@ -302,7 +302,7 @@ class D3StackBar extends Chart {
           ]);
         })
         .attr("height", bandwidth)
-        .style("fill", d => colorScale(d.country[newFlowType]))
+        .style("fill", d => colorScale(d.country.value0))
         .transition()
         .duration(durationHorizontal)
         .attr("x", d => x(d.country.value0))

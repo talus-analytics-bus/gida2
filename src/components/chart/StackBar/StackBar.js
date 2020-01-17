@@ -42,22 +42,23 @@ const StackBar = ({
   // Show chart?
   const display = chartData.length > 0;
 
-  const legend = display ? (
-    <Legend
-      className={styles.legend}
-      colorScale={jeeColorScale}
-      supportType={"jee"}
-      flowType={flowType}
-      toggle={false}
-      title={
-        <div className={styles.legendTitle}>
-          Average JEE score for core capacity
-        </div>
-      }
-    />
-  ) : (
-    <div />
-  );
+  const legend =
+    id !== "ghsa" && display ? (
+      <Legend
+        className={styles.legend}
+        colorScale={jeeColorScale}
+        supportType={"jee"}
+        flowType={flowType}
+        toggle={false}
+        title={
+          <div className={styles.legendTitle}>
+            Average JEE score for core capacity
+          </div>
+        }
+      />
+    ) : (
+      <div />
+    );
 
   const stackBarParams = {
     flowType,

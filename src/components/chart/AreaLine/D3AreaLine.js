@@ -10,37 +10,46 @@ class D3AreaLine extends Chart {
     this.params = params;
 
     this.data = params.data;
+    console.log("this.data");
+    console.log(this.data);
     this.labelShift = -100;
     this.nSeries = this.data.length;
     const firstSeries = this.data[0];
 
-    if (firstSeries.length > 0) {
-      let minTime, maxTime;
-      if (this.params.domain !== undefined) {
-        minTime = new Date(this.params.domain[0]);
-        maxTime = new Date(this.params.domain[1]);
-      } else {
-        minTime = new Date(firstSeries[0]["date_time"].replace(/-/g, "/"));
-        maxTime = new Date(
-          firstSeries[firstSeries.length - 1]["date_time"].replace(/-/g, "/")
+    let minTime, maxTime;
+    if (this.params.domain !== undefined) {
+      minTime = new Date(this.params.domain[0]);
+      maxTime = new Date(this.params.domain[1]);
+    } else {
+      this.data.forEach((series, i) => {
+        const minTimeTmp = new Date(series[0]["date_time"].replace(/-/g, "/"));
+        const maxTimeTmp = new Date(
+          series[series.length - 1]["date_time"].replace(/-/g, "/")
         );
-      }
-
-      // Add padding to x axis
-      const usePadding = true;
-      const maxTimeComponents = {
-        month: maxTime.getUTCMonth(),
-        date: maxTime.getUTCDate()
-      };
-      if (usePadding) {
-        minTime.setUTCFullYear(minTime.getUTCFullYear() - 1);
-        // maxTime.setUTCFullYear(maxTime.getUTCFullYear() + 1)
-        maxTime.setUTCMonth(maxTimeComponents.month + 1);
-        minTime.setUTCMonth(12 - maxTimeComponents.month);
-        minTime.setUTCDate(maxTimeComponents.date);
-      }
-      this.xDomainDefault = [minTime, maxTime];
+        if (i === 0) {
+          minTime = minTimeTmp;
+          maxTime = maxTimeTmp;
+        } else {
+          if (minTimeTmp < minTime) minTime = minTimeTmp;
+          if (maxTimeTmp > maxTime) maxTime = maxTimeTmp;
+        }
+      });
     }
+
+    // Add padding to x axis
+    const usePadding = true;
+    const maxTimeComponents = {
+      month: maxTime.getUTCMonth(),
+      date: maxTime.getUTCDate()
+    };
+    if (usePadding) {
+      minTime.setUTCFullYear(minTime.getUTCFullYear() - 1);
+      // maxTime.setUTCFullYear(maxTime.getUTCFullYear() + 1)
+      maxTime.setUTCMonth(maxTimeComponents.month + 1);
+      minTime.setUTCMonth(12 - maxTimeComponents.month);
+      minTime.setUTCDate(maxTimeComponents.date);
+    }
+    this.xDomainDefault = [minTime, maxTime];
 
     // If no default xdomain, hide line chart
     if (this.xDomainDefault === undefined) {
@@ -49,7 +58,8 @@ class D3AreaLine extends Chart {
 
     // Get max incidence from data.
     // [ max, min ]
-    this.yDomainDefault = [d3.max(firstSeries, d => d.value) || 5, 0];
+
+    this.yDomainDefault = [d3.max(this.data.flat(), d => d.value) || 5, 0];
 
     const marginConst = 40;
     this.margin = {
