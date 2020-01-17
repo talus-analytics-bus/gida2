@@ -10,8 +10,6 @@ class D3AreaLine extends Chart {
     this.params = params;
 
     this.data = params.data;
-    console.log("this.data");
-    console.log(this.data);
     this.labelShift = -100;
     this.nSeries = this.data.length;
     const firstSeries = this.data[0];

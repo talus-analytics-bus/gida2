@@ -35,6 +35,8 @@ const Details = ({
   setComponent,
   ...props
 }) => {
+  console.log("data");
+  console.log(data);
   // make key changes to the page if the id is special:
   // "ghsa" - Same as normal but include both a top funder and recipient table,
   //          and include only flows that are ghsa. Name of page is
@@ -72,8 +74,9 @@ const Details = ({
   // const masterSummary = data.flowBundles.master_summary;
 
   // Track outbreak funding
-  const outbreakTableData =
-    id !== "ghsa" ? data.flowBundlesFocusOther.by_outbreak : [];
+  const outbreakTableData = data.flowBundlesFocusOther.by_outbreak;
+  // const outbreakTableData =
+  //   id !== "ghsa" ? data.flowBundlesFocusOther.by_outbreak : [];
 
   // Track the Top Recipients/Funders table data
   const topTableData = getSummaryAttributeWeightsByNode({
@@ -454,7 +457,7 @@ const getComponentData = async ({
     flowBundlesFocusOther: FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: true,
-      by_outbreak: id !== "ghsa"
+      by_outbreak: true
     })
   };
 

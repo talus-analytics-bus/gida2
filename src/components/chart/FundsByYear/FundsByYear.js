@@ -53,7 +53,7 @@ const FundsByYear = ({
             {linkToEntityTable}
           </div>
           <div className={styles.areaLine}>
-            <AreaLine flowTypeInfo={flowTypeInfo} data={areaLineData} />
+            <AreaLine flowTypeInfo={flowTypeInfo} data={areaLineData} id={id} />
           </div>
         </div>
       )}

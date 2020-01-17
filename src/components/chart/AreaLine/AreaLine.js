@@ -40,10 +40,7 @@ const AreaLine = ({ data, ...props }) => {
       }
     });
     setChart(chartNew);
-  }, []);
-
-  console.log("tooltipData");
-  console.log(tooltipData);
+  }, [props.id]);
 
   return (
     <div className={styles.areaLine}>
