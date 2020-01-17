@@ -3,6 +3,10 @@
 .nav {
   border-bottom: 1px $grey solid;
   padding: 5px;
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1000;
 
   .content {
     display: flex;

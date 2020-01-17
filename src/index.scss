@@ -10,6 +10,9 @@ body,
     color: $dark-color;
     * {
       color: $dark-color;
+      &.dark-bg-allowed {
+        background-color: $dark-background-color;
+      }
     }
     button {
       background-color: $dark-grey;
