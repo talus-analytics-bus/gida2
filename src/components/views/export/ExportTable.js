@@ -9,89 +9,83 @@ import FlowQuery from "../../misc/FlowQuery.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 
 // FC for ExportTable.
-const ExportTable = ({ data, ...props }) => {
+const ExportTable = ({ data, exportCols, ...props }) => {
+  const cols = [
+    {
+      title: "Project name",
+      prop: "project_name",
+      type: "text",
+      func: d => d.flow_info.project_name
+    },
+    {
+      title: "Project description",
+      prop: "description",
+      type: "text",
+      func: d => d.flow_info.description
+    },
+    {
+      title: "Data source",
+      prop: "data_sources",
+      type: "text",
+      func: d => d.data_sources.filter(dd => dd.trim() !== "").join("; ")
+    },
+    {
+      title: "Core capacities",
+      prop: "core_capacities",
+      type: "text",
+      func: d => d.flow_info.core_capacities.join("; ")
+    },
+    {
+      title: "Transaction year range",
+      prop: "year_range",
+      type: "text",
+      func: d => (d.year_range ? d.year_range : "")
+    },
+    {
+      title: "Funder",
+      prop: "source",
+      type: "text",
+      func: d => d.source.map(dd => dd.name).join("; ")
+    },
+    {
+      title: "Recipient",
+      prop: "target",
+      type: "text",
+      func: d => d.target.map(dd => dd.name).join("; ")
+    },
+    {
+      title: "Support type",
+      prop: "assistance_type",
+      type: "text",
+      func: d =>
+        d.flow_info.assistance_type == "financial"
+          ? "Direct financial support"
+          : "In-kind support"
+    },
+    {
+      title: `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
+      prop: "committed_funds",
+      type: "num",
+      func: d =>
+        d.flow_types.committed_funds !== undefined
+          ? d.flow_types.committed_funds.focus_node_weight
+          : "",
+      render: d => Util.formatValue(d, "committed_funds")
+    },
+    {
+      title: `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
+      prop: "disbursed_funds",
+      type: "num",
+      func: d =>
+        d.flow_types.disbursed_funds !== undefined
+          ? d.flow_types.disbursed_funds.focus_node_weight
+          : "",
+      render: d => Util.formatValue(d, "disbursed_funds")
+    }
+  ].filter(d => exportCols.includes(d.prop));
+
   const dataTable = (
-    <TableInstance
-      paging={true}
-      tableColumns={[
-        {
-          title: "Project name",
-          prop: "project_name",
-          type: "text",
-          func: d => d.flow_info.project_name
-        },
-        {
-          title: "Project description",
-          prop: "description",
-          type: "text",
-          func: d => d.flow_info.description
-        },
-        {
-          title: "Data source",
-          prop: "data_sources",
-          type: "text",
-          func: d => d.data_sources.filter(dd => dd.trim() !== "").join("; ")
-        },
-        {
-          title: "Core capacities",
-          prop: "core_capacities",
-          type: "text",
-          func: d => d.flow_info.core_capacities.join("; ")
-        },
-        {
-          title: "Transaction year range",
-          prop: "year_range",
-          type: "text",
-          func: d => (d.year_range ? d.year_range : "")
-        },
-        {
-          title: "Funder",
-          prop: "source",
-          type: "text",
-          func: d => d.source.map(dd => dd.name).join("; ")
-        },
-        {
-          title: "Recipient",
-          prop: "target",
-          type: "text",
-          func: d => d.target.map(dd => dd.name).join("; ")
-        },
-        {
-          title: "Support type",
-          prop: "assistance_type",
-          type: "text",
-          func: d =>
-            d.flow_info.assistance_type == "financial"
-              ? "Direct financial support"
-              : "In-kind support"
-        },
-        {
-          title: `Amount committed (${Settings.startYear} - ${
-            Settings.endYear
-          })`,
-          prop: "committed_funds",
-          type: "num",
-          func: d =>
-            d.flow_types.committed_funds !== undefined
-              ? d.flow_types.committed_funds.focus_node_weight
-              : "",
-          render: d => Util.formatValue(d, "committed_funds")
-        },
-        {
-          title: `Amount disbursed (${Settings.startYear} - ${
-            Settings.endYear
-          })`,
-          prop: "disbursed_funds",
-          type: "num",
-          func: d =>
-            d.flow_types.disbursed_funds !== undefined
-              ? d.flow_types.disbursed_funds.focus_node_weight
-              : "",
-          render: d => Util.formatValue(d, "disbursed_funds")
-        }
-      ]}
-      tableData={data.flows}
-    />
+    <TableInstance paging={true} tableColumns={cols} tableData={data.flows} />
   );
   // Return JSX
   return (
@@ -199,7 +193,11 @@ const getComponentData = async ({ setComponent, ...props }) => {
   console.log(results);
 
   // Set the component
-  setComponent(<ExportTable {...{ data: results, ...props }} />);
+  setComponent(
+    <ExportTable
+      {...{ data: results, exportCols: props.exportCols, ...props }}
+    />
+  );
 };
 
 export default ExportTable;

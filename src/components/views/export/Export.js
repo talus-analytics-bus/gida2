@@ -19,6 +19,7 @@ const Export = ({ data, ...props }) => {
   const [funders, setFunders] = React.useState([]);
   const [recipients, setRecipients] = React.useState([]);
   const [exportTable, setExportTable] = React.useState(null);
+  const [exportCols, setExportCols] = React.useState(["project_name"]);
 
   const dataTable = renderExportTable({
     ...{
@@ -26,6 +27,7 @@ const Export = ({ data, ...props }) => {
       supportType,
       funders,
       recipients,
+      exportCols,
       component: exportTable,
       setComponent: setExportTable
     }
