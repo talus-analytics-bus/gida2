@@ -33,6 +33,7 @@ const Explore = ({
         instructions: "Choose country on map to view details."
       };
     }
+    return undefined;
   };
 
   // Track tab content components
@@ -128,31 +129,33 @@ const Explore = ({
   }, []);
 
   // Return JSX
-  return (
-    <div
-      className={classNames("pageContainer", styles.explore, {
-        [styles.dark]: props.isDark
-      })}
-    >
-      <div className={styles.header}>
-        <h1>{headerData.header}</h1>
-        <span>{headerData.instructions}</span>
-        <div className={styles.controls}>
-          <div className={styles.buttons}>
-            <Link to={"/details/ghsa"}>
-              <button>GHSA project details</button>
-            </Link>
-            {activeTab === "map" && (
-              <button onClick={() => props.setIsDark(!props.isDark)}>
-                {props.isDark ? `Dark` : "Light"}
-              </button>
-            )}
+  if (headerData === undefined) return <div />;
+  else
+    return (
+      <div
+        className={classNames("pageContainer", styles.explore, {
+          [styles.dark]: props.isDark
+        })}
+      >
+        <div className={styles.header}>
+          <h1>{headerData.header}</h1>
+          <span>{headerData.instructions}</span>
+          <div className={styles.controls}>
+            <div className={styles.buttons}>
+              <Link to={"/details/ghsa"}>
+                <button>GHSA project details</button>
+              </Link>
+              {activeTab === "map" && (
+                <button onClick={() => props.setIsDark(!props.isDark)}>
+                  {props.isDark ? `Dark` : "Light"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
+        <div className={styles.content}>{section.content}</div>
       </div>
-      <div className={styles.content}>{section.content}</div>
-    </div>
-  );
+    );
 };
 
 export const renderExplore = ({

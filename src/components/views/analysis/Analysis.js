@@ -48,6 +48,7 @@ const Analysis = ({
       <div>
         <h2>{table[0]}</h2>
         <TableInstance
+          paging={true}
           tableColumns={[
             {
               title: table[1],
@@ -181,9 +182,7 @@ const Analysis = ({
           recipient's activities. For information on a funder or recipient not
           included on this list, search for that country or organization below.
         </p>
-        {
-          // <div className={styles.tables}>{tableInstances.map(d => d)}</div>
-        }
+        {<div className={styles.tables}>{tableInstances.map(d => d)}</div>}
       </div>
     </div>
   );

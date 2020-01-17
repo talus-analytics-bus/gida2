@@ -197,6 +197,7 @@ const Orgs = ({
       <div>
         <h2>{table[0]}</h2>
         <TableInstance
+          paging={true}
           tableColumns={[
             {
               title: table[1],
@@ -234,9 +235,6 @@ const Orgs = ({
   return (
     <div className={styles.orgs}>
       <div className={styles.header}>Organizations</div>
-      <div className={styles.content}>
-        <div className={styles.tables}>{tableInstances.map(d => d)}</div>
-      </div>
       <div className={styles.menu}>
         <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
         {metricHasTransactionType && (
@@ -291,6 +289,9 @@ const Orgs = ({
             setMaxYear(years[1]);
           }}
         />
+      </div>
+      <div className={styles.content}>
+        <div className={styles.tables}>{tableInstances.map(d => d)}</div>
       </div>
     </div>
   );
