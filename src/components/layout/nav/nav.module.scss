@@ -20,12 +20,11 @@
     .links {
       display: flex;
       flex-flow: row;
-      justify-content: space-between;
-      min-width: 400px;
-      // > a,
-      // > div > a {
-      //   padding: 0 20px;
-      // }
+      > a,
+      > div {
+        padding: 0 20px;
+      }
+      align-items: center;
     }
   }
 }

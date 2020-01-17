@@ -67,8 +67,8 @@ const Nav = props => {
               }}
             />
           </div>
+          <Search />
         </div>
-        <Search />
       </div>
     </div>
   );
