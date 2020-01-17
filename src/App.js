@@ -13,6 +13,7 @@ import { renderEntityTable } from "./components/views/entitytable/EntityTable.js
 import { renderExport } from "./components/views/export/Export.js";
 import { renderAnalysisData } from "./components/views/analysis/AnalysisData.js";
 import Background from "./components/views/about/Background.js";
+import DataSources from "./components/views/about/DataSources.js";
 
 // styles
 import styles from "./App.module.scss";
@@ -363,6 +364,7 @@ const App = () => {
                 path="/about/background"
                 render={d => <Background />}
               />
+              <Route exact path="/about/data" render={d => <DataSources />} />
             </div>
           </Switch>
         </BrowserRouter>

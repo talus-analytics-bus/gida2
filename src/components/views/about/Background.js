@@ -7,7 +7,7 @@ const Background = () => {
   React.useEffect(() => window.scrollTo(0, 0), []);
 
   return (
-    <div>
+    <div className={styles.about}>
       <div className={styles.title}>Background</div>
       <div className={styles.description}>
         <p>
