@@ -7,7 +7,7 @@ const Submit = () => {
   React.useEffect(() => window.scrollTo(0, 0), []);
   return (
     <div className={styles.about}>
-      <div className={styles.title}>Data sources</div>
+      <div className={styles.title}>Submit data</div>
       <div className={styles.description}>
         <div class="section">
           <div class="description">
