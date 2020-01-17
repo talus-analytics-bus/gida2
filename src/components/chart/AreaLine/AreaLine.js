@@ -29,7 +29,7 @@ const AreaLine = ({ data, entityRole, ...props }) => {
     });
     y.yFormat = Util.formatSIInteger;
     y.lineColor = colors[5];
-    y.areaColor = colors[1];
+    y.areaColor = colors[2];
     y.title = Util.getInitCap(Util.formatLabel(type)) + " funds";
     ys.push(y);
   });

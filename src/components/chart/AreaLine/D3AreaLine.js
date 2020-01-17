@@ -35,7 +35,7 @@ class D3AreaLine extends Chart {
     }
 
     // Add padding to x axis
-    const usePadding = true;
+    const usePadding = false;
     const maxTimeComponents = {
       month: maxTime.getUTCMonth(),
       date: maxTime.getUTCDate()
@@ -83,12 +83,13 @@ class D3AreaLine extends Chart {
     this.yAxis = d3
       .axisLeft()
       .scale(this.y)
+      .tickPadding(10)
       .tickFormat(val => {
         if (val === 0) {
           return 0;
         } else return yTickFormatFunc(val);
       })
-      .ticks(2)
+      .ticks(5)
       .tickSizeOuter(0)
       .tickSizeInner(-this.width);
 
