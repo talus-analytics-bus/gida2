@@ -285,21 +285,28 @@ class D3StackBar extends Chart {
         .attr("data-tip", true)
         .attr("data-for", "chartTooltip")
         .on("mouseover", function updateTooltip(d) {
-          params.setTooltipData([
+          const tooltipData = [
             {
               field: "Core capacity",
               value: d.ccFull
             },
             {
               field: params.nodeType === "target" ? "Funder" : "Recipient",
-              value:
-                d.country[params.nodeType === "target" ? "source" : "target"]
+              value: d.country[params.otherNodeType]
             },
             {
               field: `Total ${params.flowTypeName.toLowerCase()}`,
               value: Util.money(d.country[params.flowType])
             }
-          ]);
+          ];
+          if (d.country[params.nodeType] !== undefined) {
+            tooltipData.splice(1, 0, {
+              field: params.nodeType === "target" ? "Recipient" : "Funder",
+              value: d.country[params.nodeType]
+            });
+          }
+
+          params.setTooltipData(tooltipData);
         })
         .attr("height", bandwidth)
         .style("fill", d => colorScale(d.country.value0))

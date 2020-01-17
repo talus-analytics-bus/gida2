@@ -65,6 +65,7 @@ const StackBar = ({
     flowTypeName,
     jeeScores,
     nodeType,
+    otherNodeType,
     setTooltipData,
     tooltipClassName: styles.stackBarTooltip,
     sort
