@@ -10,6 +10,7 @@ import TableInstance from "../../chart/table/TableInstance.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import Chord from "./content/Chord.js";
+import Search from "../../common/Search/Search.js";
 
 // FC for Analysis.
 const Analysis = ({
@@ -26,6 +27,7 @@ const Analysis = ({
   // Track transaction type selected for the map
   const [transactionType, setTransactionType] = React.useState("committed");
   const [chordComponent, setChordComponent] = React.useState(null);
+  const [selectedEntity, setSelectedEntity] = React.useState(null);
 
   // Get flow type
   const flowType =
@@ -111,17 +113,14 @@ const Analysis = ({
       minYear={props.minYear}
       maxYear={props.maxYear}
       transactionType={transactionType}
+      selectedEntity={selectedEntity}
+      setSelectedEntity={setSelectedEntity}
     />
   );
 
   // legend (maybe part of map?)
   return (
     <div className={styles.analysis}>
-      <div className={styles.header}>
-        <div className={styles.labels}>
-          <div>International funding network</div>
-        </div>
-      </div>
       <div className={styles.content}>
         <h1>International funding network</h1>
         <p>
@@ -164,6 +163,7 @@ const Analysis = ({
                 setCoreCapacities(vals.map(v => v.value));
               }}
             />
+            <Search callback={setSelectedEntity} expandedDefault={true} />
             <TimeSlider
               minYearDefault={Settings.startYear}
               maxYearDefault={Settings.endYear}

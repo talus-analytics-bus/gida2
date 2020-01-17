@@ -3,12 +3,22 @@
 .subregion,
 .entity {
   fill: auto;
+  path.selected {
+    stroke: yellow;
+    stroke-width: 4px;
+  }
 }
 .flows {
   path {
     fill: rgb(5, 48, 97);
     fill-opacity: 0.3;
     stroke: none;
+    &:hover {
+      fill-opacity: 0.8;
+    }
+    &.hidden {
+      display: none;
+    }
   }
 }
 .textCircle,

@@ -9,8 +9,10 @@ import NodeQuery from "../../misc/NodeQuery.js";
  * TODO implement tooltip
  * @method Search
  */
-const Search = ({ ...props }) => {
-  const [expanded, setExpanded] = React.useState(false);
+const Search = ({ callback, ...props }) => {
+  const [expanded, setExpanded] = React.useState(
+    props.expandedDefault || false
+  );
   const [open, setOpen] = React.useState(false);
   const [results, setResults] = React.useState(null);
 
@@ -32,6 +34,36 @@ const Search = ({ ...props }) => {
       e.target.value = "";
       setResults(null);
     }
+  };
+
+  const unset = () => {
+    document.getElementById("placeSearch").value = "";
+    setResults(null);
+  };
+
+  const getResults = results => {
+    if (callback === undefined) {
+      return results.map(d => (
+        <Link onClick={unset} to={`/details/${d.id}/funder`}>
+          <div className={styles.result}>
+            <div className={styles.name}>{d.name}</div>
+            <div className={styles.type}>{d.type}</div>
+          </div>
+        </Link>
+      ));
+    } else
+      return results.map(d => (
+        <div
+          onClick={() => {
+            unset();
+            callback(d.id);
+          }}
+          className={styles.result}
+        >
+          <div className={styles.name}>{d.name}</div>
+          <div className={styles.type}>{d.type}</div>
+        </div>
+      ));
   };
 
   // Hide menus on root click
@@ -71,21 +103,7 @@ const Search = ({ ...props }) => {
           style={{ display: open ? "flex" : "none" }}
           className={styles.results}
         >
-          {results.length > 0 &&
-            results.map(d => (
-              <Link
-                onClick={() => {
-                  document.getElementById("placeSearch").value = "";
-                  setResults(null);
-                }}
-                to={`/details/${d.id}/funder`}
-              >
-                <div className={styles.result}>
-                  <div className={styles.name}>{d.name}</div>
-                  <div className={styles.type}>{d.type}</div>
-                </div>
-              </Link>
-            ))}
+          {results.length > 0 && getResults(results)}
           {results.length === 0 && (
             <div className={classNames(styles.result, styles.noResult)}>
               <i>No results</i>

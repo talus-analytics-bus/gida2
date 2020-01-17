@@ -7,9 +7,14 @@ import { Settings } from "../../../../App.js";
 import D3Chord from "../../../chart/D3Chord/D3Chord.js";
 
 // FC for Chord.
-const Chord = ({ chordData, transactionType, ...props }) => {
+const Chord = ({
+  chordData,
+  transactionType,
+  setSelectedEntity,
+  selectedEntity,
+  ...props
+}) => {
   const [chord, setChord] = React.useState(null);
-  const [selectedEntity, setSelectedEntity] = React.useState("None");
 
   const chordPlaceholder = (
     <TableInstance
@@ -96,10 +101,22 @@ const Chord = ({ chordData, transactionType, ...props }) => {
     const chordNew = new D3Chord("." + styles.chordChart, {
       chordData,
       setSelectedEntity,
+      selectedEntity,
       transactionType
     });
     setChord(chordNew);
+    setSelectedEntity(null);
   }, [chordData, transactionType]);
+  React.useEffect(() => {
+    if (chord !== null) {
+      chord.params.selectedEntity = selectedEntity;
+      if (selectedEntity !== null) {
+        chord.highlight(selectedEntity);
+      } else {
+        chord.unHighlight();
+      }
+    }
+  }, [selectedEntity]);
 
   return (
     <div className={styles.chord}>

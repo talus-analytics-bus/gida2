@@ -39,6 +39,7 @@ class D3Chord extends Chart {
   exampleInstanceMethod(data) {}
 
   draw() {
+    const other = "Other funders / recipients";
     // radius
     const radius = this.containerheight * 0.4;
 
@@ -97,8 +98,8 @@ class D3Chord extends Chart {
       )
       .sort((a, b) => {
         return d3.ascending(
-          a.target[0].region || "Other",
-          b.target[0].region || "Other"
+          a.target[0].region || other,
+          b.target[0].region || other
         );
       });
 
@@ -109,7 +110,7 @@ class D3Chord extends Chart {
       // source
       const types = [["target", "source"], ["source", "target"]];
       types.forEach(type => {
-        const focusRegion = d[type[0]][0].region || "Other";
+        const focusRegion = d[type[0]][0].region || other;
         if (regionTotals[focusRegion] === undefined) {
           regionTotals[focusRegion] = {
             [type[0]]: weight,
@@ -124,7 +125,7 @@ class D3Chord extends Chart {
         total += weight;
 
         // Now check focus subregion
-        const focusSubregion = d[type[0]][0].subregion || "Other";
+        const focusSubregion = d[type[0]][0].subregion || other;
         if (
           regionTotals[focusRegion].subregions[focusSubregion] === undefined
         ) {
@@ -142,7 +143,7 @@ class D3Chord extends Chart {
         }
 
         // Now check focus entity
-        const focusEntity = d[type[0]][0].name || "Other";
+        const focusEntity = d[type[0]][0].name || other;
         if (
           regionTotals[focusRegion].subregions[focusSubregion].entities[
             focusEntity
@@ -282,28 +283,51 @@ class D3Chord extends Chart {
       }
     ];
 
-    console.log("arcsData");
-    console.log(arcsData);
+    const chart = this;
+    const setSelectedEntity = d => {
+      if (chart.params.selectedEntity === d.data.id) {
+        chart.params.setSelectedEntity(null);
+      } else chart.params.setSelectedEntity(d.data.id);
+    };
     const offset = (arcsData.region[0].theta2 - arcsData.region[0].theta1) / 2;
     arcTypes.forEach(arcType => {
       arcsData[arcType.type].forEach(d => {
         d.theta1 -= offset;
         d.theta2 -= offset;
       });
-      arcTypes[arcType.type] = this.chart
-        .append("g")
-        .attr("class", styles[arcType.type])
-        .selectAll("path")
-        .data(arcsData[arcType.type])
-        .enter()
-        .append("path")
-        .attr("class", styles[arcType.type])
-        .style("fill", d => d.color)
-        .attr("d", d => arcType.generator(d))
-        .on("click", d => {
-          this.params.setSelectedEntity(d.name);
-        });
     });
+
+    this.highlight = id => {
+      // Highlight selected entity
+      d3.select("g." + styles.entity)
+        .selectAll("path")
+        .classed(styles.selected, false)
+        .filter(function(d) {
+          console.log("d");
+          console.log(d);
+          return d.data.id === id;
+        })
+        .classed(styles.selected, true)
+        .raise();
+
+      // Highlight relevant flows
+      d3.select("." + styles.flows)
+        .selectAll("path")
+        .classed(styles.hidden, true)
+        .filter(dd => {
+          return dd.source_id === id || dd.target_id === id;
+          return true;
+        })
+        .classed(styles.hidden, false);
+    };
+    this.unHighlight = () => {
+      d3.select("." + styles.flows)
+        .selectAll("path")
+        .classed(styles.hidden, false);
+      d3.select("g." + styles.entity)
+        .selectAll("path")
+        .classed(styles.selected, false);
+    };
 
     // Define flows
     const ribbon = d3
@@ -325,14 +349,14 @@ class D3Chord extends Chart {
         const weight = f.flow_types[flowTypeName].focus_node_weight;
         const info = {
           source: {
-            region: f.source[0].region || "Other",
-            subregion: f.source[0].subregion || "Other",
-            entity: f.source[0].name || "Other"
+            region: f.source[0].region || other,
+            subregion: f.source[0].subregion || other,
+            entity: f.source[0].name || other
           },
           target: {
-            region: f.target[0].region || "Other",
-            subregion: f.target[0].subregion || "Other",
-            entity: f.target[0].name || "Other"
+            region: f.target[0].region || other,
+            subregion: f.target[0].subregion || other,
+            entity: f.target[0].name || other
           }
         };
         const source =
@@ -365,7 +389,13 @@ class D3Chord extends Chart {
           updatedArcLengthAlreadyUsedS / arcLengthS;
 
         // Math for source flow thetas
-        const flowThetas = { source: {}, target: {}, weight: weight };
+        const flowThetas = {
+          source_id: source.data.id,
+          target_id: target.data.id,
+          source: {},
+          target: {},
+          weight: weight
+        };
 
         // Source: Go from original theta 1 plus already used...
         // ...to original theta 1 plus updated already used.
@@ -402,6 +432,20 @@ class D3Chord extends Chart {
       .append("path")
       .attr("class", styles.flow)
       .attr("d", d => ribbon(d));
+
+    arcTypes.forEach(arcType => {
+      arcTypes[arcType.type] = this.chart
+        .append("g")
+        .attr("class", styles[arcType.type])
+        .selectAll("path")
+        .data(arcsData[arcType.type])
+        .enter()
+        .append("path")
+        .attr("class", styles[arcType.type])
+        .style("fill", d => d.color)
+        .attr("d", d => arcType.generator(d))
+        .on("click", arcType.type === "entity" ? setSelectedEntity : undefined);
+    });
 
     // Add labels
     // Create text circle.
