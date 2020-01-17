@@ -17,7 +17,7 @@ const PlaceQuery = async function(place_id = null, by_region = false) {
     params
   });
 
-  return res.data.data;
+  return res.data.data[0];
 };
 
 export default PlaceQuery;

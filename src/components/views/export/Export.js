@@ -4,6 +4,7 @@ import styles from "./export.module.scss";
 import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
+import NodeQuery from "../../misc/NodeQuery.js";
 import Drawer from "../../common/Drawer/Drawer.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import { core_capacities } from "../../misc/Data.js";
@@ -117,6 +118,14 @@ const Export = ({ data, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
+                    options: data.entities,
+                    placeholder: "Funder",
+                    onChange: () => console.log("Changed")
+                  }}
+                />
+                <FilterDropdown
+                  {...{
+                    label: "",
                     options: [
                       { value: "financial", label: "Direct financial support" },
                       { value: "inkind", label: "In-kind support" }
@@ -177,6 +186,8 @@ const getComponentData = async ({ setComponent }) => {
 
   // Define queries for typical Export page.
   const queries = {
+    // Information about the entity
+    entities: NodeQuery({ setKeys: "value,label" }),
     flows: FlowQuery({
       ...baseFlowQueryParams,
       flow_type_ids: [5]

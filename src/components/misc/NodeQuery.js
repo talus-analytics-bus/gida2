@@ -7,15 +7,17 @@ import { getNodeData } from "./Data.js";
  * @method NodeQuery
  */
 
-const NodeQuery = async function({ node_id }) {
-
-  if (node_id === 'ghsa') {
-    return getNodeData('ghsa')
+const NodeQuery = async function({ node_id, ...props }) {
+  if (node_id === "ghsa") {
+    return getNodeData("ghsa");
   }
   // Define URL parameters //
   const params = {
-    id: parseInt(node_id)
+    id: node_id !== undefined ? parseInt(node_id) : undefined
   };
+
+  // Other options
+  if (props.setKeys !== undefined) params.setKeys = props.setKeys;
 
   // Define URL params
   const config = {
@@ -24,6 +26,9 @@ const NodeQuery = async function({ node_id }) {
 
   // Placeholder: Return data
   const res = await axios.get(`${Util.API_URL}/place`, config);
+  if (node_id !== undefined && node_id !== null) {
+    return res.data[0];
+  }
   return res.data;
 };
 
