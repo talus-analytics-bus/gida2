@@ -217,8 +217,26 @@ class D3AreaLine extends Chart {
       })
       .text(d => d);
 
-    // Add line to chart
+    // Add area beneath first series
+    const area = d3
+      .area()
+      .x(d => x(new Date(d.date_time.replace(/-/g, "/"))))
+      .y0(d => y(d.value))
+      .y1(chart.height);
+
     const valueLineSegments = chart.params.data;
+    const firstSeries = valueLineSegments[0];
+    chart
+      .newGroup(styles.area)
+      .selectAll("path")
+      .data([firstSeries])
+      .enter()
+      .append("path")
+      .style("fill", firstSeries.areaColor)
+      .attr("class", styles.area)
+      .attr("d", d => area(d));
+
+    // Add line to chart
     valueLineSegments.forEach((series, i) => {
       chart
         .newGroup(styles.lineValue + " " + styles["series-" + i])
