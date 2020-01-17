@@ -41,6 +41,9 @@ const AreaLine = ({ data, entityRole, ...props }) => {
       yMetricParams: {
         temporal_resolution: "yearly",
         label: "Amount (in USD)"
+      },
+      xMetricParams: {
+        label: "Year"
       }
     });
     setChart(chartNew);

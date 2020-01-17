@@ -218,6 +218,28 @@ class D3AreaLine extends Chart {
       })
       .text(d => d);
 
+    const xAxisLabel = chart[styles["x-axis"]]
+      .append("text")
+      .attr("class", styles.label)
+      .attr("x", chart.width / 2)
+      .attr("y", chart.margin.bottom);
+    xAxisLabel
+      .selectAll("tspan")
+      .data([chart.params.xMetricParams.label])
+      .enter()
+      .append("tspan")
+      .attr("x", chart.width / 2)
+      .attr("dy", (d, i) => {
+        if (labelData.length === 1) {
+          return null;
+        } else if (i === 0) {
+          return -1 * labelData.length + "em";
+        } else {
+          return "1em";
+        }
+      })
+      .text(d => d);
+
     // Add area beneath first series
     const area = d3
       .area()
