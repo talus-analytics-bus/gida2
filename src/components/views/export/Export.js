@@ -10,93 +10,27 @@ import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import { core_capacities } from "../../misc/Data.js";
 
 // Content components
-import TableInstance from "../../chart/table/TableInstance.js";
+import { renderExportTable } from "./ExportTable.js";
 
 // FC for Export.
 const Export = ({ data, ...props }) => {
-  const dataTable = (
-    <TableInstance
-      paging={true}
-      tableColumns={[
-        {
-          title: "Project name",
-          prop: "project_name",
-          type: "text",
-          func: d => d.flow_info.project_name
-        },
-        {
-          title: "Project description",
-          prop: "description",
-          type: "text",
-          func: d => d.flow_info.description
-        },
-        {
-          title: "Data source",
-          prop: "data_sources",
-          type: "text",
-          func: d => d.data_sources.filter(dd => dd.trim() !== "").join("; ")
-        },
-        {
-          title: "Core capacities",
-          prop: "core_capacities",
-          type: "text",
-          func: d => d.flow_info.core_capacities.join("; ")
-        },
-        {
-          title: "Transaction year range",
-          prop: "year_range",
-          type: "text",
-          func: d => (d.year_range ? d.year_range : "")
-        },
-        {
-          title: "Funder",
-          prop: "source",
-          type: "text",
-          func: d => d.source.map(dd => dd.name).join("; ")
-        },
-        {
-          title: "Recipient",
-          prop: "target",
-          type: "text",
-          func: d => d.target.map(dd => dd.name).join("; ")
-        },
-        {
-          title: "Support type",
-          prop: "assistance_type",
-          type: "text",
-          func: d =>
-            d.flow_info.assistance_type == "financial"
-              ? "Direct financial support"
-              : "In-kind support"
-        },
-        {
-          title: `Amount committed (${Settings.startYear} - ${
-            Settings.endYear
-          })`,
-          prop: "committed_funds",
-          type: "num",
-          func: d =>
-            d.flow_types.committed_funds !== undefined
-              ? d.flow_types.committed_funds.focus_node_weight
-              : "",
-          render: d => Util.formatValue(d, "committed_funds")
-        },
-        {
-          title: `Amount disbursed (${Settings.startYear} - ${
-            Settings.endYear
-          })`,
-          prop: "disbursed_funds",
-          type: "num",
-          func: d =>
-            d.flow_types.disbursed_funds !== undefined
-              ? d.flow_types.disbursed_funds.focus_node_weight
-              : "",
-          render: d => Util.formatValue(d, "disbursed_funds")
-        }
-      ]}
-      tableData={data.flows}
-    />
-  );
+  const [coreCapacities, setCoreCapacities] = React.useState([]);
+  const [supportType, setSupportType] = React.useState([]);
+  const [funders, setFunders] = React.useState([]);
+  const [recipients, setRecipients] = React.useState([]);
+  const [exportTable, setExportTable] = React.useState(null);
+
+  const dataTable = renderExportTable({
+    ...{
+      coreCapacities,
+      supportType,
+      funders,
+      recipients,
+      component: exportTable,
+      setComponent: setExportTable
+    }
+  });
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.Export)}>
@@ -112,7 +46,7 @@ const Export = ({ data, ...props }) => {
                     label: "",
                     options: core_capacities,
                     placeholder: "Funding by core capacity",
-                    onChange: () => console.log("Changed")
+                    onChange: setCoreCapacities
                   }}
                 />
                 <FilterDropdown
@@ -123,7 +57,7 @@ const Export = ({ data, ...props }) => {
                       { value: "inkind", label: "In-kind support" }
                     ],
                     placeholder: "Support type",
-                    onChange: () => console.log("Changed")
+                    onChange: setSupportType
                   }}
                 />
                 <FilterDropdown
@@ -131,7 +65,7 @@ const Export = ({ data, ...props }) => {
                     label: "",
                     options: data.entities,
                     placeholder: "Funder",
-                    onChange: () => console.log("Changed")
+                    onChange: setFunders
                   }}
                 />
                 <FilterDropdown
@@ -139,7 +73,7 @@ const Export = ({ data, ...props }) => {
                     label: "",
                     options: data.entities,
                     placeholder: "Recipient",
-                    onChange: () => console.log("Changed")
+                    onChange: setRecipients
                   }}
                 />
               </div>
@@ -195,11 +129,7 @@ const getComponentData = async ({ setComponent }) => {
   // Define queries for typical Export page.
   const queries = {
     // Information about the entity
-    entities: NodeQuery({ setKeys: "value,label" }),
-    flows: FlowQuery({
-      ...baseFlowQueryParams,
-      flow_type_ids: [5]
-    })
+    entities: NodeQuery({ setKeys: "value,label" })
   };
 
   // Get results in parallel
