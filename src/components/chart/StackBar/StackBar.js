@@ -41,9 +41,10 @@ const StackBar = ({
 
   // Show chart?
   const display = chartData.length > 0;
+  const showJee = nodeType !== "source";
 
   const legend =
-    id !== "ghsa" && display ? (
+    id !== "ghsa" && display && showJee ? (
       <Legend
         className={styles.legend}
         colorScale={jeeColorScale}
