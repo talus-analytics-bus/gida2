@@ -10,6 +10,9 @@ import TableInstance from "../../chart/table/TableInstance.js";
 
 // FC for ExportTable.
 const ExportTable = ({ data, exportCols, ...props }) => {
+  // Set n records
+  props.setNRecords(data.flows.length);
+
   const cols = [
     {
       title: "Project name",

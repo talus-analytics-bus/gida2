@@ -20,6 +20,7 @@ const Export = ({ data, ...props }) => {
   const [funders, setFunders] = React.useState([]);
   const [recipients, setRecipients] = React.useState([]);
   const [exportTable, setExportTable] = React.useState(null);
+  const [nRecords, setNRecords] = React.useState(0);
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
@@ -80,6 +81,7 @@ const Export = ({ data, ...props }) => {
       funders,
       recipients,
       exportCols,
+      setNRecords,
       component: exportTable,
       setComponent: setExportTable
     }
@@ -172,6 +174,17 @@ const Export = ({ data, ...props }) => {
                       }}
                     />
                   ))}
+                </div>
+                <div>
+                  <button>
+                    {!showClear
+                      ? `Download all available data (${Util.comma(nRecords)} ${
+                          nRecords !== 1 ? "records" : "record"
+                        })`
+                      : `Download selected data (${Util.comma(nRecords)} ${
+                          nRecords !== 1 ? "records" : "record"
+                        })`}
+                  </button>
                 </div>
               </div>
             </div>
