@@ -6,8 +6,6 @@ import styles from "./about.module.scss";
 const DataSources = () => {
   // Scroll to top of window afer loading.
   React.useEffect(() => window.scrollTo(0, 0), []);
-  console.log("process.env.PUBLIC_URL");
-  console.log(process.env.PUBLIC_URL);
   return (
     <div className={styles.about}>
       <div className={styles.title}>Data sources</div>
