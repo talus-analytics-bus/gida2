@@ -20,8 +20,6 @@ const InfoBox = ({
   infoBoxData = null,
   ...props
 }) => {
-  console.log("infoBoxData");
-  console.log(infoBoxData);
   // Track whether info box is visible or not
   const [show, setShow] = React.useState(nodeData !== undefined);
 
@@ -56,14 +54,13 @@ const InfoBox = ({
         >
           <div className={styles.name}>{nodeData.name}</div>
           <div className={styles.close}>
-            <button
-              onClick={() => {
+            <Button
+              callback={() => {
                 setShow(false);
                 setNodeData(undefined);
               }}
-            >
-              Close
-            </button>
+              type={"close"}
+            />
           </div>
         </div>
         <div className={styles.content}>
