@@ -17,6 +17,17 @@
     position: absolute;
     bottom: 0;
     align-self: center;
+
+    > div {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      div:nth-child(2) {
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+      }
+    }
   }
   .infoBox {
     position: absolute;
