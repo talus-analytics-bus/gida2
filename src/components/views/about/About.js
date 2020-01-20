@@ -7,7 +7,7 @@ const Background = () => {
   React.useEffect(() => window.scrollTo(0, 0), []);
 
   return (
-    <div className={styles.about}>
+    <div className={classNames(styles.about, 'pageContainer')}>
       <h1>Overview</h1>
       <p>
         Measles Tracker was developed by Talus Analytics to provide up-to-date
