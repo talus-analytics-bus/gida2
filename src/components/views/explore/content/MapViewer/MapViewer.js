@@ -92,8 +92,6 @@ const MapViewer = ({
 
   // TODO:
   // map
-  // map controls (zoom, reset)
-  // legend (maybe part of map?)
   return (
     <div className={styles.mapViewer}>
       <div className={styles.header}>
@@ -102,12 +100,7 @@ const MapViewer = ({
           {metricHasTransactionType && <div>{flowTypeDisplayName}</div>}
         </div>
         {supportType !== "needs_met" && supportType !== "jee" && (
-          <div className={styles.toggle}>
-            <EntityRoleToggle
-              entityRole={entityRole}
-              callback={setEntityRole}
-            />
-          </div>
+          <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
         )}
       </div>
       <div className={styles.content}>

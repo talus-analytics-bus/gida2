@@ -113,7 +113,8 @@ export const getMapColorScale = ({
   data,
   flowType,
   jeeScores,
-  coreCapacities
+  coreCapacities,
+  entityRole
 }) => {
   const colorScaleMaker = ({ domain, range, type }) => {
     const baseScale = d3[type || "scaleThreshold"]()
@@ -147,7 +148,7 @@ export const getMapColorScale = ({
   if (supportType === "inkind") {
     return colorScaleMaker({
       domain: [5, 10, 15, 20, 25, 30],
-      range: greens
+      range: entityRole === "funder" ? greens : purples
     });
   } else if (supportType === "funds") {
     // Get values for use in calculating quantile scales.
@@ -161,7 +162,7 @@ export const getMapColorScale = ({
 
     return colorScaleMaker({
       domain: values,
-      range: purples,
+      range: entityRole === "funder" ? greens : purples,
       type: "scaleQuantile"
     });
   } else if (supportType === "needs_met") {

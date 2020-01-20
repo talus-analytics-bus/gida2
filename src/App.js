@@ -177,7 +177,7 @@ const App = () => {
                 exact
                 path="/explore/:activeTab"
                 render={d => {
-                  setPage("explore");
+                  setPage("explore-" + d.match.params.activeTab);
                   return renderExplore({
                     ...d.match.params,
                     component: exploreComponent,

@@ -28,6 +28,10 @@
   .header {
     display: flex;
     flex-flow: column;
+    > span {
+      font-style: italic;
+      font-size: 1.2em;
+    }
     .controls {
       display: flex;
       flex-flow: row;

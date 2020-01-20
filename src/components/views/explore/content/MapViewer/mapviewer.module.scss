@@ -3,4 +3,21 @@
   .hide {
     display: none;
   }
+  .header {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-between;
+
+    font-size: 20px;
+    .labels {
+      font-family: "Raleway", serif;
+      div:first-child {
+        font-weight: 600;
+      }
+      div:nth-child(2) {
+        font-weight: normal;
+      }
+    }
+  }
 }

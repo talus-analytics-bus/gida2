@@ -24,14 +24,23 @@ const Nav = ({ page, ...props }) => {
         styles[page]
       )}
     >
-      <div className={classNames(styles.content, "pageContainer", "noPadding")}>
+      <div
+        className={classNames(
+          styles.content,
+          { wide: page === "explore-map" },
+          "pageContainer",
+          "noPadding"
+        )}
+      >
         <Link to="/">
           <img src={logo} alt="GIDA - Tracker" />
         </Link>
         <div className={styles.links}>
           <div>
             <Link
-              className={page === "explore" ? styles.active : ""}
+              className={
+                page && page.startsWith("explore") ? styles.active : ""
+              }
               onClick={() => toggleMenu("explore")}
             >
               Explore

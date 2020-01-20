@@ -39,7 +39,8 @@ const Map = ({
     data: data,
     flowType: flowType,
     jeeScores,
-    coreCapacities
+    coreCapacities,
+    entityRole
   });
 
   // Define hatch mark pattern.

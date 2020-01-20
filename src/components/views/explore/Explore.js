@@ -135,9 +135,14 @@ const Explore = ({
   else
     return (
       <div
-        className={classNames("pageContainer", styles.explore, {
-          [styles.dark]: props.isDark
-        })}
+        className={classNames(
+          "pageContainer",
+          { wide: activeTab === "map" },
+          styles.explore,
+          {
+            [styles.dark]: props.isDark
+          }
+        )}
       >
         <div className={styles.header}>
           <h1>{headerData.header}</h1>
