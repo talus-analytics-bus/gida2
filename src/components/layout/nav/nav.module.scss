@@ -7,6 +7,7 @@
   top: 0;
   background-color: white;
   z-index: 1000;
+  font-size: 16px;
 
   .content {
     display: flex;
@@ -20,9 +21,28 @@
     .links {
       display: flex;
       flex-flow: row;
+      color: #777;
+      span {
+        margin-left: 5px;
+      }
       > a,
       > div {
-        padding: 0 20px;
+        margin: 0 20px;
+      }
+      > a,
+      > div > a {
+        color: #777;
+        &:hover:not(.active) {
+          color: #52a8e6;
+        }
+        &:hover,
+        &:focus {
+          text-decoration: none;
+        }
+        &.active {
+          font-weight: 600;
+          border-bottom: 2px solid #777;
+        }
       }
       align-items: center;
     }

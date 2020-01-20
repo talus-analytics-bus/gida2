@@ -162,19 +162,22 @@ const App = () => {
     return baseCols.concat(valueColInfo);
   };
 
+  const [page, setPage] = React.useState(undefined);
+
   // JSX for main app.
   if (loading) return <div />;
   else
     return (
       <div className={isDark ? "dark" : ""}>
         <BrowserRouter>
-          <Nav {...{ isDark }} />
+          <Nav {...{ isDark, page }} />
           <Switch>
             <div>
               <Route
                 exact
                 path="/explore/:activeTab"
                 render={d => {
+                  setPage("explore");
                   return renderExplore({
                     ...d.match.params,
                     component: exploreComponent,
@@ -194,6 +197,7 @@ const App = () => {
                 exact
                 path="/details/:id/:entityRole"
                 render={d => {
+                  setPage(undefined);
                   return renderDetails({
                     ...d.match.params,
                     id: parseInt(d.match.params.id),
@@ -211,6 +215,7 @@ const App = () => {
                 exact
                 path="/table/:id/:entityRole"
                 render={d => {
+                  setPage(undefined);
                   return renderEntityTable({
                     ...d.match.params,
                     component: entityTableComponent,
@@ -227,6 +232,7 @@ const App = () => {
                 exact
                 path="/data"
                 render={d => {
+                  setPage("data");
                   return renderExport({
                     ...d.match.params,
                     component: exportComponent,
@@ -238,6 +244,7 @@ const App = () => {
                 exact
                 path="/analysis"
                 render={d => {
+                  setPage("analysis");
                   return renderAnalysisData({
                     ...d.match.params,
                     component: analysisDataComponent,
@@ -252,6 +259,7 @@ const App = () => {
                 exact
                 path="/pair-table/:funderId/:recipientId"
                 render={d => {
+                  setPage(undefined);
                   return renderEntityTable({
                     id: parseInt(d.match.params.funderId),
                     otherId: parseInt(d.match.params.recipientId),
@@ -269,6 +277,7 @@ const App = () => {
                 exact
                 path="/details/:id"
                 render={d => {
+                  setPage(undefined);
                   if (d.match.params.id === "ghsa")
                     return renderDetails({
                       ...d.match.params,
@@ -287,12 +296,43 @@ const App = () => {
               <Route
                 exact
                 path="/about/background"
-                render={d => <Background />}
+                render={d => {
+                  setPage("about");
+                  return <Background />;
+                }}
               />
-              <Route exact path="/about/data" render={d => <DataSources />} />
-              <Route exact path="/about/research" render={d => <Research />} />
-              <Route exact path="/about/submit" render={d => <Submit />} />
-              <Route exact path="/" render={d => <Home />} />
+              <Route
+                exact
+                path="/about/data"
+                render={d => {
+                  setPage("about");
+                  return <DataSources />;
+                }}
+              />
+              <Route
+                exact
+                path="/about/research"
+                render={d => {
+                  setPage("about");
+                  return <Research />;
+                }}
+              />
+              <Route
+                exact
+                path="/about/submit"
+                render={d => {
+                  setPage("about");
+                  return <Submit />;
+                }}
+              />
+              <Route
+                exact
+                path="/"
+                render={d => {
+                  setPage(undefined);
+                  return <Home />;
+                }}
+              />
             </div>
           </Switch>
         </BrowserRouter>

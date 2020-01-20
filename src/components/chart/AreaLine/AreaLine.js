@@ -24,7 +24,7 @@ const AreaLine = ({ data, entityRole, ...props }) => {
       y.push({
         date_time: `${d.attribute}/01/01`,
         metric: type,
-        value: d[type] === "n/a" ? 0 : d[type],
+        value: d[type] === "n/a" || d[type] === "unknown" ? 0 : d[type],
         temporal_resolution: "yearly"
       });
     });

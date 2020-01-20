@@ -8,8 +8,7 @@ import ReactTooltip from "react-tooltip";
 import Menu from "./content/Menu/Menu.js";
 import Search from "../../common/Search/Search.js";
 
-const Nav = props => {
-  const page = props.page;
+const Nav = ({ page, ...props }) => {
   const logo = props.isDark ? logoDark : logoLight;
   const [openMenu, setOpenMenu] = React.useState("");
   const toggleMenu = name => {
@@ -31,7 +30,10 @@ const Nav = props => {
         </Link>
         <div className={styles.links}>
           <div>
-            <Link onClick={() => toggleMenu("explore")}>
+            <Link
+              className={page === "explore" ? styles.active : ""}
+              onClick={() => toggleMenu("explore")}
+            >
               Explore
               <span className={"caret"} />
             </Link>
@@ -47,10 +49,20 @@ const Nav = props => {
               }}
             />
           </div>
-          <Link to="/analysis">Analysis</Link>
-          <Link to="/data">Data</Link>
+          <Link
+            className={page === "analysis" ? styles.active : ""}
+            to="/analysis"
+          >
+            Analysis
+          </Link>
+          <Link className={page === "data" ? styles.active : ""} to="/data">
+            Data
+          </Link>
           <div>
-            <Link onClick={() => toggleMenu("about")}>
+            <Link
+              className={page === "about" ? styles.active : ""}
+              onClick={() => toggleMenu("about")}
+            >
               About
               <span className={"caret"} />
             </Link>
