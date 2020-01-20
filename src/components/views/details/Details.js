@@ -166,7 +166,7 @@ const Details = ({
       content: (
         <TableInstance
           paging={true}
-          sortByProp={"amount"}
+          sortByProp={"year_range"}
           tableColumns={[
             {
               title: "Event year",
