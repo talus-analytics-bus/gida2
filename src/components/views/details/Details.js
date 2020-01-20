@@ -10,6 +10,7 @@ import {
   isUnknownDataOnly
 } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
+import FlowQuery from "../../misc/FlowQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
@@ -167,14 +168,62 @@ const Details = ({
       hide: noData
     },
     {
-      header: <h2>Response funding by outbreak event</h2>,
+      header: <h2>NEW Response funding by outbreak event</h2>,
       content: (
         <TableInstance
           paging={true}
           sortByProp={"amount"}
           tableColumns={[
             {
-              title: "Outbreak event",
+              title: "Event year",
+              prop: "year_range",
+              type: "text",
+              func: d => d.outbreak.year_range,
+              render: d => d
+            },
+            {
+              title: "Event response",
+              prop: "event",
+              type: "text",
+              func: d => d.outbreak.name,
+              render: d => d
+            },
+            {
+              title: curFlowTypeName,
+              prop: "amount",
+              type: "num",
+              func: d => {
+                const ft = d.flow_bundles.flow_types[curFlowType];
+                if (ft === undefined) return -9999;
+                else return ft.focus_node_weight;
+              },
+              render: d => Util.formatValue(d, curFlowType)
+            }
+          ]}
+          tableData={outbreakTableData.filter(
+            d => d.flow_bundles.flow_types[curFlowType] !== undefined
+          )}
+        />
+      ),
+      toggleFlowType: true,
+      hide: noData || unknownDataOnly || noFinancialData
+    },
+    {
+      header: <h2>OLD Response funding by outbreak event</h2>,
+      content: (
+        <TableInstance
+          paging={true}
+          sortByProp={"amount"}
+          tableColumns={[
+            {
+              title: "Event year",
+              prop: "year_range",
+              type: "text",
+              func: d => d.outbreak.year_range,
+              render: d => d
+            },
+            {
+              title: "Event response",
               prop: "event",
               type: "text",
               func: d => d.outbreak.name,
@@ -459,6 +508,12 @@ const getComponentData = async ({
       ...baseQueryParams,
       by_neighbor: true,
       by_outbreak: true
+    }),
+    flows: FlowQuery({
+      ...baseQueryParams,
+      by_outbreak: true,
+      filters: { parent_flow_info_filters: [["outbreak_id:not", null]] },
+      flow_type_ids: [5]
     })
   };
 
