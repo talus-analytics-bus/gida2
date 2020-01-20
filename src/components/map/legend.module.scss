@@ -1,9 +1,30 @@
+@import "../../assets/styles/colors.scss";
 .legend {
+  .toggle {
+    &:not(.flip) span {
+      transform: rotate(180deg);
+    }
+    button {
+      border-bottom: none;
+      span {
+        // font-size: 2em !important;
+        margin: 0 10px;
+      }
+      border-radius: $border-radius $border-radius 0 0;
+    }
+  }
   .content {
     display: none;
     flex-flow: column;
+    border: 1px solid #ccc;
+    padding: 10px 30px;
+    background-color: white;
+    opacity: 0.8;
     &.show {
       display: flex;
+    }
+    > div:first-child {
+      margin-bottom: 10px;
     }
   }
   .entries {
@@ -56,6 +77,7 @@
         position: relative;
 
         &.init {
+          width: 0;
           .rect {
             width: 0;
           }

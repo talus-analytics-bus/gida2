@@ -145,9 +145,11 @@ const Legend = ({
   return (
     <div className={classNames(styles.legend, className)}>
       {toggle !== false && (
-        <div className={styles.toggle}>
+        <div className={classNames(styles.toggle, { [styles.flip]: show })}>
           <button onClick={() => setShow(!show)}>
+            <span className={"caret"} />
             {show ? "hide" : "show"} legend
+            <span className={"caret"} />
           </button>
         </div>
       )}
