@@ -317,11 +317,17 @@ const getComponentData = async ({
   }
 
   // If GHSA page, then filter by GHSA projects.
-  if (ghsaOnly === "true")
+  if (ghsaOnly === "true") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
       "True"
     ]);
+  } else if (ghsaOnly === "event") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "outbreak_id:not",
+      null
+    ]);
+  }
 
   // Define queries for typical details page.
   const queries = {
