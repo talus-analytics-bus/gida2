@@ -42,7 +42,7 @@ const D3Map = ({
         axios(`${Util.API_URL}/place`, {
           params: { id: activeCountry }
         }).then(d => {
-          setNodeData(d.data);
+          setNodeData(d.data[0]);
         });
       } else {
         setNodeData(undefined);
