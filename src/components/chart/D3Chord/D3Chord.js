@@ -297,6 +297,8 @@ class D3Chord extends Chart {
       });
     });
 
+    this.params.setEntityArcInfo(arcsData.entity);
+
     this.highlight = id => {
       // Highlight selected entity
       d3.select("g." + styles.entity)

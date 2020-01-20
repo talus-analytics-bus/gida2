@@ -31,6 +31,7 @@ const Analysis = ({
   const [chordComponent, setChordComponent] = React.useState(null);
   const [selectedEntity, setSelectedEntity] = React.useState(null);
   const [selectedEntityInfo, setSelectedEntityInfo] = React.useState(null);
+  const [entityArcInfo, setEntityArcInfo] = React.useState(null);
   const [showInfo, setShowInfo] = React.useState(false);
 
   // Get flow type
@@ -49,20 +50,27 @@ const Analysis = ({
     ["Top recipients", "Recipient", "target", "flowBundlesFocusTargets"]
   ];
 
-  console.log("selectedEntity");
-  console.log(selectedEntity);
   React.useEffect(() => {
-    if (selectedEntity === null) setSelectedEntityInfo(null);
-    else {
-      axios(`${Util.API_URL}/place`, {
-        params: { id: selectedEntity }
-      }).then(d => {
-        setSelectedEntityInfo(d.data[0]);
-      });
+    if (selectedEntity === null) {
+      setShowInfo(false);
+      setSelectedEntityInfo(null);
+    } else {
+      setShowInfo(true);
+      setSelectedEntityInfo(
+        entityArcInfo.find(d => d.data.id === selectedEntity)
+      );
+      // axios(`${Util.API_URL}/place`, {
+      //   params: { id: selectedEntity }
+      // }).then(d => {
+      //   setSelectedEntityInfo(d.data[0]);
+      // });
     }
   }, [selectedEntity]);
 
-  const info = selectedEntityInfo && (
+  const transactionTypeNoun =
+    transactionType === "committed" ? "commitments" : "disbursements";
+
+  const info = selectedEntity && showInfo && selectedEntityInfo && (
     <div style={{ display: showInfo }} className={styles.info}>
       <div className={styles.header}>
         <div className={styles.name}>{selectedEntityInfo.name}</div>
@@ -70,15 +78,25 @@ const Analysis = ({
       </div>
       <div className={styles.content}>
         <div className={styles.metric}>
-          <div className={styles.value}>9,999 USD</div>
-          <div className={styles.label}>Total funded commitments</div>
+          <div className={styles.value}>
+            {Util.money(selectedEntityInfo.source)}
+          </div>
+          <div className={styles.label}>Total {transactionTypeNoun} funded</div>
+        </div>
+        <div className={styles.metric}>
+          <div className={styles.value}>
+            {Util.money(selectedEntityInfo.target)}
+          </div>
+          <div className={styles.label}>
+            Total {transactionTypeNoun} received
+          </div>
         </div>
         {true && (
           <div>
-            <Link to={`/details/${selectedEntityInfo.id}/funder`}>
+            <Link to={`/details/${selectedEntityInfo.data.id}/funder`}>
               <button>View funder profile</button>
             </Link>
-            <Link to={`/details/${selectedEntityInfo.id}/recipient`}>
+            <Link to={`/details/${selectedEntityInfo.data.id}/recipient`}>
               <button>View recipient profile</button>
             </Link>
           </div>
@@ -157,6 +175,8 @@ const Analysis = ({
       transactionType={transactionType}
       selectedEntity={selectedEntity}
       setSelectedEntity={setSelectedEntity}
+      setEntityArcInfo={setEntityArcInfo}
+      setShowInfo={setShowInfo}
     />
   );
 
