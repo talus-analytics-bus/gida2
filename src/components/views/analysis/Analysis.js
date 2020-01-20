@@ -11,6 +11,8 @@ import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import Chord from "./content/Chord.js";
 import Search from "../../common/Search/Search.js";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 // FC for Analysis.
 const Analysis = ({
@@ -28,6 +30,8 @@ const Analysis = ({
   const [transactionType, setTransactionType] = React.useState("committed");
   const [chordComponent, setChordComponent] = React.useState(null);
   const [selectedEntity, setSelectedEntity] = React.useState(null);
+  const [selectedEntityInfo, setSelectedEntityInfo] = React.useState(null);
+  const [showInfo, setShowInfo] = React.useState(false);
 
   // Get flow type
   const flowType =
@@ -44,6 +48,44 @@ const Analysis = ({
     ["Top funders", "Funder", "source", "flowBundlesFocusSources"],
     ["Top recipients", "Recipient", "target", "flowBundlesFocusTargets"]
   ];
+
+  console.log("selectedEntity");
+  console.log(selectedEntity);
+  React.useEffect(() => {
+    if (selectedEntity === null) setSelectedEntityInfo(null);
+    else {
+      axios(`${Util.API_URL}/place`, {
+        params: { id: selectedEntity }
+      }).then(d => {
+        setSelectedEntityInfo(d.data[0]);
+      });
+    }
+  }, [selectedEntity]);
+
+  const info = selectedEntityInfo && (
+    <div style={{ display: showInfo }} className={styles.info}>
+      <div className={styles.header}>
+        <div className={styles.name}>{selectedEntityInfo.name}</div>
+        <button onClick={() => setSelectedEntity(null)}>Close</button>
+      </div>
+      <div className={styles.content}>
+        <div className={styles.metric}>
+          <div className={styles.value}>9,999 USD</div>
+          <div className={styles.label}>Total funded commitments</div>
+        </div>
+        {true && (
+          <div>
+            <Link to={`/details/${selectedEntityInfo.id}/funder`}>
+              <button>View funder profile</button>
+            </Link>
+            <Link to={`/details/${selectedEntityInfo.id}/recipient`}>
+              <button>View recipient profile</button>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   tables.forEach(table => {
     tableInstances.push(
@@ -172,6 +214,7 @@ const Analysis = ({
                 setMaxYear(years[1]);
               }}
             />
+            {info}
           </div>
         </div>
         <h1>International funding by funder/recipient</h1>
