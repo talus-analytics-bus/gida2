@@ -20,7 +20,8 @@ const Donuts = ({ data, id, flowType, nodeType, attributeType, ...props }) => {
   return (
     <div className={styles.donuts}>
       {!noData &&
-        ["P", "D", "R", "O", "General IHR", "Unspecified"].map((d, idx) => (
+        ["P", "D", "R", "O", "General IHR"].map((d, idx) => (
+          // ["P", "D", "R", "O", "General IHR", "Unspecified"].map((d, idx) => (
           <Donut
             idx={`num_${idx}`}
             numerator={
