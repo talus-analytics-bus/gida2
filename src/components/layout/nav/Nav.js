@@ -16,11 +16,6 @@ const Nav = props => {
     setOpenMenu(openMenu !== name ? name : "");
   };
 
-  // Hide menus on root click
-  document.getElementById("root").onclick = e => {
-    setOpenMenu("");
-  };
-
   return (
     <div
       className={classNames(
