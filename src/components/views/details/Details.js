@@ -204,7 +204,7 @@ const Details = ({
                   urlType: "details",
                   nodeList: JSON.parse(d),
                   entityRole: "funder",
-                  id: null
+                  id: id
                 })
             },
             {
