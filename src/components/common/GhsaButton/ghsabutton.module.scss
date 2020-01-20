@@ -1,0 +1,9 @@
+@import "../../../assets/styles/colors.scss";
+
+.ghsaButton {
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+  padding: 10px;
+}

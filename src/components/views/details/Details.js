@@ -24,6 +24,7 @@ import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 
 // FC for Details.
 const Details = ({
@@ -394,11 +395,7 @@ const Details = ({
             />
           </div>
         )}
-        {pageType !== "ghsa" && (
-          <Link to={"/details/ghsa"}>
-            <button>GHSA project details</button>
-          </Link>
-        )}
+        {pageType !== "ghsa" && <GhsaButton />}
       </div>
       {sections.map(
         s =>

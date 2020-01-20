@@ -1,0 +1,19 @@
+@import "../../../assets/styles/colors.scss";
+
+.button {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  border-radius: $border-radius;
+  color: #333;
+  &.secondary {
+    border: 1px solid #cccccc;
+    background-color: #e6e6e6;
+    &:hover {
+      background-color: darken(#e6e6e6, 10%);
+    }
+  }
+  img {
+    margin-right: 10px;
+  }
+}

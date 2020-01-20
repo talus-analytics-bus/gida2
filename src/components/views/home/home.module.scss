@@ -2,4 +2,52 @@
 
 .home {
   height: auto;
+  display: grid;
+  grid-template-columns: 33% 66%;
+
+  > div {
+    display: flex;
+    flex-flow: column;
+  }
+
+  > div:first-child {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    min-height: 60vh;
+    > div:first-child {
+      .welcomeText {
+        margin-bottom: 10px;
+        font-weight: 600;
+        line-height: 35px;
+        font-size: 32px;
+        text-transform: uppercase;
+        color: #11315d;
+        &.dark {
+          color: white;
+        }
+        font-family: "Raleway", sans-serif;
+      }
+      .welcomeDesc {
+        font-size: 18px;
+        font-family: "Open Sans", sans-serif;
+        color: #4d4d4d;
+        &.dark {
+          color: #eee;
+        }
+      }
+    }
+    .searchContainer {
+      .searchTitle {
+        font-weight: 600;
+        font-size: 22px;
+        text-transform: uppercase;
+        color: #11315d;
+        font-family: "Raleway", sans-serif;
+        &.dark {
+          color: white;
+        }
+      }
+    }
+  }
 }

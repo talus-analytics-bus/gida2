@@ -1,20 +1,19 @@
 import React from "react";
+import classNames from "classnames";
+import Search from "../../common/Search/Search.js";
 import styles from "./home.module.scss";
 
 // JSX for about page.
 const Home = () => {
-  // Scroll to top of window afer loading.
-  React.useEffect(() => window.scrollTo(0, 0), []);
-
   return (
-    <div className={styles.home}>
-      <div class="left-pane">
-        <div class="welcome-container">
-          <div class="welcome-text">
+    <div className={classNames(styles.home, "pageContainer")}>
+      <div className={styles.leftPane}>
+        <div className={styles.welcomeContainer}>
+          <div className={styles.welcomeText}>
             Welcome to the Georgetown Infectious Disease Atlas
           </div>
 
-          <div class="welcome-desc">
+          <div className={styles.welcomeDesc}>
             The Georgetown Infectious Disease Atlas (GIDA) maps the flow of
             funding and in-kind support for global health security. Use the
             search bar below to view more details about a funder or recipient's
@@ -23,25 +22,12 @@ const Home = () => {
           </div>
         </div>
 
-        <div class="search-container">
-          <div class="search-title">
+        <div className={styles.searchContainer}>
+          <div className={styles.searchTitle}>
             View specific country or organization details
           </div>
 
-          <div class="network-country-search search-box">
-            <div class="form-group has-feedback">
-              <input
-                type="text"
-                class="country-search-input form-control"
-                placeholder="search for a country or organization"
-              />
-              <i class="glyphicon glyphicon-search form-control-feedback" />
-            </div>
-            <div class="live-search-results-container">
-              <div class="live-search-no-results-text">No results found</div>
-              <div class="live-search-results-contents" />
-            </div>
-          </div>
+          <Search expandedDefault={true} />
 
           <div class="search-buttons">
             <button
