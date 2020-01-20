@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./search.module.scss";
 import NodeQuery from "../../misc/NodeQuery.js";
+import Util from "../../misc/Util.js";
 
 /**
  * Generic radio toggle
@@ -44,10 +45,18 @@ const Search = ({ callback, ...props }) => {
   const getResults = results => {
     if (callback === undefined) {
       return results.map(d => (
-        <Link onClick={unset} to={`/details/${d.id}/funder`}>
+        <Link
+          onClick={unset}
+          to={`/details/${d.id}/${
+            d.primary_role === "source" ? "funder" : "recipient"
+          }`}
+        >
           <div className={styles.result}>
             <div className={styles.name}>{d.name}</div>
-            <div className={styles.type}>{d.type}</div>
+            <div className={styles.type}>
+              {Util.getInitCap(d.type)}, mainly{" "}
+              {d.primary_role === "source" ? "funder" : "recipient"}
+            </div>
           </div>
         </Link>
       ));

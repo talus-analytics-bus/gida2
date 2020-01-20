@@ -60,7 +60,8 @@
       .type {
         height: auto;
         font-style: italic;
-        text-transform: capitalize;
+        color: gray;
+        // text-transform: capitalize;
       }
       &:not(.noResult):hover {
         background-color: #f3f3f3;
