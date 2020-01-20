@@ -17,3 +17,9 @@
     margin-right: 10px;
   }
 }
+.link {
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+}

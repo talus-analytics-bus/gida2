@@ -10,6 +10,8 @@ import { Settings } from "../../../App.js";
 import Tab from "../../misc/Tab.js";
 import { renderMapViewer } from "./content/MapViewer/MapViewer.js";
 import { renderOrgs } from "./content/Orgs/Orgs.js";
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
+import { Toggle } from "react-toggle-component";
 
 // FC for Explore.
 const Explore = ({
@@ -142,14 +144,27 @@ const Explore = ({
           <span>{headerData.instructions}</span>
           <div className={styles.controls}>
             <div className={styles.buttons}>
-              <Link to={"/details/ghsa"}>
-                <button>GHSA project details</button>
-              </Link>
               {activeTab === "map" && (
-                <button onClick={() => props.setIsDark(!props.isDark)}>
-                  {props.isDark ? `Dark` : "Light"}
-                </button>
+                <div className={styles.darkToggle}>
+                  <Toggle
+                    knobColor="#ccc"
+                    borderWidth="1px"
+                    borderColor="#ccc"
+                    radius="3px"
+                    knobWidth="8px"
+                    backgroundColor={props.isDark ? "#222" : "white"}
+                    radiusBackground="2px"
+                    knobRadius="2px"
+                    width={"55px"}
+                    name="toggle-1"
+                    onToggle={() => props.setIsDark(!props.isDark)}
+                  />
+                  <div className={classNames({ [styles.dark]: props.isDark })}>
+                    {props.isDark ? `Dark` : "Light"}
+                  </div>
+                </div>
               )}
+              <GhsaButton />
             </div>
           </div>
         </div>

@@ -21,7 +21,12 @@ const Button = ({ label, ...props }) => {
       {label}
     </button>
   );
-  if (props.linkTo) return <Link to={props.linkTo}>{button}</Link>;
+  if (props.linkTo)
+    return (
+      <Link className={styles.link} to={props.linkTo}>
+        {button}
+      </Link>
+    );
   else return button;
 };
 export default Button;

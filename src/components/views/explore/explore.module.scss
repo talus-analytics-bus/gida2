@@ -5,6 +5,26 @@
   //   background-color: #222222;
   //   color: #eeeeee;
   // }
+  .darkToggle {
+    display: flex;
+    flex-flow: row;
+    position: relative;
+    justify-content: center;
+    > * {
+      position: relative;
+    }
+    > div {
+      position: absolute;
+      top: 2px;
+      pointer-events: none;
+      &:not(.dark) {
+        left: 15%;
+      }
+      &.dark {
+        right: 15%;
+      }
+    }
+  }
   .header {
     display: flex;
     flex-flow: column;
@@ -19,6 +39,10 @@
         display: flex;
         flex-flow: row;
         margin-left: auto;
+        align-items: center;
+        > :not(:last-child) {
+          margin-right: 10px;
+        }
       }
     }
   }
