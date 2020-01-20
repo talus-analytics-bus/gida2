@@ -19,7 +19,7 @@
     border: 1px solid #ccc;
     padding: 10px 30px;
     background-color: white;
-    opacity: 0.8;
+    opacity: 0.95;
     &.show {
       display: flex;
     }
@@ -28,11 +28,37 @@
     }
   }
   .entries {
+    $rect-height: 15px;
+    $rect-width: $rect-height * 4;
     display: flex;
     flex-flow: row;
     .entry {
-      $rect-height: 15px;
-      $rect-width: $rect-height * 4;
+      &.unspec {
+        .bucket {
+          display: flex;
+          flex-flow: column;
+          align-items: center;
+        }
+        margin-left: 50px;
+        svg {
+          height: $rect-height;
+          width: $rect-width;
+          rect {
+            height: $rect-height;
+            width: $rect-width;
+            mask: url(#mask-stripe);
+            fill: #ccc;
+          }
+        }
+        // .rect {
+        //   // mask: url(#mask-stripe);
+        //   background-color: #ccc;
+        // }
+        .label {
+          left: 0 !important;
+        }
+      }
+
       display: flex;
       flex-flow: row;
       justify-content: space-between;

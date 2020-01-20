@@ -160,6 +160,16 @@ const Legend = ({
         </div>
         <div className={styles.entries}>
           {getMainLegendBuckets({ colorScale, supportType })}
+          {supportType !== "jee" && supportType !== "pvs" && (
+            <div className={classNames(styles.entry, styles.unspec)}>
+              <div className={styles.bucket}>
+                <svg>
+                  <rect />
+                </svg>
+                <div className={styles.label}>Unspecified value</div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
