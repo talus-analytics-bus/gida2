@@ -13,7 +13,7 @@ const Search = ({ callback, ...props }) => {
   const [expanded, setExpanded] = React.useState(
     props.expandedDefault || false
   );
-  const [open, setOpen] = React.useState(false);
+  const [showResults, setShowResults] = React.useState(false);
   const [results, setResults] = React.useState(null);
 
   const handleInputChange = async e => {
@@ -68,7 +68,7 @@ const Search = ({ callback, ...props }) => {
 
   // Hide menus on root click
   document.getElementById("root").onclick = e => {
-    setOpen(false);
+    setShowResults(false);
   };
 
   const inputEl = (
@@ -82,7 +82,7 @@ const Search = ({ callback, ...props }) => {
   );
 
   return (
-    <div onClick={() => setOpen(true)} className={styles.search}>
+    <div onClick={() => setShowResults(true)} className={styles.search}>
       <div
         className={classNames(styles.searchBar, {
           [styles.expanded]: expanded
@@ -90,7 +90,15 @@ const Search = ({ callback, ...props }) => {
       >
         <div className={styles.field}>
           <i
-            onClick={() => setExpanded(!expanded)}
+            onClick={e => {
+              // If search bar results are showing when it's minimized, then
+              // hide the results.
+              if (expanded) {
+                e.stopPropagation();
+                setShowResults(false);
+              }
+              setExpanded(!expanded);
+            }}
             className={"material-icons"}
           >
             search
@@ -100,7 +108,7 @@ const Search = ({ callback, ...props }) => {
       </div>
       {results !== null && (
         <div
-          style={{ display: open ? "flex" : "none" }}
+          style={{ display: showResults ? "flex" : "none" }}
           className={styles.results}
         >
           {results.length > 0 && getResults(results)}
