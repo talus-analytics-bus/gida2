@@ -13,6 +13,7 @@ const Donut = ({
   attrFormatter,
   nodeType,
   flowType,
+  ghsaOnly,
   idx,
   id,
   ...props
@@ -27,7 +28,7 @@ const Donut = ({
           : greens[greens.length - 1]
     });
     setChart(chartNew);
-  }, [flowType, id, nodeType]);
+  }, [flowType, id, nodeType, ghsaOnly]);
 
   return (
     <div className={styles.donut}>

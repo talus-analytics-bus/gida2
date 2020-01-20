@@ -7,7 +7,15 @@ import styles from "./donuts.module.scss";
 import Donut from "./Donut.js";
 
 // FC
-const Donuts = ({ data, id, flowType, nodeType, attributeType, ...props }) => {
+const Donuts = ({
+  data,
+  id,
+  flowType,
+  nodeType,
+  attributeType,
+  ghsaOnly,
+  ...props
+}) => {
   // If no data, return message to that effect.
   const noData = data === null;
 
@@ -33,6 +41,7 @@ const Donuts = ({ data, id, flowType, nodeType, attributeType, ...props }) => {
             attrFormatter={Util.getAttrFormatter(attributeType)}
             attribute={d}
             nodeType={nodeType}
+            ghsaOnly={ghsaOnly}
             flowType={flowType}
           />
         ))}

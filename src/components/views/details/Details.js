@@ -71,9 +71,6 @@ const Details = ({
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
 
-  // Get master summary
-  const masterSummary = data.focusSummary.master_summary;
-
   // Track the Top Recipients/Funders table data
   const topTableData = getSummaryAttributeWeightsByNode({
     data: data.flowBundlesFocusOther.flow_bundles,
@@ -86,6 +83,8 @@ const Details = ({
       (d[otherNodeType][0].name !== "Not reported" ||
         d[otherNodeType].length > 1)
   );
+  console.log("topTableData");
+  console.log(topTableData);
   // If on GHSA page, get "other" top table to display.
   const topTableDataOther =
     pageType === "ghsa"
@@ -101,12 +100,16 @@ const Details = ({
   const noData = data.flowBundles.flow_bundles[0] === undefined;
   const noFinancialData = noData
     ? true
-    : masterSummary.flow_types["disbursed_funds"] === undefined &&
-      masterSummary.flow_types["committed_funds"] === undefined;
+    : data.focusSummary.master_summary.flow_types["disbursed_funds"] ===
+        undefined &&
+      data.focusSummary.master_summary.flow_types["committed_funds"] ===
+        undefined;
 
   // True if the only available data to show are for "unknown" values (specific
   // value no reported).
-  const unknownDataOnly = isUnknownDataOnly({ masterSummary: masterSummary });
+  const unknownDataOnly = isUnknownDataOnly({
+    masterSummary: data.focusSummary.master_summary
+  });
 
   // Define standard colums for Top Funders and Top Recipients tables.
   const topTableCols = [
@@ -270,8 +273,9 @@ const Details = ({
       header: <h2>Funding by core element</h2>,
       content: (
         <Donuts
-          data={masterSummary}
+          data={data.focusSummary.master_summary}
           flowType={curFlowType}
+          ghsaOnly={ghsaOnly}
           attributeType={"core_elements"}
           nodeType={nodeType}
           id={id}
@@ -502,6 +506,11 @@ const getComponentData = async ({
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
       "True"
+    ]);
+  } else if (ghsaOnly === "event") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "outbreak_id:not",
+      null
     ]);
   }
 

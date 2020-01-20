@@ -412,8 +412,13 @@ export const getSummaryAttributeWeightsByNode = ({
         summaries[field] === undefined ||
         Object.keys(summaries[field]).length === 0
       )
-        return;
-      else noData = false;
+        summaries[field] = {
+          Unspecified: curFtData["focus_node_weight"]
+        };
+
+      // return;
+      // else noData = false;
+      noData = false;
 
       // Initialize output obj for current flow type
       output[ft] = { total: curFtData.focus_node_weight };
