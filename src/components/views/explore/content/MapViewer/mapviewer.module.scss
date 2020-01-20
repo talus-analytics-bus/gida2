@@ -20,4 +20,15 @@
       }
     }
   }
+  .content {
+    position: relative;
+    .menu {
+      position: absolute;
+      border: 1px solid #ccc;
+      top: 0;
+      right: 10px;
+      background-color: white;
+      opacity: 0.95;
+    }
+  }
 }

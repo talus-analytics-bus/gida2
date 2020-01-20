@@ -115,78 +115,78 @@ const MapViewer = ({
           coreCapacities={coreCapacities}
           ghsaOnly={ghsaOnly}
         />
-      </div>
-      <div className={styles.menu}>
-        <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-        {metricHasTransactionType && (
+        <div className={styles.menu}>
+          <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+          {metricHasTransactionType && (
+            <RadioToggle
+              label={"Choose"}
+              callback={setTransactionType}
+              curVal={transactionType}
+              choices={[
+                {
+                  name: "Committed",
+                  value: "committed"
+                },
+                {
+                  name: "Disbursed",
+                  value: "disbursed"
+                }
+              ]}
+            />
+          )}
           <RadioToggle
-            label={"Choose"}
-            callback={setTransactionType}
-            curVal={transactionType}
+            label={"Click to show"}
+            callback={setSupportType}
+            curVal={supportType}
             choices={[
               {
-                name: "Committed",
-                value: "committed"
+                name: "Financial support",
+                value: "funds"
               },
               {
-                name: "Disbursed",
-                value: "disbursed"
+                name: "In-kind support",
+                value: "inkind",
+                tooltip:
+                  "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
+              },
+              {
+                name: "JEE score",
+                value: "jee",
+                tooltip:
+                  "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
+              },
+              {
+                name: "PVS score",
+                value: "pvs",
+                tooltip: ""
+              },
+              {
+                name: "Combined financial resources and need metric",
+                value: "needs_met",
+                tooltip:
+                  "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
               }
             ]}
           />
-        )}
-        <RadioToggle
-          label={"Click to show"}
-          callback={setSupportType}
-          curVal={supportType}
-          choices={[
-            {
-              name: "Financial support",
-              value: "funds"
-            },
-            {
-              name: "In-kind support",
-              value: "inkind",
-              tooltip:
-                "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
-            },
-            {
-              name: "JEE score",
-              value: "jee",
-              tooltip:
-                "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
-            },
-            {
-              name: "PVS score",
-              value: "pvs",
-              tooltip: ""
-            },
-            {
-              name: "Combined financial resources and need metric",
-              value: "needs_met",
-              tooltip:
-                "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
-            }
-          ]}
-        />
-        {
-          // TODO: add this tooltip for CC dropdown
-          // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-        }
-        <CoreCapacityDropdown
-          onChange={vals => {
-            setCoreCapacities(vals.map(v => v.value));
-          }}
-        />
-        <TimeSlider
-          hide={supportType === "jee"}
-          minYearDefault={Settings.startYear}
-          maxYearDefault={Settings.endYear}
-          onAfterChange={years => {
-            setMinYear(years[0]);
-            setMaxYear(years[1]);
-          }}
-        />
+          {
+            // TODO: add this tooltip for CC dropdown
+            // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+          }
+          <CoreCapacityDropdown
+            onChange={vals => {
+              setCoreCapacities(vals.map(v => v.value));
+            }}
+          />
+          <TimeSlider
+            hide={supportType === "jee"}
+            minYearDefault={Settings.startYear}
+            maxYearDefault={Settings.endYear}
+            onAfterChange={years => {
+              setMinYear(years[0]);
+              setMaxYear(years[1]);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
