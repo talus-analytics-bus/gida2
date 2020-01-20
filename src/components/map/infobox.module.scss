@@ -3,7 +3,7 @@
   display: none;
   flex-flow: column;
   border: 1px solid #666666;
-  width: 25%;
+  width: 100%;
   &.show {
     display: flex;
   }
@@ -32,6 +32,10 @@
     font-size: 18px;
     min-height: 150px;
     justify-content: space-between;
+    background-color: white;
+    &.dark {
+      background-color: #222;
+    }
     > div {
       display: flex;
       flex-flow: row;

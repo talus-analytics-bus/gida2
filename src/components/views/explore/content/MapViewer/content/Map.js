@@ -392,16 +392,20 @@ const Map = ({
           setNodeData
         }}
       />
-      <Legend {...{ colorScale, supportType, flowType }} />
-      <InfoBox
-        {...{
-          entityRole,
-          supportType,
-          nodeData,
-          setNodeData,
-          infoBoxData
-        }}
-      />
+      <div className={styles.legend}>
+        <Legend {...{ colorScale, supportType, flowType }} />
+      </div>
+      <div className={styles.infoBox}>
+        <InfoBox
+          {...{
+            entityRole,
+            supportType,
+            nodeData,
+            setNodeData,
+            infoBoxData
+          }}
+        />
+      </div>
     </div>
   );
 };
