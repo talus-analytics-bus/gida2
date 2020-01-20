@@ -259,7 +259,10 @@ class WorldMap extends Chart {
     this.newGroup("buttons");
 
     this.buttons
-      .attr("transform", `translate(${this.params.shiftX || 0}, ${30 + 25})`)
+      .attr(
+        "transform",
+        `translate(${this.params.shiftX || 0}, ${-this.height + 90})`
+      )
       .style("font-family", "Open Sans, sans-serif");
 
     this.addResetButton();
