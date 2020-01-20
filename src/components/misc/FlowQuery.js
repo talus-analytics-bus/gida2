@@ -17,7 +17,8 @@ const FlowQuery = async function({
   bundle_child_flows = true,
   bundle_child_flows_by_neighbor = true,
   filters = {},
-  pair_node_id
+  pair_node_id,
+  by_outbreak
 }) {
   // Define URL parameters //
   const params = {
@@ -30,7 +31,8 @@ const FlowQuery = async function({
     return_child_flows: return_child_flows,
     bundle_child_flows: bundle_child_flows,
     bundle_child_flows_by_neighbor: bundle_child_flows_by_neighbor,
-    pair_node_id: pair_node_id
+    pair_node_id: pair_node_id,
+    by_outbreak: by_outbreak
   };
 
   // Send start and end dates if they are provided, otherwise do not send.

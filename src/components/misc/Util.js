@@ -821,7 +821,8 @@ Util.formatValue = (val, cn, units = true) => {
         else if (val === -9999 || val === "zzz") return undefined;
         else return val || 0;
       default:
-        return val;
+        if (val === -9999 || val === "zzz") return undefined;
+        else return val;
     }
   }
 };

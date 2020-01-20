@@ -72,12 +72,6 @@ const Details = ({
 
   // Get master summary
   const masterSummary = data.focusSummary.master_summary;
-  // const masterSummary = data.flowBundles.master_summary;
-
-  // Track outbreak funding
-  const outbreakTableData = data.flowBundlesFocusOther.by_outbreak;
-  // const outbreakTableData =
-  //   id !== "ghsa" ? data.flowBundlesFocusOther.by_outbreak : [];
 
   // Track the Top Recipients/Funders table data
   const topTableData = getSummaryAttributeWeightsByNode({
@@ -168,7 +162,7 @@ const Details = ({
       hide: noData
     },
     {
-      header: <h2>NEW Response funding by outbreak event</h2>,
+      header: <h2>Response funding by outbreak event</h2>,
       content: (
         <TableInstance
           paging={true}
@@ -178,72 +172,94 @@ const Details = ({
               title: "Event year",
               prop: "year_range",
               type: "text",
-              func: d => d.outbreak.year_range,
+              func: d => d.flow_info.outbreak.year_range,
               render: d => d
             },
             {
               title: "Event response",
               prop: "event",
               type: "text",
-              func: d => d.outbreak.name,
+              func: d => d.flow_info.outbreak.name,
               render: d => d
             },
             {
-              title: curFlowTypeName,
+              title: "Project name",
+              prop: "project_name",
+              type: "text",
+              func: d => d.flow_info.project_name,
+              render: d => d
+            },
+            {
+              title: Util.getInitCap(
+                Util.getRoleTerm({
+                  type: "noun",
+                  role: "funder"
+                })
+              ),
+              prop: "source",
+              type: "text",
+              func: d => JSON.stringify(d.source),
+              render: d =>
+                getNodeLinkList({
+                  urlType: "details",
+                  nodeList: JSON.parse(d),
+                  entityRole: "funder",
+                  id: null
+                })
+            },
+            {
+              title: Util.getInitCap(
+                Util.getRoleTerm({
+                  type: "noun",
+                  role: "recipient"
+                })
+              ),
+              prop: "target",
+              type: "text",
+              func: d => JSON.stringify(d.target),
+              render: d =>
+                getNodeLinkList({
+                  urlType: "details",
+                  nodeList: JSON.parse(d),
+                  entityRole: "recipient",
+                  id: id
+                })
+            },
+            {
+              title: "Funding year(s)",
+              prop: "year_range_proj",
+              type: "text",
+              func: d => d.year_range,
+              render: d => Util.formatValue(d, "year_range")
+            },
+            {
+              title: curFlowTypeName + ' (or "In-kind support")',
               prop: "amount",
               type: "num",
               func: d => {
-                const ft = d.flow_bundles.flow_types[curFlowType];
-                if (ft === undefined) return -9999;
-                else return ft.focus_node_weight;
+                // Check whether the monetary amount is available
+                const ft = d.flow_types[curFlowType];
+                const financial = ft !== undefined;
+                if (financial) return ft.focus_node_weight;
+                else {
+                  // If no financial, check for inkind
+                  const inkindField =
+                    curFlowType === "disbursed_funds"
+                      ? "provided_inkind"
+                      : "committed_inkind";
+                  const inkind = d.flow_types[inkindField] !== undefined;
+                  if (inkind) return -7777;
+                  else return -9999;
+                }
               },
-              render: d => Util.formatValue(d, curFlowType)
+              render: d =>
+                d === -7777
+                  ? Util.formatValue("In-kind support", "inkind")
+                  : Util.formatValue(d, curFlowType)
             }
           ]}
-          tableData={outbreakTableData.filter(
-            d => d.flow_bundles.flow_types[curFlowType] !== undefined
-          )}
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || unknownDataOnly || noFinancialData
-    },
-    {
-      header: <h2>OLD Response funding by outbreak event</h2>,
-      content: (
-        <TableInstance
-          paging={true}
-          sortByProp={"amount"}
-          tableColumns={[
-            {
-              title: "Event year",
-              prop: "year_range",
-              type: "text",
-              func: d => d.outbreak.year_range,
-              render: d => d
-            },
-            {
-              title: "Event response",
-              prop: "event",
-              type: "text",
-              func: d => d.outbreak.name,
-              render: d => d
-            },
-            {
-              title: curFlowTypeName,
-              prop: "amount",
-              type: "num",
-              func: d => {
-                const ft = d.flow_bundles.flow_types[curFlowType];
-                if (ft === undefined) return -9999;
-                else return ft.focus_node_weight;
-              },
-              render: d => Util.formatValue(d, curFlowType)
-            }
-          ]}
-          tableData={outbreakTableData.filter(
-            d => d.flow_bundles.flow_types[curFlowType] !== undefined
-          )}
+          tableData={data.flows}
+          hide={r => r.amount === -9999}
         />
       ),
       toggleFlowType: true,
@@ -506,8 +522,7 @@ const getComponentData = async ({
     // row per target node it has a flow with)
     flowBundlesFocusOther: FlowBundleFocusQuery({
       ...baseQueryParams,
-      by_neighbor: true,
-      by_outbreak: true
+      by_neighbor: true
     }),
     flows: FlowQuery({
       ...baseQueryParams,

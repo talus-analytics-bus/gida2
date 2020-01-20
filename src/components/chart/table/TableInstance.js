@@ -19,8 +19,7 @@ const TableInstance = ({
 }) => {
   // console.log("tableColumns");
   // console.log(tableColumns);
-  // console.log("tableData");
-  // console.log(tableData);
+
   const buildTable = tableData => {
     const sortBy =
       sortByProp !== undefined
@@ -29,6 +28,20 @@ const TableInstance = ({
             order: "descending"
           }
         : {};
+    const initialDataTmp = useRowDataAsIs
+      ? tableData
+      : getTableRowData({
+          tableRowDefs: tableColumns,
+          data: tableData,
+          filterFcn: filterFcn
+        });
+
+    const initialData =
+      props.hide === undefined
+        ? initialDataTmp
+        : initialDataTmp.filter(d => !props.hide(d));
+    console.log("initialData");
+    console.log(initialData);
     return (
       <div
         className={classNames("tableInstance", {
@@ -37,15 +50,7 @@ const TableInstance = ({
       >
         <DataTable
           columns={tableColumns}
-          initialData={
-            useRowDataAsIs
-              ? tableData
-              : getTableRowData({
-                  tableRowDefs: tableColumns,
-                  data: tableData,
-                  filterFcn: filterFcn
-                })
-          }
+          initialData={initialData}
           initialPageLength={props.paging ? 10 : 1e6}
           paging={props.paging || false}
           initialSortBy={sortBy}
