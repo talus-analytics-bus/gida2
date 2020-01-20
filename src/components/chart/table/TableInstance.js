@@ -40,8 +40,8 @@ const TableInstance = ({
       props.hide === undefined
         ? initialDataTmp
         : initialDataTmp.filter(d => !props.hide(d));
-    console.log("initialData");
-    console.log(initialData);
+    // console.log("initialData");
+    // console.log(initialData);
     return (
       <div
         className={classNames("tableInstance", {

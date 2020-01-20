@@ -508,6 +508,22 @@ const getComponentData = async ({
     ]);
   }
 
+  const flowQueryParams = {
+    ...JSON.parse(JSON.stringify(baseQueryParams)),
+    by_outbreak: true,
+    flow_type_ids: [5],
+    include_general_amounts: true
+  };
+  flowQueryParams.filters.parent_flow_info_filters.push([
+    "outbreak_id:not",
+    null
+  ]);
+
+  // if (true) {
+  //   flowQueryParams.filters.place_filters = [[nodeType, id]];
+  //   flowQueryParams.focus_node_ids = null;
+  // }
+
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
@@ -525,10 +541,8 @@ const getComponentData = async ({
       by_neighbor: true
     }),
     flows: FlowQuery({
-      ...baseQueryParams,
-      by_outbreak: true,
-      filters: { parent_flow_info_filters: [["outbreak_id:not", null]] },
-      flow_type_ids: [5]
+      ...flowQueryParams
+      // filters: { parent_flow_info_filters: [["outbreak_id:not", null]] }
     })
   };
 
