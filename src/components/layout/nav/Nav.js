@@ -31,7 +31,10 @@ const Nav = props => {
         </Link>
         <div className={styles.links}>
           <div>
-            <Link onClick={() => toggleMenu("explore")}>Explore</Link>
+            <Link onClick={() => toggleMenu("explore")}>
+              Explore
+              <span className={"caret"} />
+            </Link>
             <Menu
               {...{
                 name: "explore",
@@ -47,7 +50,10 @@ const Nav = props => {
           <Link to="/analysis">Analysis</Link>
           <Link to="/data">Data</Link>
           <div>
-            <Link onClick={() => toggleMenu("about")}>About</Link>
+            <Link onClick={() => toggleMenu("about")}>
+              About
+              <span className={"caret"} />
+            </Link>
             <Menu
               {...{
                 name: "about",
