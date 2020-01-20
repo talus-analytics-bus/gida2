@@ -64,23 +64,24 @@ const InfoBox = ({
           </div>
         </div>
         <div className={styles.content}>
-          {infoBoxData.jeeScoreOfNode !== undefined &&
-            Util.getScoreName(infoBoxData.jeeScoreOfNode)}
-          {supportType !== "jee" &&
-            flowValuesKnown &&
-            infoBoxData.flowValues.map(d => (
-              <div className={styles.flowValues}>
-                {d.value}
-                <br />
-                {d.label()}
+          <div>
+            {infoBoxData.jeeScoreOfNode !== undefined &&
+              Util.getScoreName(infoBoxData.jeeScoreOfNode)}
+            {supportType !== "jee" &&
+              flowValuesKnown &&
+              infoBoxData.flowValues.map(d => (
+                <div className={styles.flowValues}>
+                  <div>{d.value}</div>
+                  <div>{d.label()}</div>
+                </div>
+              ))}
+            {!flowValuesKnown && (
+              <div className={styles.unknownValuesMessage}>
+                <div>{infoBoxData.unknownValueExplanation}</div>
+                <div>Specific amounts not indicated.</div>
               </div>
-            ))}
-          {!flowValuesKnown && (
-            <div className={styles.unknownValuesMessage}>
-              <div>{infoBoxData.unknownValueExplanation}</div>
-              <div>Specific amounts not indicated.</div>
-            </div>
-          )}
+            )}
+          </div>
           <Button
             linkTo={`/details/${nodeData.id}/${entityRole}`}
             label={"View funding details"}

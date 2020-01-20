@@ -28,9 +28,32 @@
   .content {
     display: flex;
     flex-flow: column;
+    padding: 10px;
+    font-size: 18px;
+    min-height: 150px;
+    justify-content: space-between;
+    > div {
+      display: flex;
+      flex-flow: row;
+      .flowValues {
+        display: flex;
+        flex-flow: column;
+        margin-right: 10px;
+
+        div:first-child {
+          font-family: "rawline", serif;
+          margin-bottom: 10px;
+        }
+        div:last-child {
+          font-size: 0.66em;
+        }
+      }
+    }
     a {
       position: relative;
       margin-left: auto;
+      font-size: 0.77em;
+      margin-top: 15px;
     }
   }
 }
