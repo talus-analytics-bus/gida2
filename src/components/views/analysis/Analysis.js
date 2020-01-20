@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import styles from "./analysis.module.scss";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import RadioToggle from "../../misc/RadioToggle.js";
@@ -182,7 +183,7 @@ const Analysis = ({
 
   // legend (maybe part of map?)
   return (
-    <div className={styles.analysis}>
+    <div className={classNames(styles.analysis, "pageContainer")}>
       <div className={styles.content}>
         <h1>International funding network</h1>
         <p>
