@@ -14,7 +14,8 @@ const Button = ({ label, ...props }) => {
     <button
       onClick={props.callback}
       className={classNames(...classes, styles.button, {
-        [styles.secondary]: props.type === "secondary"
+        [styles.secondary]: props.type === "secondary",
+        [styles.primary]: props.type === "primary"
       })}
     >
       {props.image && <img src={props.image} />}

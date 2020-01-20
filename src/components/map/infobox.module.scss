@@ -3,6 +3,7 @@
   display: none;
   flex-flow: column;
   border: 1px solid #666666;
+  width: 25%;
   &.show {
     display: flex;
   }
@@ -11,7 +12,12 @@
     flex-flow: row;
     justify-content: space-between;
     align-items: center;
-    background-color: gray;
+
+    padding: 7px 50px 7px 11px;
+    line-height: 1.2em;
+    font-size: 1.4em;
+    text-align: left;
+
     div {
       color: white;
     }

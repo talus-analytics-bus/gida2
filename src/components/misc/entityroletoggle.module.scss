@@ -6,6 +6,11 @@
   width: 223px;
   font-size: 16px;
 
+  a:hover,
+  a:focus {
+    text-decoration: none;
+  }
+
   .recipient path {
     fill: rgb(98, 59, 99);
   }

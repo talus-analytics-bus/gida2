@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./infobox.module.scss";
 import classNames from "classnames";
 import Util from "../misc/Util.js";
+import Button from "../common/Button/Button.js";
 // import * as d3 from "d3/dist/d3.min";
 
 /**
@@ -83,9 +84,11 @@ const InfoBox = ({
               <div>Specific amounts not indicated.</div>
             </div>
           )}
-          <Link to={`/details/${nodeData.id}/${entityRole}`}>
-            <button>View funding details</button>
-          </Link>
+          <Button
+            linkTo={`/details/${nodeData.id}/${entityRole}`}
+            label={"View funding details"}
+            type={"primary"}
+          />
         </div>
       </div>
     );
