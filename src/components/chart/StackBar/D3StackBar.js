@@ -163,6 +163,7 @@ class D3StackBar extends Chart {
       });
 
       // determine whether this is a country with jee scores available
+      const jeesWhite = params.nodeType === "source";
       const showJee =
         params.jeeScores !== undefined && params.nodeType !== "source";
       const scores = params.jeeScores; // undefined if not available
@@ -372,8 +373,8 @@ class D3StackBar extends Chart {
           const badgeGroup = g
             .append("g")
             .attr("class", "score-badge")
-            .attr("transform", `translate(${axisGap}, 0)`)
-            .classed(styles.unscored, !showJee);
+            .attr("transform", `translate(${axisGap}, 0)`);
+          // .classed(styles.unscored, !showJee);
 
           const badgeHeight = 16 * 1.25;
           const badgeWidth = 30 * 1.25;
@@ -385,8 +386,9 @@ class D3StackBar extends Chart {
             rx: 2.5
           };
           badgeGroup
+            .classed(styles.showNoScore, jeesWhite)
             .append("rect")
-            .style("fill", score ? jeeColorScale(score) : "gray")
+            .style("fill", score ? jeeColorScale(score) : "#ccc")
             .attr("width", badgeDim.width)
             .attr("height", badgeDim.height)
             .attr("rx", badgeDim.rx)

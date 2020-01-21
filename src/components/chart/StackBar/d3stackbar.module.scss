@@ -17,7 +17,8 @@
     cursor: default;
   }
 }
-.unscored {
+.unscored,
+.showNoScore {
   rect {
     fill: none !important;
     stroke: #333 !important;

@@ -46,10 +46,10 @@ const InfoBox = ({
       };
     } else if (infoBoxData.colorValue === -8888) {
       return {
-        baseColor: "#ccc",
+        baseColor: "rgb(204, 204, 204)",
         style: {
           background:
-            "repeating-linear-gradient(-45deg, #ccc, #ccc 17px, #fff 17px, #fff 20px)"
+            "repeating-linear-gradient(-45deg, #afafaf, #afafaf 17px, #fff 17px, #fff 20px)"
         }
       };
     } else if (supportType === "jee") {
