@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./legend.module.scss";
 import classNames from "classnames";
 import Util from "../misc/Util.js";
+import SlideToggle from "../common/SlideToggle/SlideToggle.js";
 
 /**
  * Given the support type and flow type, returns the correct legend title.
@@ -181,13 +182,7 @@ const Legend = ({
       })}
     >
       {toggle !== false && (
-        <div className={classNames(styles.toggle, { [styles.flip]: show })}>
-          <button onClick={() => setShow(!show)}>
-            <span className={"caret"} />
-            {show ? "hide" : "show"} legend
-            <span className={"caret"} />
-          </button>
-        </div>
+        <SlideToggle {...{ label: "legend", show, setShow }} />
       )}
       <div className={classNames(styles.content, { [styles.show]: show })}>
         <div>
