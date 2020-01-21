@@ -57,6 +57,8 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
   // Is the "needs met" metric the one being plotted? Its legend is a little
   // special.
   const needsMetMetric = supportType === "needs_met";
+  const numericMetric = supportType === "funds" || supportType === "inkind";
+  const scoreMetric = supportType === "jee" || supportType === "pvs";
 
   // Define JSX for value labels that are invisible which are used as spacers
   // in binary legends like the "needs met" legend.
@@ -92,8 +94,15 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
     <div className={styles.bucket}>
       <div style={{ backgroundColor: colors[i] }} className={styles.rect} />
       <div className={styles.label}>
-        {!needsMetMetric && Util.formatValue(d, supportType, units)}
-        {needsMetMetric && d}
+        {scoreMetric && Util.formatValue(d, supportType, units)}
+        {!scoreMetric &&
+          !needsMetMetric &&
+          i < legendVals.length - 1 &&
+          Util.formatValue(d, supportType, units)}
+        {!scoreMetric && numericMetric && i >= legendVals.length - 1 && (
+          <span>&nbsp;</span>
+        )}
+        {!scoreMetric && needsMetMetric && d}
       </div>
     </div>
   ));
