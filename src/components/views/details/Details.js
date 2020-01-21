@@ -177,6 +177,12 @@ const Details = ({
           content: [
             {
               header: <h2>Funding by core element</h2>,
+              text: (
+                <p>
+                  Percentages shown for each core element based on total
+                  funding.
+                </p>
+              ),
               content: (
                 <Donuts
                   data={data.focusSummary.master_summary}
@@ -192,6 +198,17 @@ const Details = ({
             },
             {
               header: <h2>Funding by core capacity</h2>,
+              text: (
+                <p>
+                  The chart below shows the funds{" "}
+                  {Util.getRoleTerm({
+                    type: "adjective",
+                    role: entityRole
+                  })}{" "}
+                  by core capacity. Only funded core capacities are shown. Hover
+                  over a bar to see additional funding details.
+                </p>
+              ),
               content: (
                 <StackBar
                   data={getWeightsBySummaryAttributeSimple({
@@ -217,6 +234,17 @@ const Details = ({
             },
             {
               header: <h2>Top {otherEntityRole}s</h2>,
+              text: (
+                <p>
+                  The table below displays {otherEntityRole}s in order of amount
+                  of funds{" "}
+                  {Util.getRoleTerm({
+                    type: "adjective",
+                    role: otherEntityRole
+                  })}
+                  . Click on a row to view details.
+                </p>
+              ),
               content: (
                 <TableInstance
                   sortByProp={"total"}
@@ -449,6 +477,7 @@ const Details = ({
               <DetailsSection
                 header={s.header}
                 content={s.content}
+                text={s.text}
                 curFlowType={curFlowType}
                 setCurFlowType={setCurFlowType}
                 flowTypeInfo={flowTypeInfo}
@@ -486,6 +515,7 @@ const Details = ({
                     !s.hide && (
                       <DetailsSection
                         header={s.header}
+                        text={s.text}
                         content={s.content}
                         curFlowType={curFlowType}
                         setCurFlowType={setCurFlowType}

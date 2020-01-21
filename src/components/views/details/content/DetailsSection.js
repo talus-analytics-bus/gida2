@@ -5,6 +5,7 @@ import styles from "./detailssection.module.scss";
 const DetailsSection = ({
   header,
   content,
+  text,
   curFlowType,
   setCurFlowType,
   flowTypeInfo,
@@ -32,6 +33,7 @@ const DetailsSection = ({
   return (
     <div className={styles.detailsSection}>
       {header}
+      {text && <div className={styles.text}>{text}</div>}
       {toggleFlowType && !noFinancialData && (
         <form>
           {["disbursed_funds", "committed_funds"].map(flowType => (
