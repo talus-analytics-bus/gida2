@@ -53,10 +53,10 @@ const Explore = ({
   const [coreCapacities, setCoreCapacities] = React.useState([]);
   const [outbreakResponses, setOutbreakResponses] = React.useState([]);
 
-  // React.useEffect(() => {
-  //   // Set isDark defaults.
-  //   props.setIsDark(activeTab === "map");
-  // }, []);
+  React.useEffect(() => {
+    // Set isDark defaults.
+    props.setIsDark(activeTab === "map");
+  }, []);
 
   React.useEffect(() => {
     // Set isDark defaults.
@@ -74,6 +74,7 @@ const Explore = ({
           header: "Countries",
           slug: "map",
           content: renderMapViewer({
+            isDark: props.isDark,
             component: mapViewerComponent,
             setComponent: setMapViewerComponent,
             entityRole: entityRole,
@@ -152,7 +153,7 @@ const Explore = ({
               {activeTab === "map" && (
                 <div className={styles.darkToggle}>
                   <Toggle
-                    checked={!props.isDark}
+                    checked={props.isDark}
                     knobColor="#ccc"
                     borderWidth="1px"
                     borderColor="#ccc"

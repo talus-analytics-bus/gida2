@@ -24,6 +24,7 @@
     position: relative;
     .menu {
       font-size: 14px;
+      background-color: white;
 
       button {
         background-color: white;
@@ -102,6 +103,22 @@
       background-color: white;
       opacity: 0.95;
       width: 25%;
+    }
+  }
+
+  // DARK MODE SETTINGS
+  &.dark {
+    height: auto;
+    .content {
+      .menu {
+        background-color: #222;
+        button {
+          background-color: #222 !important;
+          &:not(.selected) {
+            background-color: transparent !important;
+          }
+        }
+      }
     }
   }
 }

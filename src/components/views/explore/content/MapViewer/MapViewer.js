@@ -31,6 +31,7 @@ const MapViewer = ({
   coreCapacities,
   setCoreCapacities,
   flowTypeInfo,
+  isDark,
   ...props
 }) => {
   // Track transaction type selected for the map
@@ -236,8 +237,10 @@ const MapViewer = ({
 
   // TODO:
   // map
+  console.log("isDark");
+  console.log(isDark);
   return (
-    <div className={styles.mapViewer}>
+    <div className={classNames(styles.mapViewer, { [styles.dark]: isDark })}>
       <div className={styles.header}>
         <div className={styles.labels}>
           <div>{getMapTitle({ supportType, entityRole })}</div>
@@ -360,6 +363,10 @@ export const renderMapViewer = ({
     });
 
     return component ? component : <div />;
+  } else if (component.props.isDark !== props.isDark) {
+    setComponent(
+      <MapViewer {...{ ...component.props, isDark: props.isDark }} />
+    );
   } else {
     return component;
   }
@@ -449,6 +456,7 @@ const getComponentData = async ({
   setComponent(
     <MapViewer
       id={id}
+      isDark={props.isDark}
       entityRole={entityRole}
       setEntityRole={setEntityRole}
       data={results}
