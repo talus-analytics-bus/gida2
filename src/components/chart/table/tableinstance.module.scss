@@ -1,4 +1,10 @@
 @import "../../../assets/styles/colors.scss";
 
 .tableInstance {
+  width: 100%;
+  // max-width: 800px;
+  td,
+  th {
+    background-color: white;
+  }
 }

@@ -43,6 +43,15 @@ body,
 
   // DataTables global styling
   .tableInstance {
+    .table {
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      margin: 0;
+      padding: 0;
+      width: unset !important;
+    }
     // Empty cells --> data NA
     td:empty::after {
       content: "n/a";

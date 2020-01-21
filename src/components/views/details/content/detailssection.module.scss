@@ -15,4 +15,18 @@
       margin-top: 0;
     }
   }
+  border-top: 1px solid #b2b2b2;
+  border-bottom: 1px solid #b2b2b2;
+  &:first-child {
+    border: none;
+  }
+  &:last-child {
+    border-bottom: none;
+  }
+  &:not(:first-child):not(:last-child) {
+    border-bottom: none;
+  }
+  &:first-child:last-child {
+    border: none;
+  }
 }

@@ -442,19 +442,22 @@ const Details = ({
         )}
         {pageType !== "ghsa" && <GhsaButton />}
       </div>
-      {[pageHeaderContent].map(
-        s =>
-          !s.hide && (
-            <DetailsSection
-              header={s.header}
-              content={s.content}
-              curFlowType={curFlowType}
-              setCurFlowType={setCurFlowType}
-              flowTypeInfo={flowTypeInfo}
-              toggleFlowType={s.toggleFlowType}
-            />
-          )
-      )}
+      <div>
+        {[pageHeaderContent].map(
+          s =>
+            !s.hide && (
+              <DetailsSection
+                header={s.header}
+                content={s.content}
+                curFlowType={curFlowType}
+                setCurFlowType={setCurFlowType}
+                flowTypeInfo={flowTypeInfo}
+                toggleFlowType={s.toggleFlowType}
+              />
+            )
+        )}
+      </div>
+
       {showTabs && (
         <div className={styles.tabs}>
           {tabSections

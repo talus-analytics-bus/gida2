@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { DataTable } from "react-data-components";
 import { getTableRowData } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
-// import styles from "./tableinstance.module.scss";
+import styles from "./tableinstance.module.scss";
 
 /**
  * Simple DataTable implementation
@@ -44,7 +44,7 @@ const TableInstance = ({
     // console.log(initialData);
     return (
       <div
-        className={classNames("tableInstance", {
+        className={classNames("tableInstance", styles.tableInstance, {
           noPaging: props.paging !== true
         })}
       >
