@@ -1,9 +1,9 @@
 @import "../../../assets/styles/colors.scss";
 
 .donuts {
-  display: flex;
-  flex-flow: row;
-  > div {
+  .donutContainer {
+    display: flex;
+    flex-flow: row;
     margin: 10px;
   }
 }

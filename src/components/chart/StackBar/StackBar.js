@@ -122,7 +122,11 @@ const StackBar = ({
         className={styles.stackBarChart}
       />
       {legend}
-      {!display && <div>No data to show</div>}
+      {!display && (
+        <div>
+          <i>No data to show</i>
+        </div>
+      )}
       {
         // Tooltip for info tooltip icons.
         <ReactTooltip
