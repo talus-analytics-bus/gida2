@@ -104,6 +104,7 @@ const remountComponent = ({ component, ...props }) => {
     component.props.coreCapacities.toString() !==
       props.coreCapacities.toString() ||
     component.props.funders.toString() !== props.funders.toString() ||
+    component.props.outbreaks.toString() !== props.outbreaks.toString() ||
     component.props.supportType.toString() !== props.supportType.toString() ||
     component.props.recipients.toString() !== props.recipients.toString();
 
@@ -173,7 +174,8 @@ const getComponentData = async ({ setComponent, ...props }) => {
   // Flow info filters
   const flowInfoFilters = [
     ["supportType", "assistance_type"],
-    ["coreCapacities", "core_capacities"]
+    ["coreCapacities", "core_capacities"],
+    ["outbreaks", "outbreak_id"]
   ];
   flowInfoFilters.forEach(type => {
     if (props[type[0]].length > 0) {

@@ -5,6 +5,7 @@ import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
+import OutbreakQuery from "../../misc/OutbreakQuery.js";
 import Drawer from "../../common/Drawer/Drawer.js";
 import Checkbox from "../../common/Checkbox/Checkbox.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
@@ -19,6 +20,7 @@ const Export = ({ data, ...props }) => {
   const [supportType, setSupportType] = React.useState([]);
   const [funders, setFunders] = React.useState([]);
   const [recipients, setRecipients] = React.useState([]);
+  const [outbreaks, setOutbreaks] = React.useState([]);
   const [exportTable, setExportTable] = React.useState(null);
   const [nRecords, setNRecords] = React.useState(0);
   const showClear =
@@ -76,6 +78,7 @@ const Export = ({ data, ...props }) => {
 
   const dataTable = renderExportTable({
     ...{
+      outbreaks,
       coreCapacities,
       supportType,
       funders,
@@ -103,6 +106,7 @@ const Export = ({ data, ...props }) => {
     setSupportType([]);
     setFunders([]);
     setRecipients([]);
+    setOutbreaks([]);
   };
 
   // Return JSX
@@ -158,6 +162,15 @@ const Export = ({ data, ...props }) => {
                     placeholder: "Recipient",
                     onChange: setRecipients,
                     curValues: recipients
+                  }}
+                />
+                <FilterDropdown
+                  {...{
+                    label: "",
+                    options: data.outbreaks,
+                    placeholder: "Event response",
+                    onChange: setOutbreaks,
+                    curValues: outbreaks
                   }}
                 />
               </div>
@@ -240,7 +253,8 @@ const getComponentData = async ({ setComponent }) => {
   // Define queries for typical Export page.
   const queries = {
     // Information about the entity
-    entities: NodeQuery({ setKeys: "value,label" })
+    entities: NodeQuery({ setKeys: "value,label" }),
+    outbreaks: OutbreakQuery({})
   };
 
   // Get results in parallel
