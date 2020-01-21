@@ -89,6 +89,35 @@ const D3Map = ({
         // Append defs svg
         <svg className={styles.defsSvg} height="100%" width="100%">
           <defs>
+            <g id="shadowDefs">
+              <filter
+                id="dropShadowCountry"
+                x="-50%"
+                y="-50%"
+                width="200%"
+                height="200%"
+              >
+                <feGaussianBlur
+                  in="SourceAlpha"
+                  stdDeviation="1"
+                  result="blur"
+                />
+                <feColorMatrix
+                  in="blur"
+                  result="matrixOut"
+                  values="
+							0 0 0 0 0
+							0 0 0 0 0
+							0 0 0 0 0
+							0 0 0 1 0
+						"
+                />
+                <feMerge>
+                  <feMergeNode in="matrixOut" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </g>
             <g id="hatchDefs">
               <pattern
                 id="pattern-stripe"

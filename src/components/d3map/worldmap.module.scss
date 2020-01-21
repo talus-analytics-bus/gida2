@@ -18,6 +18,12 @@
         stroke: #a9c9f9;
       }
     }
+    &.active {
+      path {
+        stroke: #3b88fd;
+        filter: url("#dropShadowCountry");
+      }
+    }
     path.boundary {
       stroke: none;
       fill: none;

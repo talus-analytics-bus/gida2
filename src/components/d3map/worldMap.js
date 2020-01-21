@@ -143,6 +143,9 @@ class WorldMap extends Chart {
 
     // Add hatch def link
     this.svg.append("use").attr("xlink:href", "#hatchDefs");
+
+    // Add shadow def link
+    this.svg.append("use").attr("xlink:href", "#shadowDefs");
   }
 
   addOverlay() {
@@ -155,6 +158,7 @@ class WorldMap extends Chart {
   }
 
   addCountries() {
+    const chart = this;
     const countryGroup = this.newGroup(styles.countries)
       .selectAll("g")
       .data(this.countryData)
@@ -162,13 +166,21 @@ class WorldMap extends Chart {
       .append("g")
       .on("mouseover", function() {
         d3.select(this).raise();
+        if (chart.activeCountry) chart.activeCountry.raise();
       })
-      .on("click", d => {
-        if (this.params.activeCountry !== d.properties.place_id) {
-          this.params.setActiveCountry(d.properties.place_id);
-          this.zoomTo(d);
+      .on("click", function(d) {
+        const country = d3.select(this);
+        if (chart.params.activeCountry !== d.properties.place_id) {
+          chart.params.setActiveCountry(d.properties.place_id);
+          chart.zoomTo(d);
+          chart[styles.countries].selectAll("g").classed(styles.active, false);
+          country.classed(styles.active, true);
+          chart.activeCountry = country;
+          country.raise();
         } else {
-          this.reset();
+          country.classed(styles.active, false);
+          chart.reset();
+          chart.activeCountry = undefined;
         }
       });
 
