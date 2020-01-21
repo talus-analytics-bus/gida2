@@ -52,7 +52,7 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
   const units = false;
 
   // Get colors of legend rectangles based on color scale.
-  const colors = colorScale.range();
+  let colors = colorScale.range();
 
   // Is the "needs met" metric the one being plotted? Its legend is a little
   // special.
@@ -70,7 +70,7 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
 
   // Get the legend values that label each color rectangle in the legend
   // entry's "buckets" (one rectangle and one label per bucket).
-  const legendVals = needsMetMetric
+  let legendVals = needsMetMetric
     ? [
         <span>
           Needs
@@ -87,10 +87,29 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
           met
         </span>
       ]
-    : colorScale.values;
+    : colorScale.values.filter(d => d !== undefined);
+
+  // If no entries, return blank;
+  if (legendVals.length === 0) return <div />;
 
   // Add extra value for numeric metrics
   if (numericMetric) legendVals.push("more");
+
+  // Remove duplicates
+  if (numericMetric)
+    legendVals = legendVals.filter((d, i) => {
+      if (i === legendVals.length - 1) return true;
+      else if (legendVals[i] === legendVals[i + 1]) {
+        // Remove the NEXT color.
+        colors[i + 1] = -9999;
+        // Remove this value
+        return false;
+      } else {
+        return true;
+      }
+    });
+  // Remove unused colors
+  colors = colors.filter(d => d !== -9999);
 
   // Get the buckets (rectangles and labels) for this legend entry.
   const buckets = legendVals.map((d, i) => (
