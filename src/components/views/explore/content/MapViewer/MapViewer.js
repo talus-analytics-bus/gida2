@@ -13,6 +13,7 @@ import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import ScoreQuery from "../../../../misc/ScoreQuery.js";
 import Tab from "../../../../misc/Tab.js";
 import { core_capacities } from "../../../../misc/Data.js";
+import SlideToggle from "../../../../common/SlideToggle/SlideToggle.js";
 
 // Local content components
 import Map from "./content/Map.js";
@@ -42,6 +43,9 @@ const MapViewer = ({
 
   // Track main map title
   const [mapTitle, setMapTitle] = React.useState("funds");
+
+  // Track whether to show main menu
+  const [showControls, setShowControls] = React.useState(true);
 
   /**
    * Given the transaction type and the support type, returns the flow type.
@@ -263,40 +267,52 @@ const MapViewer = ({
           ghsaOnly={ghsaOnly}
           isDark={isDark}
         />
-        <div className={styles.menu}>
-          <TimeSlider
-            hide={supportType === "jee"}
-            minYearDefault={Settings.startYear}
-            maxYearDefault={Settings.endYear}
-            onAfterChange={years => {
-              setMinYear(years[0]);
-              setMaxYear(years[1]);
+        <div className={styles.menuContainer}>
+          <SlideToggle
+            {...{
+              label: "controls",
+              show: showControls,
+              setShow: setShowControls
             }}
           />
-          <div className={styles.tabSectionHeader}>View map by</div>
-          <div className={styles.tabs}>
-            {sections
-              .filter(s => s.show !== false)
-              .map(s => (
-                <button
-                  className={classNames({
-                    [styles.selected]: s.slug === curTab
-                  })}
-                  onClick={() => setCurTab(s.slug)}
-                >
-                  {s.header}
-                </button>
+          <div
+            style={{ display: showControls ? "" : "none" }}
+            className={styles.menu}
+          >
+            <TimeSlider
+              hide={supportType === "jee"}
+              minYearDefault={Settings.startYear}
+              maxYearDefault={Settings.endYear}
+              onAfterChange={years => {
+                setMinYear(years[0]);
+                setMaxYear(years[1]);
+              }}
+            />
+            <div className={styles.tabSectionHeader}>View map by</div>
+            <div className={styles.tabs}>
+              {sections
+                .filter(s => s.show !== false)
+                .map(s => (
+                  <button
+                    className={classNames({
+                      [styles.selected]: s.slug === curTab
+                    })}
+                    onClick={() => setCurTab(s.slug)}
+                  >
+                    {s.header}
+                  </button>
+                ))}
+            </div>
+            <div className={styles.tabContent}>
+              {sections.map(s => (
+                <Tab selected={curTab === s.slug} content={s.content} />
               ))}
+            </div>
+            {
+              // TODO: add this tooltip for CC dropdown
+              // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+            }
           </div>
-          <div className={styles.tabContent}>
-            {sections.map(s => (
-              <Tab selected={curTab === s.slug} content={s.content} />
-            ))}
-          </div>
-          {
-            // TODO: add this tooltip for CC dropdown
-            // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-          }
         </div>
       </div>
     </div>

@@ -180,7 +180,6 @@ class WorldMap extends Chart {
         } else {
           country.classed(styles.active, false);
           chart.reset();
-          chart.activeCountry = undefined;
         }
       });
 
@@ -258,6 +257,10 @@ class WorldMap extends Chart {
   }
 
   reset() {
+    if (this.activeCountry !== undefined) {
+      this.activeCountry.classed(styles.active, false);
+      this.activeCountry = undefined;
+    }
     this.params.setActiveCountry(null);
     this.svg
       .transition()
