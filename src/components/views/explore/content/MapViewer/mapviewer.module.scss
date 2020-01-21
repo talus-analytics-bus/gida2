@@ -38,8 +38,9 @@
         opacity: 0.95;
         padding: 10px;
         border: 1px solid #ccc;
+        width: 100%;
 
-        button {
+        button.tabToggle {
           background-color: white;
           border-bottom: none;
           position: relative;
@@ -118,7 +119,7 @@
     .content {
       .menu {
         background-color: #222;
-        button {
+        button.tabToggle {
           background-color: #222 !important;
           &:not(.selected) {
             background-color: transparent !important;

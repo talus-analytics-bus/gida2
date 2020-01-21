@@ -16,10 +16,21 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
     else value = options.filter(d => props.curValues.includes(d.value));
   }
   if (className) className.push(styles.label);
+
+  // Define custom styles
+  const customStyles = {
+    option: (provided, state) => {
+      return {
+        ...provided,
+        color: state.isSelected ? "#333 !important" : "inherit"
+      };
+    }
+  };
   return (
     <div
       className={classNames(styles.filterDropdown, {
-        [styles.up]: props.openDirection === "up"
+        [styles.up]: props.openDirection === "up",
+        [styles.dark]: props.isDark
       })}
     >
       <div
@@ -30,6 +41,7 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
         {label}
       </div>
       <ReactMultiSelectCheckboxes
+        styles={customStyles}
         placeholderButtonLabel={props.placeholder}
         options={options}
         onChange={onChange}

@@ -105,6 +105,7 @@ const MapViewer = ({
     <FilterDropdown
       {...{
         className: [styles.italic],
+        isDark: isDark,
         label: "IHR core capacity",
         openDirection: "up",
         options: core_capacities,
@@ -295,7 +296,7 @@ const MapViewer = ({
                 .filter(s => s.show !== false)
                 .map(s => (
                   <button
-                    className={classNames({
+                    className={classNames(styles.tabToggle, {
                       [styles.selected]: s.slug === curTab
                     })}
                     onClick={() => setCurTab(s.slug)}
