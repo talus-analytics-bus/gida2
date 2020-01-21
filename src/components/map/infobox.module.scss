@@ -33,6 +33,13 @@
     min-height: 150px;
     justify-content: space-between;
     background-color: white;
+    .unknownValuesMessage {
+      line-height: 1.1;
+      div:last-child {
+        font-size: 0.7em;
+        margin-top: 10px;
+      }
+    }
     &.dark {
       background-color: #222;
     }
@@ -47,9 +54,10 @@
         div:first-child {
           font-family: "rawline", serif;
           margin-bottom: 10px;
+          line-height: 1;
         }
         div:last-child {
-          font-size: 0.66em;
+          font-size: 0.7em;
         }
       }
     }
