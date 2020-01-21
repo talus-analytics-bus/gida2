@@ -32,8 +32,6 @@ const InfoBox = ({
 
   // Define header color -- use JEE color if JEE is view, otherwise use
   // color scale of selected metric.
-  console.log("infoBoxData");
-  console.log(infoBoxData);
   const getHeaderStyle = ({ infoBoxData, supportType }) => {
     if (
       infoBoxData.colorValue === undefined ||
@@ -77,7 +75,9 @@ const InfoBox = ({
   const headerStyle = getHeaderStyle({ infoBoxData, supportType });
   const headerColor = headerStyle.baseColor;
   const missingScore =
-    (supportType === "jee" || supportType === "pvs") &&
+    (supportType === "jee" ||
+      supportType === "pvs" ||
+      supportType === "needs_met") &&
     infoBoxData.scoreOfNode === undefined;
 
   if (nodeData === undefined) return "";
