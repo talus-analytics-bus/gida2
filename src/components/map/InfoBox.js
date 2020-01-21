@@ -16,6 +16,7 @@ const InfoBox = ({
   supportType,
   color,
   colorIdx,
+  isDark,
   entityRole = "funder", // For link button to details page
   infoBoxData = null,
   ...props
@@ -84,7 +85,12 @@ const InfoBox = ({
   // TODO slide up somehow
   else
     return (
-      <div className={classNames(styles.infoBox, { [styles.show]: show })}>
+      <div
+        className={classNames(styles.infoBox, {
+          [styles.show]: show,
+          [styles.dark]: isDark
+        })}
+      >
         <div
           style={headerStyle.style}
           className={classNames(styles.header, {

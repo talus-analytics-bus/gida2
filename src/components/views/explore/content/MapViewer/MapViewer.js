@@ -261,6 +261,7 @@ const MapViewer = ({
           maxYear={maxYear}
           coreCapacities={coreCapacities}
           ghsaOnly={ghsaOnly}
+          isDark={isDark}
         />
         <div className={styles.menu}>
           <TimeSlider

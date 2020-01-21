@@ -134,4 +134,11 @@
       }
     }
   }
+
+  // DARK MODE SETTINGS
+  &.dark {
+    .content {
+      background-color: #222;
+    }
+  }
 }

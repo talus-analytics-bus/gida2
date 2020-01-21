@@ -28,6 +28,7 @@ const Map = ({
   coreCapacities,
   jeeScores,
   ghsaOnly,
+  isDark,
   ...props
 }) => {
   // Get node type from entity role
@@ -376,7 +377,7 @@ const Map = ({
   }
 
   return (
-    <div className={styles.map}>
+    <div className={classNames(styles.map, { [styles.dark]: isDark })}>
       <D3Map
         {...{
           mapData,
@@ -393,7 +394,7 @@ const Map = ({
         }}
       />
       <div className={styles.legend}>
-        <Legend {...{ colorScale, supportType, flowType }} />
+        <Legend {...{ colorScale, supportType, flowType, isDark }} />
       </div>
       <div className={styles.infoBox}>
         <InfoBox
@@ -402,7 +403,8 @@ const Map = ({
             supportType,
             nodeData,
             setNodeData,
-            infoBoxData
+            infoBoxData,
+            isDark
           }}
         />
       </div>

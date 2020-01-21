@@ -168,13 +168,18 @@ const Legend = ({
   flowType,
   toggle,
   title,
-  className
+  className,
+  isDark
 }) => {
   // Track whether legend is visible or not
   const [show, setShow] = React.useState(true);
 
   return (
-    <div className={classNames(styles.legend, className)}>
+    <div
+      className={classNames(styles.legend, className, {
+        [styles.dark]: isDark
+      })}
+    >
       {toggle !== false && (
         <div className={classNames(styles.toggle, { [styles.flip]: show })}>
           <button onClick={() => setShow(!show)}>
