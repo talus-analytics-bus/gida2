@@ -82,6 +82,7 @@ const Search = ({ callback, ...props }) => {
 
   const inputEl = (
     <input
+      className={"dark-bg-allowed"}
       id={"placeSearch"}
       type="text"
       placeholder="search for a country or organization"
@@ -118,7 +119,9 @@ const Search = ({ callback, ...props }) => {
       {results !== null && (
         <div
           style={{ display: showResults ? "flex" : "none" }}
-          className={styles.results}
+          className={classNames(styles.results, {
+            [styles.dark]: props.isDark
+          })}
         >
           {results.length > 0 && getResults(results)}
           {results.length === 0 && (
