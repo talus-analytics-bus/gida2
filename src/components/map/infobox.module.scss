@@ -30,9 +30,12 @@
     flex-flow: column;
     padding: 10px;
     font-size: 18px;
-    min-height: 150px;
+    // min-height: 150px;
     justify-content: space-between;
     background-color: white;
+    .score {
+      margin-bottom: 10px;
+    }
     .unknownValuesMessage {
       line-height: 1.1;
       div:last-child {
@@ -49,6 +52,7 @@
       .flowValues {
         display: flex;
         flex-flow: column;
+        justify-content: flex-end;
         margin-right: 10px;
 
         div:first-child {

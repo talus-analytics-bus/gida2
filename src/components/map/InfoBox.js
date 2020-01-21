@@ -50,12 +50,12 @@ const InfoBox = ({
         baseColor: "#ccc",
         style: {
           background:
-            "repeating-linear-gradient(-45deg, #ccc, #ccc 17px, #fff0 17px, #fff0 20px)"
+            "repeating-linear-gradient(-45deg, #ccc, #ccc 17px, #fff 17px, #fff 20px)"
         }
       };
     } else if (supportType === "jee") {
       const baseColor = infoBoxData.colorScale(
-        Util.getScoreShortName(infoBoxData.jeeScoreOfNode)
+        Util.getScoreShortName(infoBoxData.scoreOfNode)
       );
       return {
         baseColor: baseColor,
@@ -76,6 +76,9 @@ const InfoBox = ({
 
   const headerStyle = getHeaderStyle({ infoBoxData, supportType });
   const headerColor = headerStyle.baseColor;
+  const missingScore =
+    (supportType === "jee" || supportType === "pvs") &&
+    infoBoxData.scoreOfNode === undefined;
 
   if (nodeData === undefined) return "";
   // TODO slide up somehow
@@ -100,9 +103,10 @@ const InfoBox = ({
           </div>
         </div>
         <div className={styles.content}>
-          <div>
-            {infoBoxData.jeeScoreOfNode !== undefined &&
-              Util.getScoreName(infoBoxData.jeeScoreOfNode)}
+          <div className={styles.score}>
+            {infoBoxData.scoreOfNode !== undefined &&
+              Util.getScoreName(infoBoxData.scoreOfNode)}
+            {missingScore && <div>No score data available</div>}
           </div>
           <div>
             {supportType !== "jee" &&

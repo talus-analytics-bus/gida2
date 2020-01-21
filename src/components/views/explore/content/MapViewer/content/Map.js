@@ -290,8 +290,8 @@ const Map = ({
   };
   // If a node has been selected, get the info box data for it.
   // First, get the JEE score for the node, if it exists. If it is not avail,
-  // then 'jeeScoreOfNode' is undefined.
-  let jeeScoreOfNode;
+  // then 'scoreOfNode' is undefined.
+  let scoreOfNode;
   if (
     // There is a node selected...
     nodeData !== undefined &&
@@ -307,7 +307,7 @@ const Map = ({
 
     // Average JEE score is mean.
     const avgJeeScore = d3.mean(jeeScoresToAvg, d => d.score);
-    jeeScoreOfNode = avgJeeScore;
+    scoreOfNode = avgJeeScore;
   }
 
   // Define the InfoBox data passed to the InfoBox component. By default the
@@ -317,7 +317,7 @@ const Map = ({
       ? mapData.find(d => d.id === nodeData.id)
       : undefined;
   let infoBoxData = {
-    jeeScoreOfNode: jeeScoreOfNode,
+    scoreOfNode: scoreOfNode,
     flowValues: getFlowValues({
       supportTypeForValues: supportType
     }),
@@ -339,7 +339,7 @@ const Map = ({
       datum: d,
       value: getMapMetricValue({
         d,
-        supportType: supportType === "jee" ? "funds" : supportType,
+        supportType,
         flowType,
         coreCapacities
       }),
