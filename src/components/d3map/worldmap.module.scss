@@ -10,8 +10,12 @@
       fill: #ccc;
       stroke: #333333;
       stroke-width: 0.5px;
+      cursor: pointer;
       &.hatched {
         mask: url(#mask-stripe);
+      }
+      &:hover {
+        stroke: #a9c9f9;
       }
     }
     path.boundary {

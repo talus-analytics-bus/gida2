@@ -160,6 +160,9 @@ class WorldMap extends Chart {
       .data(this.countryData)
       .enter()
       .append("g")
+      .on("mouseover", function() {
+        d3.select(this).raise();
+      })
       .on("click", d => {
         if (this.params.activeCountry !== d.properties.place_id) {
           this.params.setActiveCountry(d.properties.place_id);
@@ -172,7 +175,6 @@ class WorldMap extends Chart {
     countryGroup
       .append("path")
       .attr("class", styles.country)
-      // .style("fill", "blue")
       .attr("d", d => this.path(d));
 
     countryGroup
