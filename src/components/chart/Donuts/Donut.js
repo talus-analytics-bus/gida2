@@ -21,6 +21,7 @@ const Donut = ({
   const [chart, setChart] = React.useState(null);
   React.useEffect(() => {
     const chartNew = new D3Donut(`.${styles.donutChart}.${idx}`, {
+      noResizeEvent: true,
       pct: numerator / denominator,
       color:
         nodeType === "target"

@@ -63,7 +63,7 @@ class D3AreaLine extends Chart {
 
     const marginConst = 40;
     this.margin = {
-      left: 200,
+      left: 80,
       top: 10,
       bottom: marginConst,
       right: marginConst

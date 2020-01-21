@@ -244,7 +244,12 @@ const Details = ({
                     type: "adjective",
                     role: otherEntityRole
                   })}
-                  . Click on a row to view details.
+                  . Click on a{" "}
+                  {Util.getRoleTerm({
+                    type: "noun",
+                    role: otherEntityRole
+                  })}{" "}
+                  name to view their profile.
                 </p>
               ),
               content: (
