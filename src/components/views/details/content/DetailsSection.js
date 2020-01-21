@@ -49,7 +49,7 @@ const DetailsSection = ({
           ))}
         </form>
       )}
-      {!noFinancialData && content}
+      {!noFinancialData && <div className={styles.content}>{content}</div>}
       {noFinancialData && <span>No financial assistance data to show.</span>}
     </div>
   );
