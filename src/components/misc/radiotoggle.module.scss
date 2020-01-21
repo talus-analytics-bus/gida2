@@ -3,16 +3,30 @@
 .radioToggle {
   > div {
     font-weight: bold;
+    margin-bottom: 5px;
   }
   form {
     display: flex;
     flex-flow: column;
   }
+  span:last-child label {
+    margin-bottom: 0;
+  }
   label {
     font-weight: normal;
     color: black;
+    display: flex;
+    flex-flow: row;
   }
   input {
     margin-right: 5px;
+  }
+  &.disabled {
+    pointer-events: none;
+    color: gray;
+    input,
+    label {
+      color: gray;
+    }
   }
 }

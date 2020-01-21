@@ -94,7 +94,7 @@ const EntityRoleToggle = ({ entityRole, redirectUrlFunc, callback }) => {
           "recipient",
           <g
             onClick={() => {
-              if (callback) callback("funder");
+              if (callback) callback("recipient");
             }}
             className={classNames(styles.recipient, {
               [styles.active]: entityRole === "recipient"

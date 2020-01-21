@@ -98,18 +98,12 @@ const MapViewer = ({
   const filters = (
     <FilterDropdown
       {...{
-        label: "Core capacity",
+        className: [styles.italic],
+        label: "IHR core capacity",
         options: core_capacities,
         placeholder: "Select core capacities",
         onChange: v => setCoreCapacities(v.map(d => d.value)),
         curValues: coreCapacities
-      }}
-    />
-  );
-  const filtersOld = (
-    <CoreCapacityDropdown
-      onChange={vals => {
-        setCoreCapacities(vals.map(v => v.value));
       }}
     />
   );
@@ -118,15 +112,23 @@ const MapViewer = ({
       slug: "funding",
       header: "Funding",
       content: (
-        <div>
-          <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-          <div>
-            <div>Refine map</div>
-            <div>
-              <div>
-                {metricHasTransactionType && (
+        <div className={styles.tabContent}>
+          <div className={styles.section}>
+            <GhsaToggle
+              label={""}
+              ghsaOnly={ghsaOnly}
+              setGhsaOnly={setGhsaOnly}
+            />
+          </div>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Refine map</div>
+            <div className={styles.subSections}>
+              <div className={styles.subSection}>
+                {true && (
                   <RadioToggle
                     label={"Select funding type"}
+                    disabled={!metricHasTransactionType}
+                    className={[styles.italic]}
                     callback={setTransactionType}
                     curVal={transactionType}
                     choices={[
@@ -142,8 +144,9 @@ const MapViewer = ({
                   />
                 )}
               </div>
-              <div>
+              <div className={styles.subSection}>
                 <RadioToggle
+                  className={[styles.italic]}
                   label={"Select support type"}
                   callback={setSupportType}
                   curVal={supportType}
@@ -163,8 +166,8 @@ const MapViewer = ({
               </div>
             </div>
           </div>
-          <div>
-            <div>Filter by</div>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Filter by</div>
             {filters}
           </div>
         </div>
@@ -174,27 +177,30 @@ const MapViewer = ({
       slug: "scores",
       header: "Scores",
       content: (
-        <div>
-          <RadioToggle
-            label={"Select score type"}
-            callback={setSupportType}
-            curVal={supportType}
-            choices={[
-              {
-                name: "JEE score",
-                value: "jee",
-                tooltip:
-                  "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
-              },
-              {
-                name: "PVS score",
-                value: "pvs",
-                tooltip: ""
-              }
-            ]}
-          />
-          <div>
-            <div>Filter by</div>
+        <div className={styles.tabContent}>
+          <div className={styles.section}>
+            <RadioToggle
+              className={[styles.italic]}
+              label={""}
+              callback={setSupportType}
+              curVal={supportType}
+              choices={[
+                {
+                  name: "JEE score",
+                  value: "jee",
+                  tooltip:
+                    "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
+                },
+                {
+                  name: "PVS score",
+                  value: "pvs",
+                  tooltip: ""
+                }
+              ]}
+            />
+          </div>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Filter by</div>
             {filters}
           </div>
         </div>
@@ -262,7 +268,7 @@ const MapViewer = ({
               setMaxYear(years[1]);
             }}
           />
-          <div>View map by</div>
+          <div className={styles.tabSectionHeader}>View map by</div>
           <div className={styles.tabs}>
             {sections
               .filter(s => s.show !== false)

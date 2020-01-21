@@ -6,10 +6,10 @@ import RadioToggle from "./RadioToggle.js";
  * TODO implement tooltip
  * @method GhsaToggle
  */
-const GhsaToggle = ({ ghsaOnly, setGhsaOnly }) => {
+const GhsaToggle = ({ ghsaOnly, setGhsaOnly, ...props }) => {
   return (
     <RadioToggle
-      label={"Click to show"}
+      label={props.label !== undefined ? props.label : "Click to show"}
       choices={[
         {
           name: "All funding",

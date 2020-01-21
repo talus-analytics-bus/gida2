@@ -23,13 +23,68 @@
   .content {
     position: relative;
     .menu {
+      font-size: 14px;
+      .tabSectionHeader {
+        font-family: "Raleway", serif;
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+
+      .tabContent {
+        display: flex;
+        flex-flow: column;
+        width: 100%;
+
+        .italic {
+          font-weight: normal;
+          font-style: italic;
+        }
+
+        .section {
+          display: flex;
+          flex-flow: column;
+          padding: 10px;
+          border: 1px solid #ccc;
+          &:first-child {
+            border-bottom: none;
+          }
+          &:last-child {
+            // border-top: none;
+          }
+          &:not(:first-child):not(:last-child) {
+            border-bottom: none;
+          }
+
+          .sectionTitle {
+            font-weight: 600;
+            margin-bottom: 10px;
+          }
+
+          .subSections {
+            display: flex;
+            flex-flow: row;
+            .subSection {
+              display: flex;
+              flex-flow: column;
+              &:not(:last-child) {
+                padding-right: 10px;
+                margin-right: 10px;
+                border-right: 1px solid #ccc;
+              }
+            }
+          }
+        }
+      }
       padding: 10px;
       position: absolute;
       border: 1px solid #ccc;
-      top: 0;
+      bottom: 0;
       right: 10px;
       background-color: white;
       opacity: 0.95;
+      width: 25%;
     }
   }
 }

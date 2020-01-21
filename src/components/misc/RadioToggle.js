@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import styles from "./radiotoggle.module.scss";
 
 /**
@@ -12,6 +13,7 @@ const RadioToggle = ({
   callback,
   onClick,
   label,
+  className,
   ...props
 }) => {
   /**
@@ -28,8 +30,14 @@ const RadioToggle = ({
   if (onClick === undefined) onClick = (a, b) => b;
 
   return (
-    <div className={styles.radioToggle}>
-      <div>{label}</div>
+    <div
+      className={classNames(styles.radioToggle, {
+        [styles.disabled]: props.disabled === true
+      })}
+    >
+      <div className={classNames(className !== undefined ? className : "")}>
+        {label}
+      </div>
       <form>
         {choices.map(c => (
           <span>
@@ -37,6 +45,7 @@ const RadioToggle = ({
               c.value,
               <label onClick={callback ? onChange : undefined} for={c.name}>
                 <input
+                  disabled={props.disabled === true ? "disabled" : ""}
                   type="radio"
                   name={c.name}
                   value={c.value}
