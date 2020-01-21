@@ -25,6 +25,7 @@ import TableInstance from "../../chart/table/TableInstance.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
+import Tab from "../../misc/Tab.js";
 
 // FC for Details.
 const Details = ({
@@ -37,8 +38,6 @@ const Details = ({
   setComponent,
   ...props
 }) => {
-  console.log("data");
-  console.log(data);
   // make key changes to the page if the id is special:
   // "ghsa" - Same as normal but include both a top funder and recipient table,
   //          and include only flows that are ghsa. Name of page is
@@ -67,6 +66,11 @@ const Details = ({
   // Track whether viewing committed or disbursed/provided assistance
   const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
 
+  const noResponseData = data.flows.length === 0;
+  const [curTab, setCurTab] = React.useState("ihr");
+
+  if (noResponseData && curTab === "event") setCurTab("ihr");
+
   // Get display name for current flow type
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
@@ -83,8 +87,7 @@ const Details = ({
       (d[otherNodeType][0].name !== "Not reported" ||
         d[otherNodeType].length > 1)
   );
-  console.log("topTableData");
-  console.log(topTableData);
+
   // If on GHSA page, get "other" top table to display.
   const topTableDataOther =
     pageType === "ghsa"
@@ -141,246 +144,284 @@ const Details = ({
     })
   );
 
+  // Define header charts
+  const pageHeaderContent = {
+    header: (
+      <h2>
+        Total funds {Util.getRoleTerm({ type: "adjective", role: entityRole })}{" "}
+        from {Settings.startYear} to {Settings.endYear}
+      </h2>
+    ),
+    content: (
+      <FundsByYear
+        id={id}
+        entityRole={entityRole}
+        data={data.focusSummary.master_summary.flow_types}
+        unknownDataOnly={unknownDataOnly}
+        noFinancialData={noFinancialData}
+        flowTypeInfo={flowTypeInfo}
+        ghsaOnly={ghsaOnly}
+      />
+    ),
+    toggleFlowType: false,
+    hide: noData
+  };
+
   // Define details content sections.
-  const sections = [
-    {
-      header: (
-        <h2>
-          Total funds{" "}
-          {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
-          {Settings.startYear} to {Settings.endYear}
-        </h2>
-      ),
-      content: (
-        <FundsByYear
-          id={id}
-          entityRole={entityRole}
-          data={data.focusSummary.master_summary.flow_types}
-          unknownDataOnly={unknownDataOnly}
-          noFinancialData={noFinancialData}
-          flowTypeInfo={flowTypeInfo}
-          ghsaOnly={ghsaOnly}
-        />
-      ),
-      toggleFlowType: false,
-      hide: noData
-    },
-    {
-      header: <h2>Response funding by outbreak event</h2>,
-      content: (
-        <TableInstance
-          paging={true}
-          sortByProp={"year_range"}
-          tableColumns={[
+  const showTabs = !noData && !unknownDataOnly;
+  const tabSections = showTabs
+    ? [
+        {
+          slug: "ihr",
+          header: "IHR funding",
+          content: [
             {
-              title: "Event year",
-              prop: "year_range",
-              type: "text",
-              func: d => d.flow_info.outbreak.year_range,
-              render: d => d
-            },
-            {
-              title: "Event response",
-              prop: "event",
-              type: "text",
-              func: d => d.flow_info.outbreak.name,
-              render: d => d
-            },
-            {
-              title: "Project name",
-              prop: "project_name",
-              type: "text",
-              func: d => d.flow_info.project_name,
-              render: d => d
-            },
-            {
-              title: Util.getInitCap(
-                Util.getRoleTerm({
-                  type: "noun",
-                  role: "funder"
-                })
+              header: <h2>Funding by core element</h2>,
+              content: (
+                <Donuts
+                  data={data.focusSummary.master_summary}
+                  flowType={curFlowType}
+                  ghsaOnly={ghsaOnly}
+                  attributeType={"core_elements"}
+                  nodeType={nodeType}
+                  id={id}
+                />
               ),
-              prop: "source",
-              type: "text",
-              func: d => JSON.stringify(d.source),
-              render: d =>
-                getNodeLinkList({
-                  urlType: "details",
-                  nodeList: JSON.parse(d),
-                  entityRole: "funder",
-                  id: id
-                })
+              toggleFlowType: true,
+              hide: noData || unknownDataOnly || noFinancialData
             },
             {
-              title: Util.getInitCap(
-                Util.getRoleTerm({
-                  type: "noun",
-                  role: "recipient"
-                })
+              header: <h2>Funding by core capacity</h2>,
+              content: (
+                <StackBar
+                  data={getWeightsBySummaryAttributeSimple({
+                    field: "core_capacities",
+                    flowTypes: ["disbursed_funds", "committed_funds"],
+                    data: data.flowBundles.flow_bundles,
+                    byOtherNode: true,
+                    nodeType: nodeType,
+                    otherNodeType: otherNodeType
+                  })}
+                  flowType={curFlowType}
+                  flowTypeName={curFlowTypeName}
+                  attributeType={"core_capacities"}
+                  nodeType={nodeType}
+                  otherNodeType={otherNodeType}
+                  jeeScores={data.jeeScores[data.nodeData.id]}
+                  id={id}
+                  ghsaOnly={ghsaOnly}
+                />
               ),
-              prop: "target",
-              type: "text",
-              func: d => JSON.stringify(d.target),
-              render: d =>
-                getNodeLinkList({
-                  urlType: "details",
-                  nodeList: JSON.parse(d),
-                  entityRole: "recipient",
-                  id: id
-                })
+              toggleFlowType: true,
+              hide: noData || unknownDataOnly || noFinancialData
             },
             {
-              title: "Funding year(s)",
-              prop: "year_range_proj",
-              type: "text",
-              func: d => d.year_range,
-              render: d => Util.formatValue(d, "year_range")
+              header: <h2>Top {otherEntityRole}s</h2>,
+              content: (
+                <TableInstance
+                  sortByProp={"total"}
+                  paging={true}
+                  tableColumns={[
+                    {
+                      title: Util.getInitCap(
+                        Util.getRoleTerm({
+                          type: "noun",
+                          role: otherEntityRole
+                        })
+                      ),
+                      prop: otherNodeType,
+                      type: "text",
+                      func: d => JSON.stringify(d[otherNodeType]),
+                      render: d =>
+                        getNodeLinkList({
+                          urlType: "details",
+                          nodeList: JSON.parse(d),
+                          entityRole: otherEntityRole,
+                          id: id
+                        })
+                    }
+                  ].concat(topTableCols)}
+                  tableData={
+                    topTableData
+                      ? topTableData.filter(d => d[curFlowType] !== undefined)
+                      : []
+                  }
+                />
+              ),
+              toggleFlowType: true,
+              hide: noData || unknownDataOnly || noFinancialData
             },
             {
-              title: curFlowTypeName + ' (or "In-kind support")',
-              prop: "amount",
-              type: "num",
-              func: d => {
-                // Check whether the monetary amount is available
-                const ft = d.flow_types[curFlowType];
-                const financial = ft !== undefined;
-                if (financial) return ft.focus_node_weight;
-                else {
-                  // If no financial, check for inkind
-                  const inkindField =
-                    curFlowType === "disbursed_funds"
-                      ? "provided_inkind"
-                      : "committed_inkind";
-                  const inkind = d.flow_types[inkindField] !== undefined;
-                  if (inkind) return -7777;
-                  else return -9999;
-                }
-              },
-              render: d =>
-                d === -7777
-                  ? Util.formatValue("In-kind support", "inkind")
-                  : Util.formatValue(d, curFlowType)
+              header: <h2>Top {entityRole}s</h2>,
+              content: pageType === "ghsa" && (
+                <TableInstance
+                  sortByProp={"total"}
+                  tableColumns={[
+                    {
+                      title: Util.getInitCap(
+                        Util.getRoleTerm({
+                          type: "noun",
+                          role: entityRole
+                        })
+                      ),
+                      prop: nodeType,
+                      type: "text",
+                      func: d => JSON.stringify(d[nodeType]),
+                      render: d =>
+                        getNodeLinkList({
+                          urlType: "details",
+                          nodeList: JSON.parse(d),
+                          entityRole: entityRole,
+                          id: id
+                        })
+                    }
+                  ].concat(topTableCols)}
+                  tableData={
+                    topTableDataOther
+                      ? topTableDataOther.filter(
+                          d => d[curFlowType] !== undefined
+                        )
+                      : []
+                  }
+                />
+              ),
+              toggleFlowType: true,
+              hide:
+                noData ||
+                pageType !== "ghsa" ||
+                unknownDataOnly ||
+                noFinancialData
             }
-          ]}
-          tableData={data.flows}
-          hide={r => r.amount === -9999}
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || unknownDataOnly || noFinancialData
-    },
-    {
-      header: <h2>Funding by core element</h2>,
-      content: (
-        <Donuts
-          data={data.focusSummary.master_summary}
-          flowType={curFlowType}
-          ghsaOnly={ghsaOnly}
-          attributeType={"core_elements"}
-          nodeType={nodeType}
-          id={id}
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || unknownDataOnly || noFinancialData
-    },
-    {
-      header: <h2>Funding by core capacity</h2>,
-      content: (
-        <StackBar
-          data={getWeightsBySummaryAttributeSimple({
-            field: "core_capacities",
-            flowTypes: ["disbursed_funds", "committed_funds"],
-            data: data.flowBundles.flow_bundles,
-            byOtherNode: true,
-            nodeType: nodeType,
-            otherNodeType: otherNodeType
-          })}
-          flowType={curFlowType}
-          flowTypeName={curFlowTypeName}
-          attributeType={"core_capacities"}
-          nodeType={nodeType}
-          otherNodeType={otherNodeType}
-          jeeScores={data.jeeScores[data.nodeData.id]}
-          id={id}
-          ghsaOnly={ghsaOnly}
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || unknownDataOnly || noFinancialData
-    },
-    {
-      header: <h2>Top {otherEntityRole}s</h2>,
-      content: (
-        <TableInstance
-          sortByProp={"total"}
-          paging={true}
-          tableColumns={[
-            {
-              title: Util.getInitCap(
-                Util.getRoleTerm({
-                  type: "noun",
-                  role: otherEntityRole
-                })
-              ),
-              prop: otherNodeType,
-              type: "text",
-              func: d => JSON.stringify(d[otherNodeType]),
-              render: d =>
-                getNodeLinkList({
-                  urlType: "details",
-                  nodeList: JSON.parse(d),
-                  entityRole: otherEntityRole,
-                  id: id
-                })
-            }
-          ].concat(topTableCols)}
-          tableData={
-            topTableData
-              ? topTableData.filter(d => d[curFlowType] !== undefined)
-              : []
-          }
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || unknownDataOnly || noFinancialData
-    },
-    {
-      header: <h2>Top {entityRole}s</h2>,
-      content: pageType === "ghsa" && (
-        <TableInstance
-          sortByProp={"total"}
-          tableColumns={[
-            {
-              title: Util.getInitCap(
-                Util.getRoleTerm({
-                  type: "noun",
-                  role: entityRole
-                })
-              ),
-              prop: nodeType,
-              type: "text",
-              func: d => JSON.stringify(d[nodeType]),
-              render: d =>
-                getNodeLinkList({
-                  urlType: "details",
-                  nodeList: JSON.parse(d),
-                  entityRole: entityRole,
-                  id: id
-                })
-            }
-          ].concat(topTableCols)}
-          tableData={
-            topTableDataOther
-              ? topTableDataOther.filter(d => d[curFlowType] !== undefined)
-              : []
-          }
-        />
-      ),
-      toggleFlowType: true,
-      hide: noData || pageType !== "ghsa" || unknownDataOnly || noFinancialData
-    }
-  ];
+          ]
+        },
+        {
+          slug: "event",
+          header: "Event response funding",
+          hide: noResponseData,
+          content:
+            data.flows.length > 0
+              ? [
+                  {
+                    header: <h2>Response funding by outbreak event</h2>,
+                    content: (
+                      <TableInstance
+                        paging={true}
+                        sortByProp={"year_range"}
+                        tableColumns={[
+                          {
+                            title: "Event year",
+                            prop: "year_range",
+                            type: "text",
+                            func: d => d.flow_info.outbreak.year_range,
+                            render: d => d
+                          },
+                          {
+                            title: "Event response",
+                            prop: "event",
+                            type: "text",
+                            func: d => d.flow_info.outbreak.name,
+                            render: d => d
+                          },
+                          {
+                            title: "Project name",
+                            prop: "project_name",
+                            type: "text",
+                            func: d => d.flow_info.project_name,
+                            render: d => d
+                          },
+                          {
+                            title: Util.getInitCap(
+                              Util.getRoleTerm({
+                                type: "noun",
+                                role: "funder"
+                              })
+                            ),
+                            prop: "source",
+                            type: "text",
+                            func: d => JSON.stringify(d.source),
+                            render: d =>
+                              getNodeLinkList({
+                                urlType: "details",
+                                nodeList: JSON.parse(d),
+                                entityRole: "funder",
+                                id: id
+                              })
+                          },
+                          {
+                            title: Util.getInitCap(
+                              Util.getRoleTerm({
+                                type: "noun",
+                                role: "recipient"
+                              })
+                            ),
+                            prop: "target",
+                            type: "text",
+                            func: d => JSON.stringify(d.target),
+                            render: d =>
+                              getNodeLinkList({
+                                urlType: "details",
+                                nodeList: JSON.parse(d),
+                                entityRole: "recipient",
+                                id: id
+                              })
+                          },
+                          {
+                            title: "Funding year(s)",
+                            prop: "year_range_proj",
+                            type: "text",
+                            func: d => d.year_range,
+                            render: d => Util.formatValue(d, "year_range")
+                          },
+                          {
+                            title: curFlowTypeName + ' (or "In-kind support")',
+                            prop: "amount",
+                            type: "num",
+                            func: d => {
+                              // Check whether the monetary amount is available
+                              const ft = d.flow_types[curFlowType];
+                              const financial = ft !== undefined;
+                              if (financial) return ft.focus_node_weight;
+                              else {
+                                // If no financial, check for inkind
+                                const inkindField =
+                                  curFlowType === "disbursed_funds"
+                                    ? "provided_inkind"
+                                    : "committed_inkind";
+                                const inkind =
+                                  d.flow_types[inkindField] !== undefined;
+                                if (inkind) return -7777;
+                                else return -9999;
+                              }
+                            },
+                            render: d =>
+                              d === -7777
+                                ? Util.formatValue("In-kind support", "inkind")
+                                : Util.formatValue(d, curFlowType)
+                          }
+                        ]}
+                        tableData={data.flows}
+                        hide={r => r.amount === -9999}
+                      />
+                    ),
+                    toggleFlowType: true,
+                    hide: noData || unknownDataOnly || noFinancialData
+                  }
+                ]
+              : [
+                  {
+                    header: <h2>Response funding by outbreak event</h2>,
+                    content: (
+                      <div>
+                        <i>No data to show</i>
+                      </div>
+                    ),
+                    toggleFlowType: false,
+                    hide: noData || unknownDataOnly || noFinancialData
+                  }
+                ]
+        }
+      ]
+    : [];
 
   // Return JSX
   return (
@@ -401,7 +442,60 @@ const Details = ({
         )}
         {pageType !== "ghsa" && <GhsaButton />}
       </div>
-      {sections.map(
+      {[pageHeaderContent].map(
+        s =>
+          !s.hide && (
+            <DetailsSection
+              header={s.header}
+              content={s.content}
+              curFlowType={curFlowType}
+              setCurFlowType={setCurFlowType}
+              flowTypeInfo={flowTypeInfo}
+              toggleFlowType={s.toggleFlowType}
+            />
+          )
+      )}
+      {showTabs && (
+        <div className={styles.tabs}>
+          {tabSections
+            .filter(s => s.hide !== true)
+            .map(s => (
+              <button
+                className={classNames(styles.tabToggle, {
+                  [styles.selected]: s.slug === curTab
+                })}
+                onClick={() => setCurTab(s.slug)}
+              >
+                {s.header}
+              </button>
+            ))}
+        </div>
+      )}
+      {showTabs && (
+        <div className={styles.tabContent}>
+          {tabSections
+            .filter(s => s.hide !== true)
+            .map(s => (
+              <Tab
+                selected={curTab === s.slug}
+                content={s.content.map(
+                  s =>
+                    !s.hide && (
+                      <DetailsSection
+                        header={s.header}
+                        content={s.content}
+                        curFlowType={curFlowType}
+                        setCurFlowType={setCurFlowType}
+                        flowTypeInfo={flowTypeInfo}
+                        toggleFlowType={s.toggleFlowType}
+                      />
+                    )
+                )}
+              />
+            ))}
+        </div>
+      )}
+      {[].map(
         s =>
           !s.hide && (
             <DetailsSection
