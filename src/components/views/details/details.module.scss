@@ -1,11 +1,64 @@
 @import "../../../assets/styles/colors.scss";
 
 .details {
+  padding-top: 0 !important;
   .header {
     display: flex;
-    flex-flow: row;
-    align-items: center;
-    justify-content: space-between;
+    flex-flow: column;
+    margin-bottom: 20px;
+
+    .entityRole {
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      align-items: center;
+      height: 90px;
+      > div {
+        color: white;
+        text-transform: uppercase;
+        font-family: "Raleway", serif;
+        font-size: 1.5em;
+        line-height: 1;
+      }
+      > div,
+      > svg {
+        margin: 20px;
+      }
+    }
+    .countryBanner {
+      display: flex;
+      flex-flow: row;
+      background-color: #f2f2f2;
+      padding: 20px;
+      justify-content: space-between;
+      align-items: center;
+
+      .countryName {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        h1 {
+          font-weight: 600;
+          font-size: 30px;
+        }
+        img:not(.unspec) {
+          width: 45px;
+          margin-right: 20px;
+        }
+      }
+
+      .toggles {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        > :last-child {
+          margin-left: 20px;
+        }
+      }
+      h1 {
+        margin: 0;
+      }
+    }
   }
   .radioToggles {
     display: flex;

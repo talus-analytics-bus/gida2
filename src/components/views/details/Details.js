@@ -15,6 +15,7 @@ import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 import ScoreQuery from "../../misc/ScoreQuery.js";
+import { purples, greens } from "../../map/MapUtil.js";
 
 // Content components
 import DetailsSection from "../../views/details/content/DetailsSection.js";
@@ -68,6 +69,7 @@ const Details = ({
 
   const noResponseData = data.flows.length === 0;
   const [curTab, setCurTab] = React.useState("ihr");
+  const [showFlag, setShowFlag] = React.useState(true);
 
   if (noResponseData && curTab === "event") setCurTab("ihr");
 
@@ -451,24 +453,50 @@ const Details = ({
       ]
     : [];
 
+  const flag = `/flags/${data.nodeData.iso2}.png`;
+
+  // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
+  const addDefaultSrc = ev => {
+    ev.target.src = "/flags/unspecified.png";
+    // ev.target.classList.add(styles.unspec);
+    setShowFlag(false);
+  };
+
+  React.useEffect(() => {
+    setShowFlag(true);
+  }, [id]);
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.details)}>
       <div className={styles.header}>
-        <h1>
-          {data.nodeData.name}{" "}
-          {pageType === "entity" && <span>({entityRoleNoun} profile)</span>}
-        </h1>
-        {pageType !== "ghsa" && (
-          <div className={styles.radioToggles}>
-            <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-            <EntityRoleToggle
-              entityRole={entityRole}
-              redirectUrlFunc={v => `/details/${id}/${v}`}
-            />
+        <div
+          style={{
+            backgroundColor:
+              entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)"
+          }}
+          className={styles.entityRole}
+        >
+          <div>{entityRoleNoun} profile</div>
+          <EntityRoleToggle
+            entityRole={entityRole}
+            redirectUrlFunc={v => `/details/${id}/${v}`}
+          />
+        </div>
+        <div className={styles.countryBanner}>
+          <div className={styles.countryName}>
+            {showFlag && <img src={flag} onError={e => addDefaultSrc(e)} />}
+            <h1>{data.nodeData.name}</h1>
           </div>
-        )}
-        {pageType !== "ghsa" && <GhsaButton />}
+          <div className={styles.toggles}>
+            {pageType !== "ghsa" && (
+              <div className={styles.radioToggles}>
+                <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+              </div>
+            )}
+            {pageType !== "ghsa" && <GhsaButton />}
+          </div>
+        </div>
       </div>
       <div>
         {[pageHeaderContent].map(
