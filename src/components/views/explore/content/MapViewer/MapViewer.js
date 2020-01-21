@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import styles from "./mapviewer.module.scss";
 import EntityRoleToggle from "../../../../misc/EntityRoleToggle.js";
 import GhsaToggle from "../../../../misc/GhsaToggle.js";
@@ -124,27 +125,6 @@ const MapViewer = ({
             <div className={styles.sectionTitle}>Refine map</div>
             <div className={styles.subSections}>
               <div className={styles.subSection}>
-                {true && (
-                  <RadioToggle
-                    label={"Select funding type"}
-                    disabled={!metricHasTransactionType}
-                    className={[styles.italic]}
-                    callback={setTransactionType}
-                    curVal={transactionType}
-                    choices={[
-                      {
-                        name: "Committed",
-                        value: "committed"
-                      },
-                      {
-                        name: "Disbursed",
-                        value: "disbursed"
-                      }
-                    ]}
-                  />
-                )}
-              </div>
-              <div className={styles.subSection}>
                 <RadioToggle
                   className={[styles.italic]}
                   label={"Select support type"}
@@ -160,6 +140,25 @@ const MapViewer = ({
                       value: "inkind",
                       tooltip:
                         "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
+                    }
+                  ]}
+                />
+              </div>
+              <div className={styles.subSection}>
+                <RadioToggle
+                  label={"Select funding type"}
+                  disabled={!metricHasTransactionType}
+                  className={[styles.italic]}
+                  callback={setTransactionType}
+                  curVal={transactionType}
+                  choices={[
+                    {
+                      name: "Committed",
+                      value: "committed"
+                    },
+                    {
+                      name: "Disbursed",
+                      value: "disbursed"
                     }
                   ]}
                 />
@@ -210,22 +209,24 @@ const MapViewer = ({
       slug: "combined",
       header: "Combined",
       content: (
-        <div>
-          <RadioToggle
-            label={"Select support type"}
-            callback={setSupportType}
-            curVal={supportType}
-            choices={[
-              {
-                name: "Combined financial resources and need metric",
-                value: "needs_met",
-                tooltip:
-                  "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
-              }
-            ]}
-          />
-          <div>
-            <div>Filter by</div>
+        <div className={styles.tabContent}>
+          <div className={styles.section}>
+            <RadioToggle
+              label={""}
+              callback={setSupportType}
+              curVal={supportType}
+              choices={[
+                {
+                  name: "Combined financial resources and need metric",
+                  value: "needs_met",
+                  tooltip:
+                    "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
+                }
+              ]}
+            />
+          </div>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Filter by</div>
             {filters}
           </div>
         </div>
@@ -273,7 +274,14 @@ const MapViewer = ({
             {sections
               .filter(s => s.show !== false)
               .map(s => (
-                <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
+                <button
+                  className={classNames({
+                    [styles.selected]: s.slug === curTab
+                  })}
+                  onClick={() => setCurTab(s.slug)}
+                >
+                  {s.header}
+                </button>
               ))}
           </div>
           <div className={styles.tabContent}>

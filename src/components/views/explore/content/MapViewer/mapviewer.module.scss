@@ -24,6 +24,23 @@
     position: relative;
     .menu {
       font-size: 14px;
+
+      button {
+        background-color: white;
+        border-bottom: none;
+        position: relative;
+        bottom: -1px;
+        &:not(.selected) {
+          background-color: transparent;
+        }
+        &.selected {
+          font-weight: 600;
+        }
+        &:not(:first-child):not(:last-child) {
+          margin: 0 5px;
+        }
+      }
+
       .tabSectionHeader {
         font-family: "Raleway", serif;
         text-transform: uppercase;
