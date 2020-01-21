@@ -466,23 +466,27 @@ const Details = ({
     setShowFlag(true);
   }, [id]);
 
+  const ghsa = pageType === "ghsa";
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.details)}>
       <div className={styles.header}>
-        <div
-          style={{
-            backgroundColor:
-              entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)"
-          }}
-          className={styles.entityRole}
-        >
-          <div>{entityRoleNoun} profile</div>
-          <EntityRoleToggle
-            entityRole={entityRole}
-            redirectUrlFunc={v => `/details/${id}/${v}`}
-          />
-        </div>
+        {!ghsa && (
+          <div
+            style={{
+              backgroundColor:
+                entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)"
+            }}
+            className={styles.entityRole}
+          >
+            <div>{entityRoleNoun} profile</div>
+            <EntityRoleToggle
+              entityRole={entityRole}
+              redirectUrlFunc={v => `/details/${id}/${v}`}
+            />
+          </div>
+        )}
         <div className={styles.countryBanner}>
           <div className={styles.countryName}>
             {showFlag && <img src={flag} onError={e => addDefaultSrc(e)} />}
