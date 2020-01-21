@@ -32,12 +32,50 @@ const InfoBox = ({
 
   // Define header color -- use JEE color if JEE is view, otherwise use
   // color scale of selected metric.
-  const headerColor =
-    supportType === "jee"
-      ? infoBoxData.colorScale(
-          Util.getScoreShortName(infoBoxData.jeeScoreOfNode)
-        )
-      : infoBoxData.colorScale(infoBoxData.colorValue);
+  console.log("infoBoxData");
+  console.log(infoBoxData);
+  const getHeaderStyle = ({ infoBoxData, supportType }) => {
+    if (
+      infoBoxData.colorValue === undefined ||
+      infoBoxData.colorValue === -9999
+    ) {
+      return {
+        baseColor: "#ccc",
+        style: {
+          backgroundColor: "#ccc"
+        }
+      };
+    } else if (infoBoxData.colorValue === -8888) {
+      return {
+        baseColor: "#ccc",
+        style: {
+          background:
+            "repeating-linear-gradient(-45deg, #ccc, #ccc 17px, #fff0 17px, #fff0 20px)"
+        }
+      };
+    } else if (supportType === "jee") {
+      const baseColor = infoBoxData.colorScale(
+        Util.getScoreShortName(infoBoxData.jeeScoreOfNode)
+      );
+      return {
+        baseColor: baseColor,
+        style: {
+          backgroundColor: baseColor
+        }
+      };
+    } else {
+      const baseColor = infoBoxData.colorScale(infoBoxData.colorValue);
+      return {
+        baseColor: baseColor,
+        style: {
+          backgroundColor: baseColor
+        }
+      };
+    }
+  };
+
+  const headerStyle = getHeaderStyle({ infoBoxData, supportType });
+  const headerColor = headerStyle.baseColor;
 
   if (nodeData === undefined) return "";
   // TODO slide up somehow
@@ -45,9 +83,7 @@ const InfoBox = ({
     return (
       <div className={classNames(styles.infoBox, { [styles.show]: show })}>
         <div
-          style={{
-            backgroundColor: headerColor
-          }}
+          style={headerStyle.style}
           className={classNames(styles.header, {
             [styles.darkFont]: Util.isLightColor(headerColor)
           })}
