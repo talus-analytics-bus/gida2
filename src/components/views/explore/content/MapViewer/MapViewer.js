@@ -106,6 +106,7 @@ const MapViewer = ({
       {...{
         className: [styles.italic],
         label: "IHR core capacity",
+        openDirection: "up",
         options: core_capacities,
         placeholder: "Select core capacities",
         onChange: v => setCoreCapacities(v.map(d => d.value)),
@@ -194,12 +195,12 @@ const MapViewer = ({
                   value: "jee",
                   tooltip:
                     "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
-                },
-                {
-                  name: "PVS score",
-                  value: "pvs",
-                  tooltip: ""
                 }
+                // {
+                //   name: "PVS score",
+                //   value: "pvs",
+                //   tooltip: ""
+                // }
               ]}
             />
           </div>

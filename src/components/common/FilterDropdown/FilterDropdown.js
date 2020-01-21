@@ -17,7 +17,11 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
   }
   if (className) className.push(styles.label);
   return (
-    <div className={styles.filterDropdown}>
+    <div
+      className={classNames(styles.filterDropdown, {
+        [styles.up]: props.openDirection === "up"
+      })}
+    >
       <div
         className={classNames(
           className !== undefined ? className : styles.label

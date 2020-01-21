@@ -138,7 +138,8 @@ const Export = ({ data, ...props }) => {
                     ],
                     placeholder: "Support type",
                     onChange: setSupportType,
-                    curValues: supportType
+                    curValues: supportType,
+                    isSearchable: false
                   }}
                 />
                 <FilterDropdown
