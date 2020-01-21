@@ -353,7 +353,7 @@ const getComponentData = async ({
     start_date: `${minYear}-01-01`, // TODO check these two
     end_date: `${maxYear}-12-31`,
     by_neighbor: false,
-    filters: {},
+    filters: { parent_flow_info_filters: [] },
     summaries: {},
     include_master_summary: false,
     single_source_and_target: true
@@ -371,6 +371,17 @@ const getComponentData = async ({
     baseQueryParams.filters.parent_flow_info_filters = [
       ["ghsa_funding", "True"]
     ];
+  else if (ghsaOnly === "event") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "outbreak_id:not",
+      null
+    ]);
+  } else if (ghsaOnly === "capacity") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "response_or_capacity:not",
+      "response"
+    ]);
+  }
 
   // Define queries for typical details page.
   const queries = {
