@@ -7,8 +7,11 @@ import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
+import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import ScoreQuery from "../../../../misc/ScoreQuery.js";
+import Tab from "../../../../misc/Tab.js";
+import { core_capacities } from "../../../../misc/Data.js";
 
 // Local content components
 import Map from "./content/Map.js";
@@ -90,6 +93,140 @@ const MapViewer = ({
   // Get whether metric has transaction type
   const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
 
+  // Define map menu sections
+  const [curTab, setCurTab] = React.useState("funding");
+  const filters = (
+    <FilterDropdown
+      {...{
+        label: "Core capacity",
+        options: core_capacities,
+        placeholder: "Select core capacities",
+        onChange: v => setCoreCapacities(v.map(d => d.value)),
+        curValues: coreCapacities
+      }}
+    />
+  );
+  const filtersOld = (
+    <CoreCapacityDropdown
+      onChange={vals => {
+        setCoreCapacities(vals.map(v => v.value));
+      }}
+    />
+  );
+  const sections = [
+    {
+      slug: "funding",
+      header: "Funding",
+      content: (
+        <div>
+          <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+          <div>
+            <div>Refine map</div>
+            <div>
+              <div>
+                {metricHasTransactionType && (
+                  <RadioToggle
+                    label={"Select funding type"}
+                    callback={setTransactionType}
+                    curVal={transactionType}
+                    choices={[
+                      {
+                        name: "Committed",
+                        value: "committed"
+                      },
+                      {
+                        name: "Disbursed",
+                        value: "disbursed"
+                      }
+                    ]}
+                  />
+                )}
+              </div>
+              <div>
+                <RadioToggle
+                  label={"Select support type"}
+                  callback={setSupportType}
+                  curVal={supportType}
+                  choices={[
+                    {
+                      name: "Financial support",
+                      value: "funds"
+                    },
+                    {
+                      name: "In-kind support",
+                      value: "inkind",
+                      tooltip:
+                        "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
+                    }
+                  ]}
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div>Filter by</div>
+            {filters}
+          </div>
+        </div>
+      )
+    },
+    {
+      slug: "scores",
+      header: "Scores",
+      content: (
+        <div>
+          <RadioToggle
+            label={"Select score type"}
+            callback={setSupportType}
+            curVal={supportType}
+            choices={[
+              {
+                name: "JEE score",
+                value: "jee",
+                tooltip:
+                  "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
+              },
+              {
+                name: "PVS score",
+                value: "pvs",
+                tooltip: ""
+              }
+            ]}
+          />
+          <div>
+            <div>Filter by</div>
+            {filters}
+          </div>
+        </div>
+      )
+    },
+    {
+      slug: "combined",
+      header: "Combined",
+      content: (
+        <div>
+          <RadioToggle
+            label={"Select support type"}
+            callback={setSupportType}
+            curVal={supportType}
+            choices={[
+              {
+                name: "Combined financial resources and need metric",
+                value: "needs_met",
+                tooltip:
+                  "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
+              }
+            ]}
+          />
+          <div>
+            <div>Filter by</div>
+            {filters}
+          </div>
+        </div>
+      )
+    }
+  ];
+
   // TODO:
   // map
   return (
@@ -116,67 +253,6 @@ const MapViewer = ({
           ghsaOnly={ghsaOnly}
         />
         <div className={styles.menu}>
-          <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-          {metricHasTransactionType && (
-            <RadioToggle
-              label={"Choose"}
-              callback={setTransactionType}
-              curVal={transactionType}
-              choices={[
-                {
-                  name: "Committed",
-                  value: "committed"
-                },
-                {
-                  name: "Disbursed",
-                  value: "disbursed"
-                }
-              ]}
-            />
-          )}
-          <RadioToggle
-            label={"Click to show"}
-            callback={setSupportType}
-            curVal={supportType}
-            choices={[
-              {
-                name: "Financial support",
-                value: "funds"
-              },
-              {
-                name: "In-kind support",
-                value: "inkind",
-                tooltip:
-                  "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
-              },
-              {
-                name: "JEE score",
-                value: "jee",
-                tooltip:
-                  "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
-              },
-              {
-                name: "PVS score",
-                value: "pvs",
-                tooltip: ""
-              },
-              {
-                name: "Combined financial resources and need metric",
-                value: "needs_met",
-                tooltip:
-                  "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
-              }
-            ]}
-          />
-          {
-            // TODO: add this tooltip for CC dropdown
-            // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-          }
-          <CoreCapacityDropdown
-            onChange={vals => {
-              setCoreCapacities(vals.map(v => v.value));
-            }}
-          />
           <TimeSlider
             hide={supportType === "jee"}
             minYearDefault={Settings.startYear}
@@ -186,6 +262,23 @@ const MapViewer = ({
               setMaxYear(years[1]);
             }}
           />
+          <div>View map by</div>
+          <div className={styles.tabs}>
+            {sections
+              .filter(s => s.show !== false)
+              .map(s => (
+                <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
+              ))}
+          </div>
+          <div className={styles.tabContent}>
+            {sections.map(s => (
+              <Tab selected={curTab === s.slug} content={s.content} />
+            ))}
+          </div>
+          {
+            // TODO: add this tooltip for CC dropdown
+            // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+          }
         </div>
       </div>
     </div>

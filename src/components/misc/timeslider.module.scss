@@ -4,4 +4,10 @@
   > div {
     font-weight: bold;
   }
+  > div:last-child {
+    margin-left: 20px;
+    margin-top: 5px;
+    margin-bottom: 40px;
+    width: 200px;
+  }
 }

@@ -28,15 +28,19 @@ const TimeSlider = ({
   return (
     <div className={styles.timeSlider}>
       <div>{label || "Select time range"}</div>
-      <Range
-        className={hide ? styles.hide : ""}
-        min={minYearDefault}
-        max={maxYearDefault}
-        defaultValue={[minYearDefault, maxYearDefault]}
-        marks={marks}
-        step={1}
-        onAfterChange={onAfterChange}
-      />
+      <div>
+        <div>
+          <Range
+            className={hide ? styles.hide : ""}
+            min={minYearDefault}
+            max={maxYearDefault}
+            defaultValue={[minYearDefault, maxYearDefault]}
+            marks={marks}
+            step={1}
+            onAfterChange={onAfterChange}
+          />
+        </div>
+      </div>
     </div>
   );
 };
