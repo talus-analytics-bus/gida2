@@ -4,6 +4,20 @@
   display: flex;
   flex-flow: column;
   width: 100%;
+  a button {
+    display: flex;
+    flex-flow: row;
+    width: max-content;
+    background-color: white !important;
+    padding: 10px;
+    &:hover {
+      background-color: darken(white, 10%) !important;
+    }
+    img {
+      height: 18.75;
+      width: 15px;
+    }
+  }
   .areaLine {
     width: 100%;
   }

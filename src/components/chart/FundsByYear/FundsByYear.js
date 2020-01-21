@@ -6,6 +6,8 @@ import styles from "./fundsbyyear.module.scss";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
 import AreaLine from "../AreaLine/AreaLine.js";
 import { Settings } from "../../../App.js";
+import tableIcon from "../../../assets/images/table-funds.svg";
+import Button from "../../common/Button/Button.js";
 
 // Data functions
 
@@ -39,10 +41,21 @@ const FundsByYear = ({
 
   // Get link to entitytable page
   const linkToEntityTable = (
-    <Link to={`/table/${id}/${entityRole}`}>
-      <button>View table of funds</button>
-    </Link>
+    <Button
+      type={"secondary"}
+      image={tableIcon}
+      label={"View table of funds"}
+      linkTo={`/table/${id}/${entityRole}`}
+    />
   );
+  // const linkToEntityTable = (
+  //   <Link to={`/table/${id}/${entityRole}`}>
+  //     <button>
+  //       <img src={tableIcon} />
+  //       View table of funds
+  //     </button>
+  //   </Link>
+  // );
   return (
     <div className={styles.fundsByYear}>
       {!unknownDataOnly && !noFinancialData && (
