@@ -7,6 +7,9 @@ body,
   // TODO finish the CSS for this.
   .dark {
     background-color: $dark-background-color;
+    span.control {
+      color: #333;
+    }
     color: $dark-color;
     * {
       color: $dark-color;
