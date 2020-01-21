@@ -16,6 +16,7 @@
   .content {
     display: none;
     flex-flow: column;
+    align-items: center;
     border: 1px solid #ccc;
     padding: 10px 30px;
     background-color: white;
@@ -33,6 +34,7 @@
     $rect-width: $rect-height * 4;
     display: flex;
     flex-flow: row;
+    align-items: flex-start;
     .entry {
       &.unspec {
         .bucket {
@@ -40,7 +42,12 @@
           flex-flow: column;
           align-items: center;
         }
-        margin-left: 50px;
+        &:first-child {
+          margin-right: 30px;
+        }
+        &:last-child {
+          margin-left: 30px;
+        }
         svg {
           height: $rect-height;
           width: $rect-width;

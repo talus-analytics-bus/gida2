@@ -89,18 +89,21 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
       ]
     : colorScale.values;
 
+  // Add extra value for numeric metrics
+  if (numericMetric) legendVals.push("more");
+
   // Get the buckets (rectangles and labels) for this legend entry.
   const buckets = legendVals.map((d, i) => (
     <div className={styles.bucket}>
       <div style={{ backgroundColor: colors[i] }} className={styles.rect} />
       <div className={styles.label}>
-        {scoreMetric && Util.formatValue(d, supportType, units)}
+        {scoreMetric && Util.formatValue(d, supportType, units, true)}
         {!scoreMetric &&
           !needsMetMetric &&
           i < legendVals.length - 1 &&
-          Util.formatValue(d, supportType, units)}
+          Util.formatValue(d, supportType, units, true)}
         {!scoreMetric && numericMetric && i >= legendVals.length - 1 && (
-          <span>&nbsp;</span>
+          <span>{d}</span>
         )}
         {!scoreMetric && needsMetMetric && d}
       </div>
@@ -168,6 +171,17 @@ const Legend = ({
           {title !== undefined && title}
         </div>
         <div className={styles.entries}>
+          {supportType !== "jee" && supportType !== "pvs" && (
+            <div className={classNames(styles.entry, styles.unspec)}>
+              <div className={styles.bucket}>
+                <div
+                  style={{ backgroundColor: "#ccc" }}
+                  className={styles.rect}
+                />
+                <div className={styles.label}>None</div>
+              </div>
+            </div>
+          )}
           {getMainLegendBuckets({ colorScale, supportType })}
           {supportType !== "jee" && supportType !== "pvs" && (
             <div className={classNames(styles.entry, styles.unspec)}>
@@ -175,7 +189,7 @@ const Legend = ({
                 <svg>
                   <rect />
                 </svg>
-                <div className={styles.label}>Unspecified value</div>
+                <div className={styles.label}>Unspecified</div>
               </div>
             </div>
           )}

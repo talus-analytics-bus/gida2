@@ -798,7 +798,7 @@ Util.getScoreShortName = score => {
 };
 
 // Formats value based on column name
-Util.formatValue = (val, cn, units = true) => {
+Util.formatValue = (val, cn, units = true, round = false) => {
   if (val === -8888 || val === "yyy") return "Specific amount not reported";
   if (val === "n/a") return val;
   if (val === undefined || val === null) val = 0;
@@ -813,7 +813,7 @@ Util.formatValue = (val, cn, units = true) => {
       case "funds":
       case "needs_met":
         if (val === -9999 || val === "zzz") return undefined;
-        else return Util.money(val, units); // TODO units
+        else return Util.money(val, units, round);
       case "provided_inkind":
       case "committed_inkind":
       case "inkind":
@@ -828,12 +828,13 @@ Util.formatValue = (val, cn, units = true) => {
 };
 
 // Format money as comma number with USD suffix
-Util.money = (val, units = true) => {
+Util.money = (val, units = true, round = false) => {
   if (val === "unknown") return "Specific amount not reported";
   else if (val === 0) return "0" + (units ? " USD" : "");
-  else {
-    return `${Util.formatSI(val)}${units ? " USD" : ""}`; // TODO units
-  }
+  else if (round) {
+    console.log("ROUNDING");
+    return `${Util.formatSIInteger(val)}${units ? " USD" : ""}`;
+  } else return `${Util.formatSI(val)}${units ? " USD" : ""}`;
 };
 
 Util.formatSIInteger = val => {

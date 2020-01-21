@@ -14,7 +14,7 @@ export const greens = [
 export const purples = [
   "#bfd3e6",
   "#88aac3",
-  "#757fb6",
+  // "#757fb6",
   "#75559d",
   "#713286",
   "#6a1266",
@@ -147,7 +147,8 @@ export const getMapColorScale = ({
 
   if (supportType === "inkind") {
     return colorScaleMaker({
-      domain: [5, 10, 15, 20, 25, 30],
+      domain: [5, 10, 15, 20, 25],
+      // domain: [5, 10, 15, 20, 25, 30],
       range: entityRole === "funder" ? greens : purples
     });
   } else if (supportType === "funds") {
