@@ -29,6 +29,10 @@
         background-color: transparent;
         border: none;
         color: darkgray;
+        &:hover {
+          background-color: rgba(211, 211, 211, 0.15);
+          color: #333;
+        }
       }
       &.selected {
         font-weight: bold;

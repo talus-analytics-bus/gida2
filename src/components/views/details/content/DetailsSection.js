@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./detailssection.module.scss";
+import SourceText from "../../../common/SourceText/SourceText.js";
 
 // FC for DetailsSection.
 const DetailsSection = ({
@@ -49,7 +50,12 @@ const DetailsSection = ({
           ))}
         </form>
       )}
-      {!noFinancialData && <div className={styles.content}>{content}</div>}
+      {!noFinancialData && (
+        <div className={styles.content}>
+          {content}
+          <SourceText />
+        </div>
+      )}
       {noFinancialData && <span>No financial assistance data to show.</span>}
     </div>
   );
