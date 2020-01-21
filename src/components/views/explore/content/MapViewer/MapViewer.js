@@ -453,6 +453,11 @@ const getComponentData = async ({
       "outbreak_id:not",
       null
     ]);
+  } else if (ghsaOnly === "capacity") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "response_or_capacity:not",
+      "response"
+    ]);
   }
 
   // Define queries for typical details page.

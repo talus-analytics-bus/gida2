@@ -25,6 +25,11 @@ const GhsaToggle = ({ ghsaOnly, setGhsaOnly, ...props }) => {
           name: "Event response funding only",
           value: "event",
           tooltip: ""
+        },
+        {
+          name: "IHR capacity building funding only",
+          value: "capacity",
+          tooltip: ""
         }
       ]}
       curVal={ghsaOnly}
