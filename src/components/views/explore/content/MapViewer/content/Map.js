@@ -1,5 +1,7 @@
 import React from "react";
+import ReactTooltip from "react-tooltip";
 import styles from "./map.module.scss";
+import tooltipStyles from "../../../../../common/tooltip.module.scss";
 import classNames from "classnames";
 import * as d3 from "d3/dist/d3.min";
 
@@ -76,6 +78,10 @@ const Map = ({
   // Track selected node (i.e., the clicked country whose info box is also
   // visible).
   const [nodeData, setNodeData] = React.useState(undefined);
+  const [tooltipCountry, setTooltipCountry] = React.useState(undefined);
+  const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
+  console.log("tooltipNodeData");
+  console.log(tooltipNodeData);
 
   // Define "columns" for map data.
   const d3MapDataFields = [
@@ -224,9 +230,13 @@ const Map = ({
   console.log("mapData");
   console.log(mapData);
   // Get datum for the selected node, if it exists.
-  const d =
+  const datumForInfoBox =
     nodeData !== undefined
       ? data.find(d => d[nodeType].find(dd => dd.id === nodeData.id))
+      : undefined;
+  const datumForTooltip =
+    tooltipNodeData !== undefined
+      ? data.find(d => d[nodeType].find(dd => dd.id === tooltipNodeData.id))
       : undefined;
 
   /**
@@ -236,15 +246,27 @@ const Map = ({
    * @param  {String}      [supportTypeForValues="funds"] [description]
    * @return {[type]}                                     [description]
    */
-  const getFlowValues = ({ supportTypeForValues = "funds" }) => {
+  const getFlowValues = ({
+    supportTypeForValues = "funds",
+    datum,
+    transactionType
+  }) => {
     // Define the flows that should be used to get the flow values.
-    const flows =
+    const flowsTmp =
       supportTypeForValues === "funds"
         ? ["committed_funds", "disbursed_funds"]
         : ["committed_inkind", "provided_inkind"];
 
+    let flows;
+    if (transactionType !== undefined) {
+      if (transactionType === "committed") flows = [flowsTmp[0]];
+      else flows = [flowsTmp[1]];
+    } else {
+      flows = flowsTmp;
+    }
+
     // If the datum is undefined, return "zeros" for the flow values.
-    if (d === undefined) {
+    if (datum === undefined) {
       return flows.map(f => {
         return {
           value: Util.formatValue(0, f),
@@ -268,7 +290,7 @@ const Map = ({
         return {
           value: Util.formatValue(
             getMapMetricValue({
-              d,
+              d: datum,
               supportType: supportTypeForValues,
               flowType: f,
               coreCapacities
@@ -289,98 +311,124 @@ const Map = ({
       });
     }
   };
-  // If a node has been selected, get the info box data for it.
-  // First, get the JEE score for the node, if it exists. If it is not avail,
-  // then 'scoreOfNode' is undefined.
-  let scoreOfNode;
-  if (
-    // There is a node selected...
-    nodeData !== undefined &&
-    // and the support type being viewed is one that shows the JEE score...
-    (supportType === "jee" || supportType === "needs_met")
-  ) {
-    // Get JEE score (avg) to display.
-    const jeeScoresToAvg = getJeeScores({
-      scores: jeeScores, // TODO
-      iso2: nodeData.id, // TODO
-      coreCapacities
-    });
 
-    // Average JEE score is mean.
-    const avgJeeScore = d3.mean(jeeScoresToAvg, d => d.score);
-    scoreOfNode = avgJeeScore;
-  }
-
-  // Define the InfoBox data passed to the InfoBox component. By default the
-  // flow values are all zeroes.
-  const nodeMapData =
-    nodeData !== undefined
-      ? mapData.find(d => d.id === nodeData.id)
-      : undefined;
-  let infoBoxData = {
-    scoreOfNode: scoreOfNode,
-    flowValues: getFlowValues({
-      supportTypeForValues: supportType
-    }),
-    colorScale: colorScale
-  };
-
-  // Get the node data that is in the table of values for display in the map.
-
-  // If we have data to put in the InfoBox:
-  if (nodeMapData !== undefined && d !== undefined) {
-    // Define a value with which to determine the color of the InfoBox header.
-    // This will be overriden by 'jeeLabel' if the supportType is 'jee'.
-    infoBoxData.colorValue = nodeMapData.value_raw;
-
-    // If unknown value applies, get the message for it, explaining why the
-    // value is unknown (e.g., country is marked as a funder for a multilateral
-    // project in which their specific contribution is not known).
-    infoBoxData.unknownValueExplanation = getUnknownValueExplanation({
-      datum: d,
-      value: getMapMetricValue({
-        d,
-        supportType,
-        flowType,
+  const getInfoBoxData = (nodeDataToCheck, mapData, datum, simple = false) => {
+    // If a node has been selected, get the info box data for it.
+    // First, get the JEE score for the node, if it exists. If it is not avail,
+    // then 'scoreOfNode' is undefined.
+    let scoreOfNode;
+    if (
+      // There is a node selected...
+      nodeDataToCheck !== undefined &&
+      // and the support type being viewed is one that shows the JEE score...
+      (supportType === "jee" || supportType === "needs_met")
+    ) {
+      // Get JEE score (avg) to display.
+      const jeeScoresToAvg = getJeeScores({
+        scores: jeeScores, // TODO
+        iso2: nodeDataToCheck.id, // TODO
         coreCapacities
-      }),
-      entityRole: entityRole
-    });
+      });
 
-    // Get other data for info box depending on the support type.
-    switch (supportType) {
-      // Funding data: show amount committed/disbursed
-      case "funds":
-        infoBoxData.flowValues = getFlowValues({
-          supportTypeForValues: "funds"
-        });
-        break;
-
-      // Inkind data: show amount committed/provided
-      case "inkind":
-        infoBoxData.flowValues = getFlowValues({
-          supportTypeForValues: "inkind"
-        });
-        break;
-
-      // JEE data / needs met: show amount committed/disbursed and JEE score
-      case "needs_met":
-      case "jee":
-        infoBoxData.flowValues = getFlowValues({
-          supportTypeForValues: "funds"
-        });
-        break;
-
-      default:
-        break;
+      // Average JEE score is mean.
+      const avgJeeScore = d3.mean(jeeScoresToAvg, d => d.score);
+      scoreOfNode = avgJeeScore;
     }
-  }
+
+    // Define the InfoBox data passed to the InfoBox component. By default the
+    // flow values are all zeroes.
+    const transactionTypeTmp =
+      flowType.startsWith("committed") && supportType !== "needs_met"
+        ? "committed"
+        : "disbursed";
+    const transactionType = simple ? transactionTypeTmp : undefined;
+    const nodeMapData =
+      nodeDataToCheck !== undefined
+        ? mapData.find(d => d.id === nodeDataToCheck.id)
+        : undefined;
+    let infoBoxData = {
+      scoreOfNode: scoreOfNode,
+      flowValues: getFlowValues({
+        supportTypeForValues: supportType,
+        datum: datum,
+        transactionType
+      }),
+      colorScale: colorScale
+    };
+
+    // Get the node data that is in the table of values for display in the map.
+
+    // If we have data to put in the InfoBox:
+    if (nodeMapData !== undefined && datum !== undefined) {
+      // Define a value with which to determine the color of the InfoBox header.
+      // This will be overriden by 'jeeLabel' if the supportType is 'jee'.
+      infoBoxData.colorValue = nodeMapData.value_raw;
+
+      // If unknown value applies, get the message for it, explaining why the
+      // value is unknown (e.g., country is marked as a funder for a multilateral
+      // project in which their specific contribution is not known).
+      infoBoxData.unknownValueExplanation = getUnknownValueExplanation({
+        datum,
+        value: getMapMetricValue({
+          d: datum,
+          supportType,
+          flowType,
+          coreCapacities
+        }),
+        entityRole: entityRole
+      });
+
+      // Get other data for info box depending on the support type.
+      switch (supportType) {
+        // Funding data: show amount committed/disbursed
+        case "funds":
+          infoBoxData.flowValues = getFlowValues({
+            supportTypeForValues: "funds",
+            datum,
+            transactionType
+          });
+          break;
+
+        // Inkind data: show amount committed/provided
+        case "inkind":
+          infoBoxData.flowValues = getFlowValues({
+            supportTypeForValues: "inkind",
+            datum,
+            transactionType
+          });
+          break;
+
+        // JEE data / needs met: show amount committed/disbursed and JEE score
+        case "needs_met":
+        case "jee":
+          infoBoxData.flowValues = getFlowValues({
+            supportTypeForValues: "funds",
+            datum,
+            transactionType
+          });
+          break;
+
+        default:
+          break;
+      }
+    }
+    return infoBoxData;
+  };
+  const infoBoxData = getInfoBoxData(nodeData, mapData, datumForInfoBox);
+  const tooltipData =
+    tooltipNodeData !== undefined
+      ? getInfoBoxData(tooltipNodeData, mapData, datumForTooltip, true)
+      : undefined;
+
+  console.log("tooltipData");
+  console.log(tooltipData);
 
   return (
     <div className={classNames(styles.map, { [styles.dark]: isDark })}>
       <D3Map
         {...{
           mapData,
+          setTooltipNodeData,
           colorScale,
           flowType,
           entityRole,
@@ -408,6 +456,31 @@ const Map = ({
           }}
         />
       </div>
+      {
+        // Tooltip for info tooltip icons.
+        <ReactTooltip
+          id={"mapTooltip"}
+          type="light"
+          className={classNames(tooltipStyles.tooltip, tooltipStyles.simple)}
+          place="top"
+          effect="float"
+          getContent={() =>
+            tooltipData && (
+              <InfoBox
+                {...{
+                  simple: true,
+                  entityRole,
+                  supportType,
+                  nodeData: tooltipNodeData,
+                  setNodeData,
+                  infoBoxData: tooltipData,
+                  isDark
+                }}
+              />
+            )
+          }
+        />
+      }
     </div>
   );
 };

@@ -11,6 +11,7 @@ import Button from "../common/Button/Button.js";
  * @method InfoBox
  */
 const InfoBox = ({
+  simple = false,
   nodeData,
   setNodeData,
   supportType,
@@ -88,7 +89,8 @@ const InfoBox = ({
       <div
         className={classNames(styles.infoBox, {
           [styles.show]: show,
-          [styles.dark]: isDark
+          [styles.dark]: isDark,
+          [styles.simple]: simple
         })}
       >
         <div
@@ -98,15 +100,17 @@ const InfoBox = ({
           })}
         >
           <div className={styles.name}>{nodeData.name}</div>
-          <div className={styles.close}>
-            <Button
-              callback={() => {
-                setShow(false);
-                setNodeData(undefined);
-              }}
-              type={"close"}
-            />
-          </div>
+          {!simple && (
+            <div className={styles.close}>
+              <Button
+                callback={() => {
+                  setShow(false);
+                  setNodeData(undefined);
+                }}
+                type={"close"}
+              />
+            </div>
+          )}
         </div>
         <div className={styles.content}>
           <div className={styles.score}>
@@ -130,11 +134,13 @@ const InfoBox = ({
               </div>
             )}
           </div>
-          <Button
-            linkTo={`/details/${nodeData.id}/${entityRole}`}
-            label={"View funding details"}
-            type={"primary"}
-          />
+          {!simple && (
+            <Button
+              linkTo={`/details/${nodeData.id}/${entityRole}`}
+              label={"View funding details"}
+              type={"primary"}
+            />
+          )}
         </div>
       </div>
     );

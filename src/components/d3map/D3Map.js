@@ -18,18 +18,21 @@ const D3Map = ({
   d3MapDataFields,
   ghsaOnly,
   setNodeData,
+  setTooltipNodeData,
   ...props
 }) => {
   const [mapLoaded, setMapLoaded] = React.useState(false);
   const [worldMap, setWorldMap] = React.useState(null);
   const [activeCountry, setActiveCountry] = React.useState(null);
+  const [tooltipCountry, setTooltipCountry] = React.useState(null);
 
   // Create map the first time it's loaded.
   React.useEffect(() => {
     const worldMapNew = new WorldMap("." + styles.worldMap, {
       setMapLoaded,
       setActiveCountry,
-      activeCountry
+      activeCountry,
+      setTooltipCountry
     });
     setWorldMap(worldMapNew);
   }, []);
@@ -49,6 +52,21 @@ const D3Map = ({
       }
     }
   }, [activeCountry]);
+
+  // Update active country if it changes
+  React.useEffect(() => {
+    if (worldMap !== null) {
+      if (tooltipCountry !== null) {
+        axios(`${Util.API_URL}/place`, {
+          params: { id: tooltipCountry }
+        }).then(d => {
+          setTooltipNodeData(d.data[0]);
+        });
+      } else {
+        setTooltipNodeData(undefined);
+      }
+    }
+  }, [tooltipCountry]);
 
   // Update map coloring and tooltips etc. whenever flowtype is updated.
   React.useEffect(() => {

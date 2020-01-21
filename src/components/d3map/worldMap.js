@@ -1,3 +1,5 @@
+import React from "react";
+import ReactTooltip from "react-tooltip";
 import * as d3 from "d3/dist/d3.min";
 import { geoNaturalEarth2 } from "d3-geo-projection";
 import * as topojson from "topojson-client";
@@ -164,9 +166,19 @@ class WorldMap extends Chart {
       .data(this.countryData)
       .enter()
       .append("g")
-      .on("mouseover", function() {
+      .on("mouseover", function(d) {
+        console.log("d");
+        console.log(d);
+        // Highlight
         d3.select(this).raise();
         if (chart.activeCountry) chart.activeCountry.raise();
+        chart.params.setTooltipCountry(d.properties.place_id);
+        // Tooltip
+        // chart.params.setTooltipContent(
+        //   <div>
+        //     <div>{d.properties.NAME}</div>
+        //   </div>
+        // );
       })
       .on("click", function(d) {
         const country = d3.select(this);
@@ -185,8 +197,11 @@ class WorldMap extends Chart {
 
     countryGroup
       .append("path")
+      .attr("data-tip", true)
+      .attr("data-for", "mapTooltip")
       .attr("class", styles.country)
       .attr("d", d => this.path(d));
+    ReactTooltip.rebuild();
 
     countryGroup
       .append("path")
