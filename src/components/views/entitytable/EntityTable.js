@@ -117,6 +117,7 @@ const EntityTable = ({
       slug: "all",
       content: (
         <TableInstance
+          paging={true}
           tableColumns={[
             {
               title: "Funder",
@@ -198,6 +199,7 @@ const EntityTable = ({
       slug: "funds_by_other",
       content: (
         <TableInstance
+          paging={true}
           sortByProp={"disbursed_funds"}
           tableColumns={[
             otherEntityRole === "funder" ? funderCol : recipientCol,
@@ -241,6 +243,7 @@ const EntityTable = ({
       show: id === "ghsa",
       content: (
         <TableInstance
+          paging={true}
           sortByProp={"disbursed_funds"}
           tableColumns={[
             otherEntityRole === "funder" ? recipientCol : funderCol,
@@ -327,6 +330,7 @@ const EntityTable = ({
       slug: "in-kind",
       content: (
         <TableInstance
+          paging={true}
           sortByProp={"provided_inkind"}
           tableColumns={[
             {
