@@ -258,7 +258,7 @@ const Orgs = ({
         <TableInstance
           tooltipFunc={d => {
             return {
-              "data-tip": true,
+              "data-tip": "",
               "data-for": "orgTooltip",
               onMouseOver: () =>
                 updateTooltipData(d[table[2]], table[2], table[3], [d])
@@ -304,6 +304,9 @@ const Orgs = ({
   //     setTooltipData(undefined);
   //   }
   // }, [hoveredEntity]);
+
+  console.log("Rebuilding tooltips");
+  ReactTooltip.rebuild();
 
   // TODO:
   // map
@@ -388,7 +391,8 @@ const Orgs = ({
           className={classNames(tooltipStyles.tooltip, tooltipStyles.simple)}
           place="top"
           delayShow={500}
-          effect="solid"
+          offset={{ top: 5 }}
+          effect="float"
           clickable={true}
           afterShow={function(e) {
             setRevealed(true);

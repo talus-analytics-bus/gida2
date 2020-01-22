@@ -7,6 +7,22 @@
   .tables {
     display: flex;
     flex-flow: row;
+    table {
+      td,
+      tr {
+        color: black;
+        &:hover {
+          transition-timing-function: linear;
+          transition: background 125ms, outline 125ms;
+          td {
+            background-color: #f9f9f9;
+            transition-timing-function: linear;
+            transition: background-color 125ms, border-color 125ms,
+              font-weight 125ms;
+          }
+        }
+      }
+    }
     > div {
       margin: 0 10px;
       width: 100%;
