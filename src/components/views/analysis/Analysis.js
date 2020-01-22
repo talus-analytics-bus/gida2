@@ -15,6 +15,8 @@ import Search from "../../common/Search/Search.js";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { core_capacities } from "../../misc/Data.js";
+import SourceText from "../../common/SourceText/SourceText.js";
+import Button from "../../common/Button/Button.js";
 
 // FC for Analysis.
 const Analysis = ({
@@ -76,31 +78,45 @@ const Analysis = ({
     <div style={{ display: showInfo }} className={styles.info}>
       <div className={styles.header}>
         <div className={styles.name}>{selectedEntityInfo.name}</div>
-        <button onClick={() => setSelectedEntity(null)}>Close</button>
+        <Button
+          callback={() => {
+            setSelectedEntity(null);
+          }}
+          type={"close"}
+        />
       </div>
-      <div className={styles.content}>
-        <div className={styles.metric}>
-          <div className={styles.value}>
-            {Util.money(selectedEntityInfo.source)}
+      <div className={styles.contentInfo}>
+        <div className={styles.row}>
+          <div className={styles.metric}>
+            <div className={styles.value}>
+              {Util.money(selectedEntityInfo.source)}
+            </div>
+            <div className={styles.label}>
+              Total {transactionTypeNoun} funded
+            </div>
           </div>
-          <div className={styles.label}>Total {transactionTypeNoun} funded</div>
+          <div className={styles.metric}>
+            <div className={styles.value}>
+              {Util.money(selectedEntityInfo.target)}
+            </div>
+            <div className={styles.label}>
+              Total {transactionTypeNoun} received
+            </div>
+          </div>
         </div>
-        <div className={styles.metric}>
-          <div className={styles.value}>
-            {Util.money(selectedEntityInfo.target)}
-          </div>
-          <div className={styles.label}>
-            Total {transactionTypeNoun} received
-          </div>
-        </div>
+
         {true && (
-          <div>
-            <Link to={`/details/${selectedEntityInfo.data.id}/funder`}>
-              <button>View funder profile</button>
-            </Link>
-            <Link to={`/details/${selectedEntityInfo.data.id}/recipient`}>
-              <button>View recipient profile</button>
-            </Link>
+          <div className={styles.row}>
+            <Button
+              type={"secondary"}
+              linkTo={`/details/${selectedEntityInfo.data.id}/funder`}
+              label={"View funder profile"}
+            />
+            <Button
+              type={"secondary"}
+              linkTo={`/details/${selectedEntityInfo.data.id}/recipient`}
+              label={"View recipient profile"}
+            />
           </div>
         )}
       </div>
@@ -204,48 +220,52 @@ const Analysis = ({
         </p>
         <div className={styles.chordDiagram}>
           {chordContent}
-          <div className={styles.menu}>
-            <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-            <RadioToggle
-              label={"Choose"}
-              callback={setTransactionType}
-              curVal={transactionType}
-              choices={[
-                {
-                  name: "Committed",
-                  value: "committed"
-                },
-                {
-                  name: "Disbursed",
-                  value: "disbursed"
-                }
-              ]}
-            />
-            {
-              // TODO: add this tooltip for CC dropdown
-              // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-            }
-            <FilterDropdown
-              {...{
-                className: [styles.italic],
-                label: "IHR core capacity",
-                openDirection: "down",
-                options: core_capacities,
-                placeholder: "Select core capacities",
-                onChange: v => setCoreCapacities(v.map(d => d.value)),
-                curValues: coreCapacities
-              }}
-            />
-            <Search callback={setSelectedEntity} expandedDefault={true} />
-            <TimeSlider
-              minYearDefault={Settings.startYear}
-              maxYearDefault={Settings.endYear}
-              onAfterChange={years => {
-                setMinYear(years[0]);
-                setMaxYear(years[1]);
-              }}
-            />
-            {info}
+          <div className={styles.menuContainer}>
+            <div className={styles.menu}>
+              <Search callback={setSelectedEntity} expandedDefault={true} />
+
+              <TimeSlider
+                minYearDefault={Settings.startYear}
+                maxYearDefault={Settings.endYear}
+                onAfterChange={years => {
+                  setMinYear(years[0]);
+                  setMaxYear(years[1]);
+                }}
+              />
+              <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+              <RadioToggle
+                label={"Choose"}
+                callback={setTransactionType}
+                curVal={transactionType}
+                choices={[
+                  {
+                    name: "Committed",
+                    value: "committed"
+                  },
+                  {
+                    name: "Disbursed",
+                    value: "disbursed"
+                  }
+                ]}
+              />
+              {
+                // TODO: add this tooltip for CC dropdown
+                // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+              }
+              <FilterDropdown
+                {...{
+                  className: [styles.italic],
+                  label: "IHR core capacities",
+                  openDirection: "down",
+                  options: core_capacities,
+                  placeholder: "Select core capacities",
+                  onChange: v => setCoreCapacities(v.map(d => d.value)),
+                  curValues: coreCapacities
+                }}
+              />
+              {info}
+            </div>
+            {<SourceText />}
           </div>
         </div>
         <h1>International funding by funder/recipient</h1>
@@ -257,6 +277,7 @@ const Analysis = ({
           included on this list, search for that country or organization below.
         </p>
         {<div className={styles.tables}>{tableInstances.map(d => d)}</div>}
+        {<SourceText />}
       </div>
     </div>
   );

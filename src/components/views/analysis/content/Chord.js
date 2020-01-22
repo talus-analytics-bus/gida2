@@ -27,7 +27,8 @@ const Chord = ({
       setSelectedEntity,
       selectedEntity,
       transactionType,
-      setEntityArcInfo
+      setEntityArcInfo,
+      noResizeEvent: true
     });
     setChord(chordNew);
   }, [chordData, transactionType]);
