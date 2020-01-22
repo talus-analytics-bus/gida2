@@ -19,13 +19,18 @@
     }
   }
   .areaLine {
-    width: 90%;
+    width: 80%;
   }
   .content {
     display: flex;
     flex-flow: row;
     .totals {
-      width: 10%;
+      &:not(.unknownOnly) {
+        width: 20%;
+      }
+      &.unknownOnly > div {
+        margin: 10px 0 20px 0;
+      }
       display: flex;
       flex-flow: column;
     }

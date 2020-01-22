@@ -18,8 +18,6 @@ const Donuts = ({
 }) => {
   // If no data, return message to that effect.
   const noData = data === null;
-  console.log("data");
-  console.log(data);
 
   // Check if the flow type selected has data to show.
   const flowTypeData = data.flow_types[flowType];
@@ -51,6 +49,7 @@ const Donuts = ({
               nodeType={nodeType}
               ghsaOnly={ghsaOnly}
               flowType={flowType}
+              id={id}
             />
           ))}
         </div>

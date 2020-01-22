@@ -5,14 +5,19 @@ import styles from "./totalbyflowtype.module.scss";
 
 // FC for Details.
 const TotalByFlowType = ({ flowType, data, ...props }) => {
+  const amount = getAmountByFlowType(flowType, data);
   return (
     <div
       className={classNames(styles.totalByFlowType, {
         [styles.inline]: props.inline
       })}
     >
-      <div className={styles.value}>
-        {Util.formatValue(getAmountByFlowType(flowType, data), flowType)}
+      <div
+        className={classNames(styles.value, {
+          [styles.unknown]: amount === "unknown"
+        })}
+      >
+        {Util.formatValue(amount, flowType)}
       </div>
       <div className={styles.label}>
         {Util.formatLabel(flowType)}

@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./fundsbyyear.module.scss";
 
@@ -78,11 +79,11 @@ const FundsByYear = ({
       )}
       {(unknownDataOnly || noFinancialData) && (
         <div className={styles.content}>
-          <div className={styles.totals}>
-            <span>
+          <div className={classNames(styles.totals, styles.unknownOnly)}>
+            <div>
               No funding with specific amounts to show. Click "View table of
               funds" to view all available data.
-            </span>
+            </div>
             {linkToEntityTable}
           </div>
         </div>

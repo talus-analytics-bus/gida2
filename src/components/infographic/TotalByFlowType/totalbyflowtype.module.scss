@@ -19,7 +19,10 @@
     font-family: "RawlineRegular", serif;
     font-weight: 800;
     font-size: 30.8px;
-    white-space: nowrap;
+    &.unknown {
+      font-size: 2em;
+    }
+    // white-space: nowrap;
   }
   .label {
     font-family: "Open Sans", sans-serif;

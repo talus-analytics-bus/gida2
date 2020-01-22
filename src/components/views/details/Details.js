@@ -171,7 +171,7 @@ const Details = ({
   };
 
   // Define details content sections.
-  const showTabs = !noData && !unknownDataOnly;
+  const showTabs = !noData && !unknownDataOnly && !noFinancialData;
 
   // For response event funding: get totals.
   const responseEventTotals = (
