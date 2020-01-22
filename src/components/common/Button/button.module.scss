@@ -6,6 +6,11 @@
   align-items: center;
   border-radius: $border-radius;
   color: #333;
+
+  span[class^="glyphicon"] {
+    margin-right: 10px;
+  }
+
   &.close {
     cursor: pointer;
     background-color: #e6e6e6 !important;

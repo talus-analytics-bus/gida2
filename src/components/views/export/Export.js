@@ -206,13 +206,20 @@ const Export = ({ data, ...props }) => {
                         alert("Feature currently being implemented.")
                       }
                       label={
-                        !showClear
-                          ? `Download all available data (${Util.comma(
-                              nRecords
-                            )} ${nRecords !== 1 ? "records" : "record"})`
-                          : `Download selected data (${Util.comma(nRecords)} ${
-                              nRecords !== 1 ? "records" : "record"
-                            })`
+                        <span>
+                          <span
+                            className={classNames(
+                              "glyphicon glyphicon-download-alt"
+                            )}
+                          />
+                          {!showClear
+                            ? `Download all available data (${Util.comma(
+                                nRecords
+                              )} ${nRecords !== 1 ? "records" : "record"})`
+                            : `Download selected data (${Util.comma(
+                                nRecords
+                              )} ${nRecords !== 1 ? "records" : "record"})`}
+                        </span>
                       }
                       type={"primary"}
                     />
