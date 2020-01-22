@@ -193,10 +193,15 @@ const Orgs = ({
   tables.forEach(table => {
     const orgTableData = getTableRowData({
       tableRowDefs: getTableColDefs(table[2], table[1].toLowerCase()),
-      data: data[table[3]].flow_bundles.filter(
-        d => d.flow_types[flowType] !== undefined
-      )
+      data: data[table[3]].flow_bundles.filter(d => {
+        if (table[2] === "target") {
+          if (d.target[0].name === "Not reported") return false;
+        }
+        return d.flow_types[flowType] !== undefined;
+      })
     });
+    console.log("data[table[3]]");
+    console.log(data[table[3]]);
     tableInstances.push(
       <div>
         <h2>{table[0]}</h2>
