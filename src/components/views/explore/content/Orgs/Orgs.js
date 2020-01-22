@@ -1,12 +1,15 @@
 import React from "react";
+import ReactTooltip from "react-tooltip";
+import classNames from "classnames";
 import styles from "./orgs.module.scss";
+import tooltipStyles from "../../../../common/tooltip.module.scss";
 import GhsaToggle from "../../../../misc/GhsaToggle.js";
 import RadioToggle from "../../../../misc/RadioToggle.js";
 import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import TableInstance from "../../../../chart/table/TableInstance.js";
-import { core_capacities } from "../../../../misc/Data.js";
+import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js";
 import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import {
@@ -18,6 +21,7 @@ import {
 import { getNodeData, getTableRowData } from "../../../../misc/Data.js";
 import { getNodeLinkList } from "../../../../misc/Data.js";
 import SourceText from "../../../../common/SourceText/SourceText.js";
+import InfoBox from "../../../../map/InfoBox.js";
 
 // FC for Orgs.
 const Orgs = ({
@@ -43,6 +47,12 @@ const Orgs = ({
 
   // Track main map title
   const [mapTitle, setMapTitle] = React.useState("funds");
+
+  const [tooltipData, setTooltipData] = React.useState(undefined);
+  console.log("tooltipData - orgs.js");
+  console.log(tooltipData);
+  const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
+  const [hoveredEntity, setHoveredEntity] = React.useState(undefined);
 
   /**
    * Given the transaction type and the support type, returns the flow type.
@@ -200,12 +210,52 @@ const Orgs = ({
         return d.flow_types[flowType] !== undefined;
       })
     });
-    console.log("data[table[3]]");
-    console.log(data[table[3]]);
+
+    const updateTooltipData = (dStr, nodeType, dataKey, mapData) => {
+      const d = JSON.parse(dStr)[0];
+      console.log(d);
+      const datum = data[dataKey].flow_bundles.find(
+        dd => dd[nodeType][0].id === d.id
+      );
+      console.log("data[dataKey].flow_bundles");
+      console.log(data[dataKey].flow_bundles);
+      console.log("datum");
+      console.log(datum);
+
+      // Get tooltip data on hover
+      const tooltipData =
+        tooltipNodeData !== undefined
+          ? getInfoBoxData({
+              nodeDataToCheck: d,
+              mapData,
+              datum: datum,
+              supportType,
+              jeeScores: [],
+              coreCapacities: [],
+              colorScale: v => v,
+              entityRole,
+              minYear,
+              maxYear,
+              flowType,
+              simple: false
+            })
+          : undefined;
+      setHoveredEntity(d.id);
+      setTooltipNodeData(d);
+      setTooltipData(tooltipData);
+    };
     tableInstances.push(
       <div>
         <h2>{table[0]}</h2>
         <TableInstance
+          tooltipFunc={d => {
+            return {
+              "data-tip": true,
+              "data-for": "orgTooltip",
+              onMouseOver: () =>
+                updateTooltipData(d[table[2]], table[2], table[3], [d])
+            };
+          }}
           paging={true}
           tableColumns={[
             {
@@ -236,6 +286,16 @@ const Orgs = ({
       </div>
     );
   });
+
+  // React.useEffect(() => {
+  //   if (hoveredEntity !== undefined) {
+  //     console.log("data");
+  //     console.log(data);
+  //     setTooltipData([]);
+  //   } else if (tooltipData !== undefined) {
+  //     setTooltipData(undefined);
+  //   }
+  // }, [hoveredEntity]);
 
   // TODO:
   // map
@@ -312,6 +372,29 @@ const Orgs = ({
         <div className={styles.tables}>{tableInstances.map(d => d)}</div>
         {<SourceText />}
       </div>
+      {
+        // Tooltip for info tooltip icons.
+        <ReactTooltip
+          id={"orgTooltip"}
+          type="light"
+          className={classNames(tooltipStyles.tooltip, tooltipStyles.simple)}
+          place="top"
+          effect="float"
+          getContent={() =>
+            tooltipData && (
+              <InfoBox
+                {...{
+                  simple: false,
+                  entityRole,
+                  supportType,
+                  nodeData: tooltipNodeData,
+                  infoBoxData: tooltipData
+                }}
+              />
+            )
+          }
+        />
+      }
     </div>
   );
 };

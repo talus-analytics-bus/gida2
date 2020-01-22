@@ -63,6 +63,7 @@ const TableInstance = ({
           initialPageLength={props.paging ? 10 : 1e6}
           paging={props.paging || false}
           initialSortBy={sortBy}
+          buildRowOptions={props.tooltipFunc ? props.tooltipFunc : v => ""}
         />
       </div>
     );
