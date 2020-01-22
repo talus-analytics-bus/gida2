@@ -1,4 +1,4 @@
-@import '../../../assets/styles/colors.scss';
+@import "../../../assets/styles/colors.scss";
 
 $button-width: 250px;
 $button-font-size: 16px;
@@ -8,26 +8,37 @@ $spacing: 10px;
   display: flex;
   flex-flow: row;
   background-color: white;
+  justify-content: flex-end;
+  width: 100%;
+  border-top: 1px $grey solid;
 
   padding: 10px;
 
-  div:first-child {
-    margin: auto auto 0 0;
-    font-style: italic;
-    font-family: 'Gotham Book', sans-serif;
-    color: $dark-grey-2;
-  }
+  // div:first-child {
+  //   margin: auto auto 0 0;
+  //   font-style: italic;
+  //   font-family: "Gotham Book", sans-serif;
+  //   color: $dark-grey-2;
+  // }
 
-  .links {
-    margin-left: auto;
-  }
+  // .links {
+  //   margin-left: auto;
+  // }
 
   img {
     height: 70px;
     padding: 0 10px;
   }
 
+  &.dark {
+    background-color: #222;
+    border: none;
+    a {
+      display: none;
+    }
+  }
+
   a:first-child:not(:last-child) img {
-    border-right: 1px solid $dark-grey;
+    border-right: 1px solid $grey;
   }
 }

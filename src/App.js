@@ -345,6 +345,7 @@ const App = () => {
             </div>
           </Switch>
         </BrowserRouter>
+        {<Footer {...{ isDark }} />}
       </div>
     );
 };

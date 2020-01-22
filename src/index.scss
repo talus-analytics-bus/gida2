@@ -3,6 +3,11 @@
 html,
 body,
 #root {
+  > div {
+    > div:nth-child(2) {
+      min-height: 80vh;
+    }
+  }
   // Handle dark mode
   // TODO finish the CSS for this.
   .dark {
