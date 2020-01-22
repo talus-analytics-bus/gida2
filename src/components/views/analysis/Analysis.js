@@ -6,7 +6,7 @@ import RadioToggle from "../../misc/RadioToggle.js";
 import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import TimeSlider from "../../misc/TimeSlider.js";
-import CoreCapacityDropdown from "../../misc/CoreCapacityDropdown.js";
+import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
@@ -14,6 +14,7 @@ import Chord from "./content/Chord.js";
 import Search from "../../common/Search/Search.js";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { core_capacities } from "../../misc/Data.js";
 
 // FC for Analysis.
 const Analysis = ({
@@ -142,6 +143,9 @@ const Analysis = ({
           ]}
           tableData={data[table[3]].flow_bundles}
           sortByProp={"disbursed_funds"}
+          limit={10}
+          noNativePaging={true}
+          noNativeSearch={true}
         />
       </div>
     );
@@ -221,9 +225,15 @@ const Analysis = ({
               // TODO: add this tooltip for CC dropdown
               // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
             }
-            <CoreCapacityDropdown
-              onChange={vals => {
-                setCoreCapacities(vals.map(v => v.value));
+            <FilterDropdown
+              {...{
+                className: [styles.italic],
+                label: "IHR core capacity",
+                openDirection: "down",
+                options: core_capacities,
+                placeholder: "Select core capacities",
+                onChange: v => setCoreCapacities(v.map(d => d.value)),
+                curValues: coreCapacities
               }}
             />
             <Search callback={setSelectedEntity} expandedDefault={true} />

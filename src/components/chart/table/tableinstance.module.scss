@@ -12,4 +12,19 @@
     vertical-align: middle;
     margin: auto 0;
   }
+
+  // Hide or show pagination controls
+  &.noNativePaging {
+    [class^="pagination"],
+    [for="page-menu"],
+    [id="page-menu"] {
+      display: none;
+    }
+  }
+  &.noNativeSearch {
+    [for="search-field"],
+    [id="search-field"] {
+      display: none;
+    }
+  }
 }
