@@ -34,6 +34,7 @@ const GhsaToggle = ({ ghsaOnly, setGhsaOnly, ...props }) => {
       ]}
       curVal={ghsaOnly}
       callback={setGhsaOnly}
+      horizontal={props.horizontal}
     />
   );
 };

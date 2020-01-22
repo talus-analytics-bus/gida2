@@ -32,7 +32,8 @@ const RadioToggle = ({
   return (
     <div
       className={classNames(styles.radioToggle, {
-        [styles.disabled]: props.disabled === true
+        [styles.disabled]: props.disabled === true,
+        [styles.horizontal]: props.horizontal === true
       })}
     >
       <div className={classNames(className !== undefined ? className : "")}>

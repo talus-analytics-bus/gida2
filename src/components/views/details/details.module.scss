@@ -27,11 +27,19 @@
     }
     .countryBanner {
       display: flex;
-      flex-flow: row;
+      flex-flow: column;
       background-color: #f2f2f2;
       padding: 20px;
-      justify-content: space-between;
-      align-items: center;
+
+      .bannerRow {
+        display: flex;
+        flex-flow: row;
+        justify-content: space-between;
+        align-items: center;
+        &:last-child {
+          align-items: flex-end;
+        }
+      }
 
       .countryName {
         display: flex;
@@ -42,8 +50,11 @@
           font-size: 30px;
         }
         img:not(.unspec) {
-          width: 45px;
+          width: 80px;
           margin-right: 20px;
+          &.small {
+            width: 30px;
+          }
         }
       }
 

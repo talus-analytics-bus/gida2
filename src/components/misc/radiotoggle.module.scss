@@ -29,4 +29,23 @@
       color: gray;
     }
   }
+
+  // Horizontal version
+  &.horizontal {
+    display: flex;
+    flex-flow: row;
+    > div {
+      display: flex;
+      flex-flow: row;
+      white-space: nowrap;
+    }
+    form {
+      display: flex;
+      flex-flow: row;
+      label {
+        padding: 0 10px;
+        width: max-content;
+      }
+    }
+  }
 }

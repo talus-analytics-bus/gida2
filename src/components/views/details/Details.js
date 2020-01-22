@@ -525,7 +525,9 @@ const Details = ({
       ]
     : [];
 
-  const flag = `/flags/${data.nodeData.iso2}.png`;
+  const flag = `/flags/${data.nodeData.iso2 || data.nodeData.id}.png`;
+  console.log("data.nodeData");
+  console.log(data.nodeData);
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
@@ -560,18 +562,30 @@ const Details = ({
           </div>
         )}
         <div className={styles.countryBanner}>
-          <div className={styles.countryName}>
-            {showFlag && <img src={flag} onError={e => addDefaultSrc(e)} />}
-            <h1>{data.nodeData.name}</h1>
+          <div className={styles.bannerRow}>
+            <div className={styles.countryName}>
+              {showFlag && (
+                <img
+                  className={classNames({ [styles.small]: ghsa })}
+                  src={flag}
+                  onError={e => addDefaultSrc(e)}
+                />
+              )}
+              <h1>{data.nodeData.name}</h1>
+            </div>
           </div>
-          <div className={styles.toggles}>
-            {pageType !== "ghsa" && (
-              <div className={styles.radioToggles}>
-                <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+          {pageType !== "ghsa" && (
+            <div className={styles.bannerRow}>
+              <GhsaToggle
+                horizontal={true}
+                ghsaOnly={ghsaOnly}
+                setGhsaOnly={setGhsaOnly}
+              />
+              <div className={styles.toggles}>
+                {pageType !== "ghsa" && <GhsaButton />}
               </div>
-            )}
-            {pageType !== "ghsa" && <GhsaButton />}
-          </div>
+            </div>
+          )}
         </div>
       </div>
       <div>
