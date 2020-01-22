@@ -2,6 +2,212 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Util from "./Util.js";
 import * as d3 from "d3/dist/d3.min";
+import {
+  getMapTooltipLabel,
+  getUnknownValueExplanation,
+  getMapColorScale,
+  getMapMetricValue
+} from "../map/MapUtil.js";
+
+/**
+ * Return flow values for display in the InfoBox for the selected node, given
+ * the support type to show (usually funds, but can be inkind).
+ * @method getFlowValues
+ * @param  {String}      [supportTypeForValues="funds"] [description]
+ * @return {[type]}                                     [description]
+ */
+const getFlowValues = ({
+  supportTypeForValues = "funds",
+  datum,
+  transactionType,
+  minYear,
+  maxYear,
+  entityRole,
+  coreCapacities
+}) => {
+  // Define the flows that should be used to get the flow values.
+  const flowsTmp =
+    supportTypeForValues === "funds"
+      ? ["committed_funds", "disbursed_funds"]
+      : ["committed_inkind", "provided_inkind"];
+
+  let flows;
+  if (transactionType !== undefined) {
+    if (transactionType === "committed") flows = [flowsTmp[0]];
+    else flows = [flowsTmp[1]];
+  } else {
+    flows = flowsTmp;
+  }
+
+  // If the datum is undefined, return "zeros" for the flow values.
+  if (datum === undefined) {
+    return flows.map(f => {
+      return {
+        value: Util.formatValue(0, f),
+        label() {
+          return getMapTooltipLabel({
+            val: this.value,
+            supportType: supportTypeForValues,
+            flowType: f,
+            minYear,
+            maxYear,
+            entityRole
+          });
+        }
+      };
+    });
+  } else {
+    // Otherwise, return an array with one object for each flow value that
+    // contains (1) the value to be displayed, formatted; and (2) the label
+    // that goes beneath that value, returned by a function "label".
+    return flows.map(f => {
+      return {
+        value: Util.formatValue(
+          getMapMetricValue({
+            d: datum,
+            supportType: supportTypeForValues,
+            flowType: f,
+            coreCapacities
+          }) || 0,
+          f
+        ),
+        label() {
+          return getMapTooltipLabel({
+            val: this.value,
+            supportType: supportTypeForValues,
+            flowType: f,
+            minYear,
+            maxYear,
+            entityRole
+          });
+        }
+      };
+    });
+  }
+};
+
+export const getInfoBoxData = ({
+  nodeDataToCheck,
+  mapData,
+  datum,
+  supportType,
+  jeeScores,
+  coreCapacities,
+  colorScale,
+  entityRole,
+  flowType,
+  minYear,
+  maxYear,
+  simple = false
+}) => {
+  // If a node has been selected, get the info box data for it.
+  // First, get the JEE score for the node, if it exists. If it is not avail,
+  // then 'scoreOfNode' is undefined.
+  let scoreOfNode;
+  if (
+    // There is a node selected...
+    nodeDataToCheck !== undefined &&
+    // and the support type being viewed is one that shows the JEE score...
+    (supportType === "jee" || supportType === "needs_met")
+  ) {
+    // Get JEE score (avg) to display.
+    const jeeScoresToAvg = getJeeScores({
+      scores: jeeScores, // TODO
+      iso2: nodeDataToCheck.id, // TODO
+      coreCapacities
+    });
+
+    // Average JEE score is mean.
+    const avgJeeScore = d3.mean(jeeScoresToAvg, d => d.score);
+    scoreOfNode = avgJeeScore;
+  }
+
+  // Define the InfoBox data passed to the InfoBox component. By default the
+  // flow values are all zeroes.
+  const transactionTypeTmp =
+    flowType.startsWith("committed") && supportType !== "needs_met"
+      ? "committed"
+      : "disbursed";
+  const transactionType = simple ? transactionTypeTmp : undefined;
+  const nodeMapData =
+    nodeDataToCheck !== undefined
+      ? mapData.find(d => d.id === nodeDataToCheck.id)
+      : undefined;
+  let infoBoxData = {
+    scoreOfNode: scoreOfNode,
+    flowValues: getFlowValues({
+      supportTypeForValues: supportType,
+      datum: datum,
+      transactionType,
+      minYear,
+      maxYear,
+      entityRole,
+      coreCapacities
+    }),
+    colorScale: colorScale
+  };
+
+  // Get the node data that is in the table of values for display in the map.
+
+  // If we have data to put in the InfoBox:
+  if (nodeMapData !== undefined && datum !== undefined) {
+    // Define a value with which to determine the color of the InfoBox header.
+    // This will be overriden by 'jeeLabel' if the supportType is 'jee'.
+    infoBoxData.colorValue = nodeMapData.value_raw;
+
+    // If unknown value applies, get the message for it, explaining why the
+    // value is unknown (e.g., country is marked as a funder for a multilateral
+    // project in which their specific contribution is not known).
+    infoBoxData.unknownValueExplanation = getUnknownValueExplanation({
+      datum,
+      value: getMapMetricValue({
+        d: datum,
+        supportType,
+        flowType,
+        coreCapacities
+      }),
+      entityRole: entityRole
+    });
+
+    // Get other data for info box depending on the support type.
+    switch (supportType) {
+      // Funding data: show amount committed/disbursed
+      case "funds":
+        infoBoxData.flowValues = getFlowValues({
+          supportTypeForValues: "funds",
+          datum,
+          transactionType
+        });
+        break;
+
+      // Inkind data: show amount committed/provided
+      case "inkind":
+        infoBoxData.flowValues = getFlowValues({
+          supportTypeForValues: "inkind",
+          datum,
+          transactionType
+        });
+        break;
+
+      // JEE data / needs met: show amount committed/disbursed and JEE score
+      case "needs_met":
+      case "jee":
+        infoBoxData.flowValues = getFlowValues({
+          supportTypeForValues: "funds",
+          datum,
+          transactionType
+        });
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  // If showing jee score, set color value to the score.
+  // if (supportType === "jee") infoBoxData.colorValue = infoBoxData.scoreOfNode;
+  return infoBoxData;
+};
 
 // Given the full set of JEE scores, an ISO2 code, and a set of core capacities,
 // returns the average core capacity score for each defined core capacity for
