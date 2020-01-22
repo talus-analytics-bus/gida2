@@ -10,6 +10,7 @@ import Drawer from "../../common/Drawer/Drawer.js";
 import Checkbox from "../../common/Checkbox/Checkbox.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import { core_capacities } from "../../misc/Data.js";
+import Button from "../../common/Button/Button.js";
 
 // Content components
 import { renderExportTable } from "./ExportTable.js";
@@ -117,11 +118,14 @@ const Export = ({ data, ...props }) => {
           label: "Select data",
           contentSections: [
             <div>
-              <div>
+              <div className={styles.sectionHeader}>
                 <div>Select filters to apply to selected data.</div>
-                {showClear && (
-                  <button onClick={clearSelections}>Clear selections</button>
-                )}
+                <Button
+                  style={{ visibility: showClear ? "visible" : "hidden" }}
+                  callback={clearSelections}
+                  label={"Clear selections"}
+                  type={"secondary"}
+                />
               </div>
               <div className={styles.filters}>
                 <FilterDropdown
@@ -177,7 +181,9 @@ const Export = ({ data, ...props }) => {
             </div>,
             <div>
               <div>
-                <div>Choose data fields to include in table/download.</div>
+                <div className={styles.sectionHeader}>
+                  Choose data fields to include in table/download.
+                </div>
                 <div className={styles.sectionContent}>
                   <div className={styles.checkboxes}>
                     {cols.map(
@@ -195,15 +201,21 @@ const Export = ({ data, ...props }) => {
                     )}
                   </div>
                   <div>
-                    <button>
-                      {!showClear
-                        ? `Download all available data (${Util.comma(
-                            nRecords
-                          )} ${nRecords !== 1 ? "records" : "record"})`
-                        : `Download selected data (${Util.comma(nRecords)} ${
-                            nRecords !== 1 ? "records" : "record"
-                          })`}
-                    </button>
+                    <Button
+                      callback={() =>
+                        alert("Feature currently being implemented.")
+                      }
+                      label={
+                        !showClear
+                          ? `Download all available data (${Util.comma(
+                              nRecords
+                            )} ${nRecords !== 1 ? "records" : "record"})`
+                          : `Download selected data (${Util.comma(nRecords)} ${
+                              nRecords !== 1 ? "records" : "record"
+                            })`
+                      }
+                      type={"primary"}
+                    />
                   </div>
                 </div>
               </div>
