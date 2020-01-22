@@ -314,7 +314,9 @@ const Map = ({
         <ReactTooltip
           id={"mapTooltip"}
           type="light"
-          className={classNames(tooltipStyles.tooltip, tooltipStyles.simple)}
+          className={classNames(tooltipStyles.tooltip, tooltipStyles.simple, {
+            [tooltipStyles.dark]: isDark
+          })}
           place="top"
           effect="float"
           getContent={() =>

@@ -15,6 +15,9 @@ body,
     span.control {
       color: #333;
     }
+    .__react_component_tooltip.type-light.place-top:after {
+      border-top-color: $dark-background-color;
+    }
     color: $dark-color;
     * {
       color: $dark-color;
