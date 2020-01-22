@@ -1,5 +1,6 @@
 import React from "react";
-import styles from "./about.module.scss"; import classNames from "classnames";
+import styles from "./about.module.scss";
+import classNames from "classnames";
 
 // JSX for about page.
 const Background = () => {
@@ -7,8 +8,10 @@ const Background = () => {
   React.useEffect(() => window.scrollTo(0, 0), []);
 
   return (
-    <div className={classNames(styles.about, 'pageContainer')}>
-      <div className={styles.title}>Background</div>
+    <div className={classNames(styles.about, "pageContainer")}>
+      <div className={styles.header}>
+        <div className={styles.title}>Background</div>
+      </div>
       <div className={styles.description}>
         <p>
           Addressing global health security requires understanding the

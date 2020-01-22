@@ -8,7 +8,9 @@ const Research = () => {
   React.useEffect(() => window.scrollTo(0, 0), []);
   return (
     <div className={classNames(styles.about, "pageContainer")}>
-      <div className={styles.title}>Research</div>
+      <div className={styles.header}>
+        <div className={styles.title}>Research</div>
+      </div>
       <div className={styles.description}>
         <p>
           A peer-reviewed paper describing this dashboard project is available{" "}

@@ -50,8 +50,18 @@ const Analysis = ({
   const tableInstances = [];
 
   const tables = [
-    ["Top funders", "Funder", "source", "flowBundlesFocusSources"],
-    ["Top recipients", "Recipient", "target", "flowBundlesFocusTargets"]
+    [
+      <div className={styles.subtitle}>Top funders</div>,
+      "Funder",
+      "source",
+      "flowBundlesFocusSources"
+    ],
+    [
+      <div className={styles.subtitle}>Top recipients</div>,
+      "Recipient",
+      "target",
+      "flowBundlesFocusTargets"
+    ]
   ];
 
   React.useEffect(() => {
@@ -130,7 +140,7 @@ const Analysis = ({
   tables.forEach(table => {
     tableInstances.push(
       <div>
-        <h2>{table[0]}</h2>
+        {table[0]}
         <TableInstance
           paging={true}
           tableColumns={[
@@ -208,8 +218,10 @@ const Analysis = ({
   // legend (maybe part of map?)
   return (
     <div className={classNames(styles.analysis, "pageContainer")}>
+      <div className={styles.header}>
+        <div className={styles.title}>International funding network</div>
+      </div>
       <div className={styles.content}>
-        <h1>International funding network</h1>
         <p>
           The figure below illustrates the flow of funds from funder to
           recipient. Countries and non-country funders are grouped along the
@@ -276,7 +288,11 @@ const Analysis = ({
             {<SourceText />}
           </div>
         </div>
-        <h1>International funding by funder/recipient</h1>
+        <div className={styles.header}>
+          <div className={styles.title}>
+            International funding by funder/recipient
+          </div>
+        </div>
         <p>
           The tables below identify the funders that have committed the most
           funds, and the recipients that have recieved the most funds. Click on

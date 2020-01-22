@@ -11,6 +11,7 @@ import Checkbox from "../../common/Checkbox/Checkbox.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import { core_capacities } from "../../misc/Data.js";
 import Button from "../../common/Button/Button.js";
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 
 // Content components
 import { renderExportTable } from "./ExportTable.js";
@@ -113,6 +114,11 @@ const Export = ({ data, ...props }) => {
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.export)}>
+      <div className={styles.header}>
+        <div className={styles.title}>Download data</div>
+        <GhsaButton />
+      </div>
+
       <Drawer
         {...{
           label: "Select data",

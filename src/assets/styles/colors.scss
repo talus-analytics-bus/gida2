@@ -79,8 +79,6 @@ $loading-spinner-gradient: radial-gradient(
   white,
   rgba(255, 255, 255, 0.0001) 75%
 );
-// $loading-spinner-gradient: linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0%, transparent 100%);
-// $loading-spinner-gradient: linear-gradient(90deg, white 0%, transparent 100%);
 
 // MEDIA QUERIES
 $phone: "screen and (max-width : 670px)";
@@ -88,3 +86,27 @@ $phone-narrow: "screen and (max-width : 375px)";
 // $phone: "screen and (max-width : 375px)";
 $phone-width: 670px;
 $phone-width-narrow: 375px;
+
+@mixin title {
+  font-weight: 600;
+  font-size: 22px;
+  text-transform: uppercase;
+  color: #11315d;
+  font-family: "Raleway", sans-serif;
+}
+@mixin subtitle {
+  margin-top: 20px;
+  font-weight: 600;
+  font-size: 22px;
+  color: #11315d;
+  font-family: "Raleway", sans-serif;
+}
+
+@mixin header {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  min-height: 48px;
+}

@@ -1,6 +1,12 @@
 @import "../../../assets/styles/colors.scss";
 
 .export {
+  .header {
+    @include header;
+  }
+  .title {
+    @include title;
+  }
   .filters {
     margin-top: 5px;
 

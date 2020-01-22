@@ -1,13 +1,11 @@
 @import "../../../assets/styles/colors.scss";
 
 .about {
-  .title {
-    font-size: 24px;
-    text-transform: uppercase;
-    font-family: "Raleway", sans-serif;
-    font-weight: 600;
-    color: #11315d;
-    margin: 20px 0;
+  .header {
+    @include header;
+    .title {
+      @include title;
+    }
   }
   .description {
     max-width: unset;

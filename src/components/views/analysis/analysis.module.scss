@@ -1,6 +1,18 @@
 @import "../../../assets/styles/colors.scss";
 
 .analysis {
+  .header {
+    @include header;
+    .title {
+      @include title;
+    }
+  }
+  .subtitle {
+    @include subtitle;
+  }
+  p {
+    max-width: 900px;
+  }
   .info {
     height: auto;
     border: 1px solid #ccc;
