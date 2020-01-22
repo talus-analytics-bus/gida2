@@ -47,33 +47,33 @@ const Map = ({
   });
 
   // Define hatch mark pattern.
-  const defs = (
-    <defs>
-      <pattern
-        id="pattern-stripe"
-        width="4"
-        height="4"
-        patternUnits="userSpaceOnUse"
-        patternTransform="rotate(45)"
-      >
-        <rect
-          width="3.5"
-          height="4"
-          transform="translate(0,0)"
-          fill="lightgray"
-        />
-      </pattern>
-      <mask id="mask-stripe">
-        <rect
-          x="0"
-          y="0"
-          width="100%"
-          height="100%"
-          fill="url(#pattern-stripe)"
-        />
-      </mask>
-    </defs>
-  );
+  // const defs = (
+  //   <defs>
+  //     <pattern
+  //       id="pattern-stripe"
+  //       width="4"
+  //       height="4"
+  //       patternUnits="userSpaceOnUse"
+  //       patternTransform="rotate(45)"
+  //     >
+  //       <rect
+  //         width="3.5"
+  //         height="4"
+  //         transform="translate(0,0)"
+  //         fill="lightgray"
+  //       />
+  //     </pattern>
+  //     <mask id="mask-stripe">
+  //       <rect
+  //         x="0"
+  //         y="0"
+  //         width="100%"
+  //         height="100%"
+  //         fill="url(#pattern-stripe)"
+  //       />
+  //     </mask>
+  //   </defs>
+  // );
 
   // Track selected node (i.e., the clicked country whose info box is also
   // visible).
@@ -192,7 +192,9 @@ const Map = ({
               [styles.hatch]: d === "yyy" || d === -8888
             })}
           />
-          {defs}
+          {
+            // defs
+          }
         </svg>
       ),
       func: d =>
@@ -412,6 +414,9 @@ const Map = ({
           break;
       }
     }
+
+    // If showing jee score, set color value to the score.
+    // if (supportType === "jee") infoBoxData.colorValue = infoBoxData.scoreOfNode;
     return infoBoxData;
   };
   const infoBoxData = getInfoBoxData(nodeData, mapData, datumForInfoBox);

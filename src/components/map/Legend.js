@@ -205,9 +205,13 @@ const Legend = ({
           {supportType !== "jee" && supportType !== "pvs" && (
             <div className={classNames(styles.entry, styles.unspec)}>
               <div className={styles.bucket}>
-                <svg>
-                  <rect />
-                </svg>
+                <div
+                  style={{
+                    background:
+                      "repeating-linear-gradient(-45deg, rgb(175, 175, 175), rgb(175, 175, 175) 8px, rgba(255, 255, 255, 0) 8px, rgba(255, 255, 255, 0) 10px)"
+                  }}
+                  className={styles.rect}
+                />
                 <div className={styles.label}>Unspecified</div>
               </div>
             </div>
