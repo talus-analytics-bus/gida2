@@ -193,7 +193,9 @@ const Orgs = ({
   tables.forEach(table => {
     const orgTableData = getTableRowData({
       tableRowDefs: getTableColDefs(table[2], table[1].toLowerCase()),
-      data: data[table[3]].flow_bundles
+      data: data[table[3]].flow_bundles.filter(
+        d => d.flow_types[flowType] !== undefined
+      )
     });
     tableInstances.push(
       <div>
@@ -430,6 +432,17 @@ const getComponentData = async ({
       "ghsa_funding",
       "True"
     ]);
+  else if (ghsaOnly === "event") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "outbreak_id:not",
+      null
+    ]);
+  } else if (ghsaOnly === "capacity") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "response_or_capacity:not",
+      "response"
+    ]);
+  }
 
   // Define queries for typical details page.
   const queries = {
