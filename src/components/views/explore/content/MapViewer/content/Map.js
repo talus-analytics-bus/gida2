@@ -256,8 +256,7 @@ const Map = ({
     flowType,
     simple: false
   });
-  console.log("minYear");
-  console.log(minYear);
+
   const tooltipData =
     tooltipNodeData !== undefined
       ? getInfoBoxData({
