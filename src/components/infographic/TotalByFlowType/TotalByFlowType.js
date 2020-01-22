@@ -1,15 +1,23 @@
 import React from "react";
+import classNames from "classnames";
 import Util from "../../misc/Util.js";
 import styles from "./totalbyflowtype.module.scss";
 
 // FC for Details.
 const TotalByFlowType = ({ flowType, data, ...props }) => {
   return (
-    <div className={styles.totalByFlowType}>
+    <div
+      className={classNames(styles.totalByFlowType, {
+        [styles.inline]: props.inline
+      })}
+    >
       <div className={styles.value}>
         {Util.formatValue(getAmountByFlowType(flowType, data), flowType)}
       </div>
-      <div className={styles.label}>{Util.formatLabel(flowType)}</div>
+      <div className={styles.label}>
+        {Util.formatLabel(flowType)}
+        {props.label && <span>&nbsp;{props.label}</span>}
+      </div>
     </div>
   );
 };
@@ -17,10 +25,25 @@ const TotalByFlowType = ({ flowType, data, ...props }) => {
 const getAmountByFlowType = (flowType, data) => {
   if (data === undefined) return 0;
   else {
-    const flowTypeData = data[flowType];
-    if (flowTypeData !== undefined) {
-      return flowTypeData["focus_node_weight"];
-    } else return 0;
+    if (data.length !== undefined) {
+      // Add them up
+      let total;
+      data.forEach(d => {
+        if (d.flow_types[flowType] === undefined) return;
+        else {
+          const curVal = d.flow_types[flowType].focus_node_weight;
+          if (total === undefined) total = curVal;
+          else if (curVal !== "unknown") total += curVal;
+        }
+      });
+      if (total === undefined) return 0;
+      else return total;
+    } else {
+      const flowTypeData = data[flowType];
+      if (flowTypeData !== undefined) {
+        return flowTypeData["focus_node_weight"];
+      } else return 0;
+    }
   }
 };
 

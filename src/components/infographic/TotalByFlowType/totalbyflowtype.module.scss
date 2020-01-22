@@ -1,7 +1,20 @@
 @import "../../../assets/styles/colors.scss";
 
 .totalByFlowType {
-  padding: 10px;
+  padding: 10px 0;
+
+  &.inline {
+    padding: 0;
+    margin: 10px 0;
+    &:not(:first-child) {
+      padding-left: 40px;
+    }
+    &:not(:last-child) {
+      padding-right: 40px;
+      border-right: 1px solid #ccc;
+    }
+  }
+
   .value {
     font-family: "RawlineRegular", serif;
     font-weight: 800;
