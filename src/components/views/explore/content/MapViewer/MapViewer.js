@@ -33,13 +33,18 @@ const MapViewer = ({
   setCoreCapacities,
   flowTypeInfo,
   isDark,
+  supportTypeDefault,
   ...props
 }) => {
   // Track transaction type selected for the map
   const [transactionType, setTransactionType] = React.useState("disbursed");
 
   // Track support type selected for the map
-  const [supportType, setSupportType] = React.useState("funds");
+  console.log("supportTypeDefault");
+  console.log(supportTypeDefault);
+  const [supportType, setSupportType] = React.useState(
+    supportTypeDefault || "funds"
+  );
 
   // Track main map title
   const [mapTitle, setMapTitle] = React.useState("funds");
@@ -100,7 +105,9 @@ const MapViewer = ({
   const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
 
   // Define map menu sections
-  const [curTab, setCurTab] = React.useState("funding");
+  const [curTab, setCurTab] = React.useState(
+    supportTypeDefault === "jee" ? "scores" : "funding"
+  );
   const filters = (
     <FilterDropdown
       {...{
@@ -282,7 +289,7 @@ const MapViewer = ({
             className={styles.menu}
           >
             <TimeSlider
-              hide={supportType === "jee"}
+              disabled={supportType === "jee"}
               minYearDefault={Settings.startYear}
               maxYearDefault={Settings.endYear}
               onAfterChange={years => {
@@ -350,6 +357,7 @@ export const renderMapViewer = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  supportTypeDefault,
   ...props
 }) => {
   // Set IDs
@@ -378,6 +386,7 @@ export const renderMapViewer = ({
       setGhsaOnly: setGhsaOnly,
       entityRole: entityRole,
       setEntityRole: setEntityRole,
+      supportTypeDefault,
       ...props
     });
 
@@ -497,6 +506,7 @@ const getComponentData = async ({
       setCoreCapacities={props.setCoreCapacities}
       outbreakResponses={props.outbreakResponses}
       setOutbreakResponses={props.setOutbreakResponses}
+      supportTypeDefault={props.supportTypeDefault}
     />
   );
 };

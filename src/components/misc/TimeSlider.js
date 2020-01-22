@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import styles from "./timeslider.module.scss";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -26,11 +27,16 @@ const TimeSlider = ({
   }
 
   return (
-    <div className={styles.timeSlider}>
+    <div
+      className={classNames(styles.timeSlider, {
+        [styles.disabled]: props.disabled
+      })}
+    >
       <div>{label || "Select time range"}</div>
       <div>
         <div>
           <Range
+            disabled={props.disabled}
             className={hide ? styles.hide : ""}
             min={minYearDefault}
             max={maxYearDefault}

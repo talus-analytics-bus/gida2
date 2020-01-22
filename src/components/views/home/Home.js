@@ -2,6 +2,9 @@ import React from "react";
 import classNames from "classnames";
 import Search from "../../common/Search/Search.js";
 import styles from "./home.module.scss";
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
+import Button from "../../common/Button/Button.js";
+import mapImage from "../../../assets/images/map.png";
 
 // JSX for about page.
 const Home = () => {
@@ -23,38 +26,34 @@ const Home = () => {
         </div>
 
         <div className={styles.searchContainer}>
-          <div className={styles.searchTitle}>
+          <div className={styles.title}>
             View specific country or organization details
           </div>
-
-          <Search expandedDefault={true} />
-
-          <div class="search-buttons">
-            <button
-              class="talus-btn talus-secondary-btn ghsa-button"
-              value="GHSA project details"
-            />
+          <div className={styles.content}>
+            <Search expandedDefault={true} />
+            <GhsaButton />
           </div>
         </div>
       </div>
-
-      <div class="map-container">
-        <div class="map-title">Explore countries on a map</div>
-
-        <div class="map-buttons">
-          <button
-            class="talus-btn talus-primary-btn"
-            value="Funding map"
-            data-value="funding"
-          />
-          <button
-            class="talus-btn talus-primary-btn"
-            value="JEE score map"
-            data-value="jee"
-          />
+      <div className={styles.rightPane}>
+        <div className={styles.title}>Recipients by country</div>
+        <div className={styles.content}>
+          <div className={styles.buttons}>
+            <Button
+              linkTo={"/explore/map"}
+              type={"primary"}
+              label={"View funding map"}
+            />
+            <Button
+              linkTo={"/explore/map?supportType=jee"}
+              type={"primary"}
+              label={"View JEE score map"}
+            />
+          </div>
+          <div className={styles.map}>
+            <img src={mapImage} />
+          </div>
         </div>
-
-        <div class="funding-recipient-map" />
       </div>
     </div>
   );

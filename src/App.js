@@ -178,6 +178,14 @@ const App = () => {
                 path="/explore/:activeTab"
                 render={d => {
                   setPage("explore-" + d.match.params.activeTab);
+                  console.log("d");
+                  console.log(d);
+                  // Get support type if specified.
+                  const urlParams = new URLSearchParams(d.location.search);
+                  const supportTypeDefault = urlParams.get("supportType");
+                  console.log("supportTypeDefault - App.js");
+                  console.log(supportTypeDefault);
+
                   return renderExplore({
                     ...d.match.params,
                     component: exploreComponent,
@@ -189,7 +197,8 @@ const App = () => {
                     setGhsaOnly: setGhsaOnly,
                     isDark: isDark,
                     // isDark: d.match.params.activeTab === "map",
-                    setIsDark: setIsDark
+                    setIsDark: setIsDark,
+                    supportTypeDefault: supportTypeDefault
                   });
                 }}
               />

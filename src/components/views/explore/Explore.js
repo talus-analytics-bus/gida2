@@ -20,6 +20,7 @@ const Explore = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  supportTypeDefault,
   ...props
 }) => {
   // Returns correct header content given the active tab
@@ -89,7 +90,8 @@ const Explore = ({
             minYear: minYear,
             setMinYear: setMinYear,
             maxYear: maxYear,
-            setMaxYear: setMaxYear
+            setMaxYear: setMaxYear,
+            supportTypeDefault
           })
         };
 
@@ -203,6 +205,7 @@ export const renderExplore = ({
         activeTab={props.activeTab}
         setIsDark={props.setIsDark}
         isDark={props.isDark}
+        supportTypeDefault={props.supportTypeDefault}
       />
     );
   }
