@@ -5,6 +5,8 @@ import Util from "../../../misc/Util.js";
 import FlowBundleGeneralQuery from "../../../misc/FlowBundleGeneralQuery.js";
 import { Settings } from "../../../../App.js";
 import D3Chord from "../../../chart/D3Chord/D3Chord.js";
+import ReactTooltip from "react-tooltip";
+import tooltipStyles from "../../../common/tooltip.module.scss";
 
 // FC for Chord.
 const Chord = ({
@@ -17,6 +19,7 @@ const Chord = ({
   ...props
 }) => {
   const [chord, setChord] = React.useState(null);
+  const [tooltipData, setTooltipData] = React.useState(false);
 
   // Initial load: draw chord diagram
   React.useEffect(() => {
@@ -28,7 +31,8 @@ const Chord = ({
       selectedEntity,
       transactionType,
       setEntityArcInfo,
-      noResizeEvent: true
+      noResizeEvent: true,
+      setTooltipData
     });
     setChord(chordNew);
   }, [chordData, transactionType]);
@@ -47,6 +51,27 @@ const Chord = ({
   return (
     <div className={styles.chord}>
       <div className={styles.chordChart} />
+      {
+        // Tooltip for info tooltip icons.
+        <ReactTooltip
+          id={"analysisTooltip"}
+          type="light"
+          className={tooltipStyles.tooltip}
+          place="top"
+          effect="float"
+          getContent={() =>
+            tooltipData && (
+              <table>
+                {tooltipData.map(d => (
+                  <tr>
+                    <td>{d.field}:</td>&nbsp;<td>{d.value}</td>
+                  </tr>
+                ))}
+              </table>
+            )
+          }
+        />
+      }
     </div>
   );
 };

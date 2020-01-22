@@ -83,8 +83,6 @@ const Analysis = ({
 
   const transactionTypeNoun =
     transactionType === "committed" ? "commitments" : "disbursements";
-  console.log("selectedEntityInfo");
-  console.log(selectedEntityInfo);
   const info = selectedEntity && showInfo && selectedEntityInfo && (
     <div style={{ display: showInfo }} className={styles.info}>
       <div
@@ -457,8 +455,6 @@ const getComponentData = async ({
 
   // Get query results.
   const results = await Util.getQueryResults(queries);
-  console.log("results - Analysis.js");
-  console.log(results);
   if (props.returnDataOnly === true) return results;
   // Feed results and other data to the details component and mount it.
   setComponent(

@@ -1,7 +1,9 @@
 import * as d3 from "d3/dist/d3.min";
 import Chart from "../../chart/Chart.js";
+import Util from "../../misc/Util.js";
 // import Util from "../misc/Util.js";
 import styles from "./d3chord.module.scss";
+import ReactTooltip from "react-tooltip";
 
 /**
  * Creates a D3.js world map in the container provided
@@ -391,6 +393,8 @@ class D3Chord extends Chart {
         const flowThetas = {
           source_id: source.data.id,
           target_id: target.data.id,
+          source_name: source.data.name,
+          target_name: target.data.name,
           source: {},
           target: {},
           weight: weight
@@ -430,7 +434,29 @@ class D3Chord extends Chart {
       .enter()
       .append("path")
       .attr("class", styles.flow)
-      .attr("d", d => ribbon(d));
+      .attr("d", d => ribbon(d))
+      .attr("data-tip", "")
+      .attr("data-for", "analysisTooltip")
+      .on("mouseover", function updateTooltip(d) {
+        const params = chart.params;
+        const tooltipData = [
+          {
+            field: "Funder",
+            value: d.source_name
+          },
+          {
+            field: "Recipient",
+            value: d.target_name
+          },
+          {
+            field: `Total ${params.transactionType} funds`,
+            value: Util.money(d.weight)
+          }
+        ];
+
+        chart.params.setTooltipData(tooltipData);
+      });
+    ReactTooltip.rebuild();
 
     arcTypes.forEach(arcType => {
       arcTypes[arcType.type] = this.chart
