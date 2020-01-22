@@ -11,6 +11,9 @@
   label {
     font-weight: normal;
     color: black;
+    display: flex;
+    flex-flow: row;
+    white-space: normal;
   }
   input {
     margin-right: 5px;

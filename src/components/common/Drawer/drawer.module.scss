@@ -2,4 +2,51 @@
 
 .drawer {
   height: auto;
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+  background-color: #e6e6e6;
+  .header {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+
+    span {
+      color: #4682b4;
+      line-height: 1.2;
+      font-size: 1.5em;
+      &.flip {
+        transform: rotate(180deg);
+      }
+    }
+    .label {
+      font-family: "Open Sans", sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+    }
+  }
+  .content {
+    display: flex;
+    flex-flow: column;
+    background-color: white;
+    width: 100%;
+
+    .section {
+      &,
+      > div {
+        width: 100%;
+      }
+
+      &:not(:first-child) {
+        margin-top: 2px;
+      }
+      display: flex;
+      flex-flow: row;
+      background-color: #f2f2f2;
+      padding: 10px;
+    }
+  }
 }

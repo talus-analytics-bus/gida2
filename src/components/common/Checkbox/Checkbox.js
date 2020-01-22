@@ -28,7 +28,7 @@ const Checkbox = ({ label, value, curChecked, callback, ...props }) => {
             value={value}
             checked={curChecked === true}
           />
-          {label}
+          <span>{label}</span>
         </label>
       </form>
     </div>

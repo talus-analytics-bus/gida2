@@ -30,7 +30,7 @@ const Export = ({ data, ...props }) => {
     recipients.length > 0;
 
   const cols = [
-    ["project_name", "Project name"],
+    ["project_name", "Project name", true],
     ["description", "Project description"],
     ["data_sources", "Data source"],
     ["core_capacities", "Core capacities"],
@@ -111,11 +111,11 @@ const Export = ({ data, ...props }) => {
 
   // Return JSX
   return (
-    <div className={classNames("pageContainer", styles.Export)}>
+    <div className={classNames("pageContainer", styles.export)}>
       <Drawer
         {...{
           label: "Select data",
-          content: (
+          contentSections: [
             <div>
               <div>
                 <div>Select filters to apply to selected data.</div>
@@ -123,7 +123,7 @@ const Export = ({ data, ...props }) => {
                   <button onClick={clearSelections}>Clear selections</button>
                 )}
               </div>
-              <div>
+              <div className={styles.filters}>
                 <FilterDropdown
                   {...{
                     label: "",
@@ -174,35 +174,41 @@ const Export = ({ data, ...props }) => {
                   }}
                 />
               </div>
-              <hr />
+            </div>,
+            <div>
               <div>
                 <div>Choose data fields to include in table/download.</div>
-                <div>
-                  {cols.map(d => (
-                    <Checkbox
-                      {...{
-                        label: d[1],
-                        value: d[0],
-                        curChecked: exportCols.includes(d[0]),
-                        callback: updateExportCols
-                      }}
-                    />
-                  ))}
-                </div>
-                <div>
-                  <button>
-                    {!showClear
-                      ? `Download all available data (${Util.comma(nRecords)} ${
-                          nRecords !== 1 ? "records" : "record"
-                        })`
-                      : `Download selected data (${Util.comma(nRecords)} ${
-                          nRecords !== 1 ? "records" : "record"
-                        })`}
-                  </button>
+                <div className={styles.sectionContent}>
+                  <div className={styles.checkboxes}>
+                    {cols.map(
+                      d =>
+                        !d[2] && (
+                          <Checkbox
+                            {...{
+                              label: d[1],
+                              value: d[0],
+                              curChecked: exportCols.includes(d[0]),
+                              callback: updateExportCols
+                            }}
+                          />
+                        )
+                    )}
+                  </div>
+                  <div>
+                    <button>
+                      {!showClear
+                        ? `Download all available data (${Util.comma(
+                            nRecords
+                          )} ${nRecords !== 1 ? "records" : "record"})`
+                        : `Download selected data (${Util.comma(nRecords)} ${
+                            nRecords !== 1 ? "records" : "record"
+                          })`}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          )
+          ]
         }}
       />
       {dataTable}
