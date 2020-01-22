@@ -357,14 +357,43 @@ const Details = ({
             data.flows.length > 0
               ? [
                   {
-                    header: <h2>Event response funding projects</h2>,
+                    header: (
+                      <div>
+                        <h2>
+                          Recent event response funding projects <br />
+                          {
+                            // Time frame
+                            // <span>in past 12 months</span>
+                          }
+                          {
+                            // Date range
+                            <span className={styles.timeFrame}>
+                              {props.responseStart.toLocaleString("en-us", {
+                                // month: "short",
+                                // day: "numeric",
+                                year: "numeric",
+                                timeZone: "UTC"
+                              })}{" "}
+                              -{" "}
+                              {props.responseEnd.toLocaleString("en-us", {
+                                // month: "short",
+                                // day: "numeric",
+                                year: "numeric",
+                                timeZone: "UTC"
+                              })}
+                            </span>
+                          }
+                        </h2>
+                      </div>
+                    ),
                     text: (
                       <div>
                         <p>
-                          This tab shows event response funding projects where{" "}
-                          {data.nodeData.name} or an associated region/group was
-                          a {entityRole}. Note that all values listed here may
-                          not apply specifically to {data.nodeData.name}.
+                          This tab shows recent event response funding projects
+                          where {data.nodeData.name} or an associated
+                          region/group was a {entityRole}. Note that all values
+                          listed here may not apply specifically to{" "}
+                          {data.nodeData.name}.
                         </p>
                         {responseEventTotals}
                       </div>
@@ -737,6 +766,14 @@ const getComponentData = async ({
   // }
 
   // Define queries for typical details page.
+  const now = new Date();
+  now.setMonth(11);
+  now.setDate(31);
+
+  const then = new Date();
+  then.setFullYear(now.getFullYear() - 1);
+  then.setMonth(0);
+  then.setDate(1);
   const queries = {
     // Information about the entity
     nodeData: NodeQuery({ node_id: id }),
@@ -753,7 +790,9 @@ const getComponentData = async ({
       by_neighbor: true
     }),
     flows: FlowQuery({
-      ...flowQueryParams
+      ...flowQueryParams,
+      start_date: Util.formatDatetimeApi(then),
+      end_date: Util.formatDatetimeApi(now)
       // filters: { parent_flow_info_filters: [["outbreak_id:not", null]] }
     })
   };
@@ -800,6 +839,8 @@ const getComponentData = async ({
       ghsaOnly={ghsaOnly}
       setGhsaOnly={setGhsaOnly}
       setComponent={setDetailsComponent}
+      responseStart={then}
+      responseEnd={now}
     />
   );
 };
