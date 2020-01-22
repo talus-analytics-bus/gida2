@@ -107,7 +107,7 @@ const Search = ({ callback, ...props }) => {
                 e.stopPropagation();
                 setShowResults(false);
               }
-              setExpanded(!expanded);
+              if (props.expandedDefault !== true) setExpanded(!expanded);
             }}
             className={"material-icons"}
           >
