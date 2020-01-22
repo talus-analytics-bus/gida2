@@ -89,7 +89,7 @@ const Nav = ({ page, ...props }) => {
               }}
             />
           </div>
-          <Search {...{ isDark: props.isDark }} />
+          <Search {...{ isDark: props.isDark, name: "nav" }} />
         </div>
       </div>
     </div>

@@ -17,9 +17,11 @@
     color: black;
     display: flex;
     flex-flow: row;
+    cursor: pointer;
   }
   input {
     margin-right: 5px;
+    cursor: pointer;
   }
   &.disabled {
     pointer-events: none;

@@ -226,7 +226,11 @@ const Analysis = ({
           {chordContent}
           <div className={styles.menuContainer}>
             <div className={styles.menu}>
-              <Search callback={setSelectedEntity} expandedDefault={true} />
+              <Search
+                name={"analysis"}
+                callback={setSelectedEntity}
+                expandedDefault={true}
+              />
 
               <TimeSlider
                 minYearDefault={Settings.startYear}

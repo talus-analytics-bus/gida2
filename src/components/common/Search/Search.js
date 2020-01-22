@@ -10,7 +10,7 @@ import Util from "../../misc/Util.js";
  * TODO implement tooltip
  * @method Search
  */
-const Search = ({ callback, ...props }) => {
+const Search = ({ callback, name, ...props }) => {
   const [expanded, setExpanded] = React.useState(
     props.expandedDefault || false
   );
@@ -38,7 +38,7 @@ const Search = ({ callback, ...props }) => {
   };
 
   const unset = () => {
-    document.getElementById("placeSearch").value = "";
+    document.getElementById("placeSearch-" + name).value = "";
     setResults(null);
   };
 
@@ -83,7 +83,7 @@ const Search = ({ callback, ...props }) => {
   const inputEl = (
     <input
       className={"dark-bg-allowed"}
-      id={"placeSearch"}
+      id={"placeSearch-" + name}
       type="text"
       placeholder="search for a country or organization"
       onChange={handleInputChange}

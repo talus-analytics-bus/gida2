@@ -30,7 +30,7 @@ const Home = () => {
             View specific country or organization details
           </div>
           <div className={styles.content}>
-            <Search expandedDefault={true} />
+            <Search name={"home"} expandedDefault={true} />
             <GhsaButton />
           </div>
         </div>
