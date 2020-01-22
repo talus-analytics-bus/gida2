@@ -22,6 +22,7 @@ const StackBar = ({
   jeeScores,
   ghsaOnly,
   id,
+  render,
   ...props
 }) => {
   const [stackBar, setStackBar] = React.useState(null);
@@ -72,12 +73,14 @@ const StackBar = ({
     sort
   };
   React.useEffect(() => {
-    const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
-      ...stackBarParams,
-      data: chartData
-    });
-    setStackBar(stackBarNew);
-  }, [id, nodeType, ghsaOnly]);
+    if (render) {
+      const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
+        ...stackBarParams,
+        data: chartData
+      });
+      setStackBar(stackBarNew);
+    }
+  }, [id, nodeType, ghsaOnly, render]);
 
   React.useEffect(() => {
     if (stackBar !== null) {

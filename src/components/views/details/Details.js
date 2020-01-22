@@ -249,6 +249,7 @@ const Details = ({
                   jeeScores={data.jeeScores[data.nodeData.id]}
                   id={id}
                   ghsaOnly={ghsaOnly}
+                  render={curTab === "ihr"}
                 />
               ),
               toggleFlowType: true,
