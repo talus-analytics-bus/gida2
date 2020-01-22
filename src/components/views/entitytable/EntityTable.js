@@ -601,16 +601,27 @@ const getComponentData = async ({
     include_master_summary: true
   };
 
+  // If GHSA page, then filter by GHSA.
+  baseQueryParams.filters.parent_flow_info_filters = [];
+  if (id === "ghsa" || ghsaOnly === "true") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "ghsa_funding",
+      "True"
+    ]);
+  } else if (ghsaOnly === "event") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "outbreak_id:not",
+      null
+    ]);
+  } else if (ghsaOnly === "capacity") {
+    baseQueryParams.filters.parent_flow_info_filters.push([
+      "response_or_capacity:not",
+      "response"
+    ]);
+  }
+
   // Set base query params for FlowQuery
   const baseFlowQueryParams = JSON.parse(JSON.stringify(baseQueryParams));
-
-  // If GHSA page, then filter by GHSA.
-  if (id === "ghsa" || ghsaOnly === "true") {
-    baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "True"]
-    ];
-    baseFlowQueryParams.filters.flow_info_filters = [["ghsa_funding", "True"]];
-  }
 
   // Define queries for typical entityTable page.
   const queries = {
