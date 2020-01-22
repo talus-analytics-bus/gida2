@@ -462,7 +462,14 @@ const EntityTable = ({
         {sections
           .filter(s => s.show !== false)
           .map(s => (
-            <button onClick={() => setCurTab(s.slug)}>{s.header}</button>
+            <button
+              className={classNames(styles.tabToggle, {
+                [styles.selected]: s.slug === curTab
+              })}
+              onClick={() => setCurTab(s.slug)}
+            >
+              {s.header}
+            </button>
           ))}
       </div>
       <div className={styles.content}>

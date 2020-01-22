@@ -18,14 +18,43 @@
       align-items: center;
       justify-content: space-between;
     }
-    // button {
-    //   position: absolute;
-    //   right: 0;
-    // }
   }
   .tabs {
     display: flex;
     flex-flow: row;
-    justify-content: center;
+    z-index: 999;
+    button {
+      background-color: rgb(248, 248, 248);
+      font-family: "Raleway", sans-serif;
+      font-size: 1.2em;
+      bottom: -1px;
+      border-bottom: none;
+      position: relative;
+      padding: 10px;
+      border-radius: $border-radius $border-radius 0 0;
+
+      &:not(.selected) {
+        background-color: transparent;
+        border: none;
+        color: darkgray;
+        &:hover {
+          background-color: rgba(211, 211, 211, 0.15);
+          color: #333;
+        }
+      }
+      &.selected {
+        font-weight: bold;
+        color: #333;
+      }
+    }
+  }
+
+  .content {
+    display: flex;
+    flex-flow: column;
+    z-index: 998;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: rgb(248, 248, 248);
   }
 }
