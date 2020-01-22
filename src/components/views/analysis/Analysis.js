@@ -6,7 +6,6 @@ import RadioToggle from "../../misc/RadioToggle.js";
 import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import TimeSlider from "../../misc/TimeSlider.js";
-import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
@@ -15,6 +14,7 @@ import Search from "../../common/Search/Search.js";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { core_capacities } from "../../misc/Data.js";
+import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import SourceText from "../../common/SourceText/SourceText.js";
 import Button from "../../common/Button/Button.js";
 

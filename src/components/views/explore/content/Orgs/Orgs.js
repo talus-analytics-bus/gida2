@@ -6,7 +6,8 @@ import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import TableInstance from "../../../../chart/table/TableInstance.js";
-import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
+import { core_capacities } from "../../../../misc/Data.js";
+import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import {
   getMapTooltipLabel,
@@ -16,6 +17,7 @@ import {
 } from "../../../../map/MapUtil.js";
 import { getNodeData, getTableRowData } from "../../../../misc/Data.js";
 import { getNodeLinkList } from "../../../../misc/Data.js";
+import SourceText from "../../../../common/SourceText/SourceText.js";
 
 // FC for Orgs.
 const Orgs = ({
@@ -234,28 +236,14 @@ const Orgs = ({
   // legend (maybe part of map?)
   return (
     <div className={styles.orgs}>
-      <div className={styles.header}>Organizations</div>
       <div className={styles.menu}>
-        <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-        {metricHasTransactionType && (
-          <RadioToggle
-            label={"Choose"}
-            callback={setTransactionType}
-            curVal={transactionType}
-            choices={[
-              {
-                name: "Committed",
-                value: "committed"
-              },
-              {
-                name: "Disbursed",
-                value: "disbursed"
-              }
-            ]}
-          />
-        )}
+        <GhsaToggle
+          label={"Select data"}
+          ghsaOnly={ghsaOnly}
+          setGhsaOnly={setGhsaOnly}
+        />
         <RadioToggle
-          label={"Click to show"}
+          label={"Select support type"}
           callback={setSupportType}
           curVal={supportType}
           choices={[
@@ -271,15 +259,38 @@ const Orgs = ({
             }
           ]}
         />
+        {metricHasTransactionType && (
+          <RadioToggle
+            label={"Select funding type"}
+            callback={setTransactionType}
+            curVal={transactionType}
+            choices={[
+              {
+                name: "Committed",
+                value: "committed"
+              },
+              {
+                name: "Disbursed",
+                value: "disbursed"
+              }
+            ]}
+          />
+        )}
+        <FilterDropdown
+          {...{
+            className: [styles.italic],
+            label: "Select IHR core capacities",
+            openDirection: "down",
+            options: core_capacities,
+            placeholder: "Select core capacities",
+            onChange: v => setCoreCapacities(v.map(d => d.value)),
+            curValues: coreCapacities
+          }}
+        />
         {
           // TODO: add this tooltip for CC dropdown
           // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
         }
-        <CoreCapacityDropdown
-          onChange={vals => {
-            setCoreCapacities(vals.map(v => v.value));
-          }}
-        />
         <TimeSlider
           hide={supportType === "jee"}
           minYearDefault={Settings.startYear}
@@ -292,6 +303,7 @@ const Orgs = ({
       </div>
       <div className={styles.content}>
         <div className={styles.tables}>{tableInstances.map(d => d)}</div>
+        {<SourceText />}
       </div>
     </div>
   );
