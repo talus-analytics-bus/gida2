@@ -148,7 +148,7 @@ const Explore = ({
         )}
       >
         <div className={styles.header}>
-          <h1>{headerData.header}</h1>
+          <div className={styles.title}>{headerData.header}</div>
           <span>{headerData.instructions}</span>
           <div className={styles.controls}>
             <div className={styles.buttons}>

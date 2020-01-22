@@ -89,7 +89,7 @@ $phone-width-narrow: 375px;
 
 @mixin title {
   font-weight: 600;
-  font-size: 22px;
+  font-size: 25px;
   text-transform: uppercase;
   color: #11315d;
   font-family: "Raleway", sans-serif;
@@ -107,6 +107,6 @@ $phone-width-narrow: 375px;
   flex-flow: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   min-height: 48px;
 }

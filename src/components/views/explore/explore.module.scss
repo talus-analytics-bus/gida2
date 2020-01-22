@@ -1,11 +1,15 @@
 @import "../../../assets/styles/colors.scss";
 
 .explore {
-  // &.dark {
-  //   background-color: #222222;
-  //   color: #eeeeee;
-  // }
   min-height: 90vh;
+  .header {
+    @include header;
+    justify-content: flex-start;
+    align-items: flex-start;
+    .title {
+      @include title;
+    }
+  }
 
   .darkToggle {
     display: flex;
@@ -37,6 +41,8 @@
     .controls {
       display: flex;
       flex-flow: row;
+      float: right;
+      margin-left: auto;
       .tabs {
         display: flex;
         flex-flow: row;
