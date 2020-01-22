@@ -13,6 +13,7 @@ const Button = ({ label, ...props }) => {
   const classes = props.className ? [props.className] : [];
   const button = (
     <button
+      style={props.linkTo === undefined ? props.style : undefined}
       onClick={props.callback}
       className={classNames(...classes, styles.button, {
         [styles.secondary]: props.type === "secondary",

@@ -57,7 +57,7 @@ const Explore = ({
   React.useEffect(() => {
     // Set isDark defaults.
     props.setIsDark(activeTab === "map");
-  }, []);
+  }, [activeTab]);
 
   React.useEffect(() => {
     // Set isDark defaults.
