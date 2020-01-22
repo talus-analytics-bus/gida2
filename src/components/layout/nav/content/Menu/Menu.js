@@ -25,7 +25,7 @@ const Menu = ({ name, links, openMenu, setOpenMenu, ...props }) => {
   return (
     <div
       style={{ display: openMenu === name ? "flex" : "none" }}
-      className={styles.menu}
+      className={classNames(styles.menu, { [styles.dark]: props.isDark })}
     >
       <div
         id={"links-" + name}

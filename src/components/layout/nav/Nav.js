@@ -54,7 +54,8 @@ const Nav = ({ page, ...props }) => {
                   <Link to="/explore/org">Organizations</Link>
                 ],
                 openMenu,
-                setOpenMenu
+                setOpenMenu,
+                isDark: props.isDark
               }}
             />
           </div>
@@ -85,7 +86,8 @@ const Nav = ({ page, ...props }) => {
                   <Link to="/about/submit">Submit data</Link>
                 ],
                 openMenu,
-                setOpenMenu
+                setOpenMenu,
+                isDark: props.isDark
               }}
             />
           </div>
