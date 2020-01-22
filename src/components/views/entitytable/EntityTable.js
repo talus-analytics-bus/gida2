@@ -18,6 +18,8 @@ import TableInstance from "../../chart/table/TableInstance.js";
 import Tab from "../../misc/Tab.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
+import SourceText from "../../common/SourceText/SourceText.js";
+import Button from "../../common/Button/Button.js";
 
 // FC for EntityTable.
 const EntityTable = ({
@@ -407,29 +409,27 @@ const EntityTable = ({
       {otherId === undefined && (
         <div className={styles.header}>
           <div className={styles.upper}>
-            {pageType !== "ghsa" && (
-              <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-            )}
-            <h1>
-              {
-                // <Link to={`/details/${data.nodeData.id}/${entityRole}`}>
-                //   {data.nodeData.name}
-                // </Link>
-                data.nodeData.name
-              }
-            </h1>
-            <Link
-              to={
+            <h1>{data.nodeData.name}</h1>
+            <Button
+              type={"secondary"}
+              linkTo={
                 id !== "ghsa"
                   ? `/details/${id}/${entityRole}` || "funder"
                   : "/details/ghsa"
               }
-            >
-              <button>Back to summary</button>
-            </Link>
+              style={{ right: 0 }}
+              label={"Back to summary"}
+            />
           </div>
           {pageType !== "ghsa" && (
             <div className={styles.lower}>
+              {pageType !== "ghsa" && (
+                <GhsaToggle
+                  horizontal={true}
+                  ghsaOnly={ghsaOnly}
+                  setGhsaOnly={setGhsaOnly}
+                />
+              )}
               <EntityRoleToggle
                 entityRole={entityRole}
                 redirectUrlFunc={v => `/table/${id}/${v}`}
@@ -441,19 +441,29 @@ const EntityTable = ({
       {otherId !== undefined && (
         <div className={styles.header}>
           <div className={styles.upper}>
-            <Link to={`/table/${id}/funder`}>
-              <button>Go to funder table</button>
-            </Link>
+            <Button
+              type={"secondary"}
+              linkTo={`/table/${id}/funder`}
+              label={"Go to funder table"}
+              style={{ left: 0 }}
+            />
             <h1>
               {data.nodeData.name} → {data.nodeDataOther.name}
             </h1>
-            <Link to={`/table/${otherId}/recipient`}>
-              <button>Go to recipient table</button>
-            </Link>
+            <Button
+              type={"secondary"}
+              linkTo={`/table/${otherId}/recipient`}
+              style={{ right: 0 }}
+              label={"Go to recipient table"}
+            />
           </div>
           <div className={styles.lower}>
             {pageType !== "ghsa" && (
-              <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+              <GhsaToggle
+                horizontal={true}
+                ghsaOnly={ghsaOnly}
+                setGhsaOnly={setGhsaOnly}
+              />
             )}
           </div>
         </div>

@@ -13,7 +13,6 @@ const Button = ({ label, ...props }) => {
   const classes = props.className ? [props.className] : [];
   const button = (
     <button
-      style={props.style}
       onClick={props.callback}
       className={classNames(...classes, styles.button, {
         [styles.secondary]: props.type === "secondary",
@@ -28,7 +27,7 @@ const Button = ({ label, ...props }) => {
   );
   if (props.linkTo)
     return (
-      <Link className={styles.link} to={props.linkTo}>
+      <Link style={props.style} className={styles.link} to={props.linkTo}>
         {button}
       </Link>
     );

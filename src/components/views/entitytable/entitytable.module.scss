@@ -1,9 +1,16 @@
 @import "../../../assets/styles/colors.scss";
 
 .entityTable {
+  position: relative;
   .header {
     display: flex;
     flex-flow: column;
+
+    a {
+      position: absolute;
+      // right: 0;
+    }
+
     h1 {
       margin: 0 auto;
     }
@@ -17,12 +24,17 @@
       flex-flow: row;
       align-items: center;
       justify-content: space-between;
+      margin: 10px 0;
+    }
+    .lower {
+      align-items: flex-end;
     }
   }
   .tabs {
     display: flex;
     flex-flow: row;
     z-index: 999;
+    margin-top: 20px;
     button {
       background-color: rgb(248, 248, 248);
       font-family: "Raleway", sans-serif;
