@@ -4,7 +4,6 @@
   .info {
     height: auto;
     border: 1px solid #ccc;
-    padding: 10px;
     width: 100%;
 
     .header {
@@ -13,11 +12,13 @@
       justify-content: space-between;
       align-items: flex-start;
       font-size: 20px;
-      margin-bottom: 20px;
+      padding: 10px;
+      color: white;
     }
     .contentInfo {
       display: flex;
       flex-flow: column;
+      padding: 10px;
 
       .row {
         display: flex;
@@ -36,6 +37,7 @@
         flex-flow: column;
         justify-content: flex-end;
         margin-right: 10px;
+        font-size: 20px;
 
         div:first-child {
           font-family: "rawline", serif;

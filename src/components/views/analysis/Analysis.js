@@ -73,10 +73,14 @@ const Analysis = ({
 
   const transactionTypeNoun =
     transactionType === "committed" ? "commitments" : "disbursements";
-
+  console.log("selectedEntityInfo");
+  console.log(selectedEntityInfo);
   const info = selectedEntity && showInfo && selectedEntityInfo && (
     <div style={{ display: showInfo }} className={styles.info}>
-      <div className={styles.header}>
+      <div
+        style={{ backgroundColor: selectedEntityInfo.color }}
+        className={styles.header}
+      >
         <div className={styles.name}>{selectedEntityInfo.name}</div>
         <Button
           callback={() => {
