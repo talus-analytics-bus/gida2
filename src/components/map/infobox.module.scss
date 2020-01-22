@@ -2,8 +2,13 @@
 .infoBox {
   display: none;
   flex-flow: column;
-  border: 1px solid #ccc;
+  // border: 1px solid #ccc;
   width: 100%;
+  opacity: 0;
+  &.revealed {
+    opacity: 1;
+    transition: opacity 0.25s;
+  }
   &.show {
     display: flex;
   }

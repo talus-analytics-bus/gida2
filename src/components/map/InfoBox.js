@@ -20,6 +20,7 @@ const InfoBox = ({
   isDark,
   entityRole = "funder", // For link button to details page
   infoBoxData = null,
+  revealed,
   ...props
 }) => {
   // Track whether info box is visible or not
@@ -87,10 +88,12 @@ const InfoBox = ({
   else
     return (
       <div
+        style={props.style}
         className={classNames(styles.infoBox, {
           [styles.show]: show,
           [styles.dark]: isDark,
-          [styles.simple]: simple
+          [styles.simple]: simple,
+          [styles.revealed]: revealed !== false || revealed === undefined
         })}
       >
         <div

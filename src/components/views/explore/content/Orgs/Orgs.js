@@ -16,7 +16,9 @@ import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
   getMapColorScale,
-  getMapMetricValue
+  getMapMetricValue,
+  greens,
+  purples
 } from "../../../../map/MapUtil.js";
 import { getNodeData, getTableRowData } from "../../../../misc/Data.js";
 import { getNodeLinkList } from "../../../../misc/Data.js";
@@ -49,6 +51,7 @@ const Orgs = ({
   const [mapTitle, setMapTitle] = React.useState("funds");
 
   const [tooltipData, setTooltipData] = React.useState(undefined);
+  const [revealed, setRevealed] = React.useState(false);
   console.log("tooltipData - orgs.js");
   console.log(tooltipData);
   const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
@@ -232,7 +235,10 @@ const Orgs = ({
               supportType,
               jeeScores: [],
               coreCapacities: [],
-              colorScale: v => v,
+              colorScale: () => {
+                if (nodeType === "source") return greens[greens.length - 1];
+                else return purples[purples.length - 1];
+              },
               entityRole,
               minYear,
               maxYear,
@@ -240,6 +246,8 @@ const Orgs = ({
               simple: false
             })
           : undefined;
+      if (tooltipData && tooltipData.colorValue === undefined)
+        tooltipData.colorValue = 1;
       setHoveredEntity(d.id);
       setTooltipNodeData(d);
       setTooltipData(tooltipData);
@@ -379,7 +387,16 @@ const Orgs = ({
           type="light"
           className={classNames(tooltipStyles.tooltip, tooltipStyles.simple)}
           place="top"
-          effect="float"
+          delayShow={500}
+          effect="solid"
+          clickable={true}
+          afterShow={function(e) {
+            setRevealed(true);
+          }}
+          afterHide={function(e) {
+            setRevealed(false);
+          }}
+          eventOff={null}
           getContent={() =>
             tooltipData && (
               <InfoBox
@@ -388,7 +405,9 @@ const Orgs = ({
                   entityRole,
                   supportType,
                   nodeData: tooltipNodeData,
-                  infoBoxData: tooltipData
+                  infoBoxData: tooltipData,
+                  setNodeData: setTooltipNodeData,
+                  revealed
                 }}
               />
             )

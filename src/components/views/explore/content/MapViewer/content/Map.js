@@ -85,8 +85,6 @@ const Map = ({
   const [nodeData, setNodeData] = React.useState(undefined);
   const [tooltipCountry, setTooltipCountry] = React.useState(undefined);
   const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
-  console.log("tooltipNodeData");
-  console.log(tooltipNodeData);
 
   // Define "columns" for map data.
   const d3MapDataFields = [
@@ -234,8 +232,6 @@ const Map = ({
       data: jeeScoreData
     });
   }
-  console.log("mapData");
-  console.log(mapData);
   // Get datum for the selected node, if it exists.
   const datumForInfoBox =
     nodeData !== undefined
@@ -260,6 +256,8 @@ const Map = ({
     flowType,
     simple: false
   });
+  console.log("minYear");
+  console.log(minYear);
   const tooltipData =
     tooltipNodeData !== undefined
       ? getInfoBoxData({
@@ -277,9 +275,6 @@ const Map = ({
           simple: true
         })
       : undefined;
-
-  console.log("tooltipData");
-  console.log(tooltipData);
 
   return (
     <div className={classNames(styles.map, { [styles.dark]: isDark })}>
@@ -310,7 +305,8 @@ const Map = ({
             nodeData,
             setNodeData,
             infoBoxData,
-            isDark
+            isDark,
+            style: { border: "1px solid #ccc" }
           }}
         />
       </div>

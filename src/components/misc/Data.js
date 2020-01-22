@@ -57,6 +57,8 @@ const getFlowValues = ({
       };
     });
   } else {
+    console.log("minYear");
+    console.log(minYear);
     // Otherwise, return an array with one object for each flow value that
     // contains (1) the value to be displayed, formatted; and (2) the label
     // that goes beneath that value, returned by a function "label".
@@ -176,7 +178,11 @@ export const getInfoBoxData = ({
         infoBoxData.flowValues = getFlowValues({
           supportTypeForValues: "funds",
           datum,
-          transactionType
+          transactionType,
+          minYear,
+          maxYear,
+          entityRole,
+          coreCapacities
         });
         break;
 
@@ -185,7 +191,11 @@ export const getInfoBoxData = ({
         infoBoxData.flowValues = getFlowValues({
           supportTypeForValues: "inkind",
           datum,
-          transactionType
+          transactionType,
+          minYear,
+          maxYear,
+          entityRole,
+          coreCapacities
         });
         break;
 
@@ -195,7 +205,11 @@ export const getInfoBoxData = ({
         infoBoxData.flowValues = getFlowValues({
           supportTypeForValues: "funds",
           datum,
-          transactionType
+          transactionType,
+          minYear,
+          maxYear,
+          entityRole,
+          coreCapacities
         });
         break;
 
