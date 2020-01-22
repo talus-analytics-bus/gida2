@@ -456,7 +456,6 @@ class D3Chord extends Chart {
 
         chart.params.setTooltipData(tooltipData);
       });
-    ReactTooltip.rebuild();
 
     arcTypes.forEach(arcType => {
       arcTypes[arcType.type] = this.chart
@@ -469,7 +468,37 @@ class D3Chord extends Chart {
         .attr("class", styles[arcType.type])
         .style("fill", d => d.color)
         .attr("d", d => arcType.generator(d))
-        .on("click", arcType.type === "entity" ? setSelectedEntity : undefined);
+        .on("click", arcType.type === "entity" ? setSelectedEntity : undefined)
+        .attr("data-tip", "")
+        .attr("data-for", "analysisTooltip")
+        .on("mouseover", function updateTooltip(d) {
+          const params = chart.params;
+          const tooltipData = [
+            {
+              field: "Name",
+              value: d.name
+            },
+            {
+              field: `Total ${
+                params.transactionType === "committed"
+                  ? "commitments"
+                  : "disbursements"
+              } provided`,
+              value: Util.money(d.source)
+            },
+            {
+              field: `Total ${
+                params.transactionType === "committed"
+                  ? "commitments"
+                  : "disbursements"
+              } received`,
+              value: Util.money(d.target)
+            }
+          ];
+
+          chart.params.setTooltipData(tooltipData);
+        });
+      ReactTooltip.rebuild();
     });
 
     // Add labels
