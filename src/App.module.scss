@@ -9,7 +9,7 @@ $logo-height: 70px;
 //   margin-bottom: 0;
 // }
 .loadingSpinner {
-  position: absolute;
+  position: fixed;
   background-color: rgba(0, 0, 0, 0);
   pointer-events: none;
   width: 100vw;
