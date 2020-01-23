@@ -64,6 +64,8 @@
   }
   .menuContainer {
     width: 100%;
+    display: flex;
+    flex-flow: column;
 
     .menu {
       border: 1px solid #ccc;

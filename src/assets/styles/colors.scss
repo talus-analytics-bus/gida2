@@ -89,17 +89,18 @@ $phone-width-narrow: 375px;
 
 @mixin title {
   font-weight: 600;
-  font-size: 25px;
+  font-size: 30px;
   text-transform: uppercase;
   color: #11315d;
-  font-family: "Raleway", sans-serif;
+  font-family: "rawline", sans-serif;
 }
 @mixin subtitle {
   margin-top: 20px;
+  margin-bottom: 10px;
   font-weight: 600;
-  font-size: 22px;
+  font-size: 25px;
   color: #11315d;
-  font-family: "Raleway", sans-serif;
+  font-family: "rawline", sans-serif;
 }
 
 @mixin header {

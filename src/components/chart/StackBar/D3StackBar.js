@@ -163,7 +163,8 @@ class D3StackBar extends Chart {
       });
 
       // determine whether this is a country with jee scores available
-      const jeesWhite = params.nodeType === "source";
+      const jeesWhite =
+        params.nodeType === "source" || params.placeType !== "country";
       const showJee =
         params.jeeScores !== undefined && params.nodeType !== "source";
       const scores = params.jeeScores; // undefined if not available

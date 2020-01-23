@@ -247,6 +247,7 @@ const Details = ({
                   nodeType={nodeType}
                   otherNodeType={otherNodeType}
                   jeeScores={data.jeeScores[data.nodeData.id]}
+                  placeType={data.nodeData.type}
                   id={id}
                   ghsaOnly={ghsaOnly}
                   render={curTab === "ihr"}
@@ -526,8 +527,6 @@ const Details = ({
     : [];
 
   const flag = `/flags/${data.nodeData.iso2 || data.nodeData.id}.png`;
-  console.log("data.nodeData");
-  console.log(data.nodeData);
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
@@ -538,6 +537,7 @@ const Details = ({
 
   React.useEffect(() => {
     setShowFlag(true);
+    window.scrollTo(0, 0);
   }, [id]);
 
   const ghsa = pageType === "ghsa";

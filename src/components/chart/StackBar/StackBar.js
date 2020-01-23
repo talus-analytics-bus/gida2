@@ -23,6 +23,7 @@ const StackBar = ({
   ghsaOnly,
   id,
   render,
+  placeType,
   ...props
 }) => {
   const [stackBar, setStackBar] = React.useState(null);
@@ -70,7 +71,8 @@ const StackBar = ({
     otherNodeType,
     setTooltipData,
     tooltipClassName: styles.stackBarTooltip,
-    sort
+    sort,
+    placeType
   };
   React.useEffect(() => {
     if (render) {
@@ -98,9 +100,11 @@ const StackBar = ({
     }
   }, [sort]);
 
+  const jeeWhite = nodeType === "source" || placeType !== "country";
+
   return (
     <div className={styles.stackbar}>
-      {display && id !== "ghsa" && nodeType !== "source" && (
+      {display && id !== "ghsa" && !jeeWhite && (
         <RadioToggle
           label={"Sort by"}
           callback={setSort}
@@ -124,7 +128,7 @@ const StackBar = ({
         }}
         className={styles.stackBarChart}
       />
-      {legend}
+      {!jeeWhite && legend}
       {!display && (
         <div>
           <i>No data to show</i>

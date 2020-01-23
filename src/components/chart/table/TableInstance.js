@@ -54,7 +54,8 @@ const TableInstance = ({
         className={classNames("tableInstance", styles.tableInstance, {
           noPaging: props.paging !== true,
           [styles.noNativePaging]: props.noNativePaging === true,
-          [styles.noNativeSearch]: props.noNativePaging === true
+          [styles.noNativeSearch]: props.noNativePaging === true,
+          [styles.noNativeSorting]: props.noNativeSorting === true
         })}
       >
         <DataTable

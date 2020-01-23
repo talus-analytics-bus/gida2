@@ -1,6 +1,14 @@
 @import "../../../../../assets/styles/colors.scss";
 .orgs {
   margin-top: 20px;
+
+  .subtitle {
+    @include subtitle;
+  }
+  .content {
+    display: flex;
+    flex-flow: column;
+  }
   .hide {
     display: none;
   }
@@ -8,6 +16,11 @@
     display: flex;
     flex-flow: row;
     table {
+      // No wrapping col labels on this page.
+      th[role="columnheader"] {
+        white-space: nowrap;
+      }
+
       td,
       tr {
         color: black;
@@ -36,12 +49,26 @@
   }
   .menu {
     display: flex;
-    flex-flow: row;
-    justify-content: space-between;
+    flex-flow: column;
+    margin-top: 20px;
     border: 1px solid #ccc;
     padding: 20px;
-    > div:last-child {
-      margin-right: 15px;
+    max-width: 900px;
+    .subtitle {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .menuContent {
+      justify-content: space-between;
+
+      > div:last-child {
+        margin-right: 15px;
+      }
+      > div {
+        margin-bottom: 20px;
+      }
+      display: flex;
+      flex-flow: row;
     }
   }
 }

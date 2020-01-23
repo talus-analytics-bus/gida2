@@ -13,7 +13,7 @@ import Chord from "./content/Chord.js";
 import Search from "../../common/Search/Search.js";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { core_capacities } from "../../misc/Data.js";
+import { core_capacities, getNodeLinkList } from "../../misc/Data.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import SourceText from "../../common/SourceText/SourceText.js";
 import Button from "../../common/Button/Button.js";
@@ -141,12 +141,21 @@ const Analysis = ({
         {table[0]}
         <TableInstance
           paging={true}
+          noNativeSorting={true}
           tableColumns={[
             {
               title: table[1],
               prop: table[2],
               type: "text",
-              func: d => d[table[2]][0].name
+              func: d => JSON.stringify(d[table[2]]),
+              render: d =>
+                getNodeLinkList({
+                  urlType: "details",
+                  nodeList: JSON.parse(d),
+                  entityRole: table[1].toLowerCase(),
+                  id: undefined,
+                  otherId: undefined
+                })
             },
             {
               title: "Committed",
@@ -227,10 +236,9 @@ const Analysis = ({
           correspond to the transfer of funds from funder to recipient. Thicker
           lines represent larger amounts of funding commitments or
           disbursements. Hover over any line to see additional details on the
-          funding amount or funders and recipients involved. Amounts shown here
-          may differ from those shown elsewhere in this site because additional,
-          estimated commitments and disbursements are included to enable
-          visualization of more reported funding flows.
+          funding amount or funders and recipients involved. Totals shown here
+          may differ from those shown elsewhere in this site because
+          transactions with multiple funders or recipients are not included.
         </p>
         <div className={styles.chordDiagram}>
           {chordContent}

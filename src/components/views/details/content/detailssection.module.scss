@@ -2,6 +2,8 @@
 .detailsSection {
   .content {
     margin: 10px 0;
+    display: flex;
+    flex-flow: column;
   }
   h2 {
     font-size: 21px;

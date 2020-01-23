@@ -3,6 +3,13 @@
 .tableInstance {
   width: 100%;
   // max-width: 800px;
+
+  table {
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
   td,
   th {
     background-color: white;
@@ -23,6 +30,11 @@
   }
 
   // Hide or show pagination controls
+  &.noNativeSorting {
+    [class^="sort-icon"] {
+      display: none;
+    }
+  }
   &.noNativePaging {
     [class^="pagination"],
     [for="page-menu"],

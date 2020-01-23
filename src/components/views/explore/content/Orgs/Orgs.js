@@ -57,6 +57,9 @@ const Orgs = ({
   const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
   const [hoveredEntity, setHoveredEntity] = React.useState(undefined);
 
+  const yearRange =
+    minYear === maxYear ? `${minYear}` : `${minYear} - ${maxYear}`;
+
   /**
    * Given the transaction type and the support type, returns the flow type.
    * @method getFlowTypeFromArgs
@@ -199,8 +202,18 @@ const Orgs = ({
   const tableInstances = [];
 
   const tables = [
-    ["Top funders", "Funder", "source", "flowBundlesFocusSources"],
-    ["Top recipients", "Recipient", "target", "flowBundlesFocusTargets"]
+    [
+      <div className={styles.subtitle}>Top funders ({yearRange})</div>,
+      "Funder",
+      "source",
+      "flowBundlesFocusSources"
+    ],
+    [
+      <div className={styles.subtitle}>Top recipients ({yearRange})</div>,
+      "Recipient",
+      "target",
+      "flowBundlesFocusTargets"
+    ]
   ];
 
   tables.forEach(table => {
@@ -216,14 +229,9 @@ const Orgs = ({
 
     const updateTooltipData = (dStr, nodeType, dataKey, mapData) => {
       const d = JSON.parse(dStr)[0];
-      console.log(d);
       const datum = data[dataKey].flow_bundles.find(
         dd => dd[nodeType][0].id === d.id
       );
-      console.log("data[dataKey].flow_bundles");
-      console.log(data[dataKey].flow_bundles);
-      console.log("datum");
-      console.log(datum);
 
       // Get tooltip data on hover
       const tooltipData =
@@ -239,7 +247,7 @@ const Orgs = ({
                 if (nodeType === "source") return greens[greens.length - 1];
                 else return purples[purples.length - 1];
               },
-              entityRole,
+              entityRole: nodeType === "source" ? "funder" : "recipient",
               minYear,
               maxYear,
               flowType,
@@ -265,6 +273,7 @@ const Orgs = ({
             };
           }}
           paging={true}
+          noNativeSorting={true}
           tableColumns={[
             {
               title: table[1],
@@ -314,57 +323,65 @@ const Orgs = ({
   // legend (maybe part of map?)
   return (
     <div className={styles.orgs}>
+      <div className={styles.content}>
+        <div className={styles.tables}>{tableInstances.map(d => d)}</div>
+        {<SourceText />}
+      </div>
       <div className={styles.menu}>
-        <GhsaToggle
-          label={"Select data"}
-          ghsaOnly={ghsaOnly}
-          setGhsaOnly={setGhsaOnly}
-        />
-        <RadioToggle
-          label={"Select support type"}
-          callback={setSupportType}
-          curVal={supportType}
-          choices={[
-            {
-              name: "Financial support",
-              value: "funds"
-            },
-            {
-              name: "In-kind support",
-              value: "inkind",
-              tooltip:
-                "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
-            }
-          ]}
-        />
-        {metricHasTransactionType && (
+        <div className={styles.subtitle}>Options</div>
+        <div className={styles.menuContent}>
+          <GhsaToggle
+            label={"Select data"}
+            ghsaOnly={ghsaOnly}
+            setGhsaOnly={setGhsaOnly}
+          />
           <RadioToggle
-            label={"Select funding type"}
-            callback={setTransactionType}
-            curVal={transactionType}
+            label={"Select support type"}
+            callback={setSupportType}
+            curVal={supportType}
             choices={[
               {
-                name: "Committed",
-                value: "committed"
+                name: "Financial support",
+                value: "funds"
               },
               {
-                name: "Disbursed",
-                value: "disbursed"
+                name: "In-kind support",
+                value: "inkind",
+                tooltip:
+                  "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
               }
             ]}
           />
-        )}
-        <FilterDropdown
-          {...{
-            className: [styles.italic],
-            label: "Select IHR core capacities",
-            openDirection: "down",
-            options: core_capacities,
-            placeholder: "Select core capacities",
-            onChange: v => setCoreCapacities(v.map(d => d.value)),
-            curValues: coreCapacities
-          }}
-        />
+          {metricHasTransactionType && (
+            <RadioToggle
+              label={"Select funding type"}
+              callback={setTransactionType}
+              curVal={transactionType}
+              choices={[
+                {
+                  name: "Committed",
+                  value: "committed"
+                },
+                {
+                  name: "Disbursed",
+                  value: "disbursed"
+                }
+              ]}
+            />
+          )}
+          <FilterDropdown
+            {...{
+              className: [styles.italic],
+              label: "Select IHR core capacities",
+              openDirection: "down",
+              options: core_capacities,
+              placeholder: "Select core capacities",
+              onChange: v => setCoreCapacities(v.map(d => d.value)),
+              curValues: coreCapacities
+            }}
+          />
+        </div>
+
         {
           // TODO: add this tooltip for CC dropdown
           // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
@@ -378,10 +395,6 @@ const Orgs = ({
             setMaxYear(years[1]);
           }}
         />
-      </div>
-      <div className={styles.content}>
-        <div className={styles.tables}>{tableInstances.map(d => d)}</div>
-        {<SourceText />}
       </div>
       {
         // Tooltip for info tooltip icons.
