@@ -5,6 +5,7 @@ import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
 import Chevron from "../../common/Chevron/Chevron.js";
+import Pagination from "../../common/Pagination/Pagination.js";
 
 // Content components
 import TableInstance from "../../chart/table/TableInstance.js";
@@ -123,21 +124,15 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
     <div className={classNames("pageContainer", styles.exportTable)}>
       {
         <div>
-          <button
-            onClick={() => {
-              if (curPage > 1) setCurPage(curPage - 1);
-            }}
-          >
-            Prev
-          </button>
-          <button
-            onClick={() => {
-              if (curPage < data.flows.paging.n_records)
-                setCurPage(curPage + 1);
-            }}
-          >
-            Next
-          </button>
+          {
+            <Pagination
+              {...{
+                curPage,
+                setCurPage,
+                nPages: data.flows.paging.n_records
+              }}
+            />
+          }
         </div>
       }
       {dataTable}
