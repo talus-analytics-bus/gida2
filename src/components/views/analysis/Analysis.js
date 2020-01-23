@@ -363,6 +363,7 @@ export const renderAnalysis = ({
   setMinYear,
   setMaxYear,
   maxYear,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   if (loading) {
@@ -390,11 +391,13 @@ export const renderAnalysis = ({
       maxYear: maxYear,
       setMinYear: setMinYear,
       setMaxYear: setMaxYear,
+      setLoadingSpinnerOn,
       ...props
     });
 
     return component ? component : <div />;
   } else {
+    setLoadingSpinnerOn(false);
     return component;
   }
 };
@@ -421,6 +424,7 @@ const getComponentData = async ({
   maxYear,
   setMinYear,
   setMaxYear,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -482,6 +486,7 @@ const getComponentData = async ({
   };
 
   // Get query results.
+  setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
   if (props.returnDataOnly === true) return results;
   // Feed results and other data to the details component and mount it.

@@ -268,7 +268,8 @@ const App = () => {
                     setComponent: setAnalysisDataComponent,
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly
+                    setGhsaOnly: setGhsaOnly,
+                    setLoadingSpinnerOn
                   });
                 }}
               />

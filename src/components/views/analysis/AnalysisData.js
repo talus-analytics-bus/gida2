@@ -11,6 +11,7 @@ const AnalysisData = ({
   ghsaOnly,
   setGhsaOnly,
   flowTypeInfo,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Track min and max year of data (consistent across tabs)
@@ -30,7 +31,8 @@ const AnalysisData = ({
     minYear: minYear,
     setMinYear: setMinYear,
     maxYear: maxYear,
-    setMaxYear: setMaxYear
+    setMaxYear: setMaxYear,
+    setLoadingSpinnerOn
   });
 
   // legend (maybe part of map?)
@@ -43,6 +45,7 @@ export const renderAnalysisData = ({
   loading,
   flowTypeInfo,
   ghsaOnly,
+  setLoadingSpinnerOn,
   setGhsaOnly,
   ...props
 }) => {
@@ -54,6 +57,7 @@ export const renderAnalysisData = ({
         {...{
           flowTypeInfo,
           ghsaOnly,
+          setLoadingSpinnerOn,
           setGhsaOnly
         }}
       />
