@@ -34,6 +34,7 @@ const MapViewer = ({
   flowTypeInfo,
   isDark,
   supportTypeDefault,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Track transaction type selected for the map
@@ -275,6 +276,7 @@ const MapViewer = ({
           coreCapacities={coreCapacities}
           ghsaOnly={ghsaOnly}
           isDark={isDark}
+          setLoadingSpinnerOn={setLoadingSpinnerOn}
         />
         <div className={styles.menuContainer}>
           <SlideToggle
@@ -358,6 +360,7 @@ export const renderMapViewer = ({
   ghsaOnly,
   setGhsaOnly,
   supportTypeDefault,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Set IDs
@@ -387,6 +390,7 @@ export const renderMapViewer = ({
       entityRole: entityRole,
       setEntityRole: setEntityRole,
       supportTypeDefault,
+      setLoadingSpinnerOn,
       ...props
     });
 
@@ -416,6 +420,7 @@ const getComponentData = async ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -481,6 +486,7 @@ const getComponentData = async ({
   };
 
   // Get query results.
+  setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
   console.log("results - MapViewer.js");
   console.log(results);
@@ -497,6 +503,7 @@ const getComponentData = async ({
       ghsaOnly={ghsaOnly}
       setGhsaOnly={setGhsaOnly}
       setComponent={setComponent}
+      setLoadingSpinnerOn={setLoadingSpinnerOn}
       activeTab={props.activeTab}
       minYear={props.minYear}
       maxYear={props.maxYear}

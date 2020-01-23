@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom";
 
 // layout
@@ -17,6 +18,7 @@ import Background from "./components/views/about/Background.js";
 import DataSources from "./components/views/about/DataSources.js";
 import Research from "./components/views/about/Research.js";
 import Submit from "./components/views/about/Submit.js";
+import spinnerImg from "./assets/images/spinner.svg";
 
 // styles
 import styles from "./App.module.scss";
@@ -54,6 +56,7 @@ const App = () => {
 
   // Track whether styling is dark or light
   const [isDark, setIsDark] = React.useState(false);
+  const [loadingSpinnerOn, setLoadingSpinnerOn] = React.useState(true);
 
   async function getAppData() {
     const queries = {
@@ -70,6 +73,10 @@ const App = () => {
   React.useEffect(() => {
     getAppData();
   }, []);
+
+  React.useEffect(() => {
+    console.log("Toggled loading spinner.");
+  }, [loadingSpinnerOn]);
 
   // Define what columns to show in tables
   const valueColsInkind = ["provided_inkind", "committed_inkind"];
@@ -178,13 +185,9 @@ const App = () => {
                 path="/explore/:activeTab"
                 render={d => {
                   setPage("explore-" + d.match.params.activeTab);
-                  console.log("d");
-                  console.log(d);
                   // Get support type if specified.
                   const urlParams = new URLSearchParams(d.location.search);
                   const supportTypeDefault = urlParams.get("supportType");
-                  console.log("supportTypeDefault - App.js");
-                  console.log(supportTypeDefault);
 
                   return renderExplore({
                     ...d.match.params,
@@ -196,9 +199,9 @@ const App = () => {
                     ghsaOnly: ghsaOnly,
                     setGhsaOnly: setGhsaOnly,
                     isDark: isDark,
-                    // isDark: d.match.params.activeTab === "map",
                     setIsDark: setIsDark,
-                    supportTypeDefault: supportTypeDefault
+                    supportTypeDefault: supportTypeDefault,
+                    setLoadingSpinnerOn
                   });
                 }}
               />
@@ -216,7 +219,8 @@ const App = () => {
                     setLoading: setLoading,
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly
+                    setGhsaOnly: setGhsaOnly,
+                    setLoadingSpinnerOn
                   });
                 }}
               />
@@ -346,6 +350,16 @@ const App = () => {
           </Switch>
         </BrowserRouter>
         {<Footer {...{ isDark }} />}
+        {
+          <div
+            className={classNames(styles.loadingSpinner, {
+              [styles.on]: loadingSpinnerOn
+            })}
+          >
+            <img src={spinnerImg} />
+            <div>Loading...</div>
+          </div>
+        }
       </div>
     );
 };

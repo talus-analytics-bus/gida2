@@ -8,6 +8,47 @@ $logo-height: 70px;
 // h1 {
 //   margin-bottom: 0;
 // }
+.loadingSpinner {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: center;
+  font-size: 3em;
+
+  > div {
+    opacity: 0;
+    color: darken(white, 10%);
+  }
+
+  img {
+    margin-right: -20px;
+    opacity: 0;
+  }
+  > div,
+  > img {
+    transition: all 0.5s;
+  }
+  transition: all 0.5s;
+
+  &.on {
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all 0.5s;
+    > div,
+    > img {
+      transition: all 0.5s;
+      opacity: 1 !important;
+    }
+  }
+}
 .app {
   display: grid;
   grid-template-columns: auto; // ensures header resizes correctly if window size is changed

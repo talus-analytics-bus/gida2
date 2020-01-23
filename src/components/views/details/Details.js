@@ -41,6 +41,7 @@ const Details = ({
   ghsaOnly,
   setGhsaOnly,
   setComponent,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // make key changes to the page if the id is special:
@@ -704,6 +705,7 @@ const Details = ({
   };
 
   React.useEffect(() => {
+    setLoadingSpinnerOn(false);
     setShowFlag(true);
     setCurPvsEdition(data.pvs.eds[0] || {});
     window.scrollTo(0, 0);
@@ -712,6 +714,7 @@ const Details = ({
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
   React.useEffect(() => {
+    setLoadingSpinnerOn(false);
     setCurTab("ihr");
   }, [entityRole]);
 
@@ -895,6 +898,7 @@ export const renderDetails = ({
   entityRole,
   flowTypeInfo,
   ghsaOnly,
+  setLoadingSpinnerOn,
   setGhsaOnly
 }) => {
   if (loading) {
@@ -912,7 +916,8 @@ export const renderDetails = ({
       entityRole: entityRole,
       flowTypeInfo: flowTypeInfo,
       ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly
+      setGhsaOnly: setGhsaOnly,
+      setLoadingSpinnerOn
     });
 
     return detailsComponent ? detailsComponent : <div />;
@@ -935,7 +940,8 @@ const getComponentData = async ({
   entityRole,
   flowTypeInfo,
   ghsaOnly,
-  setGhsaOnly
+  setGhsaOnly,
+  setLoadingSpinnerOn
 }) => {
   // Define typical base query parameters used in FlowQuery,
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
@@ -1067,6 +1073,7 @@ const getComponentData = async ({
   }
 
   // Get query results.
+  setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
 
   // Feed results and other data to the details component and mount it.
@@ -1081,6 +1088,7 @@ const getComponentData = async ({
       setComponent={setDetailsComponent}
       responseStart={then}
       responseEnd={now}
+      setLoadingSpinnerOn={setLoadingSpinnerOn}
     />
   );
 };

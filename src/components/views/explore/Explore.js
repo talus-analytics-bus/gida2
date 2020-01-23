@@ -21,6 +21,7 @@ const Explore = ({
   ghsaOnly,
   setGhsaOnly,
   supportTypeDefault,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Returns correct header content given the active tab
@@ -91,7 +92,8 @@ const Explore = ({
             setMinYear: setMinYear,
             maxYear: maxYear,
             setMaxYear: setMaxYear,
-            supportTypeDefault
+            supportTypeDefault,
+            setLoadingSpinnerOn
           })
         };
 
@@ -191,6 +193,7 @@ export const renderExplore = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   if (loading) {
@@ -206,6 +209,7 @@ export const renderExplore = ({
         setIsDark={props.setIsDark}
         isDark={props.isDark}
         supportTypeDefault={props.supportTypeDefault}
+        setLoadingSpinnerOn={setLoadingSpinnerOn}
       />
     );
   }

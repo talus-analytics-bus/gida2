@@ -19,6 +19,7 @@ const D3Map = ({
   ghsaOnly,
   setNodeData,
   setTooltipNodeData,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   const [mapLoaded, setMapLoaded] = React.useState(false);
@@ -71,6 +72,7 @@ const D3Map = ({
   // Update map coloring and tooltips etc. whenever flowtype is updated.
   React.useEffect(() => {
     if (mapLoaded) {
+      setLoadingSpinnerOn(false);
       worldMap.colorCountries(
         mapData.map(dd => {
           return { id: dd.id, value: dd.value, color: colorScale(dd.color) };
