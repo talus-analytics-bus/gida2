@@ -26,6 +26,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const [exportTable, setExportTable] = React.useState(null);
   const [nRecords, setNRecords] = React.useState(0);
   const [curPage, setCurPage] = React.useState(1);
+  console.log("curPage - Export.js");
+  console.log(curPage);
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||

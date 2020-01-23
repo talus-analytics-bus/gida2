@@ -10,9 +10,17 @@ import Chevron from "../../common/Chevron/Chevron.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 
 // FC for ExportTable.
-const ExportTable = ({ data, exportCols, ...props }) => {
+const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
   // Set n records
-  props.setNRecords(data.flows.length);
+  props.setNRecords(data.flows.paging.n_records);
+
+  React.useEffect(() => setCurPage(1), [
+    props.coreCapacities,
+    props.funders,
+    props.recipients,
+    props.outbreaks,
+    props.supportType
+  ]);
 
   const cols = [
     {
@@ -107,12 +115,31 @@ const ExportTable = ({ data, exportCols, ...props }) => {
       noNativeSearch={true}
       noNativeSorting={true}
       tableColumns={cols}
-      tableData={data.flows}
+      tableData={data.flows.flows}
     />
   );
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.exportTable)}>
+      {
+        <div>
+          <button
+            onClick={() => {
+              if (curPage > 1) setCurPage(curPage - 1);
+            }}
+          >
+            Prev
+          </button>
+          <button
+            onClick={() => {
+              if (curPage < data.flows.paging.n_records)
+                setCurPage(curPage + 1);
+            }}
+          >
+            Next
+          </button>
+        </div>
+      }
       {dataTable}
     </div>
   );
@@ -124,6 +151,7 @@ const remountComponent = ({ component, ...props }) => {
     component.props.coreCapacities.toString() !==
       props.coreCapacities.toString() ||
     component.props.funders.toString() !== props.funders.toString() ||
+    component.props.curPage.toString() !== props.curPage.toString() ||
     component.props.outbreaks.toString() !== props.outbreaks.toString() ||
     component.props.supportType.toString() !== props.supportType.toString() ||
     component.props.recipients.toString() !== props.recipients.toString();
@@ -143,7 +171,7 @@ export const renderExportTable = ({
   // Get data
   if (loading) {
     return <div>Loading...</div>;
-  } else if (remountComponent({ component, ...props })) {
+  } else if (remountComponent({ component, curPage, ...props })) {
     getComponentData({
       setComponent: setComponent,
       setLoadingSpinnerOn,
@@ -189,7 +217,7 @@ const getComponentData = async ({
     flow_type_ids: [5],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
-    page_size: 5,
+    page_size: 10,
     page: curPage,
 
     // Add filters as appropriate.
