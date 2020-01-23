@@ -30,6 +30,7 @@ const EntityTable = ({
   ghsaOnly,
   setGhsaOnly,
   otherId,
+  setLoadingSpinnerOn,
   setComponent,
   ...props
 }) => {
@@ -37,6 +38,13 @@ const EntityTable = ({
   let pageType;
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
+
+  // React.useEffect(() => {
+  //   setLoadingSpinnerOn(false);
+  //   console.log("Done loading.");
+  //   console.log("data");
+  //   console.log(data);
+  // }, [otherId]);
 
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
@@ -504,7 +512,8 @@ export const renderEntityTable = ({
   entityRole,
   flowTypeInfo,
   ghsaOnly,
-  setGhsaOnly
+  setGhsaOnly,
+  setLoadingSpinnerOn
 }) => {
   // Set ID values to correct types
   if (id !== "ghsa" && id !== undefined) id = parseInt(id);
@@ -528,11 +537,13 @@ export const renderEntityTable = ({
       entityRole: entityRole,
       flowTypeInfo: flowTypeInfo,
       ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly
+      setGhsaOnly: setGhsaOnly,
+      setLoadingSpinnerOn
     });
 
     return component ? component : <div />;
   } else {
+    setLoadingSpinnerOn(false);
     return component;
   }
 };
@@ -552,7 +563,8 @@ const getComponentData = async ({
   entityRole,
   flowTypeInfo,
   ghsaOnly,
-  setGhsaOnly
+  setGhsaOnly,
+  setLoadingSpinnerOn
 }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
   let nodeType;
@@ -669,6 +681,7 @@ const getComponentData = async ({
   }
 
   // Get results in parallel
+  setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
   console.log("results");
   console.log(results);
@@ -684,6 +697,7 @@ const getComponentData = async ({
       ghsaOnly={ghsaOnly}
       setGhsaOnly={setGhsaOnly}
       setComponent={setComponent}
+      setLoadingSpinnerOn={setLoadingSpinnerOn}
     />
   );
 };

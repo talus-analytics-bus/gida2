@@ -240,7 +240,8 @@ const App = () => {
                     setLoading: setLoading,
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly
+                    setGhsaOnly: setGhsaOnly,
+                    setLoadingSpinnerOn
                   });
                 }}
               />
@@ -285,7 +286,8 @@ const App = () => {
                     setLoading: setLoading,
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly
+                    setGhsaOnly: setGhsaOnly,
+                    setLoadingSpinnerOn
                   });
                 }}
               />
@@ -346,7 +348,7 @@ const App = () => {
                 exact
                 path="/"
                 render={d => {
-                  setPage(undefined);
+                  setPage("home");
                   return <Home />;
                 }}
               />
@@ -358,7 +360,7 @@ const App = () => {
           <div
             id={"loadingSpinner"}
             className={classNames(styles.loadingSpinner, {
-              [styles.on]: true
+              [styles.on]: page !== "home"
             })}
           >
             <img src={spinnerImg} />

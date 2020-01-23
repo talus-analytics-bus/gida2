@@ -705,7 +705,7 @@ const Details = ({
   };
 
   React.useEffect(() => {
-    setLoadingSpinnerOn(false);
+    // setLoadingSpinnerOn(false);
     setShowFlag(true);
     setCurPvsEdition(data.pvs.eds[0] || {});
     window.scrollTo(0, 0);
@@ -714,11 +714,11 @@ const Details = ({
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
   React.useEffect(() => {
-    setLoadingSpinnerOn(false);
+    // setLoadingSpinnerOn(false);
     setCurTab("ihr");
   }, [entityRole]);
   React.useEffect(() => {
-    setLoadingSpinnerOn(false);
+    // setLoadingSpinnerOn(false);
   }, [ghsaOnly]);
 
   const ghsa = pageType === "ghsa";
@@ -925,6 +925,7 @@ export const renderDetails = ({
 
     return detailsComponent ? detailsComponent : <div />;
   } else {
+    setLoadingSpinnerOn(false);
     return detailsComponent;
   }
 };
