@@ -36,7 +36,17 @@ const InfoBox = ({
   // Define header color -- use JEE color if JEE is view, otherwise use
   // color scale of selected metric.
   const getHeaderStyle = ({ infoBoxData, supportType }) => {
-    if (
+    if (supportType === "jee" && infoBoxData.scoreOfNode !== undefined) {
+      const baseColor = infoBoxData.colorScale(
+        Util.getScoreShortName(infoBoxData.scoreOfNode)
+      );
+      return {
+        baseColor: baseColor,
+        style: {
+          backgroundColor: baseColor
+        }
+      };
+    } else if (
       infoBoxData.colorValue === undefined ||
       infoBoxData.colorValue === -9999
     ) {
@@ -54,16 +64,6 @@ const InfoBox = ({
             "repeating-linear-gradient(-45deg, #afafaf, #afafaf 17px, #fff 17px, #fff 20px)"
         }
       };
-    } else if (supportType === "jee") {
-      const baseColor = infoBoxData.colorScale(
-        Util.getScoreShortName(infoBoxData.scoreOfNode)
-      );
-      return {
-        baseColor: baseColor,
-        style: {
-          backgroundColor: baseColor
-        }
-      };
     } else {
       const baseColor = infoBoxData.colorScale(infoBoxData.colorValue);
       return {
@@ -76,6 +76,8 @@ const InfoBox = ({
   };
 
   const headerStyle = getHeaderStyle({ infoBoxData, supportType });
+  console.log("headerStyle");
+  console.log(headerStyle);
   const headerColor = headerStyle.baseColor;
   const missingScore =
     (supportType === "jee" ||
