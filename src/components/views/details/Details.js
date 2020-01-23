@@ -73,9 +73,7 @@ const Details = ({
   const [pvsTooltipData, setPvsTooltipData] = React.useState(undefined);
 
   const noResponseData = data.flows.length === 0;
-  const [curTab, setCurTab] = React.useState(
-    data.pvs.scores.length > 0 ? "pvs" : "ihr"
-  );
+  const [curTab, setCurTab] = React.useState("ihr");
   const [showFlag, setShowFlag] = React.useState(true);
 
   const [curPvsEdition, setCurPvsEdition] = React.useState(
@@ -692,7 +690,7 @@ const Details = ({
           slug: "pvs",
           header: "PVS scores",
           content: pvsTabContent,
-          hide: data.pvs.scores.length === 0
+          hide: data.pvs.scores.length === 0 || entityRole === "funder"
         }
       ]
     : [];
