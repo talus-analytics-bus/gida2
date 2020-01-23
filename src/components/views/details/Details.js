@@ -243,7 +243,13 @@ const Details = ({
     };
     setPvsTooltipData(tooltipData);
   };
-
+  // tooltipFunc={d => {
+  //   return {
+  //     "data-tip": "",
+  //     "data-for": "pvsTooltip",
+  //     onMouseOver: () => updatePvsTooltipData(d)
+  //   };
+  // }}
   const pvsTabContent = [
     {
       header: (
@@ -282,13 +288,6 @@ const Details = ({
             pageLength={20}
             paging={true}
             sortByProp={"cat"}
-            tooltipFunc={d => {
-              return {
-                "data-tip": "",
-                "data-for": "pvsTooltip",
-                onMouseOver: () => updatePvsTooltipData(d)
-              };
-            }}
             tableColumns={[
               {
                 title: "Category",
@@ -706,12 +705,15 @@ const Details = ({
 
   React.useEffect(() => {
     setShowFlag(true);
-    window.scrollTo(0, 0);
     setCurPvsEdition(data.pvs.eds[0] || {});
+    window.scrollTo(0, 0);
   }, [id]);
   React.useEffect(() => {
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
+  React.useEffect(() => {
+    setCurTab("ihr");
+  }, [entityRole]);
 
   const ghsa = pageType === "ghsa";
 
