@@ -17,7 +17,7 @@ import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 import { renderExportTable } from "./ExportTable.js";
 
 // FC for Export.
-const Export = ({ data, ...props }) => {
+const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const [coreCapacities, setCoreCapacities] = React.useState([]);
   const [supportType, setSupportType] = React.useState([]);
   const [funders, setFunders] = React.useState([]);
@@ -88,7 +88,8 @@ const Export = ({ data, ...props }) => {
       exportCols,
       setNRecords,
       component: exportTable,
-      setComponent: setExportTable
+      setComponent: setExportTable,
+      setLoadingSpinnerOn
     }
   });
 
@@ -241,13 +242,19 @@ const Export = ({ data, ...props }) => {
   );
 };
 
-export const renderExport = ({ component, setComponent, loading }) => {
+export const renderExport = ({
+  component,
+  setComponent,
+  setLoadingSpinnerOn,
+  loading
+}) => {
   // Get data
   if (loading) {
     return <div>Loading...</div>;
   } else if (component === null) {
     getComponentData({
-      setComponent: setComponent
+      setComponent: setComponent,
+      setLoadingSpinnerOn
     });
 
     return component ? component : <div />;
@@ -264,7 +271,7 @@ export const renderExport = ({ component, setComponent, loading }) => {
  * @param  {[type]}       id                  [description]
  * @param  {[type]}       entityRole          [description]
  */
-const getComponentData = async ({ setComponent }) => {
+const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
 
   const baseQueryParams = {
@@ -289,12 +296,15 @@ const getComponentData = async ({ setComponent }) => {
   };
 
   // Get results in parallel
+  setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
   console.log("results - export page");
   console.log(results);
 
   // Set the component
-  setComponent(<Export data={results} />);
+  setComponent(
+    <Export data={results} setLoadingSpinnerOn={setLoadingSpinnerOn} />
+  );
 };
 
 export default Export;

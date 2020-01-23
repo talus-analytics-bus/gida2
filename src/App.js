@@ -253,7 +253,8 @@ const App = () => {
                   return renderExport({
                     ...d.match.params,
                     component: exportComponent,
-                    setComponent: setExportComponent
+                    setComponent: setExportComponent,
+                    setLoadingSpinnerOn
                   });
                 }}
               />

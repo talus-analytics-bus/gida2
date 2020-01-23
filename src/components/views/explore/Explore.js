@@ -116,7 +116,8 @@ const Explore = ({
             minYear: minYear,
             setMinYear: setMinYear,
             maxYear: maxYear,
-            setMaxYear: setMaxYear
+            setMaxYear: setMaxYear,
+            setLoadingSpinnerOn
           })
         };
     }

@@ -126,6 +126,7 @@ export const renderExportTable = ({
   component,
   setComponent,
   loading,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Get data
@@ -134,6 +135,7 @@ export const renderExportTable = ({
   } else if (remountComponent({ component, ...props })) {
     getComponentData({
       setComponent: setComponent,
+      setLoadingSpinnerOn,
       ...props
     });
 
@@ -146,6 +148,7 @@ export const renderExportTable = ({
       <ExportTable {...{ ...component.props, exportCols: props.exportCols }} />
     );
   } else {
+    setLoadingSpinnerOn(false);
     return component;
   }
 };
@@ -158,7 +161,11 @@ export const renderExportTable = ({
  * @param  {[type]}       id                  [description]
  * @param  {[type]}       entityRole          [description]
  */
-const getComponentData = async ({ setComponent, ...props }) => {
+const getComponentData = async ({
+  setComponent,
+  setLoadingSpinnerOn,
+  ...props
+}) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
 
   const baseQueryParams = {
@@ -209,6 +216,7 @@ const getComponentData = async ({ setComponent, ...props }) => {
   };
 
   // Get results in parallel
+  setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
   console.log("results - export table");
   console.log(results);

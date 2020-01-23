@@ -471,6 +471,7 @@ export const renderOrgs = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Set IDs
@@ -499,11 +500,13 @@ export const renderOrgs = ({
       setGhsaOnly: setGhsaOnly,
       entityRole: entityRole,
       setEntityRole: setEntityRole,
+      setLoadingSpinnerOn,
       ...props
     });
 
     return component ? component : <div />;
   } else {
+    setLoadingSpinnerOn(false);
     return component;
   }
 };
@@ -524,6 +527,7 @@ const getComponentData = async ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -589,6 +593,7 @@ const getComponentData = async ({
   };
 
   // Get query results.
+  setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
   console.log("results - Orgs.js");
   console.log(results);
