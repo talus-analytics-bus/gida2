@@ -111,6 +111,22 @@
     padding: 20px;
     border: 1px solid #ccc;
     background-color: rgb(248, 248, 248);
+
+    .header {
+      flex-flow: row;
+      justify-content: space-between;
+    }
+  }
+  .select {
+    display: flex;
+    flex-flow: row;
+    select {
+      margin-left: 5px;
+    }
+  }
+  .subText {
+    font-family: "Open Sans", sans-serif;
+    margin-top: 5px;
   }
   .totals {
     display: flex;
@@ -131,7 +147,8 @@
     width: $size;
     height: $size;
     color: white;
-    margin: auto;
+    margin: 0 auto;
+    padding: 10px;
   }
   .legend {
     display: flex;
@@ -140,8 +157,12 @@
     padding: 10px;
     width: min-content;
     border-radius: $border-radius;
+    font-size: 0.9em;
     * {
       white-space: nowrap;
+    }
+    > b:first-child {
+      margin-bottom: 5px;
     }
     > div {
       display: flex;
@@ -151,9 +172,15 @@
         display: flex;
         flex-flow: row;
         justify-content: flex-start;
-        margin: 5px;
+        margin: 2px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+        &:first-child {
+          margin-top: 0;
+        }
         > div {
-          margin: 0 5px;
+          margin: 0 2px;
         }
       }
     }

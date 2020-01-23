@@ -3,8 +3,40 @@
 .tooltip {
   opacity: 1 !important;
 
+  .header {
+    background-color: rgb(232, 232, 232);
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    > div {
+      display: flex;
+      flex-flow: row;
+      padding: 10px;
+      justify-content: flex-start;
+      align-items: flex-start;
+
+      > div {
+        // padding: 10px;
+        margin: 0 5px;
+        &:first-child {
+          margin-left: 0;
+        }
+        &:last-child {
+          margin-right: 0;
+          font-family: "Rawline", serif;
+          font-size: 1.2em;
+          line-height: 1.2;
+        }
+      }
+    }
+  }
+  .content {
+    padding: 10px;
+  }
+
   &.simple {
-    // background-color: blue;
     padding: 0;
     margin: 0;
     max-width: 300px;
@@ -14,6 +46,33 @@
   &.dark {
     box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
     -webkit-box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
+  }
+  &.fullTable {
+    table {
+      width: 100%;
+      tbody {
+        tr {
+          border-bottom: 1px solid #ccc;
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+
+      td {
+        font-weight: normal !important;
+      }
+      th {
+        padding-right: 30px;
+      }
+      thead {
+        tr {
+          th:last-child {
+            padding-right: 0;
+          }
+        }
+      }
+    }
   }
   table {
     td:first-child {

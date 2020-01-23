@@ -29,6 +29,8 @@ import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
 import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
+import ReactTooltip from "react-tooltip";
+import tooltipStyles from "../../common/tooltip.module.scss";
 
 // FC for Details.
 const Details = ({
@@ -53,32 +55,67 @@ const Details = ({
   else pageType = "entity";
 
   // DEBUG PVS data
-  data.pvs = [
-    {
-      ed: "6",
-      cat: 2,
-      ind: "I-1.A. Staffing: Veterinarians and other professionals",
-      score: 5
-    },
-    {
-      ed: "6",
-      cat: 4,
-      ind: "IV-Fake",
-      score: 2
-    },
-    {
-      ed: "5",
-      cat: 4,
-      ind: "IV-Fake",
-      score: 1
-    },
-    {
-      ed: "6",
-      cat: 1,
-      ind: "I-Fake",
-      score: 3
-    }
-  ];
+  data.pvs = {
+    scores: [
+      {
+        ed: "6",
+        cat: 2,
+        ind: "Staffing: Veterinarians and other professionals",
+        indId: "I-1.A",
+        score: 5
+      },
+      {
+        ed: "4",
+        cat: 2,
+        ind: "Staffing: Veterinarians and other professionals",
+        indId: "I-1.B",
+        score: 3
+      },
+      {
+        ed: "6",
+        cat: 4,
+        ind: "Fake 1",
+        indId: "IV-1",
+        score: 2
+      },
+      {
+        ed: "6",
+        cat: 3,
+        ind: "Fake 2",
+        indId: "III-1",
+        score: "N/A"
+      },
+      {
+        ed: "5",
+        cat: 4,
+        ind: "Fake 1",
+        indId: "IV-1",
+        score: 1
+      },
+      {
+        ed: "6",
+        cat: 1,
+        ind: "Fake 3",
+        indId: "I-2",
+        score: 3
+      }
+    ],
+    eds: [
+      // order by recency
+      {
+        ed: "6",
+        date: "Jan/Feb 2019"
+      },
+      {
+        ed: "5",
+        date: "Jan/Feb 2018"
+      },
+      {
+        ed: "4",
+        date: "Jan/Feb 2017"
+      }
+    ]
+  };
 
   // If entity role is not defined, let it be funder as a placeholder.
   if (entityRole === undefined) entityRole = "funder";
@@ -96,11 +133,12 @@ const Details = ({
 
   // Track whether viewing committed or disbursed/provided assistance
   const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
+  const [pvsTooltipData, setPvsTooltipData] = React.useState(undefined);
 
   const noResponseData = data.flows.length === 0;
   const [curTab, setCurTab] = React.useState("pvs");
   const [showFlag, setShowFlag] = React.useState(true);
-  const [curPvsEdition, setCurPvsEdition] = React.useState("6");
+  const [curPvsEdition, setCurPvsEdition] = React.useState(data.pvs.eds[0]);
 
   if (noResponseData && curTab === "event") setCurTab("ihr");
 
@@ -221,69 +259,95 @@ const Details = ({
     </div>
   );
 
+  const pvsLegend = (
+    <div className={styles.legend}>
+      <b>Categories</b>
+      <div>
+        {pvsCats.map((d, i) => (
+          <div>
+            <div
+              style={{ backgroundColor: pvsCats[i][1] }}
+              className={styles.circle}
+            >
+              {Util.roman(i + 1)}
+            </div>
+            <div>{pvsCats[i][0]}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const updatePvsTooltipData = d => {
+    const allEdVals = data.pvs.scores.filter(
+      dd => dd.ind.toLowerCase() === d.indName.toLowerCase()
+    );
+
+    const indNum = d.indId.split(" ")[0].split("-")[1];
+    const tooltipData = {
+      title: (
+        <div>
+          <div
+            style={{ backgroundColor: pvsCats[d.cat - 1][1] }}
+            className={styles.circle}
+          >
+            {Util.roman(d.cat)}
+          </div>
+          <div>{indNum + ". " + d.indName}</div>
+        </div>
+      ),
+      cols: ["Edition number", "Score"],
+      rows: allEdVals.map((dd, ii) => {
+        return [dd.ed, dd.score];
+      })
+    };
+    setPvsTooltipData(tooltipData);
+  };
+
   const pvsTabContent = [
     {
       header: (
-        <div>
-          <h2>
-            PVS Evaluation scores <br />
-            {<div>Placeholder: Edition selection</div>}
-            {
-              // Date range
-              <span className={styles.timeFrame}>
-                {props.responseStart.toLocaleString("en-us", {
-                  // month: "short",
-                  // day: "numeric",
-                  year: "numeric",
-                  timeZone: "UTC"
-                })}{" "}
-                -{" "}
-                {props.responseEnd.toLocaleString("en-us", {
-                  // month: "short",
-                  // day: "numeric",
-                  year: "numeric",
-                  timeZone: "UTC"
-                })}
-              </span>
-            }
-          </h2>
-        </div>
-      ),
-      text: (
-        <div>
-          <p>PVS score text placeholder.</p>
-          <form>
-            <select onChange={v => setCurPvsEdition(v.target.value)}>
-              {[...new Set(data.pvs.map(d => d.ed))].map(d => (
-                <option value={d}>{d}</option>
-              ))}
-            </select>
-          </form>
-          {
-            <div className={styles.legend}>
-              <b>Categories</b>
-              <div>
-                {pvsCats.map((d, i) => (
-                  <div>
-                    <div
-                      style={{ backgroundColor: pvsCats[i][1] }}
-                      className={styles.circle}
-                    >
-                      {Util.roman(i + 1)}
-                    </div>
-                    <div>{pvsCats[i][0]}</div>
-                  </div>
-                ))}
-              </div>
+        <div className={styles.header}>
+          <div>
+            <h2>
+              PVS Evaluation scores <br />
+            </h2>
+            <div className={styles.select}>
+              <b>OIE PVS score edition</b>
+              <form>
+                <select
+                  onChange={v =>
+                    setCurPvsEdition(
+                      data.pvs.eds.find(d => d.ed === v.target.value)
+                    )
+                  }
+                >
+                  {[...new Set(data.pvs.eds.map(d => d.ed))].map(d => (
+                    <option value={d}>{d}</option>
+                  ))}
+                </select>
+              </form>
             </div>
-          }
+            <p className={styles.subText}>
+              Evaluation conducted in {curPvsEdition.date}
+            </p>
+          </div>
+          {pvsLegend}
         </div>
       ),
+      text: undefined,
       content: (
         <div>
           <TableInstance
             paging={true}
             sortByProp={"cat"}
+            tooltipFunc={d => {
+              return {
+                "data-tip": "",
+                "data-for": "pvsTooltip",
+                onMouseOver: () => updatePvsTooltipData(d)
+              };
+            }}
             tableColumns={[
               {
                 title: "Category",
@@ -300,10 +364,26 @@ const Details = ({
                 )
               },
               {
+                title: "Indicator ID",
+                prop: "indId",
+                type: "text",
+                func: d => d.indId,
+                render: d => d,
+                hide: true
+              },
+              {
+                title: "Indicator name (only)",
+                prop: "indName",
+                type: "text",
+                func: d => d.ind,
+                render: d => d,
+                hide: true
+              },
+              {
                 title: "Indicator name",
                 prop: "ind",
                 type: "text",
-                func: d => d.ind,
+                func: d => d.indId + ". " + d.ind,
                 render: d => d
               },
               {
@@ -322,7 +402,7 @@ const Details = ({
                 )
               }
             ]}
-            tableData={data.pvs.filter(d => d.ed === curPvsEdition)}
+            tableData={data.pvs.scores.filter(d => d.ed === curPvsEdition.ed)}
             sortOrder={"ascending"}
             hide={r => r.amount === -9999}
           />
@@ -686,6 +766,9 @@ const Details = ({
     setShowFlag(true);
     window.scrollTo(0, 0);
   }, [id]);
+  React.useEffect(() => {
+    ReactTooltip.rebuild();
+  }, [curPvsEdition]);
 
   const ghsa = pageType === "ghsa";
 
@@ -812,6 +895,49 @@ const Details = ({
           currently available where {data.nodeData.name} is a {entityRoleNoun}.
         </span>
       )}
+      {
+        // Tooltip for info tooltip icons.
+        <ReactTooltip
+          id={"pvsTooltip"}
+          type="light"
+          className={classNames(
+            tooltipStyles.tooltip,
+            tooltipStyles.simple,
+            tooltipStyles.fullTable
+          )}
+          place="top"
+          effect="float"
+          getContent={() =>
+            pvsTooltipData && (
+              <div>
+                <div className={tooltipStyles.header}>
+                  {pvsTooltipData.title}
+                </div>
+                <div className={tooltipStyles.content}>
+                  <table>
+                    <thead>
+                      <tr>
+                        {pvsTooltipData.cols.map(d => (
+                          <th>{d}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pvsTooltipData.rows.map(d => (
+                        <tr>
+                          {d.map(dd => (
+                            <td>{dd}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )
+          }
+        />
+      }
     </div>
   );
 };

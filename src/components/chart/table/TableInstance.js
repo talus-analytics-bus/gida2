@@ -59,7 +59,7 @@ const TableInstance = ({
         })}
       >
         <DataTable
-          columns={tableColumns}
+          columns={tableColumns.filter(d => d.hide !== true)}
           initialData={initialData}
           initialPageLength={props.paging ? 10 : 1e6}
           paging={props.paging || false}
