@@ -4,6 +4,7 @@ import styles from "./exporttable.module.scss";
 import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
+import Chevron from "../../common/Chevron/Chevron.js";
 
 // Content components
 import TableInstance from "../../chart/table/TableInstance.js";
@@ -45,13 +46,23 @@ const ExportTable = ({ data, exportCols, ...props }) => {
       func: d => (d.year_range ? d.year_range : "")
     },
     {
-      title: "Funder",
+      title: (
+        <div className={styles.row}>
+          <Chevron type={"funder"} />
+          <div>Funder</div>
+        </div>
+      ),
       prop: "source",
       type: "text",
       func: d => d.source.map(dd => dd.name).join("; ")
     },
     {
-      title: "Recipient",
+      title: (
+        <div className={styles.row}>
+          <Chevron type={"recipient"} />
+          <div>Recipient</div>
+        </div>
+      ),
       prop: "target",
       type: "text",
       func: d => d.target.map(dd => dd.name).join("; ")

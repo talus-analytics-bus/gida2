@@ -17,6 +17,7 @@ import { core_capacities, getNodeLinkList } from "../../misc/Data.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import SourceText from "../../common/SourceText/SourceText.js";
 import Button from "../../common/Button/Button.js";
+import Chevron from "../../common/Chevron/Chevron.js";
 
 // FC for Analysis.
 const Analysis = ({
@@ -51,13 +52,19 @@ const Analysis = ({
 
   const tables = [
     [
-      <div className={styles.subtitle}>Top funders</div>,
+      <div className={styles.subtitle}>
+        <Chevron type={"funder"} />
+        <div>Top funders</div>
+      </div>,
       "Funder",
       "source",
       "flowBundlesFocusSources"
     ],
     [
-      <div className={styles.subtitle}>Top recipients</div>,
+      <div className={styles.subtitle}>
+        <Chevron type={"recipient"} />
+        <div>Top recipients</div>
+      </div>,
       "Recipient",
       "target",
       "flowBundlesFocusTargets"
@@ -222,6 +229,16 @@ const Analysis = ({
     />
   );
 
+  const chordLegend = (
+    <div className={styles.legend}>
+      <div className={styles.rect} />
+      <div className={styles.labels}>
+        <div>Funds more</div>
+        <div>Receives more</div>
+      </div>
+    </div>
+  );
+
   // legend (maybe part of map?)
   return (
     <div className={classNames(styles.analysis, "pageContainer")}>
@@ -241,7 +258,10 @@ const Analysis = ({
           transactions with multiple funders or recipients are not included.
         </p>
         <div className={styles.chordDiagram}>
-          {chordContent}
+          <div className={styles.chordContainer}>
+            {chordContent}
+            {chordLegend}
+          </div>
           <div className={styles.menuContainer}>
             <div className={styles.menu}>
               <Search

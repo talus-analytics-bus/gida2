@@ -13,6 +13,9 @@ $selected-blue: #449fb7;
 $data-blue: #5781ab;
 $dark-grey-2: #4d4d4d;
 
+$recipient-red: #67001f;
+$funder-blue: #053061;
+
 // GIDA SPECIFIC
 $dark-background-color: #222222;
 $dark-color: #eeeeee;
@@ -69,10 +72,15 @@ $light-blue-gradient-3: linear-gradient(
 $value-red-gradient: linear-gradient(90deg, #e6c1c6 0%, $value-red 100%);
 $value-change-gradient: linear-gradient(
   90deg,
-  $value-green 0%,
-  white 50%,
-  $value-red 100%
+  $funder-blue 0%,
+  $recipient-red 100%
 );
+// $value-change-gradient: linear-gradient(
+//   90deg,
+//   $value-green 0%,
+//   white 50%,
+//   $value-red 100%
+// );
 
 $loading-spinner-gradient: radial-gradient(
   circle at top right,
@@ -105,6 +113,9 @@ $phone-width-narrow: 375px;
   display: flex;
   flex-flow: row;
   align-items: center;
+  svg {
+    top: 5px;
+  }
 }
 
 @mixin header {
@@ -114,4 +125,7 @@ $phone-width-narrow: 375px;
   align-items: center;
   margin-bottom: 10px;
   min-height: 48px;
+  &:not(:first-child) {
+    margin-top: 20px;
+  }
 }

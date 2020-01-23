@@ -121,4 +121,16 @@
     font-weight: normal;
     font-size: 0.8em;
   }
+  $size: 20px;
+  .circle {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    width: $size;
+    height: $size;
+    color: white;
+    margin: auto;
+  }
 }

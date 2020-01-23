@@ -13,6 +13,25 @@
   p {
     max-width: 900px;
   }
+  .chordContainer {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+  }
+  .legend {
+    display: flex;
+    flex-flow: column;
+    width: 60%;
+    .rect {
+      background: $value-change-gradient;
+      height: 15px;
+    }
+    .labels {
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+    }
+  }
   .info {
     height: auto;
     border: 1px solid #ccc;

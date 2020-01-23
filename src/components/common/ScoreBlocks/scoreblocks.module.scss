@@ -1,0 +1,33 @@
+@import "../../../assets/styles/colors.scss";
+.scoreBlocks {
+  height: auto;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+
+  > div {
+    margin-right: 20px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .value {
+    display: flex;
+  }
+  .blocks {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    $size: 20px;
+    .block {
+      width: $size * 2;
+      height: $size;
+      margin-right: 2px;
+      background-color: rgb(232, 232, 232);
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}

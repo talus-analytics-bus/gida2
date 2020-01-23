@@ -15,7 +15,7 @@ import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 import ScoreQuery from "../../misc/ScoreQuery.js";
-import { purples, greens } from "../../map/MapUtil.js";
+import { purples, greens, pvsCatColors, pvsColors } from "../../map/MapUtil.js";
 
 // Content components
 import DetailsSection from "../../views/details/content/DetailsSection.js";
@@ -26,6 +26,7 @@ import TableInstance from "../../chart/table/TableInstance.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
+import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
 import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
 
@@ -69,7 +70,7 @@ const Details = ({
   const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
 
   const noResponseData = data.flows.length === 0;
-  const [curTab, setCurTab] = React.useState("ihr");
+  const [curTab, setCurTab] = React.useState("pvs");
   const [showFlag, setShowFlag] = React.useState(true);
 
   if (noResponseData && curTab === "event") setCurTab("ihr");
@@ -190,6 +191,112 @@ const Details = ({
       />
     </div>
   );
+
+  const pvsTabContent = [
+    {
+      header: (
+        <div>
+          <h2>
+            PVS Evaluation scores <br />
+            {<div>Placeholder: Edition selection</div>}
+            {
+              // Date range
+              <span className={styles.timeFrame}>
+                {props.responseStart.toLocaleString("en-us", {
+                  // month: "short",
+                  // day: "numeric",
+                  year: "numeric",
+                  timeZone: "UTC"
+                })}{" "}
+                -{" "}
+                {props.responseEnd.toLocaleString("en-us", {
+                  // month: "short",
+                  // day: "numeric",
+                  year: "numeric",
+                  timeZone: "UTC"
+                })}
+              </span>
+            }
+          </h2>
+        </div>
+      ),
+      text: (
+        <div>
+          <p>PVS score text placeholder.</p>
+        </div>
+      ),
+      content: (
+        <div>
+          <TableInstance
+            paging={true}
+            sortByProp={"cat"}
+            tableColumns={[
+              {
+                title: "Category",
+                prop: "cat",
+                type: "text",
+                func: d => d.cat,
+                render: d => (
+                  <div
+                    style={{ backgroundColor: pvsCatColors[d - 1] }}
+                    className={styles.circle}
+                  >
+                    {Util.roman(d)}
+                  </div>
+                )
+              },
+              {
+                title: "Indicator name",
+                prop: "ind",
+                type: "text",
+                func: d => d.ind,
+                render: d => d
+              },
+              {
+                title: "Score",
+                prop: "score",
+                type: "text",
+                func: d => d.score,
+                render: d => (
+                  <ScoreBlocks
+                    {...{
+                      value: d,
+                      rangeArray: [1, 2, 3, 4, 5],
+                      colors: pvsColors
+                    }}
+                  />
+                )
+              }
+            ]}
+            tableData={[
+              {
+                ed: 6,
+                cat: 2,
+                ind: "I-1.A. Staffing: Veterinarians and other professionals",
+                score: 5
+              },
+              {
+                ed: 6,
+                cat: 4,
+                ind: "IV-Fake",
+                score: 1
+              },
+              {
+                ed: 6,
+                cat: 1,
+                ind: "I-Fake",
+                score: 3
+              }
+            ]}
+            sortOrder={"ascending"}
+            hide={r => r.amount === -9999}
+          />
+        </div>
+      ),
+      toggleFlowType: false,
+      hide: noData || unknownDataOnly || noFinancialData
+    }
+  ];
 
   const tabSections = showTabs
     ? [
@@ -522,6 +629,11 @@ const Details = ({
                     hide: noData || unknownDataOnly || noFinancialData
                   }
                 ]
+        },
+        {
+          slug: "pvs",
+          header: "PVS scores",
+          content: pvsTabContent
         }
       ]
     : [];
@@ -781,14 +893,16 @@ const getComponentData = async ({
   // }
 
   // Define queries for typical details page.
-  const now = new Date();
-  now.setMonth(11);
-  now.setDate(31);
-
-  const then = new Date();
-  then.setFullYear(now.getFullYear() - 1);
-  then.setMonth(0);
-  then.setDate(1);
+  const now = new Date(`${Settings.endYear}-12-31`);
+  const then = new Date(`${Settings.startYear}-01-01`);
+  // const now = new Date();
+  // now.setMonth(11);
+  // now.setDate(31);
+  //
+  // const then = new Date();
+  // then.setFullYear(now.getFullYear() - 1);
+  // then.setMonth(0);
+  // then.setDate(1);
   const queries = {
     // Information about the entity
     nodeData: NodeQuery({ node_id: id }),

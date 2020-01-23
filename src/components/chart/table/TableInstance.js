@@ -26,7 +26,7 @@ const TableInstance = ({
       sortByProp !== undefined
         ? {
             prop: sortByProp,
-            order: "descending"
+            order: props.sortOrder ? props.sortOrder : "descending"
           }
         : {};
     const initialDataTmp = useRowDataAsIs

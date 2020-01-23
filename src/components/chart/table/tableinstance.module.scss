@@ -1,7 +1,8 @@
 @import "../../../assets/styles/colors.scss";
 
 .tableInstance {
-  width: 100%;
+  // width: max-content;
+  overflow: scroll;
   // max-width: 800px;
 
   table {
@@ -18,6 +19,11 @@
     text-align: left;
     vertical-align: middle;
     margin: auto 0;
+    // display: flex;
+    // > span:first-child {
+    //   flex-flow: row;
+    //   align-items: center;
+    // }
   }
 
   // Mods to native styling

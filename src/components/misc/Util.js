@@ -590,6 +590,23 @@ Util.getIncidenceQuantile = (countryObs, params = {}) => {
   // } else return null;
 };
 
+Util.roman = i => {
+  switch (i) {
+    case 1:
+      return "I";
+    case 2:
+      return "II";
+    case 3:
+      return "III";
+    case 4:
+      return "IV";
+    case 5:
+      return "V";
+    default:
+      return i;
+  }
+};
+
 const getApiUrl = () => {
   if (process.env.NODE_ENV === "production") {
     if (window.location.href.search("https") > -1)
