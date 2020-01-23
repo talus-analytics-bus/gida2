@@ -25,6 +25,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const [outbreaks, setOutbreaks] = React.useState([]);
   const [exportTable, setExportTable] = React.useState(null);
   const [nRecords, setNRecords] = React.useState(0);
+  const [curPage, setCurPage] = React.useState(1);
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
@@ -89,7 +90,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       setNRecords,
       component: exportTable,
       setComponent: setExportTable,
-      setLoadingSpinnerOn
+      setLoadingSpinnerOn,
+      curPage,
+      setCurPage
     }
   });
 

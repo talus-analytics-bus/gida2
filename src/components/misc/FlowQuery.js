@@ -19,7 +19,9 @@ const FlowQuery = async function({
   filters = {},
   pair_node_id,
   by_outbreak,
-  include_general_amounts
+  include_general_amounts,
+  page,
+  page_size
 }) {
   // Define URL parameters //
   const params = {
@@ -36,6 +38,8 @@ const FlowQuery = async function({
     by_outbreak: by_outbreak,
     include_general_amounts: include_general_amounts
   };
+  if (page) params.page = page;
+  if (page_size) params.page_size = page_size;
 
   // Send start and end dates if they are provided, otherwise do not send.
   end_date = typeof end_date !== "undefined" ? end_date : start_date;

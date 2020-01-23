@@ -37,7 +37,10 @@ const ExportTable = ({ data, exportCols, ...props }) => {
       title: "Core capacities",
       prop: "core_capacities",
       type: "text",
-      func: d => d.flow_info.core_capacities.join("; ")
+      func: d =>
+        d.flow_info.core_capacities
+          ? d.flow_info.core_capacities.join("; ")
+          : ""
     },
     {
       title: "Transaction year range",
@@ -127,6 +130,8 @@ export const renderExportTable = ({
   setComponent,
   loading,
   setLoadingSpinnerOn,
+  curPage,
+  setCurPage,
   ...props
 }) => {
   // Get data
@@ -136,6 +141,8 @@ export const renderExportTable = ({
     getComponentData({
       setComponent: setComponent,
       setLoadingSpinnerOn,
+      curPage,
+      setCurPage,
       ...props
     });
 
@@ -164,6 +171,8 @@ export const renderExportTable = ({
 const getComponentData = async ({
   setComponent,
   setLoadingSpinnerOn,
+  curPage,
+  setCurPage,
   ...props
 }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
@@ -174,6 +183,8 @@ const getComponentData = async ({
     flow_type_ids: [5],
     start_date: `${Settings.startYear}-01-01`,
     end_date: `${Settings.endYear}-12-31`,
+    page_size: 5,
+    page: curPage,
 
     // Add filters as appropriate.
     filters: { place_filters: [], flow_info_filters: [] }
@@ -224,7 +235,13 @@ const getComponentData = async ({
   // Set the component
   setComponent(
     <ExportTable
-      {...{ data: results, exportCols: props.exportCols, ...props }}
+      {...{
+        data: results,
+        curPage,
+        setCurPage,
+        exportCols: props.exportCols,
+        ...props
+      }}
     />
   );
 };
