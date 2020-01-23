@@ -6,10 +6,11 @@ import styles from "./scoreblocks.module.scss";
  * @method ScoreBlocks
  */
 const ScoreBlocks = ({ value, rangeArray, colors, ...props }) => {
-  const showBlocks = value !== "N/A";
+  const showBlocks = value !== -9999;
+  const displayValue = value !== -9999 ? value : "N/A";
   return (
     <div className={styles.scoreBlocks}>
-      <div className={styles.value}>{value}</div>
+      <div className={styles.value}>{displayValue}</div>
       {showBlocks && (
         <div className={styles.blocks}>
           {rangeArray.map((d, i) => (

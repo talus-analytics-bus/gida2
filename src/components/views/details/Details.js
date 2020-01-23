@@ -390,7 +390,7 @@ const Details = ({
                 title: "Score",
                 prop: "score",
                 type: "text",
-                func: d => d.score,
+                func: d => (d.score === "N/A" ? -9999 : d.score),
                 render: d => (
                   <ScoreBlocks
                     {...{

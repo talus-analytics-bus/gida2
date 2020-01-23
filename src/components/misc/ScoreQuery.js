@@ -15,10 +15,14 @@ const ScoreQuery = async function({ ...props }) {
     params: params
   };
 
+  // Get score type (determines endpoint)
+  const scoreType = props.scoreType ? props.scoreType : "jee";
+  const endpoint = scoreType === "jee" ? "jee_scores" : "pvs_scores";
+
   // Send request
   // Await response
   // TODO support PVS scores
-  const res = await axios.get(`${Util.API_URL}/jee_scores`, config);
+  const res = await axios.get(`${Util.API_URL}/${endpoint}`, config);
 
   // Return response data
   return res.data;
