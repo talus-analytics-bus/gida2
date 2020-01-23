@@ -102,7 +102,13 @@ const ExportTable = ({ data, exportCols, ...props }) => {
   ].filter(d => exportCols.includes(d.prop));
 
   const dataTable = (
-    <TableInstance paging={true} tableColumns={cols} tableData={data.flows} />
+    <TableInstance
+      noNativePaging={true}
+      noNativeSearch={true}
+      noNativeSorting={true}
+      tableColumns={cols}
+      tableData={data.flows}
+    />
   );
   // Return JSX
   return (

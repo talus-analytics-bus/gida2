@@ -148,7 +148,6 @@ const Analysis = ({
         {table[0]}
         <TableInstance
           paging={true}
-          noNativeSorting={true}
           tableColumns={[
             {
               title: table[1],
@@ -190,6 +189,7 @@ const Analysis = ({
           limit={10}
           noNativePaging={true}
           noNativeSearch={true}
+          noNativeSorting={true}
         />
       </div>
     );
