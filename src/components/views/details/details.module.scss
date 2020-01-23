@@ -133,4 +133,29 @@
     color: white;
     margin: auto;
   }
+  .legend {
+    display: flex;
+    flex-flow: column;
+    background-color: white;
+    padding: 10px;
+    width: min-content;
+    border-radius: $border-radius;
+    * {
+      white-space: nowrap;
+    }
+    > div {
+      display: flex;
+      flex-flow: column;
+      align-items: flex-start;
+      > div {
+        display: flex;
+        flex-flow: row;
+        justify-content: flex-start;
+        margin: 5px;
+        > div {
+          margin: 0 5px;
+        }
+      }
+    }
+  }
 }

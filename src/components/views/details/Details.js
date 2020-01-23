@@ -15,7 +15,7 @@ import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 import ScoreQuery from "../../misc/ScoreQuery.js";
-import { purples, greens, pvsCatColors, pvsColors } from "../../map/MapUtil.js";
+import { purples, greens, pvsCats, pvsColors } from "../../map/MapUtil.js";
 
 // Content components
 import DetailsSection from "../../views/details/content/DetailsSection.js";
@@ -259,6 +259,24 @@ const Details = ({
               ))}
             </select>
           </form>
+          {
+            <div className={styles.legend}>
+              <b>Categories</b>
+              <div>
+                {pvsCats.map((d, i) => (
+                  <div>
+                    <div
+                      style={{ backgroundColor: pvsCats[i][1] }}
+                      className={styles.circle}
+                    >
+                      {Util.roman(i + 1)}
+                    </div>
+                    <div>{pvsCats[i][0]}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          }
         </div>
       ),
       content: (
@@ -274,7 +292,7 @@ const Details = ({
                 func: d => d.cat,
                 render: d => (
                   <div
-                    style={{ backgroundColor: pvsCatColors[d - 1] }}
+                    style={{ backgroundColor: pvsCats[d - 1][1] }}
                     className={styles.circle}
                   >
                     {Util.roman(d)}

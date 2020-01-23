@@ -22,7 +22,12 @@ export const purples = [
 ];
 
 export const pvsColors = purples.slice(0, 5);
-export const pvsCatColors = ["#2f456b", "#5683ba", "#6aa7e2", "#9bd3f9"];
+export const pvsCats = [
+  ["Human, Physical and Financial Resources", "#2f456b"],
+  ["Technical Authority and Capacity", "#5683ba"],
+  ["Interaction with the Actors Concerned", "#6aa7e2"],
+  ["Market Access", "#9bd3f9"]
+];
 
 export const jeeColors = [
   "#ccc",
