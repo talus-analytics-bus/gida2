@@ -10,6 +10,8 @@ const ScoreQuery = async function({ ...props }) {
   // Define URL parameters //
   const params = {};
 
+  if (props.id) params.id = props.id;
+
   // Define URL params
   const config = {
     params: params

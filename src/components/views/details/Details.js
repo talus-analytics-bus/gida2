@@ -54,68 +54,68 @@ const Details = ({
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
 
-  // DEBUG PVS data
-  data.pvs = {
-    scores: [
-      {
-        ed: "6",
-        cat: 2,
-        ind: "Staffing: Veterinarians and other professionals",
-        indId: "I-1.A",
-        score: 5
-      },
-      {
-        ed: "4",
-        cat: 2,
-        ind: "Staffing: Veterinarians and other professionals",
-        indId: "I-1.B",
-        score: 3
-      },
-      {
-        ed: "6",
-        cat: 4,
-        ind: "Fake 1",
-        indId: "IV-1",
-        score: 2
-      },
-      {
-        ed: "6",
-        cat: 3,
-        ind: "Fake 2",
-        indId: "III-1",
-        score: "N/A"
-      },
-      {
-        ed: "5",
-        cat: 4,
-        ind: "Fake 1",
-        indId: "IV-1",
-        score: 1
-      },
-      {
-        ed: "6",
-        cat: 1,
-        ind: "Fake 3",
-        indId: "I-2",
-        score: 3
-      }
-    ],
-    eds: [
-      // order by recency
-      {
-        ed: "6",
-        date: "Jan/Feb 2019"
-      },
-      {
-        ed: "5",
-        date: "Jan/Feb 2018"
-      },
-      {
-        ed: "4",
-        date: "Jan/Feb 2017"
-      }
-    ]
-  };
+  // // DEBUG PVS data
+  // data.pvs = {
+  //   scores: [
+  //     {
+  //       ed: "6",
+  //       cat: 2,
+  //       ind: "Staffing: Veterinarians and other professionals",
+  //       indId: "I-1.A",
+  //       score: 5
+  //     },
+  //     {
+  //       ed: "4",
+  //       cat: 2,
+  //       ind: "Staffing: Veterinarians and other professionals",
+  //       indId: "I-1.B",
+  //       score: 3
+  //     },
+  //     {
+  //       ed: "6",
+  //       cat: 4,
+  //       ind: "Fake 1",
+  //       indId: "IV-1",
+  //       score: 2
+  //     },
+  //     {
+  //       ed: "6",
+  //       cat: 3,
+  //       ind: "Fake 2",
+  //       indId: "III-1",
+  //       score: "N/A"
+  //     },
+  //     {
+  //       ed: "5",
+  //       cat: 4,
+  //       ind: "Fake 1",
+  //       indId: "IV-1",
+  //       score: 1
+  //     },
+  //     {
+  //       ed: "6",
+  //       cat: 1,
+  //       ind: "Fake 3",
+  //       indId: "I-2",
+  //       score: 3
+  //     }
+  //   ],
+  //   eds: [
+  //     // order by recency
+  //     {
+  //       ed: "6",
+  //       date: "Jan/Feb 2019"
+  //     },
+  //     {
+  //       ed: "5",
+  //       date: "Jan/Feb 2018"
+  //     },
+  //     {
+  //       ed: "4",
+  //       date: "Jan/Feb 2017"
+  //     }
+  //   ]
+  // };
 
   // If entity role is not defined, let it be funder as a placeholder.
   if (entityRole === undefined) entityRole = "funder";
@@ -136,9 +136,13 @@ const Details = ({
   const [pvsTooltipData, setPvsTooltipData] = React.useState(undefined);
 
   const noResponseData = data.flows.length === 0;
-  const [curTab, setCurTab] = React.useState("pvs");
+  const [curTab, setCurTab] = React.useState(
+    data.pvs.scores.length > 0 ? "pvs" : "ihr"
+  );
   const [showFlag, setShowFlag] = React.useState(true);
-  const [curPvsEdition, setCurPvsEdition] = React.useState(data.pvs.eds[0]);
+  const [curPvsEdition, setCurPvsEdition] = React.useState(
+    data.pvs.eds[0] || {}
+  );
 
   if (noResponseData && curTab === "event") setCurTab("ihr");
 
@@ -293,7 +297,7 @@ const Details = ({
           >
             {Util.roman(d.cat)}
           </div>
-          <div>{indNum + ". " + d.indName}</div>
+          <div>{d.indId + " " + d.indName}</div>
         </div>
       ),
       cols: ["Edition number", "Score"],
@@ -339,6 +343,7 @@ const Details = ({
       content: (
         <div>
           <TableInstance
+            pageLength={20}
             paging={true}
             sortByProp={"cat"}
             tooltipFunc={d => {
@@ -383,7 +388,7 @@ const Details = ({
                 title: "Indicator name",
                 prop: "ind",
                 type: "text",
-                func: d => d.indId + ". " + d.ind,
+                func: d => d.indId + " " + d.ind,
                 render: d => d
               },
               {
@@ -748,7 +753,8 @@ const Details = ({
         {
           slug: "pvs",
           header: "PVS scores",
-          content: pvsTabContent
+          content: pvsTabContent,
+          hide: data.pvs.scores.length === 0
         }
       ]
     : [];
@@ -1070,6 +1076,11 @@ const getComponentData = async ({
 
     jeeScores: ScoreQuery({
       type: "jee_v1"
+    }),
+
+    pvs: ScoreQuery({
+      id,
+      scoreType: "pvs"
     }),
 
     // Flow bundles by source/target specific pairing, oriented from the other

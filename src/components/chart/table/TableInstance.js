@@ -61,7 +61,9 @@ const TableInstance = ({
         <DataTable
           columns={tableColumns.filter(d => d.hide !== true)}
           initialData={initialData}
-          initialPageLength={props.paging ? 10 : 1e6}
+          initialPageLength={
+            props.paging ? (props.pageLength ? props.pageLength : 10) : 1e6
+          }
           paging={props.paging || false}
           initialSortBy={sortBy}
           buildRowOptions={props.tooltipFunc ? props.tooltipFunc : v => ""}
