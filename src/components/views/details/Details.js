@@ -717,6 +717,9 @@ const Details = ({
     setLoadingSpinnerOn(false);
     setCurTab("ihr");
   }, [entityRole]);
+  React.useEffect(() => {
+    setLoadingSpinnerOn(false);
+  }, [ghsaOnly]);
 
   const ghsa = pageType === "ghsa";
 

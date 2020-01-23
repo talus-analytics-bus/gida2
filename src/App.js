@@ -56,7 +56,14 @@ const App = () => {
 
   // Track whether styling is dark or light
   const [isDark, setIsDark] = React.useState(false);
-  const [loadingSpinnerOn, setLoadingSpinnerOn] = React.useState(true);
+  const loadingSpinnerOn = false;
+  const setLoadingSpinnerOn = val => {
+    const el = document.getElementById("loadingSpinner");
+    if (el) {
+      if (val) el.classList.add(styles.on);
+      else el.classList.remove(styles.on);
+    }
+  };
 
   async function getAppData() {
     const queries = {
@@ -73,10 +80,6 @@ const App = () => {
   React.useEffect(() => {
     getAppData();
   }, []);
-
-  React.useEffect(() => {
-    console.log("Toggled loading spinner.");
-  }, [loadingSpinnerOn]);
 
   // Define what columns to show in tables
   const valueColsInkind = ["provided_inkind", "committed_inkind"];
@@ -298,7 +301,8 @@ const App = () => {
                       setDetailsComponent: setDetailsComponent,
                       loading: loading,
                       setLoading: setLoading,
-                      flowTypeInfo: flowTypeInfo
+                      flowTypeInfo: flowTypeInfo,
+                      setLoadingSpinnerOn
                     });
                   else
                     return (
@@ -352,8 +356,9 @@ const App = () => {
         {<Footer {...{ isDark }} />}
         {
           <div
+            id={"loadingSpinner"}
             className={classNames(styles.loadingSpinner, {
-              [styles.on]: loadingSpinnerOn
+              [styles.on]: true
             })}
           >
             <img src={spinnerImg} />
