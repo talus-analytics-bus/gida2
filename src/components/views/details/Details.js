@@ -52,6 +52,34 @@ const Details = ({
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
 
+  // DEBUG PVS data
+  data.pvs = [
+    {
+      ed: "6",
+      cat: 2,
+      ind: "I-1.A. Staffing: Veterinarians and other professionals",
+      score: 5
+    },
+    {
+      ed: "6",
+      cat: 4,
+      ind: "IV-Fake",
+      score: 2
+    },
+    {
+      ed: "5",
+      cat: 4,
+      ind: "IV-Fake",
+      score: 1
+    },
+    {
+      ed: "6",
+      cat: 1,
+      ind: "I-Fake",
+      score: 3
+    }
+  ];
+
   // If entity role is not defined, let it be funder as a placeholder.
   if (entityRole === undefined) entityRole = "funder";
 
@@ -72,6 +100,7 @@ const Details = ({
   const noResponseData = data.flows.length === 0;
   const [curTab, setCurTab] = React.useState("pvs");
   const [showFlag, setShowFlag] = React.useState(true);
+  const [curPvsEdition, setCurPvsEdition] = React.useState("6");
 
   if (noResponseData && curTab === "event") setCurTab("ihr");
 
@@ -223,6 +252,13 @@ const Details = ({
       text: (
         <div>
           <p>PVS score text placeholder.</p>
+          <form>
+            <select onChange={v => setCurPvsEdition(v.target.value)}>
+              {[...new Set(data.pvs.map(d => d.ed))].map(d => (
+                <option value={d}>{d}</option>
+              ))}
+            </select>
+          </form>
         </div>
       ),
       content: (
@@ -268,26 +304,7 @@ const Details = ({
                 )
               }
             ]}
-            tableData={[
-              {
-                ed: 6,
-                cat: 2,
-                ind: "I-1.A. Staffing: Veterinarians and other professionals",
-                score: 5
-              },
-              {
-                ed: 6,
-                cat: 4,
-                ind: "IV-Fake",
-                score: 1
-              },
-              {
-                ed: 6,
-                cat: 1,
-                ind: "I-Fake",
-                score: 3
-              }
-            ]}
+            tableData={data.pvs.filter(d => d.ed === curPvsEdition)}
             sortOrder={"ascending"}
             hide={r => r.amount === -9999}
           />
