@@ -1,0 +1,20 @@
+@import "../../../assets/styles/colors.scss";
+.chevron {
+  position: relative;
+  top: 5px;
+  .funder {
+    fill: rgb(89, 114, 81);
+    stroke: white;
+    stroke-width: 1px;
+  }
+  .recipient {
+    fill: rgb(98, 59, 99);
+    stroke: white;
+    stroke-width: 1px;
+  }
+  text {
+    font-size: 16px;
+    stroke: none;
+    fill: white;
+  }
+}

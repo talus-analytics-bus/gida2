@@ -11,6 +11,7 @@ import TimeSlider from "../../../../misc/TimeSlider.js";
 import TableInstance from "../../../../chart/table/TableInstance.js";
 import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js";
 import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
+import Chevron from "../../../../common/Chevron/Chevron.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import {
   getMapTooltipLabel,
@@ -203,13 +204,19 @@ const Orgs = ({
 
   const tables = [
     [
-      <div className={styles.subtitle}>Top funders ({yearRange})</div>,
+      <div className={styles.subtitle}>
+        <Chevron type={"funder"} />
+        <div>Top funders ({yearRange})</div>
+      </div>,
       "Funder",
       "source",
       "flowBundlesFocusSources"
     ],
     [
-      <div className={styles.subtitle}>Top recipients ({yearRange})</div>,
+      <div className={styles.subtitle}>
+        <Chevron type={"recipient"} />
+        <div>Top recipients ({yearRange})</div>
+      </div>,
       "Recipient",
       "target",
       "flowBundlesFocusTargets"

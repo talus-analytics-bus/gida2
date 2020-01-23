@@ -101,6 +101,10 @@ $phone-width-narrow: 375px;
   font-size: 25px;
   color: #11315d;
   font-family: "rawline", sans-serif;
+
+  display: flex;
+  flex-flow: row;
+  align-items: center;
 }
 
 @mixin header {
