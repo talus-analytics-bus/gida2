@@ -54,69 +54,6 @@ const Details = ({
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
 
-  // // DEBUG PVS data
-  // data.pvs = {
-  //   scores: [
-  //     {
-  //       ed: "6",
-  //       cat: 2,
-  //       ind: "Staffing: Veterinarians and other professionals",
-  //       indId: "I-1.A",
-  //       score: 5
-  //     },
-  //     {
-  //       ed: "4",
-  //       cat: 2,
-  //       ind: "Staffing: Veterinarians and other professionals",
-  //       indId: "I-1.B",
-  //       score: 3
-  //     },
-  //     {
-  //       ed: "6",
-  //       cat: 4,
-  //       ind: "Fake 1",
-  //       indId: "IV-1",
-  //       score: 2
-  //     },
-  //     {
-  //       ed: "6",
-  //       cat: 3,
-  //       ind: "Fake 2",
-  //       indId: "III-1",
-  //       score: "N/A"
-  //     },
-  //     {
-  //       ed: "5",
-  //       cat: 4,
-  //       ind: "Fake 1",
-  //       indId: "IV-1",
-  //       score: 1
-  //     },
-  //     {
-  //       ed: "6",
-  //       cat: 1,
-  //       ind: "Fake 3",
-  //       indId: "I-2",
-  //       score: 3
-  //     }
-  //   ],
-  //   eds: [
-  //     // order by recency
-  //     {
-  //       ed: "6",
-  //       date: "Jan/Feb 2019"
-  //     },
-  //     {
-  //       ed: "5",
-  //       date: "Jan/Feb 2018"
-  //     },
-  //     {
-  //       ed: "4",
-  //       date: "Jan/Feb 2017"
-  //     }
-  //   ]
-  // };
-
   // If entity role is not defined, let it be funder as a placeholder.
   if (entityRole === undefined) entityRole = "funder";
 
@@ -140,6 +77,7 @@ const Details = ({
     data.pvs.scores.length > 0 ? "pvs" : "ihr"
   );
   const [showFlag, setShowFlag] = React.useState(true);
+
   const [curPvsEdition, setCurPvsEdition] = React.useState(
     data.pvs.eds[0] || {}
   );
@@ -771,6 +709,7 @@ const Details = ({
   React.useEffect(() => {
     setShowFlag(true);
     window.scrollTo(0, 0);
+    setCurPvsEdition(data.pvs.eds[0] || {});
   }, [id]);
   React.useEffect(() => {
     ReactTooltip.rebuild();
