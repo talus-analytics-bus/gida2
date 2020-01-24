@@ -9,6 +9,10 @@ import {
   getMapMetricValue
 } from "../map/MapUtil.js";
 
+export const fetchPost = async (url, data, config) => {
+  return { data: [] };
+};
+
 /**
  * Return flow values for display in the InfoBox for the selected node, given
  * the support type to show (usually funds, but can be inkind).

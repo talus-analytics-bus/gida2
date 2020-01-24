@@ -1,5 +1,6 @@
 import axios from "axios";
 import Util from "./Util.js";
+import { fetchPost } from "./Data.js";
 
 /**
  * Get flow bundle data from API focused on a specific target or source node.
@@ -63,6 +64,12 @@ const FlowBundleFocusQuery = async function({
     data,
     config
   );
+  return res.data;
+  // const res = await axios.post(
+  //   `${Util.API_URL}/flow_bundles_focus`,
+  //   data,
+  //   config
+  // );
 
   // Post-processing (move to API though)
   if (props.single_source_and_target === true) {
