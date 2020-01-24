@@ -73,7 +73,7 @@ const Details = ({
   const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
   const [pvsTooltipData, setPvsTooltipData] = React.useState(undefined);
 
-  const noResponseData = data.flows.length === 0;
+  const noResponseData = data.flows.flows.length === 0;
   const [curTab, setCurTab] = React.useState("ihr");
   const [showFlag, setShowFlag] = React.useState(true);
 
@@ -188,13 +188,13 @@ const Details = ({
       <TotalByFlowType
         inline={true}
         flowType="disbursed_funds"
-        data={data.flows}
+        data={data.flows.flows}
         label={"event response funding"}
       />
       <TotalByFlowType
         inline={true}
         flowType="committed_funds"
-        data={data.flows}
+        data={data.flows.flows}
         label={"event response funding"}
       />
     </div>
@@ -519,7 +519,7 @@ const Details = ({
           header: "Event response funding",
           hide: noResponseData,
           content:
-            data.flows.length > 0
+            data.flows.flows.length > 0
               ? [
                   {
                     header: (
@@ -664,7 +664,7 @@ const Details = ({
                                   : Util.formatValue(d, curFlowType)
                             }
                           ]}
-                          tableData={data.flows}
+                          tableData={data.flows.flows}
                           hide={r => r.amount === -9999}
                         />
                       </div>
@@ -675,7 +675,7 @@ const Details = ({
                 ]
               : [
                   {
-                    header: <h2>Response funding by outbreak event</h2>,
+                    header: <h2>Event response funding</h2>,
                     content: (
                       <div>
                         <i>No data to show</i>
