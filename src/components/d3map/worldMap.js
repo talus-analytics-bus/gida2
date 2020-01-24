@@ -75,13 +75,22 @@ class WorldMap extends Chart {
     });
   }
 
-  colorCountries(data) {
-    this[styles.countries]
+  colorCountries(data, init = false) {
+    const countryGs = this[styles.countries]
       .selectAll("g")
       .selectAll("." + styles.country)
-      .style("fill", "")
-      .classed(styles.hatched, false)
+      .classed(styles.hatched, false);
+
+    console.log("init = " + init);
+    const duration = init ? 0 : 500;
+    countryGs
       .transition()
+      .duration(duration)
+      .style("fill", "#ccc");
+
+    countryGs
+      .transition()
+      .delay(duration)
       .duration(1000)
       .style("fill", function(d) {
         const match = data.find(dd => dd.id === d.properties.place_id);

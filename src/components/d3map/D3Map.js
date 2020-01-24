@@ -26,6 +26,7 @@ const D3Map = ({
   const [worldMap, setWorldMap] = React.useState(null);
   const [activeCountry, setActiveCountry] = React.useState(null);
   const [tooltipCountry, setTooltipCountry] = React.useState(null);
+  const [init, setInit] = React.useState(true);
 
   // Create map the first time it's loaded.
   React.useEffect(() => {
@@ -76,8 +77,10 @@ const D3Map = ({
       worldMap.colorCountries(
         mapData.map(dd => {
           return { id: dd.id, value: dd.value, color: colorScale(dd.color) };
-        })
+        }),
+        init
       );
+      setInit(false);
     }
   }, [
     mapLoaded,
