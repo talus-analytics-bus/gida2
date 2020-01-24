@@ -7,7 +7,7 @@ import Pagination from "../../../common/Pagination/Pagination.js";
 
 // FC for DataTable.
 const DataTable = ({
-  getTableData = () => [],
+  getTableData,
   pageSize,
   setLoadingSpinnerOn,
   ...props
@@ -15,8 +15,8 @@ const DataTable = ({
   const [curPage, setCurPage] = React.useState(1);
   const [nPages, setNPages] = React.useState(undefined);
   const [content, setContent] = React.useState(undefined);
-
   React.useEffect(() => {
+    if (getTableData === undefined) return;
     setLoadingSpinnerOn(true);
     getTableData(curPage, pageSize).then(d => {
       setContent(<TableInstance {...{ ...props, tableData: d.flows }} />);

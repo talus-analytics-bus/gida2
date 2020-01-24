@@ -41,19 +41,6 @@ const EntityTable = ({
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
 
-  // React.useEffect(() => {
-  //   setLoadingSpinnerOn(false);
-  //   console.log("Done loading.");
-  //   console.log("data");
-  //   console.log(data);
-  // }, [otherId]);
-
-  const [curPageAll, setCurPageAll] = React.useState(1);
-
-  React.useEffect(() => {
-    // Get all funds table data
-  }, [curPageAll]);
-
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
 
@@ -553,7 +540,17 @@ export const renderEntityTable = ({
       setLoadingSpinnerOn
     });
 
-    return component ? component : <div />;
+    return component ? (
+      <EntityTable
+        {...{
+          ...component.props,
+          getTableDataFuncs: {}
+        }}
+      />
+    ) : (
+      <div />
+    );
+    // return component ? component : <div />;
   } else {
     setLoadingSpinnerOn(false);
     return component;
