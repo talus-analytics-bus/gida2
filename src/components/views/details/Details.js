@@ -44,6 +44,8 @@ const Details = ({
   setLoadingSpinnerOn,
   ...props
 }) => {
+  console.log("data");
+  console.log(data);
   // make key changes to the page if the id is special:
   // "ghsa" - Same as normal but include both a top funder and recipient table,
   //          and include only flows that are ghsa. Name of page is
@@ -399,7 +401,7 @@ const Details = ({
                   data={getWeightsBySummaryAttributeSimple({
                     field: "core_capacities",
                     flowTypes: ["disbursed_funds", "committed_funds"],
-                    data: data.focusSummary.flow_bundles,
+                    data: data.flowBundlesFocusOther.flow_bundles,
                     // data: data.flowBundles.flow_bundles,
                     byOtherNode: true,
                     nodeType: nodeType,

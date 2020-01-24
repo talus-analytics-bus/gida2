@@ -16,9 +16,22 @@
       font-size: 1.1em;
     }
   }
+  .labels {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    .label:last-child {
+      text-align: right;
+    }
+  }
+  $rect-height: 15px;
+  $rect-width: $rect-height * 4;
+  .rect.gradient {
+    height: $rect-height;
+    width: $rect-width * 5;
+    background: $needs-met-gradient;
+  }
   .entries {
-    $rect-height: 15px;
-    $rect-width: $rect-height * 4;
     display: flex;
     flex-flow: row;
     align-items: flex-start;

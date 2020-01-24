@@ -134,8 +134,10 @@ export const getMapColorScale = ({
     const baseScale = d3[type || "scaleThreshold"]()
       .domain(domain)
       .range(range);
+    // if (type === "scaleQuantile") baseScale.clamp(true);
 
     const colorScale = v => {
+      if (type === "scaleLinear" && v === null) return baseScale(domain[1]);
       const noData = v === "zzz" || v === -9999;
       const unknownVal = v === "yyy" || v === -8888;
       if (noData) return "#cccccc";
@@ -182,7 +184,29 @@ export const getMapColorScale = ({
     });
   } else if (supportType === "needs_met") {
     // Get values for use in calculating quantile scales.
+    const fakeData = [];
+    for (let placeId in jeeScores) {
+      const match = data.find(d => d.target[0].id === parseInt(placeId));
+      if (match === undefined) {
+        // Get score avg.
+        const scores = getJeeScores({
+          scores: jeeScores,
+          iso2: placeId,
+          coreCapacities
+        });
+        const avgJeeScore = d3.mean(scores, d => d.score);
+        fakeData.push({
+          flow_types: {
+            disbursed_funds: {
+              focus_node_weight: 0
+            }
+          },
+          target: [{ id: parseInt(placeId), name: "TBD", type: "country" }]
+        });
+      }
+    }
     const values = data
+      .concat(fakeData)
       .map(d => {
         // Get JEE score values.
         const nodes = d.target ? d.target : d.source;
@@ -201,11 +225,16 @@ export const getMapColorScale = ({
         });
       })
       .filter(d => d !== null && d !== "unknown" && d >= 0);
+    console.log("values");
+    console.log(values);
 
     return colorScaleMaker({
-      domain: values,
-      range: blues,
-      type: "scaleQuantile"
+      domain: [d3.min(values), d3.max(values)],
+      // domain: values,
+      range: [blues[0], blues[blues.length - 1]],
+      // range: blues,
+      type: "scaleLinear"
+      // type: "scaleQuantile"
     });
   } else if (supportType === "jee") {
     return colorScaleMaker({

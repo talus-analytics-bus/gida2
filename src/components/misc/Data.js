@@ -61,8 +61,6 @@ const getFlowValues = ({
       };
     });
   } else {
-    console.log("minYear");
-    console.log(minYear);
     // Otherwise, return an array with one object for each flow value that
     // contains (1) the value to be displayed, formatted; and (2) the label
     // that goes beneath that value, returned by a function "label".
@@ -135,6 +133,22 @@ export const getInfoBoxData = ({
       ? "committed"
       : "disbursed";
   const transactionType = simple ? transactionTypeTmp : undefined;
+  if (nodeDataToCheck === undefined) return {};
+
+  if (datum === undefined && supportType === "needs_met") {
+    datum = {
+      flow_types: {
+        disbursed_funds: {
+          focus_node_weight: 0
+        }
+      },
+      target: [
+        {
+          ...nodeDataToCheck
+        }
+      ]
+    };
+  }
   const nodeMapData =
     nodeDataToCheck !== undefined
       ? mapData.find(d => d.id === nodeDataToCheck.id)
@@ -271,8 +285,16 @@ export const calculateNeedsMet = ({ datum, avgCapScores }) => {
     ? datum.flow_types["disbursed_funds"].focus_node_weight
     : undefined;
 
-  // If undefined, then return null for the needs met value.
-  if (disbursedFundsReceived === undefined && avgCapScores < 4) return 0;
+  if (
+    (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&
+    avgCapScores < 3
+  )
+    return 0;
+  if (
+    (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&
+    avgCapScores >= 3
+  )
+    return null;
   if (disbursedFundsReceived === undefined) return -9999;
   if (disbursedFundsReceived === "unknown") return -8888;
   if (avgCapScores === undefined) return -9999;

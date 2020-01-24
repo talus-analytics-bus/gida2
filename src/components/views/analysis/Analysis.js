@@ -184,7 +184,9 @@ const Analysis = ({
               render: d => Util.formatValue(d, "disbursed_funds")
             }
           ]}
-          tableData={data[table[3]].flow_bundles}
+          tableData={data[table[3]].flow_bundles.filter(
+            d => d[table[2]][0].name !== "Not reported"
+          )}
           sortByProp={"disbursed_funds"}
           limit={10}
           noNativePaging={true}

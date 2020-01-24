@@ -144,16 +144,39 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
   );
 
   // Return the full set of legend entry buckets.
-  return (
-    <div
-      className={classNames(styles.entry, styles[colorScale.type], {
-        [styles.binary]: needsMetMetric
-      })}
-    >
-      {initLabel}
-      {buckets}
-    </div>
-  );
+  if (needsMetMetric) {
+    return (
+      <div className={classNames(styles.bucket)}>
+        <div className={classNames(styles.rect, styles.gradient)} />
+        <div className={styles.labels}>
+          <div className={styles.label}>
+            <span>
+              Needs
+              <br />
+              unmet
+            </span>
+          </div>
+          <div className={styles.label}>
+            <span>
+              Needs
+              <br />
+              met
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  } else
+    return (
+      <div
+        className={classNames(styles.entry, styles[colorScale.type], {
+          [styles.binary]: needsMetMetric
+        })}
+      >
+        {initLabel}
+        {buckets}
+      </div>
+    );
 };
 
 /**

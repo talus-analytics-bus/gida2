@@ -82,6 +82,7 @@ const Search = ({ callback, name, ...props }) => {
 
   const inputEl = (
     <input
+      autocomplete={"off"}
       className={"dark-bg-allowed"}
       id={"placeSearch-" + name}
       type="text"

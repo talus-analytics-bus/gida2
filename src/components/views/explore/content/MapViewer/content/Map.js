@@ -19,6 +19,7 @@ import {
   getNodeData,
   getTableRowData,
   getInfoBoxData,
+  calculateNeedsMet,
   getFlowValues
 } from "../../../../../misc/Data.js";
 import Util from "../../../../../misc/Util.js";
@@ -215,7 +216,59 @@ const Map = ({
   // Get data for d3Map
   let mapData;
   if (supportType !== "jee") {
+    // add missing countries as zeros
+
     mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
+
+    if (supportType === "needs_met") {
+      for (let placeId in jeeScores) {
+        const match = mapData.find(d => d.id === parseInt(placeId));
+        if (match === undefined) {
+          // Get score avg.
+          const scores = getJeeScores({
+            scores: jeeScores,
+            iso2: placeId,
+            coreCapacities
+          });
+          const avgJeeScore = d3.mean(scores, d => d.score);
+
+          const datum = {
+            flow_types: {
+              disbursed_funds: {
+                focus_node_weight: 0
+              }
+            }
+          };
+          const value = calculateNeedsMet({ datum, avgCapScores: avgJeeScore });
+          mapData.push({
+            id: parseInt(placeId),
+            value: 0,
+            value_raw: value,
+            tooltip_label: 0,
+            color: value,
+            target: JSON.stringify([
+              {
+                id: placeId,
+                name: "TBD",
+                type: "country"
+              }
+            ])
+          });
+          // data.push({
+          //   flow_types: { disbursed_funds: { focus_node_weight: 0 } },
+          //   target: [
+          //     {
+          //       id: placeId,
+          //       name: "TBD",
+          //       type: "country"
+          //     }
+          //   ]
+          // });
+        }
+      }
+    }
+    console.log("mapData");
+    console.log(mapData);
   } else {
     const jeeScoreData = [];
     // if place not in data...
@@ -275,7 +328,8 @@ const Map = ({
           simple: true
         })
       : undefined;
-
+  console.log("tooltipData");
+  console.log(tooltipData);
   return (
     <div className={classNames(styles.map, { [styles.dark]: isDark })}>
       <D3Map
