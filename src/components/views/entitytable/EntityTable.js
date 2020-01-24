@@ -20,6 +20,7 @@ import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import SourceText from "../../common/SourceText/SourceText.js";
 import Button from "../../common/Button/Button.js";
+import DataTable from "../../chart/table/DataTable/DataTable.js";
 
 // FC for EntityTable.
 const EntityTable = ({
@@ -32,6 +33,7 @@ const EntityTable = ({
   otherId,
   setLoadingSpinnerOn,
   setComponent,
+  getTableDataFuncs,
   ...props
 }) => {
   // Get page type from id
@@ -45,6 +47,12 @@ const EntityTable = ({
   //   console.log("data");
   //   console.log(data);
   // }, [otherId]);
+
+  const [curPageAll, setCurPageAll] = React.useState(1);
+
+  React.useEffect(() => {
+    // Get all funds table data
+  }, [curPageAll]);
 
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
@@ -119,13 +127,19 @@ const EntityTable = ({
       })
   };
 
+  const [updateData, setUpdateData] = React.useState(true);
+
+  // tableData={data.flows.flows.filter(f =>
+  //   f.flow_info.assistance_type.toLowerCase().includes("financial")
+  // )}
   const sections = [
     {
       header: "All funds",
       slug: "all",
       content: (
-        <TableInstance
-          paging={true}
+        <DataTable
+          getTableData={getTableDataFuncs.flowsFinancial}
+          updateData={updateData}
           tableColumns={[
             {
               title: "Funder",
@@ -196,9 +210,6 @@ const EntityTable = ({
             }
           ]}
           sortByProp={"disbursed_funds"}
-          tableData={data.flows.filter(f =>
-            f.flow_info.assistance_type.toLowerCase().includes("financial")
-          )}
         />
       )
     },
@@ -404,9 +415,7 @@ const EntityTable = ({
               defaultContent: "n/a"
             }
           ]}
-          tableData={data.flows.filter(f =>
-            f.flow_info.assistance_type.toLowerCase().includes("inkind")
-          )}
+          tableData={data.flowsInkind.flows}
         />
       )
     }
@@ -602,13 +611,10 @@ const getComponentData = async ({
           otherId !== undefined
           ? // Then include filters for source and target as appropriate TODO confirm this works
             {
-              flow_attr_filters: [
-                [filterNodeType, id],
-                [filterNodeTypeOther, otherId]
-              ]
+              place_filters: [[nodeType, id], [otherNodeType, otherId]]
             }
           : // Otherwise, only filter by one of those (source or target)
-            { flow_attr_filters: [[filterNodeType, id]] }
+            { place_filters: [[nodeType, id]] }
         : {},
     summaries: {
       parent_flow_info_summary: ["core_capacities", "core_elements"],
@@ -637,7 +643,22 @@ const getComponentData = async ({
   }
 
   // Set base query params for FlowQuery
-  const baseFlowQueryParams = JSON.parse(JSON.stringify(baseQueryParams));
+  const baseFlowQueryParams = {
+    financial: JSON.parse(JSON.stringify(baseQueryParams)),
+    inkind: JSON.parse(JSON.stringify(baseQueryParams))
+  };
+  baseFlowQueryParams.financial.page = 1;
+  baseFlowQueryParams.financial.page_size = 10;
+  baseFlowQueryParams.inkind.page = 1;
+  baseFlowQueryParams.inkind.page_size = 10;
+  baseFlowQueryParams.financial.filters.parent_flow_info_filters.push([
+    "assistance_type:not",
+    "inkind"
+  ]);
+  baseFlowQueryParams.inkind.filters.parent_flow_info_filters.push([
+    "assistance_type",
+    "inkind"
+  ]);
 
   // Define queries for typical entityTable page.
   const queries = {
@@ -645,8 +666,12 @@ const getComponentData = async ({
     nodeData: NodeQuery({ node_id: id }),
 
     // Project-specific data
-    flows: FlowQuery({
-      ...baseFlowQueryParams,
+    flowsFinancial: FlowQuery({
+      ...baseFlowQueryParams.financial,
+      flow_type_ids: [5]
+    }),
+    flowsInkind: FlowQuery({
+      ...baseFlowQueryParams.inkind,
       flow_type_ids: [5]
     }),
 
@@ -655,6 +680,16 @@ const getComponentData = async ({
       ...baseQueryParams,
       by_neighbor: true
     })
+  };
+  const getTableDataFuncs = {
+    flowsFinancial: (page, pageSize) => {
+      baseFlowQueryParams.financial.page = page;
+      baseFlowQueryParams.financial.page_size = pageSize;
+      return FlowQuery({
+        ...baseFlowQueryParams.financial,
+        flow_type_ids: [5]
+      });
+    }
   };
 
   // If "other ID" specified, get its node data as well.
@@ -698,6 +733,7 @@ const getComponentData = async ({
       setGhsaOnly={setGhsaOnly}
       setComponent={setComponent}
       setLoadingSpinnerOn={setLoadingSpinnerOn}
+      getTableDataFuncs={getTableDataFuncs}
     />
   );
 };
