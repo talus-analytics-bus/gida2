@@ -9,8 +9,7 @@ import Pagination from "../../../common/Pagination/Pagination.js";
 const DataTable = ({
   getTableData = () => [],
   pageSize,
-  updateData,
-  updateConditions = [],
+  setLoadingSpinnerOn,
   ...props
 }) => {
   const [curPage, setCurPage] = React.useState(1);
@@ -18,6 +17,7 @@ const DataTable = ({
   const [content, setContent] = React.useState(undefined);
 
   React.useEffect(() => {
+    setLoadingSpinnerOn(true);
     getTableData(curPage, pageSize).then(d => {
       setContent(<TableInstance {...{ ...props, tableData: d.flows }} />);
       if (nPages === undefined) setNPages(d.paging.n_pages);
@@ -25,6 +25,7 @@ const DataTable = ({
         setCurPage(1);
         setNPages(d.paging.n_pages);
       }
+      setLoadingSpinnerOn(false);
     });
   }, [getTableData, curPage]);
 

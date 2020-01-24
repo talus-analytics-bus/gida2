@@ -210,6 +210,7 @@ const EntityTable = ({
               defaultContent: "n/a"
             }
           ]}
+          setLoadingSpinnerOn={setLoadingSpinnerOn}
           sortByProp={"disbursed_funds"}
         />
       )
@@ -353,6 +354,7 @@ const EntityTable = ({
           getTableData={getTableDataFuncs.flowsInkind}
           pageSize={10}
           sortByProp={"provided_inkind"}
+          setLoadingSpinnerOn={setLoadingSpinnerOn}
           tableColumns={[
             {
               title: "Provider",

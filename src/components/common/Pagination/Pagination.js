@@ -6,10 +6,6 @@ import styles from "./pagination.module.scss";
  * @method Pagination
  */
 const Pagination = ({ curPage, setCurPage, nPages, ...props }) => {
-  console.log("curPage");
-  console.log(curPage);
-  console.log("nPages");
-  console.log(nPages);
   const prev = (
     <button
       onClick={() => {
