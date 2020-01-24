@@ -125,9 +125,11 @@ const EntityTable = ({
       slug: "all",
       content: (
         <DataTable
+          noNativePaging={true}
+          noNativeSearch={true}
+          noNativeSorting={true}
           getTableData={getTableDataFuncs.flowsFinancial}
           pageSize={10}
-          updateData={updateData}
           tableColumns={[
             {
               title: "Funder",
@@ -338,6 +340,9 @@ const EntityTable = ({
       slug: "in-kind",
       content: (
         <DataTable
+          noNativePaging={true}
+          noNativeSearch={true}
+          noNativeSorting={true}
           getTableData={getTableDataFuncs.flowsInkind}
           pageSize={10}
           sortByProp={"provided_inkind"}
@@ -661,16 +666,6 @@ const getComponentData = async ({
   const queries = {
     // Information about the entity
     nodeData: NodeQuery({ node_id: id }),
-
-    // // Project-specific data
-    // flowsFinancial: FlowQuery({
-    //   ...baseFlowQueryParams.financial,
-    //   flow_type_ids: [5]
-    // }),
-    // flowsInkind: FlowQuery({
-    //   ...baseFlowQueryParams.inkind,
-    //   flow_type_ids: [5]
-    // }),
 
     // General flow bundles by neighbor, for funder/recipient tables.
     flowBundlesByNeighbor: FlowBundleFocusQuery({

@@ -129,7 +129,7 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
               {...{
                 curPage,
                 setCurPage,
-                nPages: data.flows.paging.n_records
+                nPages: data.flows.paging.n_pages
               }}
             />
           }
