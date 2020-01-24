@@ -3,7 +3,7 @@ import React from "react";
 // import { Link } from "react-router-dom";
 // import styles from "./entitytable.module.scss";
 import TableInstance from "../../../chart/table/TableInstance.js";
-import NodeQuery from "../../../misc/NodeQuery.js";
+import Pagination from "../../../common/Pagination/Pagination.js";
 
 // FC for DataTable.
 const DataTable = ({
@@ -14,17 +14,25 @@ const DataTable = ({
   ...props
 }) => {
   const [curPage, setCurPage] = React.useState(1);
+  const [nPages, setNPages] = React.useState(undefined);
   const [content, setContent] = React.useState(undefined);
 
   React.useEffect(() => {
     getTableData(curPage, pageSize).then(d => {
       setContent(<TableInstance {...{ ...props, tableData: d.flows }} />);
+      if (nPages === undefined) setNPages(d.paging.n_pages);
     });
-  }, [getTableData]);
+  }, [getTableData, curPage]);
 
   // Return JSX
   if (content === undefined) return <div />;
-  else return <div>{content}</div>;
+  else
+    return (
+      <div>
+        {<Pagination {...{ curPage, setCurPage, nPages }} />}
+        {content}
+      </div>
+    );
 };
 
 export default DataTable;

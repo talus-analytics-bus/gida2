@@ -139,6 +139,7 @@ const EntityTable = ({
       content: (
         <DataTable
           getTableData={getTableDataFuncs.flowsFinancial}
+          pageSize={10}
           updateData={updateData}
           tableColumns={[
             {
@@ -415,7 +416,7 @@ const EntityTable = ({
               defaultContent: "n/a"
             }
           ]}
-          tableData={data.flowsInkind.flows}
+          tableData={[]}
         />
       )
     }
@@ -647,15 +648,14 @@ const getComponentData = async ({
     financial: JSON.parse(JSON.stringify(baseQueryParams)),
     inkind: JSON.parse(JSON.stringify(baseQueryParams))
   };
-  baseFlowQueryParams.financial.page = 1;
-  baseFlowQueryParams.financial.page_size = 10;
-  baseFlowQueryParams.inkind.page = 1;
-  baseFlowQueryParams.inkind.page_size = 10;
-  baseFlowQueryParams.financial.filters.parent_flow_info_filters.push([
-    "assistance_type:not",
-    "inkind"
+  baseFlowQueryParams.financial.filters.flow_info_filters = [];
+  baseFlowQueryParams.inkind.filters.flow_info_filters = [];
+
+  baseFlowQueryParams.financial.filters.flow_info_filters.push([
+    "assistance_type",
+    "financial"
   ]);
-  baseFlowQueryParams.inkind.filters.parent_flow_info_filters.push([
+  baseFlowQueryParams.inkind.filters.flow_info_filters.push([
     "assistance_type",
     "inkind"
   ]);
@@ -665,15 +665,15 @@ const getComponentData = async ({
     // Information about the entity
     nodeData: NodeQuery({ node_id: id }),
 
-    // Project-specific data
-    flowsFinancial: FlowQuery({
-      ...baseFlowQueryParams.financial,
-      flow_type_ids: [5]
-    }),
-    flowsInkind: FlowQuery({
-      ...baseFlowQueryParams.inkind,
-      flow_type_ids: [5]
-    }),
+    // // Project-specific data
+    // flowsFinancial: FlowQuery({
+    //   ...baseFlowQueryParams.financial,
+    //   flow_type_ids: [5]
+    // }),
+    // flowsInkind: FlowQuery({
+    //   ...baseFlowQueryParams.inkind,
+    //   flow_type_ids: [5]
+    // }),
 
     // General flow bundles by neighbor, for funder/recipient tables.
     flowBundlesByNeighbor: FlowBundleFocusQuery({
@@ -687,6 +687,14 @@ const getComponentData = async ({
       baseFlowQueryParams.financial.page_size = pageSize;
       return FlowQuery({
         ...baseFlowQueryParams.financial,
+        flow_type_ids: [5]
+      });
+    },
+    flowsInkind: (page, pageSize) => {
+      baseFlowQueryParams.inkind.page = page;
+      baseFlowQueryParams.inkind.page_size = pageSize;
+      return FlowQuery({
+        ...baseFlowQueryParams.inkind,
         flow_type_ids: [5]
       });
     }
