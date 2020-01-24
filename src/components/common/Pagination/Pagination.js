@@ -50,24 +50,26 @@ const Pagination = ({ curPage, setCurPage, nPages, ...props }) => {
     if (i === nPages) break;
   }
 
-  return (
-    <div className={styles.pagination}>
-      {start}
-      {prev}
-      {pageButtons.map(i => (
-        <button
-          onClick={() => setCurPage(i)}
-          className={classNames({ [styles.selected]: i === curPage })}
-        >
-          {Util.comma(i)}
-        </button>
-      ))}
-      {next}
-      {end}
-      <div>
-        Page {Util.comma(curPage)} of {Util.comma(nPages)}
+  if (nPages === 0) return <div />;
+  else
+    return (
+      <div className={styles.pagination}>
+        {start}
+        {prev}
+        {pageButtons.map(i => (
+          <button
+            onClick={() => setCurPage(i)}
+            className={classNames({ [styles.selected]: i === curPage })}
+          >
+            {Util.comma(i)}
+          </button>
+        ))}
+        {next}
+        {end}
+        <div>
+          Page {Util.comma(curPage)} of {Util.comma(nPages)}
+        </div>
       </div>
-    </div>
-  );
+    );
 };
 export default Pagination;
