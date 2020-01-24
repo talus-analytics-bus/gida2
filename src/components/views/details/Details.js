@@ -104,7 +104,7 @@ const Details = ({
   const topTableDataOther =
     pageType === "ghsa"
       ? getSummaryAttributeWeightsByNode({
-          data: data.flowBundlesFocus.flow_bundles,
+          data: data.focusSummary.flow_bundles,
           field: "core_elements",
           flowTypes: ["disbursed_funds", "committed_funds"],
           nodeType: nodeType
@@ -112,7 +112,7 @@ const Details = ({
       : null;
 
   // True if there are no data to show for the entire page, false otherwise.
-  const noData = data.flowBundles.flow_bundles[0] === undefined;
+  const noData = data.focusSummary.flow_bundles[0] === undefined;
   const noFinancialData = noData
     ? true
     : data.focusSummary.master_summary.flow_types["disbursed_funds"] ===
@@ -399,7 +399,8 @@ const Details = ({
                   data={getWeightsBySummaryAttributeSimple({
                     field: "core_capacities",
                     flowTypes: ["disbursed_funds", "committed_funds"],
-                    data: data.flowBundles.flow_bundles,
+                    data: data.focusSummary.flow_bundles,
+                    // data: data.flowBundles.flow_bundles,
                     byOtherNode: true,
                     nodeType: nodeType,
                     otherNodeType: otherNodeType
@@ -1050,11 +1051,11 @@ const getComponentData = async ({
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
   if (id === "ghsa") {
-    queries["flowBundlesFocus"] = FlowBundleFocusQuery({
-      ...baseQueryParams,
-      focus_node_type: entityRole === "recipient" ? "target" : "source",
-      focus_node_ids: null
-    });
+    // queries["flowBundlesFocus"] = FlowBundleFocusQuery({
+    //   ...baseQueryParams,
+    //   focus_node_type: entityRole === "recipient" ? "target" : "source",
+    //   focus_node_ids: null
+    // });
     queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
     queries["focusSummary"] = FlowBundleFocusQuery({
       ...baseQueryParams,
@@ -1062,11 +1063,11 @@ const getComponentData = async ({
       focus_node_ids: null
     });
   } else {
-    // Flow bundles (either focus or general depending on the page type)
-    queries["flowBundles"] = FlowBundleFocusQuery({
-      ...baseQueryParams,
-      by_neighbor: true
-    });
+    // // Flow bundles (either focus or general depending on the page type)
+    // queries["flowBundles"] = FlowBundleFocusQuery({
+    //   ...baseQueryParams,
+    //   by_neighbor: true
+    // });
     queries["focusSummary"] = FlowBundleFocusQuery({
       ...baseQueryParams,
       by_neighbor: false,
