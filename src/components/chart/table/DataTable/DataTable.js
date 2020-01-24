@@ -21,6 +21,10 @@ const DataTable = ({
     getTableData(curPage, pageSize).then(d => {
       setContent(<TableInstance {...{ ...props, tableData: d.flows }} />);
       if (nPages === undefined) setNPages(d.paging.n_pages);
+      else if (nPages !== d.paging.n_pages) {
+        setCurPage(1);
+        setNPages(d.paging.n_pages);
+      }
     });
   }, [getTableData, curPage]);
 

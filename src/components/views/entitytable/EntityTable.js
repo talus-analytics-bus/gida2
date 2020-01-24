@@ -349,8 +349,9 @@ const EntityTable = ({
       header: "In-kind contributions",
       slug: "in-kind",
       content: (
-        <TableInstance
-          paging={true}
+        <DataTable
+          getTableData={getTableDataFuncs.flowsInkind}
+          pageSize={10}
           sortByProp={"provided_inkind"}
           tableColumns={[
             {
@@ -416,7 +417,6 @@ const EntityTable = ({
               defaultContent: "n/a"
             }
           ]}
-          tableData={[]}
         />
       )
     }
