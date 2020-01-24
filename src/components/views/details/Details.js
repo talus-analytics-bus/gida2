@@ -202,7 +202,7 @@ const Details = ({
 
   const pvsLegend = (
     <div className={styles.legend}>
-      <b>Categories</b>
+      <b>Fundamental components</b>
       <div>
         {pvsCats.map((d, i) => (
           <div>
@@ -291,7 +291,7 @@ const Details = ({
             sortByProp={"cat"}
             tableColumns={[
               {
-                title: "Category",
+                title: "Fundamental component",
                 prop: "cat",
                 type: "text",
                 func: d => d.cat,
@@ -321,14 +321,14 @@ const Details = ({
                 hide: true
               },
               {
-                title: "Indicator name",
+                title: "Core competency",
                 prop: "ind",
                 type: "text",
                 func: d => d.indId + " " + d.ind,
                 render: d => d
               },
               {
-                title: "Score",
+                title: "Level of advancement (1 to 5)",
                 prop: "score",
                 type: "text",
                 func: d => (d.score === "N/A" ? -9999 : d.score),

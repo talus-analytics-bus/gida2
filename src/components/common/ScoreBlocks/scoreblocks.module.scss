@@ -11,7 +11,8 @@
       margin-right: 0;
     }
   }
-
+  font-family: "Rawline", serif;
+  font-weight: 600;
   .value {
     display: flex;
   }
@@ -20,11 +21,18 @@
     flex-flow: row;
     align-items: center;
     $size: 20px;
+
     .block {
       width: $size * 2;
       height: $size;
       margin-right: 2px;
       background-color: rgb(232, 232, 232);
+      display: flex;
+      flex-flow: row;
+      justify-content: center;
+      align-items: center;
+      color: white;
+
       &:last-child {
         margin-right: 0;
       }

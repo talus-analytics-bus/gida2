@@ -10,7 +10,7 @@ const ScoreBlocks = ({ value, rangeArray, colors, ...props }) => {
   const displayValue = value !== -9999 ? value : "N/A";
   return (
     <div className={styles.scoreBlocks}>
-      <div className={styles.value}>{displayValue}</div>
+      {!showBlocks && <div className={styles.value}>{displayValue}</div>}
       {showBlocks && (
         <div className={styles.blocks}>
           {rangeArray.map((d, i) => (
@@ -19,7 +19,9 @@ const ScoreBlocks = ({ value, rangeArray, colors, ...props }) => {
               className={classNames(styles.block, {
                 [styles.active]: d === value
               })}
-            />
+            >
+              {value === d ? d : ""}
+            </div>
           ))}
         </div>
       )}
