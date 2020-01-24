@@ -17,15 +17,22 @@ const DataTable = ({
   const [content, setContent] = React.useState(undefined);
   React.useEffect(() => {
     if (getTableData === undefined) return;
-    setLoadingSpinnerOn(true);
+    setLoadingSpinnerOn(true, false, "DataTable");
     getTableData(curPage, pageSize).then(d => {
-      setContent(<TableInstance {...{ ...props, tableData: d.flows }} />);
+      setContent(
+        <TableInstance
+          {...{
+            ...props,
+            tableData: d.flows
+          }}
+        />
+      );
       if (nPages === undefined) setNPages(d.paging.n_pages);
       else if (nPages !== d.paging.n_pages) {
         setCurPage(1);
         setNPages(d.paging.n_pages);
       }
-      setLoadingSpinnerOn(false);
+      setLoadingSpinnerOn(false, false, "DataTable");
     });
   }, [getTableData, curPage]);
 

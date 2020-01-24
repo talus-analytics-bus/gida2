@@ -413,7 +413,6 @@ const EntityTable = ({
 
   // Track currently visible tab
   const [curTab, setCurTab] = React.useState(sections[0].slug);
-
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.entityTable)}>
@@ -552,7 +551,6 @@ export const renderEntityTable = ({
     );
     // return component ? component : <div />;
   } else {
-    setLoadingSpinnerOn(false);
     return component;
   }
 };

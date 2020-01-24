@@ -57,11 +57,21 @@ const App = () => {
   // Track whether styling is dark or light
   const [isDark, setIsDark] = React.useState(false);
   const loadingSpinnerOn = false;
-  const setLoadingSpinnerOn = val => {
+  const waitingFor = [];
+  const setLoadingSpinnerOn = (val, get = false, id = undefined) => {
     const el = document.getElementById("loadingSpinner");
     if (el) {
-      if (val) el.classList.add(styles.on);
-      else el.classList.remove(styles.on);
+      if (get) {
+        return el.classList.contains(styles.on);
+      } else {
+        if (val) {
+          el.classList.add(styles.on);
+          if (id) waitingFor.push(id);
+        } else {
+          if (id) waitingFor.pop();
+          if (waitingFor.length === 0) el.classList.remove(styles.on);
+        }
+      }
     }
   };
 

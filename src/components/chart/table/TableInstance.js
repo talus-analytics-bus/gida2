@@ -20,7 +20,6 @@ const TableInstance = ({
 }) => {
   // console.log("tableColumns");
   // console.log(tableColumns);
-
   const buildTable = tableData => {
     const sortBy =
       sortByProp !== undefined
@@ -71,15 +70,8 @@ const TableInstance = ({
       </div>
     );
   };
-
-  // React.useEffect(() => {
-  //   console.log("\nMounted TableInstance");
-  //   const clickableCells = document.getElementsByClassName("clickable");
-  //   console.log("clickableCells");
-  //   console.log(clickableCells);
-  // }, []);
-
-  return buildTable(tableData);
+  const component = buildTable(tableData);
+  return component;
 };
 
 export default TableInstance;
