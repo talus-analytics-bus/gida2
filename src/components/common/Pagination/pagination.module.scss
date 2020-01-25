@@ -3,7 +3,10 @@
 .pagination {
   display: flex;
   flex-flow: row;
+
   button {
+    // margin-left: auto;
+    // float: right;
     &.selected {
       background-color: $funder-blue;
       color: white;

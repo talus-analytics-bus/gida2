@@ -3,9 +3,10 @@ import styles from "./about.module.scss";
 import classNames from "classnames";
 
 // JSX for about page.
-const Background = () => {
+const Background = ({ ...props }) => {
   // Scroll to top of window afer loading.
   React.useEffect(() => window.scrollTo(0, 0), []);
+  props.setLoadingSpinnerOn(false);
 
   return (
     <div className={classNames(styles.about, "pageContainer")}>

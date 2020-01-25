@@ -329,7 +329,7 @@ const App = () => {
                 path="/about/background"
                 render={d => {
                   setPage("about");
-                  return <Background />;
+                  return <Background {...{ setLoadingSpinnerOn }} />;
                 }}
               />
               <Route
