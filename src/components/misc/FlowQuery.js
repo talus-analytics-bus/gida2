@@ -21,7 +21,8 @@ const FlowQuery = async function({
   by_outbreak,
   include_general_amounts,
   page,
-  page_size
+  page_size,
+  for_export = false
 }) {
   // Define URL parameters //
   const params = {
@@ -36,7 +37,8 @@ const FlowQuery = async function({
     bundle_child_flows_by_neighbor: bundle_child_flows_by_neighbor,
     pair_node_id: pair_node_id,
     by_outbreak: by_outbreak,
-    include_general_amounts: include_general_amounts
+    include_general_amounts: include_general_amounts,
+    for_export: for_export
   };
   if (page) params.page = page;
   if (page_size) params.page_size = page_size;

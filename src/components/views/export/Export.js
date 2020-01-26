@@ -14,7 +14,7 @@ import Button from "../../common/Button/Button.js";
 import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 
 // Content components
-import { renderExportTable } from "./ExportTable.js";
+import { renderExportTable, getFlowQuery } from "./ExportTable.js";
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
@@ -117,6 +117,29 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     setOutbreaks([]);
   };
 
+  // Function to download data
+  const download = async () => {
+    const queries = {
+      flows: getFlowQuery({
+        curPage,
+        funders,
+        recipients,
+        outbreaks,
+        coreCapacities,
+        supportType,
+        forExport: true,
+        ...props
+      })
+    };
+
+    // Get results in parallel
+    setLoadingSpinnerOn(true);
+    const results = await Util.getQueryResults(queries);
+    setLoadingSpinnerOn(false);
+    console.log("results - download function");
+    console.log(results);
+  };
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.export)}>
@@ -214,9 +237,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   </div>
                   <div>
                     <Button
-                      callback={() =>
-                        alert("Feature currently being implemented.")
-                      }
+                      callback={download}
                       label={
                         <span>
                           <span

@@ -189,23 +189,8 @@ export const renderExportTable = ({
   }
 };
 
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for special detail pages like GHSA and response
- * @method getComponentData
- * @param  {[type]}       setDetailsComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setComponent,
-  setLoadingSpinnerOn,
-  curPage,
-  setCurPage,
-  ...props
-}) => {
+export const getFlowQuery = ({ curPage, ...props }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
-
   const baseQueryParams = {
     focus_node_ids: null,
     focus_node_type: "source",
@@ -214,6 +199,7 @@ const getComponentData = async ({
     end_date: `${Settings.endYear}-12-31`,
     page_size: 10,
     page: curPage,
+    for_export: props.forExport === true,
 
     // Add filters as appropriate.
     filters: { place_filters: [], flow_info_filters: [] }
@@ -245,14 +231,31 @@ const getComponentData = async ({
 
   // Set base query params for FlowQuery
   const baseFlowQueryParams = JSON.parse(JSON.stringify(baseQueryParams));
+  return FlowQuery({
+    ...baseFlowQueryParams,
+    flow_type_ids: [5]
+  });
+};
 
+/**
+ * Returns data for the details page given the entity type and id.
+ * TODO make this work for special detail pages like GHSA and response
+ * @method getComponentData
+ * @param  {[type]}       setDetailsComponent [description]
+ * @param  {[type]}       id                  [description]
+ * @param  {[type]}       entityRole          [description]
+ */
+const getComponentData = async ({
+  setComponent,
+  setLoadingSpinnerOn,
+  curPage,
+  setCurPage,
+  ...props
+}) => {
   // Define queries for typical ExportTable page.
   const queries = {
     // Information about the entity
-    flows: FlowQuery({
-      ...baseFlowQueryParams,
-      flow_type_ids: [5]
-    })
+    flows: getFlowQuery({ curPage, ...props })
   };
 
   // Get results in parallel
