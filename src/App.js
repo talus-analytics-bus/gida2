@@ -372,7 +372,7 @@ const App = () => {
           <div
             id={"loadingSpinner"}
             className={classNames(styles.loadingSpinner, {
-              [styles.on]: page !== "home"
+              [styles.on]: page !== "home" && page !== "about"
             })}
           >
             <img src={spinnerImg} />
