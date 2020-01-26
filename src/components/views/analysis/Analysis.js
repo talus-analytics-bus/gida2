@@ -399,7 +399,6 @@ export const renderAnalysis = ({
 
     return component ? component : <div />;
   } else {
-    setLoadingSpinnerOn(false);
     return component;
   }
 };
@@ -490,6 +489,8 @@ const getComponentData = async ({
   // Get query results.
   setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
+  setLoadingSpinnerOn(false);
+
   if (props.returnDataOnly === true) return results;
   // Feed results and other data to the details component and mount it.
   setComponent(

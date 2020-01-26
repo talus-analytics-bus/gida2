@@ -20,23 +20,25 @@ const AnalysisData = ({
   const [coreCapacities, setCoreCapacities] = React.useState([]);
   const [component, setComponent] = React.useState(null);
 
-  const content = renderAnalysis({
-    component: component,
-    setComponent: setComponent,
-    flowTypeInfo: flowTypeInfo,
-    ghsaOnly: ghsaOnly,
-    setGhsaOnly: setGhsaOnly,
-    coreCapacities: coreCapacities,
-    setCoreCapacities: setCoreCapacities,
-    minYear: minYear,
-    setMinYear: setMinYear,
-    maxYear: maxYear,
-    setMaxYear: setMaxYear,
-    setLoadingSpinnerOn
-  });
+  React.useEffect(() => {
+    renderAnalysis({
+      component: component,
+      setComponent: setComponent,
+      flowTypeInfo: flowTypeInfo,
+      ghsaOnly: ghsaOnly,
+      setGhsaOnly: setGhsaOnly,
+      coreCapacities: coreCapacities,
+      setCoreCapacities: setCoreCapacities,
+      minYear: minYear,
+      setMinYear: setMinYear,
+      maxYear: maxYear,
+      setMaxYear: setMaxYear,
+      setLoadingSpinnerOn
+    });
+  }, [minYear, maxYear, coreCapacities, ghsaOnly]);
 
-  // legend (maybe part of map?)
-  return content;
+  if (component === null) return <div />;
+  else return component;
 };
 
 export const renderAnalysisData = ({
