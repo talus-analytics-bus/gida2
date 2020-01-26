@@ -43,6 +43,7 @@ const Explore = ({
   // Track tab content components
   const [mapViewerComponent, setMapViewerComponent] = React.useState(null);
   const [orgComponent, setOrgComponent] = React.useState(null);
+  const [curComponent, setCurComponent] = React.useState(null);
 
   // Track entity role selected for the map
   const [entityRole, setEntityRole] = React.useState("recipient");
@@ -54,6 +55,11 @@ const Explore = ({
   // Set value filters
   const [coreCapacities, setCoreCapacities] = React.useState([]);
   const [outbreakResponses, setOutbreakResponses] = React.useState([]);
+
+  // Track whether user...
+  const [supportTypeToSwitchTo, setSupportTypeToSwitchTo] = React.useState(
+    undefined
+  );
 
   React.useEffect(() => {
     // Set isDark defaults.
@@ -67,62 +73,12 @@ const Explore = ({
     };
   }, []);
 
-  // Define content
-  const getContent = slug => {
-    switch (slug) {
-      default:
-      case "map":
-        return {
-          header: "Countries",
-          slug: "map",
-          content: renderMapViewer({
-            isDark: props.isDark,
-            component: mapViewerComponent,
-            setComponent: setMapViewerComponent,
-            entityRole: entityRole,
-            setEntityRole: setEntityRole,
-            flowTypeInfo: flowTypeInfo,
-            ghsaOnly: ghsaOnly,
-            setGhsaOnly: setGhsaOnly,
-            coreCapacities: coreCapacities,
-            setCoreCapacities: setCoreCapacities,
-            outbreakResponses: outbreakResponses,
-            setOutbreakResponses: setOutbreakResponses,
-            minYear: minYear,
-            setMinYear: setMinYear,
-            maxYear: maxYear,
-            setMaxYear: setMaxYear,
-            supportTypeDefault,
-            setLoadingSpinnerOn
-          })
-        };
-
-      case "org":
-        return {
-          header: "Organizations",
-          slug: "org",
-          content: renderOrgs({
-            component: orgComponent,
-            setComponent: setOrgComponent,
-            entityRole: entityRole,
-            setEntityRole: setEntityRole,
-            flowTypeInfo: flowTypeInfo,
-            ghsaOnly: ghsaOnly,
-            setGhsaOnly: setGhsaOnly,
-            coreCapacities: coreCapacities,
-            setCoreCapacities: setCoreCapacities,
-            outbreakResponses: outbreakResponses,
-            setOutbreakResponses: setOutbreakResponses,
-            minYear: minYear,
-            setMinYear: setMinYear,
-            maxYear: maxYear,
-            setMaxYear: setMaxYear,
-            setLoadingSpinnerOn
-          })
-        };
-    }
-  };
-  const section = getContent(activeTab);
+  React.useEffect(() => {
+    // Set isDark defaults.
+    return () => {
+      props.setIsDark(false);
+    };
+  }, []);
 
   // Get header data
   const headerData = getHeaderData(activeTab);
@@ -135,6 +91,80 @@ const Explore = ({
       // props.setIsDark(false);
     };
   }, []);
+
+  React.useEffect(() => {
+    renderMapViewer({
+      isDark: mapViewerComponent === null || props.isDark,
+      component: mapViewerComponent,
+      setComponent: setMapViewerComponent,
+      entityRole: entityRole,
+      setEntityRole: setEntityRole,
+      flowTypeInfo: flowTypeInfo,
+      ghsaOnly: ghsaOnly,
+      setGhsaOnly: setGhsaOnly,
+      coreCapacities: coreCapacities,
+      setCoreCapacities: setCoreCapacities,
+      outbreakResponses: outbreakResponses,
+      setOutbreakResponses: setOutbreakResponses,
+      minYear: minYear,
+      setMinYear: setMinYear,
+      maxYear: maxYear,
+      setMaxYear: setMaxYear,
+      supportTypeDefault,
+      setLoadingSpinnerOn,
+      setSupportTypeToSwitchTo
+    });
+  }, [minYear, maxYear, coreCapacities, ghsaOnly, entityRole]);
+
+  React.useEffect(() => {
+    if (supportTypeToSwitchTo !== undefined) {
+      setSupportTypeToSwitchTo(undefined);
+      renderMapViewer({
+        isDark: props.isDark,
+        component: mapViewerComponent,
+        setComponent: setMapViewerComponent,
+        entityRole: entityRole,
+        setEntityRole: setEntityRole,
+        flowTypeInfo: flowTypeInfo,
+        ghsaOnly: ghsaOnly,
+        setGhsaOnly: setGhsaOnly,
+        coreCapacities: coreCapacities,
+        setCoreCapacities: setCoreCapacities,
+        outbreakResponses: outbreakResponses,
+        setOutbreakResponses: setOutbreakResponses,
+        minYear: minYear,
+        setMinYear: setMinYear,
+        maxYear: maxYear,
+        setMaxYear: setMaxYear,
+        supportTypeDefault: supportTypeToSwitchTo,
+        setLoadingSpinnerOn
+      });
+    }
+  }, [supportTypeToSwitchTo]);
+
+  React.useEffect(() => {
+    if (mapViewerComponent !== null)
+      renderMapViewer({
+        isDark: props.isDark,
+        component: mapViewerComponent,
+        setComponent: setMapViewerComponent,
+        entityRole: entityRole,
+        setEntityRole: setEntityRole,
+        flowTypeInfo: flowTypeInfo,
+        ghsaOnly: ghsaOnly,
+        setGhsaOnly: setGhsaOnly,
+        coreCapacities: coreCapacities,
+        setCoreCapacities: setCoreCapacities,
+        outbreakResponses: outbreakResponses,
+        setOutbreakResponses: setOutbreakResponses,
+        minYear: minYear,
+        setMinYear: setMinYear,
+        maxYear: maxYear,
+        setMaxYear: setMaxYear,
+        supportTypeDefault,
+        setLoadingSpinnerOn
+      });
+  }, [props.isDark]);
 
   // Return JSX
   if (headerData === undefined) return <div />;
@@ -180,7 +210,7 @@ const Explore = ({
             </div>
           </div>
         </div>
-        <div className={styles.content}>{section.content}</div>
+        <div className={styles.content}>{mapViewerComponent}</div>
       </div>
     );
 };

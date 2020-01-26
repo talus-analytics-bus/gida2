@@ -35,14 +35,13 @@ const MapViewer = ({
   isDark,
   supportTypeDefault,
   setLoadingSpinnerOn,
+  setSupportTypeToSwitchTo,
   ...props
 }) => {
   // Track transaction type selected for the map
   const [transactionType, setTransactionType] = React.useState("disbursed");
 
   // Track support type selected for the map
-  console.log("supportTypeDefault");
-  console.log(supportTypeDefault);
   const [supportType, setSupportType] = React.useState(
     supportTypeDefault || "funds"
   );
@@ -52,6 +51,11 @@ const MapViewer = ({
 
   // Track whether to show main menu
   const [showControls, setShowControls] = React.useState(true);
+
+  React.useEffect(() => {
+    if (supportTypeDefault !== undefined && supportTypeDefault !== null)
+      setSupportType(supportTypeDefault);
+  }, [supportTypeDefault]);
 
   /**
    * Given the transaction type and the support type, returns the flow type.
@@ -228,7 +232,12 @@ const MapViewer = ({
           <div className={styles.section}>
             <RadioToggle
               label={""}
-              callback={setSupportType}
+              callback={v => {
+                if (v === "needs_met" && entityRole !== "recipient") {
+                  setEntityRole("recipient");
+                  setSupportTypeToSwitchTo(v);
+                } else setSupportType(v);
+              }}
               curVal={supportType}
               choices={[
                 {
@@ -249,10 +258,6 @@ const MapViewer = ({
     }
   ];
 
-  // TODO:
-  // map
-  console.log("isDark");
-  console.log(isDark);
   return (
     <div className={classNames(styles.mapViewer, { [styles.dark]: isDark })}>
       <div className={styles.header}>
@@ -361,6 +366,7 @@ export const renderMapViewer = ({
   setGhsaOnly,
   supportTypeDefault,
   setLoadingSpinnerOn,
+  setSupportTypeToSwitchTo,
   ...props
 }) => {
   // Set IDs
@@ -391,6 +397,7 @@ export const renderMapViewer = ({
       setEntityRole: setEntityRole,
       supportTypeDefault,
       setLoadingSpinnerOn,
+      setSupportTypeToSwitchTo,
       ...props
     });
 
@@ -421,6 +428,7 @@ const getComponentData = async ({
   ghsaOnly,
   setGhsaOnly,
   setLoadingSpinnerOn,
+  setSupportTypeToSwitchTo,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -514,6 +522,7 @@ const getComponentData = async ({
       outbreakResponses={props.outbreakResponses}
       setOutbreakResponses={props.setOutbreakResponses}
       supportTypeDefault={props.supportTypeDefault}
+      setSupportTypeToSwitchTo={setSupportTypeToSwitchTo}
     />
   );
 };
