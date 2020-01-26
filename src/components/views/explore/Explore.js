@@ -73,51 +73,56 @@ const Explore = ({
     };
   }, []);
 
-  React.useEffect(() => {
-    // Set isDark defaults.
-    return () => {
-      props.setIsDark(false);
-    };
-  }, []);
-
   // Get header data
   const headerData = getHeaderData(activeTab);
 
-  // When Explore is mounted, set to dark mode.
-  // When Explore is unmounted (we leave the page) return to light mode.
   React.useEffect(() => {
-    // props.setIsDark(true);
-    return () => {
-      // props.setIsDark(false);
-    };
-  }, []);
+    if (activeTab === "map") {
+      renderMapViewer({
+        isDark: mapViewerComponent === null || props.isDark,
+        component: mapViewerComponent,
+        setComponent: setMapViewerComponent,
+        entityRole: entityRole,
+        setEntityRole: setEntityRole,
+        flowTypeInfo: flowTypeInfo,
+        ghsaOnly: ghsaOnly,
+        setGhsaOnly: setGhsaOnly,
+        coreCapacities: coreCapacities,
+        setCoreCapacities: setCoreCapacities,
+        outbreakResponses: outbreakResponses,
+        setOutbreakResponses: setOutbreakResponses,
+        minYear: minYear,
+        setMinYear: setMinYear,
+        maxYear: maxYear,
+        setMaxYear: setMaxYear,
+        supportTypeDefault,
+        setLoadingSpinnerOn,
+        setSupportTypeToSwitchTo
+      });
+    } else {
+      renderOrgs({
+        component: orgComponent,
+        setComponent: setOrgComponent,
+        entityRole: entityRole,
+        setEntityRole: setEntityRole,
+        flowTypeInfo: flowTypeInfo,
+        ghsaOnly: ghsaOnly,
+        setGhsaOnly: setGhsaOnly,
+        coreCapacities: coreCapacities,
+        setCoreCapacities: setCoreCapacities,
+        outbreakResponses: outbreakResponses,
+        setOutbreakResponses: setOutbreakResponses,
+        minYear: minYear,
+        setMinYear: setMinYear,
+        maxYear: maxYear,
+        setMaxYear: setMaxYear,
+        setLoadingSpinnerOn
+      });
+    }
+  }, [activeTab, minYear, maxYear, coreCapacities, ghsaOnly, entityRole]);
 
   React.useEffect(() => {
-    renderMapViewer({
-      isDark: mapViewerComponent === null || props.isDark,
-      component: mapViewerComponent,
-      setComponent: setMapViewerComponent,
-      entityRole: entityRole,
-      setEntityRole: setEntityRole,
-      flowTypeInfo: flowTypeInfo,
-      ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly,
-      coreCapacities: coreCapacities,
-      setCoreCapacities: setCoreCapacities,
-      outbreakResponses: outbreakResponses,
-      setOutbreakResponses: setOutbreakResponses,
-      minYear: minYear,
-      setMinYear: setMinYear,
-      maxYear: maxYear,
-      setMaxYear: setMaxYear,
-      supportTypeDefault,
-      setLoadingSpinnerOn,
-      setSupportTypeToSwitchTo
-    });
-  }, [minYear, maxYear, coreCapacities, ghsaOnly, entityRole]);
-
-  React.useEffect(() => {
-    if (supportTypeToSwitchTo !== undefined) {
+    if (activeTab === "map" && supportTypeToSwitchTo !== undefined) {
       setSupportTypeToSwitchTo(undefined);
       renderMapViewer({
         isDark: props.isDark,
@@ -143,7 +148,7 @@ const Explore = ({
   }, [supportTypeToSwitchTo]);
 
   React.useEffect(() => {
-    if (mapViewerComponent !== null)
+    if (activeTab === "map" && mapViewerComponent !== null)
       renderMapViewer({
         isDark: props.isDark,
         component: mapViewerComponent,
@@ -210,7 +215,9 @@ const Explore = ({
             </div>
           </div>
         </div>
-        <div className={styles.content}>{mapViewerComponent}</div>
+        <div className={styles.content}>
+          {activeTab === "map" ? mapViewerComponent : orgComponent}
+        </div>
       </div>
     );
 };

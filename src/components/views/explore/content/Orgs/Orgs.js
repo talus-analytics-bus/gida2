@@ -380,7 +380,7 @@ const Orgs = ({
             {...{
               className: [styles.italic],
               label: "Select IHR core capacities",
-              openDirection: "down",
+              openDirection: "up",
               options: core_capacities,
               placeholder: "Select core capacities",
               onChange: v => setCoreCapacities(v.map(d => d.value)),
@@ -595,6 +595,8 @@ const getComponentData = async ({
   // Get query results.
   setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
+  setLoadingSpinnerOn(false);
+
   console.log("results - Orgs.js");
   console.log(results);
 
