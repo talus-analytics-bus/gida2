@@ -59,6 +59,31 @@ body,
       margin: 0;
       padding: 0;
       width: unset !important;
+      .row {
+        display: flex;
+        flex-flow: row;
+        justify-content: flex-end;
+        align-items: flex-end;
+
+        // bootstrap components
+        [class^="col"] {
+          display: flex;
+          flex-flow: column;
+          justify-content: flex-end;
+          &:first-child {
+            align-items: flex-start;
+            input {
+              margin-bottom: 10px; // search field
+            }
+          }
+          &:last-child {
+            align-items: flex-end;
+            ul {
+              margin: 0 0 10px; // pagination buttons
+            }
+          }
+        }
+      }
     }
     // Empty cells --> data NA
     td:empty::after {

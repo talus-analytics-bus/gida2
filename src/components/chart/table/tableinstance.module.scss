@@ -48,6 +48,12 @@
       display: none;
     }
   }
+  &.noNativePageSizeSelect {
+    [for="page-menu"],
+    [id="page-menu"] {
+      display: none;
+    }
+  }
   &.noNativeSearch {
     [for="search-field"],
     [id="search-field"] {

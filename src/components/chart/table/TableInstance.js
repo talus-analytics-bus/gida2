@@ -54,7 +54,10 @@ const TableInstance = ({
           noPaging: props.paging !== true,
           [styles.noNativePaging]: props.noNativePaging === true,
           [styles.noNativeSearch]: props.noNativePaging === true,
-          [styles.noNativeSorting]: props.noNativeSorting === true
+          [styles.noNativeSorting]: props.noNativeSorting === true,
+          [styles.noNativePageSizeSelect]:
+            props.noNativePageSizeSelect === true ||
+            props.noNativePageSizeSelect === undefined
         })}
       >
         <DataTable
