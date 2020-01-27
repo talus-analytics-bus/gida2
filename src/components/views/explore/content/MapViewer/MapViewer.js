@@ -110,6 +110,7 @@ const MapViewer = ({
   const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
 
   // Define map menu sections
+  const [badges, setBadges] = React.useState([]);
   const [curTab, setCurTab] = React.useState(
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
@@ -123,7 +124,9 @@ const MapViewer = ({
         options: core_capacities,
         placeholder: "Select core capacities",
         onChange: v => setCoreCapacities(v.map(d => d.value)),
-        curValues: coreCapacities
+        curValues: coreCapacities,
+        setBadges,
+        badges
       }}
     />
   );
@@ -187,6 +190,16 @@ const MapViewer = ({
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Filter by</div>
             {filters}
+            {badges.length > 0 && (
+              <div>
+                <div className={styles.sectionTitle}>Filters selected:</div>
+                <div>
+                  {badges.map(d => (
+                    <div className={styles.badge}>{d}</div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )

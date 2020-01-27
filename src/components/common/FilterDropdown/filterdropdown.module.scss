@@ -1,5 +1,11 @@
 @import "../../../assets/styles/colors.scss";
-
+.badge {
+  padding: 5px;
+  border-radius: $border-radius;
+  background-color: $funder-blue;
+  width: min-content;
+  white-space: nowrap;
+}
 .filterDropdown {
   * {
     opacity: 1;

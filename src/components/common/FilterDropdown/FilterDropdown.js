@@ -31,8 +31,23 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
     console.log("Valued changed");
     console.log(value);
     if (props.setBadges !== undefined) {
-      const curBadges = props.badges || [];
-      curBadges.push(<div>test!</div>);
+      const newBadgeArr = [];
+      newBadgeArr.values = [];
+      if (props.badges.length > 0) {
+        props.badges.forEach(d => {
+          newBadgeArr.push(d);
+          newBadgeArr.values.push(d.props.children);
+        });
+      }
+
+      const badgesToAdd = value.filter(
+        d => !newBadgeArr.values.includes(d.value)
+      );
+      badgesToAdd.forEach(d => {
+        newBadgeArr.push(<div className={styles.badge}>{d.value}</div>);
+        newBadgeArr.values.push(d.value);
+      });
+      props.setBadges(newBadgeArr);
     }
   }, [value]);
   return (
