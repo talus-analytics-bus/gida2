@@ -26,6 +26,15 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
       };
     }
   };
+
+  React.useEffect(() => {
+    console.log("Valued changed");
+    console.log(value);
+    if (props.setBadges !== undefined) {
+      const curBadges = props.badges || [];
+      curBadges.push(<div>test!</div>);
+    }
+  }, [value]);
   return (
     <div
       className={classNames(styles.filterDropdown, {
