@@ -36,15 +36,26 @@
         font-size: 14px;
         background-color: white;
         opacity: 0.95;
-        padding: 10px;
         border: 1px solid #ccc;
         width: 100%;
+
+        > div:first-child {
+          padding: 10px;
+        }
+
+        > div:nth-child(2) {
+          border-bottom: 1px solid #ccc;
+        }
 
         button.tabToggle {
           background-color: white;
           border-bottom: none;
           position: relative;
           bottom: -1px;
+          padding: 5px 15px;
+          &:first-child {
+            border-left: none;
+          }
           &:not(.selected) {
             background-color: transparent;
           }
@@ -61,7 +72,6 @@
           text-transform: uppercase;
           font-weight: 600;
           font-size: 1.2em;
-          margin-bottom: 10px;
         }
 
         .tabContent {
@@ -78,15 +88,19 @@
             display: flex;
             flex-flow: column;
             padding: 10px;
-            border: 1px solid #ccc;
+            margin: 0 10px;
             &:first-child {
               border-bottom: none;
+              margin-top: 0;
             }
             &:last-child {
-              // border-top: none;
+              // margin-bottom: 0;
             }
             &:not(:first-child):not(:last-child) {
               border-bottom: none;
+            }
+            &:not(:first-child) {
+              border-top: 1px solid #ccc;
             }
 
             .sectionTitle {

@@ -739,10 +739,6 @@ const Details = ({
             className={styles.entityRole}
           >
             <div>{entityRoleNoun} profile</div>
-            <EntityRoleToggle
-              entityRole={entityRole}
-              redirectUrlFunc={v => `/details/${id}/${v}`}
-            />
           </div>
         )}
         <div className={styles.countryBanner}>
@@ -757,8 +753,14 @@ const Details = ({
               )}
               <h1>{data.nodeData.name}</h1>
             </div>
+            {!ghsa && (
+              <EntityRoleToggle
+                entityRole={entityRole}
+                redirectUrlFunc={v => `/details/${id}/${v}`}
+              />
+            )}
           </div>
-          {pageType !== "ghsa" && (
+          {!ghsa && (
             <div className={styles.bannerRow}>
               <GhsaToggle
                 horizontal={true}

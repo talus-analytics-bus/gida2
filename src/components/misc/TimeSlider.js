@@ -33,7 +33,7 @@ const TimeSlider = ({
       })}
     >
       <div>{label || "Select time range"}</div>
-      <div>
+      <div className={classNames({ [styles.left]: props.side === "left" })}>
         <div>
           <Range
             disabled={props.disabled}

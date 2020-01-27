@@ -295,16 +295,18 @@ const MapViewer = ({
             style={{ display: showControls ? "" : "none" }}
             className={styles.menu}
           >
-            <TimeSlider
-              disabled={supportType === "jee"}
-              minYearDefault={Settings.startYear}
-              maxYearDefault={Settings.endYear}
-              onAfterChange={years => {
-                setMinYear(years[0]);
-                setMaxYear(years[1]);
-              }}
-            />
-            <div className={styles.tabSectionHeader}>View map by</div>
+            <div>
+              <TimeSlider
+                disabled={supportType === "jee"}
+                minYearDefault={Settings.startYear}
+                maxYearDefault={Settings.endYear}
+                onAfterChange={years => {
+                  setMinYear(years[0]);
+                  setMaxYear(years[1]);
+                }}
+              />
+              <div className={styles.tabSectionHeader}>View map by</div>
+            </div>
             <div className={styles.tabs}>
               {sections
                 .filter(s => s.show !== false)

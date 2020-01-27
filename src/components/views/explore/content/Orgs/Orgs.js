@@ -394,6 +394,7 @@ const Orgs = ({
           // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
         }
         <TimeSlider
+          side={"left"}
           hide={supportType === "jee"}
           minYearDefault={Settings.startYear}
           maxYearDefault={Settings.endYear}
