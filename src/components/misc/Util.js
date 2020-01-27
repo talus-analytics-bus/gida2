@@ -849,7 +849,6 @@ Util.money = (val, units = true, round = false) => {
   if (val === "unknown") return "Specific amount not reported";
   else if (val === 0) return "0" + (units ? " USD" : "");
   else if (round) {
-    console.log("ROUNDING");
     return `${Util.formatSIInteger(val)}${units ? " USD" : ""}`;
   } else return `${Util.formatSI(val)}${units ? " USD" : ""}`;
 };

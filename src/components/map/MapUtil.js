@@ -225,8 +225,6 @@ export const getMapColorScale = ({
         });
       })
       .filter(d => d !== null && d !== "unknown" && d >= 0);
-    console.log("values");
-    console.log(values);
 
     return colorScaleMaker({
       domain: [d3.min(values), d3.max(values)],

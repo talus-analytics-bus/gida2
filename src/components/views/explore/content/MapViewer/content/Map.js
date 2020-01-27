@@ -267,8 +267,6 @@ const Map = ({
         }
       }
     }
-    console.log("mapData");
-    console.log(mapData);
   } else {
     const jeeScoreData = [];
     // if place not in data...
@@ -328,8 +326,6 @@ const Map = ({
           simple: true
         })
       : undefined;
-  console.log("tooltipData");
-  console.log(tooltipData);
   return (
     <div className={classNames(styles.map, { [styles.dark]: isDark })}>
       <D3Map
@@ -350,7 +346,15 @@ const Map = ({
         }}
       />
       <div className={styles.legend}>
-        <Legend {...{ colorScale, supportType, flowType, isDark }} />
+        <Legend
+          {...{
+            colorScale,
+            supportType,
+            flowType,
+            isDark,
+            style: { borderBottom: "none" }
+          }}
+        />
       </div>
       <div className={styles.infoBox}>
         <InfoBox

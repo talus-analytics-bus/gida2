@@ -193,7 +193,8 @@ const Legend = ({
   toggle,
   title,
   className,
-  isDark
+  isDark,
+  ...props
 }) => {
   // Track whether legend is visible or not
   const [show, setShow] = React.useState(true);
@@ -207,7 +208,10 @@ const Legend = ({
       {toggle !== false && (
         <SlideToggle {...{ label: "legend", show, setShow }} />
       )}
-      <div className={classNames(styles.content, { [styles.show]: show })}>
+      <div
+        style={props.style}
+        className={classNames(styles.content, { [styles.show]: show })}
+      >
         <div>
           {title === undefined && getLegendTitle({ supportType, flowType })}
           {title !== undefined && title}

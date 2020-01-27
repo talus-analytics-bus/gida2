@@ -76,8 +76,6 @@ const InfoBox = ({
   };
 
   const headerStyle = getHeaderStyle({ infoBoxData, supportType });
-  console.log("headerStyle");
-  console.log(headerStyle);
   const headerColor = headerStyle.baseColor;
   const missingScore =
     (supportType === "jee" ||

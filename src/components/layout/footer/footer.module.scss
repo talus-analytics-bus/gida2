@@ -11,6 +11,7 @@ $spacing: 10px;
   justify-content: flex-end;
   width: 100%;
   border-top: 1px $grey solid;
+  min-height: 70px;
 
   padding: 10px;
 
@@ -32,7 +33,7 @@ $spacing: 10px;
 
   &.dark {
     background-color: #222;
-    border: none;
+    // border: none;
     a {
       display: none;
     }

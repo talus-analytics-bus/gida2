@@ -1,5 +1,7 @@
 @import "../../../../../assets/styles/colors.scss";
 .mapViewer {
+  height: 100%;
+
   .hide {
     display: none;
   }
@@ -22,6 +24,7 @@
   }
   .content {
     position: relative;
+    height: 100%;
     .menuContainer {
       display: flex;
       flex-flow: column;
@@ -37,6 +40,7 @@
         background-color: white;
         opacity: 0.95;
         border: 1px solid #ccc;
+        border-bottom: none;
         width: 100%;
 
         > div:first-child {
@@ -94,7 +98,7 @@
               margin-top: 0;
             }
             &:last-child {
-              // margin-bottom: 0;
+              // margin-bottom: 10px;
             }
             &:not(:first-child):not(:last-child) {
               border-bottom: none;
@@ -129,7 +133,6 @@
 
   // DARK MODE SETTINGS
   &.dark {
-    height: auto;
     .content {
       .menu {
         background-color: #222;

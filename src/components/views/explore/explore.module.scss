@@ -1,7 +1,8 @@
 @import "../../../assets/styles/colors.scss";
 
 .explore {
-  min-height: 90vh;
+  // min-height: 90vh;
+  padding-bottom: 0 !important;
   .header {
     @include header;
     justify-content: flex-start;
@@ -57,5 +58,8 @@
         }
       }
     }
+  }
+  .content {
+    height: 100%;
   }
 }
