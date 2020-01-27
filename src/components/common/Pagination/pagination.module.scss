@@ -5,11 +5,41 @@
   flex-flow: row;
 
   button {
-    // margin-left: auto;
-    // float: right;
+    border-width: 1px 1px 1px 0;
+    color: #337ab7;
+    padding: 6px 12px;
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+      border-left-width: 1px;
+    }
+    &:nth-last-child(2) {
+      border-radius: 0 4px 4px 0;
+      border-left-width: 0;
+    }
     &.selected {
-      background-color: $funder-blue;
+      border-color: #337ab7;
+      background-color: #337ab7;
       color: white;
+    }
+    &:hover {
+      color: #23527c;
+      background-color: #eee;
+      border-color: #ddd;
+    }
+    &:active {
+      border-style: solid;
+      outline: 5px auto -webkit-focus-ring-color;
+      outline-offset: -2px;
+    }
+    &[disabled] {
+      color: #333;
+      cursor: not-allowed;
+      &:hover {
+        background-color: unset;
+      }
+    }
+    span {
+      pointer-events: none;
     }
   }
 }

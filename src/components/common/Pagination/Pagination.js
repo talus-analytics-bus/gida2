@@ -9,6 +9,7 @@ import Util from "../../misc/Util.js";
 const Pagination = ({ curPage, setCurPage, nPages, ...props }) => {
   const prev = (
     <button
+      disabled={curPage === 1}
       onClick={() => {
         if (curPage > 1) setCurPage(curPage - 1);
       }}
@@ -18,6 +19,7 @@ const Pagination = ({ curPage, setCurPage, nPages, ...props }) => {
   );
   const next = (
     <button
+      disabled={curPage >= nPages}
       onClick={() => {
         if (curPage < nPages) setCurPage(curPage + 1);
       }}
@@ -27,6 +29,7 @@ const Pagination = ({ curPage, setCurPage, nPages, ...props }) => {
   );
   const end = (
     <button
+      disabled={curPage >= nPages}
       onClick={() => {
         if (curPage < nPages) setCurPage(nPages);
       }}
@@ -36,6 +39,7 @@ const Pagination = ({ curPage, setCurPage, nPages, ...props }) => {
   );
   const start = (
     <button
+      disabled={curPage === 1}
       onClick={() => {
         if (curPage > 1) setCurPage(1);
       }}
