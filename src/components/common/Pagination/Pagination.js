@@ -6,7 +6,13 @@ import Util from "../../misc/Util.js";
 /**
  * @method Pagination
  */
-const Pagination = ({ curPage, setCurPage, nPages, ...props }) => {
+const Pagination = ({
+  curPage,
+  setCurPage,
+  nPages,
+  showPageNum = false,
+  ...props
+}) => {
   const prev = (
     <button
       disabled={curPage === 1}
@@ -58,21 +64,25 @@ const Pagination = ({ curPage, setCurPage, nPages, ...props }) => {
   else
     return (
       <div className={styles.pagination}>
-        {start}
-        {prev}
-        {pageButtons.map(i => (
-          <button
-            onClick={() => setCurPage(i)}
-            className={classNames({ [styles.selected]: i === curPage })}
-          >
-            {Util.comma(i)}
-          </button>
-        ))}
-        {next}
-        {end}
-        <div>
-          Page {Util.comma(curPage)} of {Util.comma(nPages)}
+        <div className={styles.pageButtons}>
+          {start}
+          {prev}
+          {pageButtons.map(i => (
+            <button
+              onClick={() => setCurPage(i)}
+              className={classNames({ [styles.selected]: i === curPage })}
+            >
+              {Util.comma(i)}
+            </button>
+          ))}
+          {next}
+          {end}
         </div>
+        {showPageNum && (
+          <div className={styles.pageNum}>
+            Page {Util.comma(curPage)} of {Util.comma(nPages)}
+          </div>
+        )}
       </div>
     );
 };
