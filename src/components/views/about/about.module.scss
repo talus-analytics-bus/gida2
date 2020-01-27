@@ -57,4 +57,17 @@
       }
     }
   }
+  form {
+    display: none;
+  }
+  .success,
+  .error {
+    font-weight: bold;
+  }
+  .success {
+    color: $value-green;
+  }
+  .error {
+    color: $value-red;
+  }
 }

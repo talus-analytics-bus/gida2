@@ -353,7 +353,7 @@ const App = () => {
                 path="/about/submit"
                 render={d => {
                   setPage("about");
-                  return <Submit />;
+                  return <Submit {...{ setLoadingSpinnerOn }} />;
                 }}
               />
               <Route

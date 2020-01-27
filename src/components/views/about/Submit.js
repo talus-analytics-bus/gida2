@@ -6,25 +6,25 @@ import Util from "../../misc/Util.js";
 import axios from "axios";
 
 // JSX for about page.
-const Submit = () => {
+const Submit = ({ setLoadingSpinnerOn }) => {
   const [uploadBody, setUploadBody] = React.useState(undefined);
+  const [fileName, setFileName] = React.useState("No file selected");
+  const [status, setStatus] = React.useState(undefined);
 
   // Scroll to top of window after loading.
   React.useEffect(() => window.scrollTo(0, 0), []);
-  // React.useEffect(() => {
-  //   if (uploadBody !== undefined) {
-  //     const el = document.getElementById("upload");
-  //     if (el) el.click();
-  //   }
-  // }, [uploadBody]);
+  React.useEffect(() => {
+    if (uploadBody !== undefined) {
+      const el = document.getElementById("upload");
+      if (el) el.click();
+    }
+  }, [uploadBody]);
 
   const upload = () => {
     const els = document.getElementsByClassName("form-control");
-    console.log(els);
     const newUploadBody = [];
     for (let elIdx = 0; elIdx < els.length; elIdx++) {
       const el = els[elIdx];
-      console.log(el);
       newUploadBody.push(
         <div>
           <input name={el.name} id={el.name} value={el.value} />
@@ -125,8 +125,8 @@ const Submit = () => {
                 label={"Upload completed data reporting template"}
                 type={"secondary"}
                 callback={() => {
-                  // document.getElementById("input-report-upload").click();
-                  upload();
+                  const el = document.getElementById("file");
+                  if (el) el.click();
                 }}
               />
               <input
@@ -135,41 +135,105 @@ const Submit = () => {
                 class="input-report-upload"
                 type="file"
               />
-              <div class="file-name-text">No file selected</div>
+              <div class="file-name-text">{fileName}</div>
             </div>
             <Button
               label={"Submit data"}
               type={"primary"}
               callback={() => {
-                const el = document.getElementById("upload");
-                if (el) el.click();
-                // alert("Feature not yet implemented");
+                upload();
               }}
             />
+            {status}
             {
               <form
                 onSubmit={(e, i) => {
                   e.preventDefault();
+                  const el = document.getElementById("form");
                   var formData = new FormData();
-                  var imagefile = e.target.elements.file;
+                  var imagefile = el.elements.file;
+                  if (imagefile.files.length === 0) {
+                    alert("Please upload completed data reporting template.");
+                    return;
+                  }
                   formData.append("file", imagefile.files[0]);
                   const fields = ["first_name", "last_name", "org", "email"];
-                  fields.forEach(field =>
-                    formData.append(field, e.target.elements[field].value)
-                  );
+                  let stop = false;
+                  fields.forEach(field => {
+                    if (stop) return;
+                    if (el.elements[field].value === "") {
+                      alert("Please populate all fields before submitting.");
+                      stop = true;
+                      return;
+                    }
+                    formData.append(field, el.elements[field].value);
+                  });
+                  setLoadingSpinnerOn(true);
                   axios
-                    .post(e.target.action, formData, {
+                    .post(el.action, formData, {
                       headers: {
                         "Content-Type": "multipart/form-data"
                       }
                     })
-                    .then(d => console.log(d));
+                    .then(res => {
+                      setLoadingSpinnerOn(false);
+                      if (res.status === 200) {
+                        setStatus(
+                          <div className={styles.success}>
+                            Thank you. Your data was submitted and will be
+                            reviewed.
+                          </div>
+                        );
+                        // Remove all form values
+                        const inputEls = document.getElementsByTagName("input");
+                        for (let i = 0; i < inputEls.length; i++) {
+                          inputEls[i].value = "";
+                          setFileName("No file selected");
+                        }
+                      } else {
+                        setStatus(
+                          <div className={styles.error}>
+                            Error: Please try submitting again. If issues
+                            persist, please contact{" "}
+                            <a
+                              target="_blank"
+                              href="mailto:info@talusanalytics.com"
+                            >
+                              info@talusanalytics.com
+                            </a>{" "}
+                            for assistance.
+                          </div>
+                        );
+                      }
+                    });
                 }}
                 action={Util.API_URL + "/upload_file"}
                 method="POST"
                 enctype="multipart/form-data"
+                id={"form"}
               >
-                <input type="file" name="file" />
+                <input
+                  id="file"
+                  type="file"
+                  name="file"
+                  onChange={v => {
+                    if (
+                      v.target.files !== undefined &&
+                      v.target.files[0] !== undefined
+                    ) {
+                      const fn = v.target.files[0].name;
+                      if (!fn.includes(".xlsx") && !fn.includes(".csv")) {
+                        alert(
+                          "Please upload a file with extension .XLSX or .CSV"
+                        );
+                        v.target.value = "";
+                        setFileName("No file selected");
+                      } else {
+                        setFileName(v.target.files[0].name);
+                      }
+                    }
+                  }}
+                />
                 <input
                   type="hidden"
                   name="redirect"
