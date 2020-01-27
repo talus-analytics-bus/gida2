@@ -41,10 +41,10 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     ["description", "Project description"],
     ["data_sources", "Data source"],
     ["core_capacities", "Core capacities"],
-    ["year_range", "Transaction year range"],
     ["source", "Funder"],
     ["target", "Recipient"],
     ["assistance_type", "Support type"],
+    ["year_range", "Transaction year range"],
     [
       "committed_funds",
       `Amount committed (${Settings.startYear} - ${Settings.endYear})`
@@ -119,22 +119,6 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     setOutbreaks([]);
   };
 
-  // // Function to download data
-  // const exportFlowJsx = (
-  //   <form
-  //     action="http://localhost:5002/flows?focus_node_type=target&focus_node_ids=62&flow_type_ids=5&include_master_summary=false&return_child_flows=true&bundle_child_flows=true&for_export=true"
-  //     method="POST"
-  //   >
-  //     {[].map(d => (
-  //       <div>
-  //         <input name={d[0]} id={d[0]} value={d[1]} />
-  //       </div>
-  //     ))}
-  //     <div>
-  //       <button>Send request to POST</button>
-  //     </div>
-  //   </form>
-  // );
   const download = () => {
     getFlowQuery({
       curPage,
@@ -160,9 +144,6 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         .filter(d => d)
         .join("&");
 
-      setExportAction("http://localhost:5002/flows?" + queryString);
-      console.log("data");
-      console.log(data);
       const exportBodyRows = [];
       for (let key in data) {
         const d = data[key];
@@ -179,9 +160,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         );
       }
       const exportBody = exportBodyRows;
+      setExportAction("http://localhost:5002/flows?" + queryString);
       setExportBody(exportBody);
-      console.log(params);
-      console.log("Action set!");
     });
   };
 
@@ -189,10 +169,19 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     <form action={exportAction} method="POST">
       {exportBody}
       <div>
-        <button>Send request to POST</button>
+        <button id={"download"}>Send request to POST</button>
       </div>
     </form>
   );
+
+  // When download data button is pressed, and form data are updated,
+  // perform the POST request.
+  React.useEffect(() => {
+    if (exportAction !== undefined && exportBody !== undefined) {
+      const el = document.getElementById("download");
+      if (el) el.click();
+    }
+  }, [exportAction, exportBody]);
 
   // Return JSX
   return (
