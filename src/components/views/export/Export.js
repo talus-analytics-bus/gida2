@@ -160,7 +160,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         );
       }
       const exportBody = exportBodyRows;
-      setExportAction("http://localhost:5002/flows?" + queryString);
+      setExportAction(Util.API_URL + "/flows?" + queryString);
       setExportBody(exportBody);
     });
   };

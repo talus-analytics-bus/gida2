@@ -2,11 +2,38 @@ import React from "react";
 import styles from "./about.module.scss";
 import classNames from "classnames";
 import Button from "../../common/Button/Button.js";
+import Util from "../../misc/Util.js";
+import axios from "axios";
 
 // JSX for about page.
 const Submit = () => {
-  // Scroll to top of window afer loading.
+  const [uploadBody, setUploadBody] = React.useState(undefined);
+
+  // Scroll to top of window after loading.
   React.useEffect(() => window.scrollTo(0, 0), []);
+  // React.useEffect(() => {
+  //   if (uploadBody !== undefined) {
+  //     const el = document.getElementById("upload");
+  //     if (el) el.click();
+  //   }
+  // }, [uploadBody]);
+
+  const upload = () => {
+    const els = document.getElementsByClassName("form-control");
+    console.log(els);
+    const newUploadBody = [];
+    for (let elIdx = 0; elIdx < els.length; elIdx++) {
+      const el = els[elIdx];
+      console.log(el);
+      newUploadBody.push(
+        <div>
+          <input name={el.name} id={el.name} value={el.value} />
+        </div>
+      );
+    }
+    setUploadBody(newUploadBody);
+  };
+
   return (
     <div className={classNames(styles.about, "pageContainer")}>
       <div className={styles.header}>
@@ -63,25 +90,31 @@ const Submit = () => {
                 <tr>
                   <td>First name</td>
                   <td>
-                    <input class="first-name-input form-control" />
+                    <input
+                      name="first_name"
+                      class="first-name-input form-control"
+                    />
                   </td>
                 </tr>
                 <tr>
                   <td>Last name</td>
                   <td>
-                    <input class="last-name-input form-control" />
+                    <input
+                      name="last_name"
+                      class="last-name-input form-control"
+                    />
                   </td>
                 </tr>
                 <tr>
                   <td>Organization</td>
                   <td>
-                    <input class="org-input form-control" />
+                    <input name="org" class="org-input form-control" />
                   </td>
                 </tr>
                 <tr>
                   <td>Email address</td>
                   <td>
-                    <input class="email-input form-control" />
+                    <input name="email" class="email-input form-control" />
                   </td>
                 </tr>
               </tbody>
@@ -92,7 +125,8 @@ const Submit = () => {
                 label={"Upload completed data reporting template"}
                 type={"secondary"}
                 callback={() => {
-                  document.getElementById("input-report-upload").click();
+                  // document.getElementById("input-report-upload").click();
+                  upload();
                 }}
               />
               <input
@@ -107,9 +141,46 @@ const Submit = () => {
               label={"Submit data"}
               type={"primary"}
               callback={() => {
-                alert("Feature not yet implemented");
+                const el = document.getElementById("upload");
+                if (el) el.click();
+                // alert("Feature not yet implemented");
               }}
             />
+            {
+              <form
+                onSubmit={(e, i) => {
+                  e.preventDefault();
+                  var formData = new FormData();
+                  var imagefile = e.target.elements.file;
+                  formData.append("file", imagefile.files[0]);
+                  const fields = ["first_name", "last_name", "org", "email"];
+                  fields.forEach(field =>
+                    formData.append(field, e.target.elements[field].value)
+                  );
+                  axios
+                    .post(e.target.action, formData, {
+                      headers: {
+                        "Content-Type": "multipart/form-data"
+                      }
+                    })
+                    .then(d => console.log(d));
+                }}
+                action={Util.API_URL + "/upload_file"}
+                method="POST"
+                enctype="multipart/form-data"
+              >
+                <input type="file" name="file" />
+                <input
+                  type="hidden"
+                  name="redirect"
+                  value="/about/background"
+                />
+                {uploadBody}
+                <div>
+                  <input type="submit" id={"upload"} />
+                </div>
+              </form>
+            }
           </div>
         </div>
       </div>
