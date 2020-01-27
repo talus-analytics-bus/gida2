@@ -15,10 +15,11 @@ const DataTable = ({
   const [curPage, setCurPage] = React.useState(1);
   const [nPages, setNPages] = React.useState(undefined);
   const [content, setContent] = React.useState(undefined);
+  const [curPageSize, setCurPageSize] = React.useState(pageSize);
   React.useEffect(() => {
     if (getTableData === undefined) return;
     setLoadingSpinnerOn(true, false, "DataTable");
-    getTableData(curPage, pageSize).then(d => {
+    getTableData(curPage, curPageSize).then(d => {
       setContent(
         <TableInstance
           {...{
@@ -41,7 +42,7 @@ const DataTable = ({
   else
     return (
       <div>
-        {<Pagination {...{ curPage, setCurPage, nPages }} />}
+        {<Pagination {...{ curPage, setCurPage, setCurPageSize, nPages }} />}
         {content}
       </div>
     );

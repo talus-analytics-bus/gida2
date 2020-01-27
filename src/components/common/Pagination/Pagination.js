@@ -9,6 +9,7 @@ import Util from "../../misc/Util.js";
 const Pagination = ({
   curPage,
   setCurPage,
+  setCurPageSize,
   nPages,
   showPageNum = false,
   ...props
@@ -64,6 +65,20 @@ const Pagination = ({
   else
     return (
       <div className={styles.pagination}>
+        {
+          // <div className={styles.pageSizeControls}>
+          //   <select
+          //     onChange={e => {
+          //       setCurPage(1);
+          //       setCurPageSize(e.target.value);
+          //     }}
+          //   >
+          //     <option value={5}>5</option>
+          //     <option value={10}>10</option>
+          //     <option value={20}>20</option>
+          //   </select>
+          // </div>
+        }
         <div className={styles.pageButtons}>
           {start}
           {prev}

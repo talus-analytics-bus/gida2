@@ -14,7 +14,9 @@ import TableInstance from "../../chart/table/TableInstance.js";
 const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
   // Set n records
   props.setNRecords(data.flows.paging.n_records);
-
+  const [curPageSize, setCurPageSize] = React.useState(5);
+  console.log("curPageSize");
+  console.log(curPageSize);
   React.useEffect(() => setCurPage(1), [
     props.coreCapacities,
     props.funders,
@@ -129,6 +131,7 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
               {...{
                 curPage,
                 setCurPage,
+                setCurPageSize,
                 nPages: data.flows.paging.n_pages
               }}
             />
