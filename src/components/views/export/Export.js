@@ -26,6 +26,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const [exportTable, setExportTable] = React.useState(null);
   const [nRecords, setNRecords] = React.useState(0);
   const [curPage, setCurPage] = React.useState(1);
+  const [exportAction, setExportAction] = React.useState(undefined);
+  const [exportBody, setExportBody] = React.useState(undefined);
   console.log("curPage - Export.js");
   console.log(curPage);
   const showClear =
@@ -117,28 +119,80 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     setOutbreaks([]);
   };
 
-  // Function to download data
-  const download = async () => {
-    const queries = {
-      flows: getFlowQuery({
-        curPage,
-        funders,
-        recipients,
-        outbreaks,
-        coreCapacities,
-        supportType,
-        forExport: true,
-        ...props
-      })
-    };
+  // // Function to download data
+  // const exportFlowJsx = (
+  //   <form
+  //     action="http://localhost:5002/flows?focus_node_type=target&focus_node_ids=62&flow_type_ids=5&include_master_summary=false&return_child_flows=true&bundle_child_flows=true&for_export=true"
+  //     method="POST"
+  //   >
+  //     {[].map(d => (
+  //       <div>
+  //         <input name={d[0]} id={d[0]} value={d[1]} />
+  //       </div>
+  //     ))}
+  //     <div>
+  //       <button>Send request to POST</button>
+  //     </div>
+  //   </form>
+  // );
+  const download = () => {
+    getFlowQuery({
+      curPage,
+      funders,
+      recipients,
+      outbreaks,
+      coreCapacities,
+      supportType,
+      forExport: true,
+      paramsOnly: true,
+      ...props
+    }).then(paramsTmp => {
+      const params = paramsTmp.params;
+      const data = paramsTmp.data;
+      data.cols = cols.filter(d => exportCols.includes(d[0]));
 
-    // Get results in parallel
-    setLoadingSpinnerOn(true);
-    const results = await Util.getQueryResults(queries);
-    setLoadingSpinnerOn(false);
-    console.log("results - download function");
-    console.log(results);
+      const queryString = Object.keys(params)
+        .map(key => {
+          if (params[key] !== null && params[key] !== undefined) {
+            return key + "=" + params[key];
+          } else return undefined;
+        })
+        .filter(d => d)
+        .join("&");
+
+      setExportAction("http://localhost:5002/flows?" + queryString);
+      console.log("data");
+      console.log(data);
+      const exportBodyRows = [];
+      for (let key in data) {
+        const d = data[key];
+        exportBodyRows.push(
+          <div>
+            <input
+              {...{
+                name: key,
+                id: key,
+                value: JSON.stringify(d)
+              }}
+            />
+          </div>
+        );
+      }
+      const exportBody = exportBodyRows;
+      setExportBody(exportBody);
+      console.log(params);
+      console.log("Action set!");
+    });
   };
+
+  const exportFlowJsx = (
+    <form action={exportAction} method="POST">
+      {exportBody}
+      <div>
+        <button>Send request to POST</button>
+      </div>
+    </form>
+  );
 
   // Return JSX
   return (
@@ -257,6 +311,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                       type={"primary"}
                     />
                   </div>
+                  {exportFlowJsx}
                 </div>
               </div>
             </div>

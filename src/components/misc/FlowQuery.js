@@ -22,7 +22,8 @@ const FlowQuery = async function({
   include_general_amounts,
   page,
   page_size,
-  for_export = false
+  for_export = false,
+  ...props
 }) {
   // Define URL parameters //
   const params = {
@@ -40,8 +41,10 @@ const FlowQuery = async function({
     include_general_amounts: include_general_amounts,
     for_export: for_export
   };
-  if (page) params.page = page;
-  if (page_size) params.page_size = page_size;
+  if (params.for_export !== true) {
+    if (page) params.page = page;
+    if (page_size) params.page_size = page_size;
+  }
 
   // Send start and end dates if they are provided, otherwise do not send.
   end_date = typeof end_date !== "undefined" ? end_date : start_date;
@@ -51,10 +54,20 @@ const FlowQuery = async function({
   // Define POST body data
   const data = filters;
 
+  if (props.paramsOnly === true) return { params: params, data: data };
+
   // Define URL params
   const config = {
     params: params
   };
+
+  // // If for export, set content type
+  // if (params.for_export) {
+  //   config.headers = {
+  //     "Content-Type":
+  //       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  //   };
+  // }
 
   // Send request
   // Await response

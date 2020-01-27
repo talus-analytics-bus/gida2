@@ -190,6 +190,13 @@ export const renderExportTable = ({
 };
 
 export const getFlowQuery = ({ curPage, ...props }) => {
+  return FlowQuery({
+    ...getFlowQueryParams({ curPage, ...props }),
+    flow_type_ids: [5]
+  });
+};
+
+export const getFlowQueryParams = ({ curPage, ...props }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
   const baseQueryParams = {
     focus_node_ids: null,
@@ -200,6 +207,7 @@ export const getFlowQuery = ({ curPage, ...props }) => {
     page_size: 10,
     page: curPage,
     for_export: props.forExport === true,
+    paramsOnly: props.paramsOnly === true,
 
     // Add filters as appropriate.
     filters: { place_filters: [], flow_info_filters: [] }
@@ -230,11 +238,7 @@ export const getFlowQuery = ({ curPage, ...props }) => {
   });
 
   // Set base query params for FlowQuery
-  const baseFlowQueryParams = JSON.parse(JSON.stringify(baseQueryParams));
-  return FlowQuery({
-    ...baseFlowQueryParams,
-    flow_type_ids: [5]
-  });
+  return baseQueryParams;
 };
 
 /**
