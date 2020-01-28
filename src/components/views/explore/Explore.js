@@ -148,6 +148,8 @@ const Explore = ({
   };
 
   React.useEffect(() => {
+    if (fundType === "event" && coreCapacities.length > 0) return;
+    if (fundType !== "event" && outbreakResponses.length > 0) return;
     if (activeTab === "map") {
       renderMapViewer({
         ...mapProps,
