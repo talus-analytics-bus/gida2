@@ -162,7 +162,7 @@ const MapViewer = ({
     </div>
   );
 
-  const filterSelections = fundType !== "event" ? coreCapacities : events; // TODO
+  const filterSelections = fundType !== "event" ? coreCapacities : events;
 
   const sections = [
     {
@@ -224,7 +224,7 @@ const MapViewer = ({
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Filter by</div>
             {filters}
-            {coreCapacities.length > 0 && (
+            {filterSelections.length > 0 && (
               <div>
                 <div
                   className={classNames(
@@ -235,7 +235,7 @@ const MapViewer = ({
                   Filters selected:
                 </div>
                 <div>
-                  {
+                  {fundType !== "event" && (
                     <FilterSelections
                       {...{
                         optionList: core_capacities,
@@ -244,7 +244,17 @@ const MapViewer = ({
                         type: "coreCapacities"
                       }}
                     />
-                  }
+                  )}
+                  {fundType === "event" && (
+                    <FilterSelections
+                      {...{
+                        optionList: data.outbreaks,
+                        selections: events,
+                        setSelections: setEvents,
+                        type: "events"
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             )}

@@ -62,6 +62,11 @@ const Explore = ({
   const [fundType, setFundType] = React.useState("false"); // default "all"
 
   React.useEffect(() => {
+    if (fundType === "event") setCoreCapacities([]);
+    else setOutbreakResponses([]);
+  }, [fundType]);
+
+  React.useEffect(() => {
     // Set isDark defaults.
     props.setIsDark(activeTab === "map");
 
