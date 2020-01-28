@@ -10,6 +10,8 @@
 button.ghsaButton {
   color: #777;
   background-color: white !important;
+  &.dark {
+  }
   &:hover,
   &:focus {
     text-decoration: none;

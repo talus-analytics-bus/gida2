@@ -37,30 +37,19 @@ const Nav = ({ page, ...props }) => {
           <img src={logo} className={styles.logo} alt="GIDA - Tracker" />
         </Link>
         <div className={styles.links}>
-          <GhsaButton active={page === "ghsa"} />
-          <div>
-            <Link
-              className={
-                page && page.startsWith("explore") ? styles.active : ""
-              }
-              onClick={() => toggleMenu("explore")}
-            >
-              Explore
-              <span className={"caret"} />
-            </Link>
-            <Menu
-              {...{
-                name: "explore",
-                links: [
-                  <Link to="/explore/map">Map</Link>,
-                  <Link to="/explore/org">Organizations</Link>
-                ],
-                openMenu,
-                setOpenMenu,
-                isDark: props.isDark
-              }}
-            />
-          </div>
+          <GhsaButton {...{ active: page === "ghsa", isDark: props.isDark }} />
+          <Link
+            className={page === "explore-map" ? styles.active : ""}
+            to="/explore/map"
+          >
+            Map
+          </Link>
+          <Link
+            className={page === "explore-org" ? styles.active : ""}
+            to="/explore/org"
+          >
+            Orgs
+          </Link>
           <Link
             className={page === "analysis" ? styles.active : ""}
             to="/analysis"

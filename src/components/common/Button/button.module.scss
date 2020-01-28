@@ -11,6 +11,14 @@
     margin-right: 10px;
   }
 
+  &.dark {
+    background-color: #222 !important;
+    &:hover,
+    &:active {
+      background-color: #333 !important;
+    }
+  }
+
   &.close {
     cursor: pointer;
     background-color: #e6e6e6 !important;

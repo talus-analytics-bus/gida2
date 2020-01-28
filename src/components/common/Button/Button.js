@@ -20,7 +20,8 @@ const Button = ({ label, ...props }) => {
         [styles.secondary]: props.type === "secondary",
         [styles.primary]: props.type === "primary",
         [styles.close]: props.type === "close",
-        [styles.closeBadge]: props.type === "close-badge"
+        [styles.closeBadge]: props.type === "close-badge",
+        [styles.dark]: props.isDark
       })}
     >
       {props.type === "close" && <img src={close} />}

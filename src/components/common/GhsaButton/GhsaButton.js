@@ -13,6 +13,7 @@ const GhsaButton = ({ ...props }) => {
     <Button
       {...{
         className: styles.ghsaButton,
+        isDark: props.isDark,
         label: props.active ? (
           <span className={styles.active}>GHSA</span>
         ) : (
