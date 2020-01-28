@@ -56,8 +56,6 @@ const MapViewer = ({
 
   // Track whether to show main menu
   const [showControls, setShowControls] = React.useState(true);
-  console.log("fundType");
-  console.log(fundType);
 
   React.useEffect(() => {
     if (supportTypeDefault !== undefined && supportTypeDefault !== null)
@@ -271,7 +269,12 @@ const MapViewer = ({
             <RadioToggle
               className={[styles.italic]}
               label={""}
-              callback={setSupportType}
+              callback={v => {
+                if (v === "jee" && fundType === "event") {
+                  setFundType("false");
+                  setSupportType(v);
+                } else setSupportType(v);
+              }}
               curVal={supportType}
               choices={[
                 {

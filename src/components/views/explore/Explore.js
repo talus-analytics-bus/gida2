@@ -62,8 +62,10 @@ const Explore = ({
   const [fundType, setFundType] = React.useState("false"); // default "all"
 
   React.useEffect(() => {
-    if (fundType === "event") setCoreCapacities([]);
-    else setOutbreakResponses([]);
+    if (fundType === "event" && coreCapacities.length > 0)
+      setCoreCapacities([]);
+    else if (fundType !== "event" && outbreakResponses.length > 0)
+      setOutbreakResponses([]);
   }, [fundType]);
 
   React.useEffect(() => {
