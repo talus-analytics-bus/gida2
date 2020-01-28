@@ -14,6 +14,7 @@ import ScoreQuery from "../../../../misc/ScoreQuery.js";
 import Tab from "../../../../misc/Tab.js";
 import { core_capacities } from "../../../../misc/Data.js";
 import SlideToggle from "../../../../common/SlideToggle/SlideToggle.js";
+import Button from "../../../../common/Button/Button.js";
 
 // Local content components
 import Map from "./content/Map.js";
@@ -114,6 +115,58 @@ const MapViewer = ({
   const [curTab, setCurTab] = React.useState(
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
+
+  // Add a badge
+  const updateBadges = (valuesTmp, type) => {
+    // convert values to object array if not already
+    const values = [];
+    valuesTmp.forEach(d => {
+      if (typeof d !== "object") {
+        values.push({
+          value: d,
+          label: d,
+          type: type
+        });
+      } else values.push(d);
+    });
+
+    // get list of values that already have badges of this type
+    const curBadgesOfType = badges.filter(d => {
+      return d.type === type;
+    });
+    const curBadgeValsOfType = curBadgesOfType.map(d => d.props.value);
+
+    // check which badges need to be added
+    const toAdd = values.filter(d => {
+      return !curBadgeValsOfType.includes(d.value);
+    });
+
+    // check which badges need to be removed
+    const toRmv = curBadgeValsOfType.filter(d => {
+      return !values.includes(d);
+    });
+
+    // get set of updated badges and set them
+    const updatedBadges = [];
+    curBadgesOfType.forEach(d => {
+      if (!toRmv.includes(d.value)) updateBadges.push(d);
+    });
+    toAdd.forEach(d => {
+      updatedBadges.push(
+        <div value={d.value} className={styles.badge}>
+          {Util.getShortName(d.label)}
+          <Button
+            callback={() => {
+              // remove value
+              console.log("Removing " + d.value + " from selections.");
+            }}
+            type={"close-badge"}
+          />
+        </div>
+      );
+    });
+    setBadges(updatedBadges);
+  };
   const filters = (
     <FilterDropdown
       {...{
@@ -125,6 +178,7 @@ const MapViewer = ({
         placeholder: "Select core capacities",
         onChange: v => setCoreCapacities(v.map(d => d.value)),
         curValues: coreCapacities,
+        updateBadges,
         setBadges,
         badges
       }}

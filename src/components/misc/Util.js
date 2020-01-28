@@ -5,7 +5,7 @@ const Util = {};
 
 Util.getShortName = s => {
   if (s === "General IHR Implementation") return s;
-  const maxLen = 50;
+  const maxLen = 20;
   if (s.length > maxLen) {
     const shortened = s
       .split(" ")

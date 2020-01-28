@@ -31,7 +31,7 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
   };
 
   // Add or remove badges whenever value is changed, as needed.
-  const updateBadges = value => {
+  const updateBadgesOld = value => {
     if (props.setBadges !== undefined) {
       // Manage badge array
       let newBadgeArr = [];
@@ -107,6 +107,8 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
     }
   };
 
+  const updateBadges = value => {};
+
   return (
     <div
       className={classNames(styles.filterDropdown, {
@@ -127,7 +129,8 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
         options={options}
         onChange={v => {
           onChange(v);
-          updateBadges(v);
+          // updateBadges(v);
+          if (props.updateBadges) props.updateBadges(v);
         }}
         getDropdownButtonLabel={({ placeholderButtonLabel, value }) => {
           if (value === undefined || value.length === 0)
