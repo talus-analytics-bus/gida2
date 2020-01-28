@@ -127,6 +127,12 @@
               .subSection {
                 display: flex;
                 flex-flow: column;
+                &[disabled] {
+                  color: gray !important;
+                  * {
+                    color: gray !important;
+                  }
+                }
                 &:not(:last-child) {
                   padding-right: 10px;
                   margin-right: 10px;

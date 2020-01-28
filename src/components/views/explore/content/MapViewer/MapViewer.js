@@ -126,10 +126,6 @@ const MapViewer = ({
   const [curTab, setCurTab] = React.useState(
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
-  console.log("events");
-  console.log(events);
-  console.log("setEvents");
-  console.log(setEvents);
   const filters = (
     <div>
       {fundType === "event" && (
@@ -138,10 +134,7 @@ const MapViewer = ({
             label: "Event response",
             options: data.outbreaks,
             placeholder: "Select event response",
-            onChange: v => {
-              console.log(v.map(d => d.value));
-              setEvents(v.map(d => d.value));
-            },
+            onChange: v => setEvents(v.map(d => d.value)),
             curValues: events,
             className: [styles.italic],
             isDark: isDark,
@@ -170,6 +163,10 @@ const MapViewer = ({
 
   const filterSelections = fundType !== "event" ? coreCapacities : events;
 
+  const disableRefinements = !["true", "false", "event", "capacity"].includes(
+    fundType
+  );
+
   const sections = [
     {
       slug: "funding",
@@ -186,12 +183,13 @@ const MapViewer = ({
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Refine map</div>
             <div className={styles.subSections}>
-              <div className={styles.subSection}>
+              <div disabled={disableRefinements} className={styles.subSection}>
                 <RadioToggle
                   className={[styles.italic]}
                   label={"Select support type"}
                   callback={setSupportType}
-                  curVal={supportType}
+                  curVal={disableRefinements ? "" : supportType}
+                  disabled={disableRefinements}
                   choices={[
                     {
                       name: "Financial support",
@@ -206,13 +204,13 @@ const MapViewer = ({
                   ]}
                 />
               </div>
-              <div className={styles.subSection}>
+              <div disabled={disableRefinements} className={styles.subSection}>
                 <RadioToggle
                   label={"Select funding type"}
-                  disabled={!metricHasTransactionType}
+                  disabled={disableRefinements}
                   className={[styles.italic]}
                   callback={setTransactionType}
-                  curVal={transactionType}
+                  curVal={disableRefinements ? "" : transactionType}
                   choices={[
                     {
                       name: "Committed",

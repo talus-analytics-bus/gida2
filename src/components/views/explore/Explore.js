@@ -170,17 +170,6 @@ const Explore = ({
     entityRole
   ]);
 
-  // React.useEffect(() => {
-  //   if (activeTab === "map" && supportTypeToSwitchTo !== undefined) {
-  //     renderMapViewer({
-  //       ...mapProps,
-  //       isDark: props.isDark,
-  //       supportTypeDefault: supportTypeToSwitchTo
-  //     });
-  //     setSupportTypeToSwitchTo(undefined);
-  //   }
-  // }, [supportTypeToSwitchTo]);
-
   React.useEffect(() => {
     if (activeTab === "map" && mapViewerComponent !== null)
       renderMapViewer({
