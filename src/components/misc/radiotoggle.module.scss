@@ -1,6 +1,9 @@
 @import "../../assets/styles/colors.scss";
 
 .radioToggle {
+  select {
+    max-width: 90%;
+  }
   > div {
     font-weight: bold;
     margin-bottom: 5px;

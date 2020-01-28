@@ -23,55 +23,80 @@ const RadioToggle = ({
    * @return {[type]}   [description]
    */
   const onChange = e => {
-    const input = e.target.closest("label").querySelector("input");
-    callback(input.value);
+    if (props.selectpicker) {
+      console.log("e");
+      console.log(e);
+      callback(e.target.value);
+    } else {
+      const input = e.target.closest("label").querySelector("input");
+      callback(input.value);
+    }
   };
 
   if (onClick === undefined) onClick = (a, b) => b;
 
-  return (
-    <div
-      className={classNames(styles.radioToggle, {
-        [styles.disabled]: props.disabled === true,
-        [styles.horizontal]: props.horizontal === true
-      })}
-    >
-      <div className={classNames(className !== undefined ? className : "")}>
-        {label}
+  if (props.selectpicker) {
+    return (
+      <div
+        className={classNames(styles.radioToggle, {
+          [styles.disabled]: props.disabled === true,
+          [styles.horizontal]: props.horizontal === true
+        })}
+      >
+        <div className={classNames(className !== undefined ? className : "")}>
+          {label}
+        </div>
+        <select onChange={callback ? onChange : undefined}>
+          {choices.map(c => (
+            <option value={c.value}>{c.name}</option>
+          ))}
+        </select>
       </div>
-      <form>
-        {choices.map(c => (
-          <span>
-            {onClick(
-              c.value,
-              <label
-                disabled={
-                  props.disabled === true || c.disabled === true
-                    ? "disabled"
-                    : ""
-                }
-                onClick={callback ? onChange : undefined}
-                for={c.name}
-              >
-                <input
+    );
+  } else
+    return (
+      <div
+        className={classNames(styles.radioToggle, {
+          [styles.disabled]: props.disabled === true,
+          [styles.horizontal]: props.horizontal === true
+        })}
+      >
+        <div className={classNames(className !== undefined ? className : "")}>
+          {label}
+        </div>
+        <form>
+          {choices.map(c => (
+            <span>
+              {onClick(
+                c.value,
+                <label
                   disabled={
                     props.disabled === true || c.disabled === true
                       ? "disabled"
                       : ""
                   }
-                  type="radio"
-                  name={c.name}
-                  value={c.value}
-                  checked={curVal.toString() === c.value.toString()}
-                />
-                {c.name}
-              </label>
-            )}
-          </span>
-        ))}
-      </form>
-    </div>
-  );
+                  onClick={callback ? onChange : undefined}
+                  for={c.name}
+                >
+                  <input
+                    disabled={
+                      props.disabled === true || c.disabled === true
+                        ? "disabled"
+                        : ""
+                    }
+                    type="radio"
+                    name={c.name}
+                    value={c.value}
+                    checked={curVal.toString() === c.value.toString()}
+                  />
+                  {c.name}
+                </label>
+              )}
+            </span>
+          ))}
+        </form>
+      </div>
+    );
 };
 
 export default RadioToggle;

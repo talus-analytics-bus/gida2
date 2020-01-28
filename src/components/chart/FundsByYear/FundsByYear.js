@@ -110,14 +110,17 @@ const FundsByYear = ({
       {!unknownDataOnly && !noFinancialData && (
         <div className={styles.content}>
           <div className={styles.totals}>
-            <TotalByFlowType flowType="disbursed_funds" data={data} />
-            <TotalByFlowType flowType="committed_funds" data={data} />
+            <GhsaToggle
+              {...{
+                label: "Show funding type",
+                setGhsaOnly: setFundType,
+                ghsaOnly: fundType,
+                selectpicker: true
+              }}
+            />
+            <TotalByFlowType flowType="disbursed_funds" data={chartData} />
+            <TotalByFlowType flowType="committed_funds" data={chartData} />
             {linkToEntityTable}
-            {
-              <GhsaToggle
-                {...{ setGhsaOnly: setFundType, ghsaOnly: fundType }}
-              />
-            }
           </div>
           <div className={styles.areaLine}>
             <AreaLine

@@ -33,6 +33,7 @@ const GhsaToggle = ({ ghsaOnly, setGhsaOnly, ...props }) => {
   // Set disable criteria
   if (props.disabled)
     choices.forEach(d => (d.disabled = props.disabled[d.value] || false));
+
   return (
     <RadioToggle
       label={props.label !== undefined ? props.label : "Click to show"}
@@ -40,6 +41,7 @@ const GhsaToggle = ({ ghsaOnly, setGhsaOnly, ...props }) => {
       curVal={ghsaOnly}
       callback={setGhsaOnly}
       horizontal={props.horizontal}
+      selectpicker={props.selectpicker}
     />
   );
 };
