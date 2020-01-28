@@ -36,9 +36,9 @@
         flex-flow: row;
         justify-content: space-between;
         align-items: center;
-        &:last-child {
-          align-items: flex-end;
-        }
+        // &:last-child {
+        //   align-items: flex-end;
+        // }
       }
 
       .countryName {

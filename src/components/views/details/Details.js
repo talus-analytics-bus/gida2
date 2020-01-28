@@ -23,7 +23,6 @@ import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
 import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
-import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
 import Tab from "../../misc/Tab.js";
@@ -45,13 +44,6 @@ const Details = ({
 }) => {
   console.log("data");
   console.log(data);
-  // make key changes to the page if the id is special:
-  // "ghsa" - Same as normal but include both a top funder and recipient table,
-  //          and include only flows that are ghsa. Name of page is
-  //          "Global Health Security Agenda (GHSA)" and entityRole is always
-  //          funder.
-  // "outbreak-response" - TBD
-  // Get page type from id
   let pageType;
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
@@ -174,6 +166,7 @@ const Details = ({
         noFinancialData={noFinancialData}
         flowTypeInfo={flowTypeInfo}
         ghsaOnly={ghsaOnly}
+        params={props.focusSummaryQueryParams}
       />
     ),
     toggleFlowType: false,
@@ -759,15 +752,6 @@ const Details = ({
               />
             )}
           </div>
-          {!ghsa && (
-            <div className={styles.bannerRow}>
-              <GhsaToggle
-                horizontal={true}
-                ghsaOnly={ghsaOnly}
-                setGhsaOnly={setGhsaOnly}
-              />
-            </div>
-          )}
         </div>
       </div>
       <div>
@@ -1004,22 +988,9 @@ const getComponentData = async ({
     null
   ]);
 
-  // if (true) {
-  //   flowQueryParams.filters.place_filters = [[nodeType, id]];
-  //   flowQueryParams.focus_node_ids = null;
-  // }
-
   // Define queries for typical details page.
   const now = new Date(`${Settings.endYear}-12-31`);
   const then = new Date(`${Settings.startYear}-01-01`);
-  // const now = new Date();
-  // now.setMonth(11);
-  // now.setDate(31);
-  //
-  // const then = new Date();
-  // then.setFullYear(now.getFullYear() - 1);
-  // then.setMonth(0);
-  // then.setDate(1);
   const queries = {
     // Information about the entity
     nodeData: NodeQuery({ node_id: id }),
@@ -1044,37 +1015,29 @@ const getComponentData = async ({
       ...flowQueryParams,
       start_date: Util.formatDatetimeApi(then),
       end_date: Util.formatDatetimeApi(now)
-      // filters: { parent_flow_info_filters: [["outbreak_id:not", null]] }
     })
   };
 
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
+  let focusSummaryQueryParams;
   if (id === "ghsa") {
-    // queries["flowBundlesFocus"] = FlowBundleFocusQuery({
-    //   ...baseQueryParams,
-    //   focus_node_type: entityRole === "recipient" ? "target" : "source",
-    //   focus_node_ids: null
-    // });
     queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
-    queries["focusSummary"] = FlowBundleFocusQuery({
+    focusSummaryQueryParams = {
       ...baseQueryParams,
       focus_node_type: entityRole === "recipient" ? "target" : "source",
       focus_node_ids: null
-    });
+    };
+    queries["focusSummary"] = FlowBundleFocusQuery(focusSummaryQueryParams);
   } else {
-    // // Flow bundles (either focus or general depending on the page type)
-    // queries["flowBundles"] = FlowBundleFocusQuery({
-    //   ...baseQueryParams,
-    //   by_neighbor: true
-    // });
-    queries["focusSummary"] = FlowBundleFocusQuery({
+    focusSummaryQueryParams = {
       ...baseQueryParams,
       by_neighbor: false,
       summaries: {
         flow_info_summary: ["core_capacities", "core_elements", "year"]
       }
-    });
+    };
+    queries["focusSummary"] = FlowBundleFocusQuery(focusSummaryQueryParams);
   }
 
   // Get query results.
@@ -1094,6 +1057,7 @@ const getComponentData = async ({
       responseStart={then}
       responseEnd={now}
       setLoadingSpinnerOn={setLoadingSpinnerOn}
+      focusSummaryQueryParams={baseQueryParams}
     />
   );
 };

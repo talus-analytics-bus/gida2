@@ -49,7 +49,8 @@ const AreaLine = ({ data, entityRole, ...props }) => {
     });
     setChart(chartNew);
     setLegend(chartNew.legend);
-  }, [props.id, props.ghsaOnly, entityRole]);
+    ReactTooltip.rebuild();
+  }, [props.id, props.ghsaOnly, entityRole, data]);
 
   return (
     <div className={styles.areaLine}>

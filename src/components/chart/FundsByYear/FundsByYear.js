@@ -9,9 +9,11 @@ import AreaLine from "../AreaLine/AreaLine.js";
 import { Settings } from "../../../App.js";
 import tableIcon from "../../../assets/images/table-funds.svg";
 import Button from "../../common/Button/Button.js";
+import GhsaToggle from "../../misc/GhsaToggle.js";
+import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
+import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 
 // Data functions
-
 // FC
 const FundsByYear = ({
   id,
@@ -20,25 +22,29 @@ const FundsByYear = ({
   flowTypeInfo,
   unknownDataOnly,
   noFinancialData,
+  params,
   ...props
 }) => {
   // Get area line data
-  const areaLineData = [];
-  for (let i = Settings.startYear; i <= Settings.endYear; i++) {
-    const yearDatum = {
-      attribute: i.toString()
-    };
+  const getAreaLineData = data => {
+    const areaLineData = [];
+    for (let i = Settings.startYear; i <= Settings.endYear; i++) {
+      const yearDatum = {
+        attribute: i.toString()
+      };
 
-    flowTypeInfo.forEach(ft => {
-      if (data[ft.name] === undefined) yearDatum[ft.name] = "n/a";
-      else {
-        const yearDatumVal = data[ft.name].summaries.year[i.toString()];
-        if (yearDatumVal !== undefined) yearDatum[ft.name] = yearDatumVal;
-        else yearDatum[ft.name] = "n/a";
-      }
-    });
-    areaLineData.push(yearDatum);
-  }
+      flowTypeInfo.forEach(ft => {
+        if (data[ft.name] === undefined) yearDatum[ft.name] = "n/a";
+        else {
+          const yearDatumVal = data[ft.name].summaries.year[i.toString()];
+          if (yearDatumVal !== undefined) yearDatum[ft.name] = yearDatumVal;
+          else yearDatum[ft.name] = "n/a";
+        }
+      });
+      areaLineData.push(yearDatum);
+    }
+    return areaLineData;
+  };
 
   // Get link to entitytable page
   const linkToEntityTable = (
@@ -49,14 +55,62 @@ const FundsByYear = ({
       linkTo={`/table/${id}/${entityRole}`}
     />
   );
-  // const linkToEntityTable = (
-  //   <Link to={`/table/${id}/${entityRole}`}>
-  //     <button>
-  //       <img src={tableIcon} />
-  //       View table of funds
-  //     </button>
-  //   </Link>
-  // );
+
+  // If data type toggle changes, update the data (but not initially, to avoid
+  // unnecessary API calls).
+  const [fundType, setFundType] = React.useState("false"); // all
+  const [chartData, setChartData] = React.useState(data);
+  const [areaLineData, setAreaLineData] = React.useState(
+    getAreaLineData(chartData)
+  );
+  const [initialized, setInitialized] = React.useState(false);
+  React.useEffect(() => {
+    if (!initialized) {
+      setInitialized(true);
+      return;
+    } else {
+      console.log("Fund type changed to: " + fundType);
+      console.log(params);
+
+      // Get new data
+      const queryFunc =
+        id === "ghsa" ? FlowBundleGeneralQuery : FlowBundleFocusQuery;
+
+      // update params as needed
+      const updatedParams = {
+        filters: { parent_flow_info_filters: [] },
+        summaries: { flow_info_summary: ["year"] }
+      };
+      if (fundType === "true") {
+        updatedParams.filters.parent_flow_info_filters.push([
+          "ghsa_funding",
+          "True"
+        ]);
+      } else if (fundType === "event") {
+        updatedParams.filters.parent_flow_info_filters.push([
+          "outbreak_id:not",
+          null
+        ]);
+      } else if (fundType === "capacity") {
+        updatedParams.filters.parent_flow_info_filters.push([
+          "response_or_capacity:not",
+          "response"
+        ]);
+      }
+      const query = queryFunc({
+        ...params,
+        ...updatedParams
+      });
+      query.then(d => {
+        setChartData(d.master_summary.flow_types);
+        setAreaLineData(getAreaLineData(d.master_summary.flow_types));
+      });
+    }
+  }, [fundType]);
+
+  console.log("areaLineData");
+  console.log(areaLineData);
+
   return (
     <div className={styles.fundsByYear}>
       {!unknownDataOnly && !noFinancialData && (
@@ -65,6 +119,11 @@ const FundsByYear = ({
             <TotalByFlowType flowType="disbursed_funds" data={data} />
             <TotalByFlowType flowType="committed_funds" data={data} />
             {linkToEntityTable}
+            {
+              <GhsaToggle
+                {...{ setGhsaOnly: setFundType, ghsaOnly: fundType }}
+              />
+            }
           </div>
           <div className={styles.areaLine}>
             <AreaLine
