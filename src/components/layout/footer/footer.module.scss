@@ -34,9 +34,9 @@ $spacing: 10px;
   &.dark {
     background-color: #222;
     // border: none;
-    a {
-      display: none;
-    }
+    // a {
+    //   display: none;
+    // }
   }
 
   a:first-child:not(:last-child) img {

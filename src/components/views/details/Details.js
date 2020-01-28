@@ -361,27 +361,27 @@ const Details = ({
           slug: "ihr",
           header: "IHR funding",
           content: [
-            {
-              header: <h2>Funding by core element</h2>,
-              text: (
-                <p>
-                  Percentages shown for each core element based on total
-                  funding.
-                </p>
-              ),
-              content: (
-                <Donuts
-                  data={data.focusSummary.master_summary}
-                  flowType={curFlowType}
-                  ghsaOnly={ghsaOnly}
-                  attributeType={"core_elements"}
-                  nodeType={nodeType}
-                  id={id}
-                />
-              ),
-              toggleFlowType: true,
-              hide: noData || unknownDataOnly || noFinancialData
-            },
+            // {
+            //   header: <h2>Funding by core element</h2>,
+            //   text: (
+            //     <p>
+            //       Percentages shown for each core element based on total
+            //       funding.
+            //     </p>
+            //   ),
+            //   content: (
+            //     <Donuts
+            //       data={data.focusSummary.master_summary}
+            //       flowType={curFlowType}
+            //       ghsaOnly={ghsaOnly}
+            //       attributeType={"core_elements"}
+            //       nodeType={nodeType}
+            //       id={id}
+            //     />
+            //   ),
+            //   toggleFlowType: true,
+            //   hide: noData || unknownDataOnly || noFinancialData
+            // },
             {
               header: <h2>Funding by core capacity</h2>,
               text: (

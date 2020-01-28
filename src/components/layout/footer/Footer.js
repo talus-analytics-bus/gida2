@@ -2,18 +2,20 @@ import React from "react";
 import classNames from "classnames";
 import styles from "./footer.module.scss";
 import talus from "../../../assets/images/logo-talus.png";
+import talusDark from "../../../assets/images/logo-talus-dark.png";
 import gu from "../../../assets/images/logo-georgetown.png";
+import guDark from "../../../assets/images/logo-georgetown-dark.png";
 import Util from "../../misc/Util.js";
 
 const Footer = ({ ...props }) => {
   const images = [
     {
-      imgSrc: gu,
+      imgSrc: props.isDark ? guDark : gu,
       url: "https://ghss.georgetown.edu/",
       alt: "Georgetown University Center for Global Health Science and Security"
     },
     {
-      imgSrc: talus,
+      imgSrc: props.isDark ? talusDark : talus,
       url: "http://talusanalytics.com/",
       alt: "Talus Analytics, LLC"
     }
