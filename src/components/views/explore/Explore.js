@@ -64,6 +64,30 @@ const Explore = ({
   React.useEffect(() => {
     // Set isDark defaults.
     props.setIsDark(activeTab === "map");
+
+    // // Get rid of fund type default
+    setFundType("false");
+    setCoreCapacities([]);
+    setOutbreakResponses([]);
+
+    setMapViewerComponent(null);
+    setOrgComponent(null);
+    if (activeTab === "map") {
+      renderMapViewer({
+        ...mapProps,
+        coreCapacities: [],
+        events: [],
+        isDark: true,
+        fundType: "false"
+      });
+    } else {
+      renderOrgs({
+        ...orgProps,
+        coreCapacities: [],
+        events: [],
+        ghsaOnly: "false"
+      });
+    }
   }, [activeTab]);
 
   React.useEffect(() => {
@@ -76,73 +100,65 @@ const Explore = ({
   // Get header data
   const headerData = getHeaderData(activeTab);
 
+  const mapProps = {
+    component: mapViewerComponent,
+    setComponent: setMapViewerComponent,
+    entityRole: entityRole,
+    setEntityRole: setEntityRole,
+    flowTypeInfo: flowTypeInfo,
+    fundType: fundType,
+    setFundType: setFundType,
+    coreCapacities: coreCapacities,
+    setCoreCapacities: setCoreCapacities,
+    events: outbreakResponses,
+    setEvents: setOutbreakResponses,
+    minYear: minYear,
+    setMinYear: setMinYear,
+    maxYear: maxYear,
+    setMaxYear: setMaxYear,
+    supportTypeDefault,
+    setLoadingSpinnerOn,
+    setSupportTypeToSwitchTo
+  };
+
+  const orgProps = {
+    component: orgComponent,
+    setComponent: setOrgComponent,
+    entityRole: entityRole,
+    setEntityRole: setEntityRole,
+    flowTypeInfo: flowTypeInfo,
+    ghsaOnly: fundType,
+    setGhsaOnly: setFundType,
+    coreCapacities: coreCapacities,
+    setCoreCapacities: setCoreCapacities,
+    events: outbreakResponses,
+    setEvents: setOutbreakResponses,
+    minYear: minYear,
+    setMinYear: setMinYear,
+    maxYear: maxYear,
+    setMaxYear: setMaxYear,
+    setLoadingSpinnerOn
+  };
+
   React.useEffect(() => {
     if (activeTab === "map") {
       renderMapViewer({
         isDark: mapViewerComponent === null || props.isDark,
-        component: mapViewerComponent,
-        setComponent: setMapViewerComponent,
-        entityRole: entityRole,
-        setEntityRole: setEntityRole,
-        flowTypeInfo: flowTypeInfo,
-        fundType: fundType,
-        setFundType: setFundType,
-        coreCapacities: coreCapacities,
-        setCoreCapacities: setCoreCapacities,
-        events: outbreakResponses,
-        setEvents: setOutbreakResponses,
-        minYear: minYear,
-        setMinYear: setMinYear,
-        maxYear: maxYear,
-        setMaxYear: setMaxYear,
-        supportTypeDefault,
-        setLoadingSpinnerOn,
-        setSupportTypeToSwitchTo
+        ...mapProps
       });
     } else {
       renderOrgs({
-        component: orgComponent,
-        setComponent: setOrgComponent,
-        entityRole: entityRole,
-        setEntityRole: setEntityRole,
-        flowTypeInfo: flowTypeInfo,
-        fundType: fundType,
-        setFundType: setFundType,
-        coreCapacities: coreCapacities,
-        setCoreCapacities: setCoreCapacities,
-        outbreakResponses: outbreakResponses,
-        setOutbreakResponses: setOutbreakResponses,
-        minYear: minYear,
-        setMinYear: setMinYear,
-        maxYear: maxYear,
-        setMaxYear: setMaxYear,
-        setLoadingSpinnerOn
+        ...orgProps
       });
     }
-  }, [activeTab, minYear, maxYear, coreCapacities, fundType, entityRole]);
+  }, [minYear, maxYear, coreCapacities, fundType, entityRole]);
 
   React.useEffect(() => {
     if (activeTab === "map" && supportTypeToSwitchTo !== undefined) {
       setSupportTypeToSwitchTo(undefined);
       renderMapViewer({
         isDark: props.isDark,
-        component: mapViewerComponent,
-        setComponent: setMapViewerComponent,
-        entityRole: entityRole,
-        setEntityRole: setEntityRole,
-        flowTypeInfo: flowTypeInfo,
-        fundType: fundType,
-        setFundType: setFundType,
-        coreCapacities: coreCapacities,
-        setCoreCapacities: setCoreCapacities,
-        outbreakResponses: outbreakResponses,
-        setOutbreakResponses: setOutbreakResponses,
-        minYear: minYear,
-        setMinYear: setMinYear,
-        maxYear: maxYear,
-        setMaxYear: setMaxYear,
-        supportTypeDefault: supportTypeToSwitchTo,
-        setLoadingSpinnerOn
+        ...mapProps
       });
     }
   }, [supportTypeToSwitchTo]);
@@ -151,23 +167,7 @@ const Explore = ({
     if (activeTab === "map" && mapViewerComponent !== null)
       renderMapViewer({
         isDark: props.isDark,
-        component: mapViewerComponent,
-        setComponent: setMapViewerComponent,
-        entityRole: entityRole,
-        setEntityRole: setEntityRole,
-        flowTypeInfo: flowTypeInfo,
-        fundType: fundType,
-        setFundType: setFundType,
-        coreCapacities: coreCapacities,
-        setCoreCapacities: setCoreCapacities,
-        outbreakResponses: outbreakResponses,
-        setOutbreakResponses: setOutbreakResponses,
-        minYear: minYear,
-        setMinYear: setMinYear,
-        maxYear: maxYear,
-        setMaxYear: setMaxYear,
-        supportTypeDefault,
-        setLoadingSpinnerOn
+        ...mapProps
       });
   }, [props.isDark]);
 

@@ -385,7 +385,8 @@ const remountComponent = ({
   props,
   id,
   entityRole,
-  fundType
+  fundType,
+  events
 }) => {
   const remount =
     component.props.minYear !== minYear ||
@@ -394,7 +395,7 @@ const remountComponent = ({
     component.props.fundType !== fundType ||
     component.props.coreCapacities.toString() !==
       props.coreCapacities.toString() ||
-    component.props.events.toString() !== props.events.toString();
+    events.toString() !== events.toString();
   return remount;
 };
 
@@ -411,6 +412,7 @@ export const renderMapViewer = ({
   supportTypeDefault,
   setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
+  events,
   ...props
 }) => {
   // Set IDs
@@ -428,7 +430,8 @@ export const renderMapViewer = ({
         entityRole: entityRole,
         fundType: fundType,
         minYear: props.minYear,
-        maxYear: props.maxYear
+        maxYear: props.maxYear,
+        events
       }))
   ) {
     getComponentData({

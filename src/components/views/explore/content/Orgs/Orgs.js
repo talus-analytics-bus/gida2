@@ -53,8 +53,6 @@ const Orgs = ({
 
   const [tooltipData, setTooltipData] = React.useState(undefined);
   const [revealed, setRevealed] = React.useState(false);
-  console.log("tooltipData - orgs.js");
-  console.log(tooltipData);
   const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
   const [hoveredEntity, setHoveredEntity] = React.useState(undefined);
 
@@ -311,23 +309,8 @@ const Orgs = ({
     );
   });
 
-  // React.useEffect(() => {
-  //   if (hoveredEntity !== undefined) {
-  //     console.log("data");
-  //     console.log(data);
-  //     setTooltipData([]);
-  //   } else if (tooltipData !== undefined) {
-  //     setTooltipData(undefined);
-  //   }
-  // }, [hoveredEntity]);
-
-  console.log("Rebuilding tooltips");
   ReactTooltip.rebuild();
 
-  // TODO:
-  // map
-  // map controls (zoom, reset)
-  // legend (maybe part of map?)
   return (
     <div className={styles.orgs}>
       <div className={styles.content}>
@@ -597,9 +580,6 @@ const getComponentData = async ({
   setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
   setLoadingSpinnerOn(false);
-
-  console.log("results - Orgs.js");
-  console.log(results);
 
   // Feed results and other data to the details component and mount it.
   setComponent(
