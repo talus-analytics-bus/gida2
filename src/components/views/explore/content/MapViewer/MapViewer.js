@@ -192,7 +192,14 @@ const MapViewer = ({
             {filters}
             {badges.length > 0 && (
               <div>
-                <div className={styles.sectionTitle}>Filters selected:</div>
+                <div
+                  className={classNames(
+                    styles.sectionTitle,
+                    styles.filterBadges
+                  )}
+                >
+                  Filters selected:
+                </div>
                 <div>
                   {badges.map(d => (
                     <div className={styles.badge}>{d}</div>

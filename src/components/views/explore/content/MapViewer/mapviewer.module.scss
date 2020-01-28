@@ -110,6 +110,15 @@
             .sectionTitle {
               font-weight: 600;
               margin-bottom: 10px;
+              &.filterBadges {
+                margin-top: 10px;
+                + div {
+                  // max-height: 100px;
+                  // overflow: scroll;
+                  display: flex;
+                  flex-flow: row wrap;
+                }
+              }
             }
 
             .subSections {

@@ -1,10 +1,19 @@
 @import "../../../assets/styles/colors.scss";
 .badge {
-  padding: 5px;
+  padding: 5px 10px;
   border-radius: $border-radius;
-  background-color: $funder-blue;
-  width: min-content;
-  white-space: nowrap;
+  background-color: #5482b0;
+  color: white;
+  width: max-content;
+
+  // white-space: nowrap;
+  margin: 0 5px 5px 0;
+  cursor: default;
+
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
 }
 .filterDropdown {
   * {

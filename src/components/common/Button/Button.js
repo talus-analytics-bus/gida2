@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./button.module.scss";
 import close from "../../../assets/images/close.png";
+import plusWhite from "../../../assets/images/plus-white.svg";
 
 /**
  * Generic radio toggle
@@ -18,10 +19,12 @@ const Button = ({ label, ...props }) => {
       className={classNames(...classes, styles.button, {
         [styles.secondary]: props.type === "secondary",
         [styles.primary]: props.type === "primary",
-        [styles.close]: props.type === "close"
+        [styles.close]: props.type === "close",
+        [styles.closeBadge]: props.type === "close-badge"
       })}
     >
       {props.type === "close" && <img src={close} />}
+      {props.type === "close-badge" && <img src={plusWhite} />}
       {props.image && <img src={props.image} />}
       {label}
     </button>

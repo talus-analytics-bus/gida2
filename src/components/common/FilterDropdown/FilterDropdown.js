@@ -3,6 +3,7 @@ import classNames from "classnames";
 import styles from "./filterdropdown.module.scss";
 import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes";
 import Util from "../../misc/Util.js";
+import Button from "../../common/Button/Button.js";
 
 /**
  * @method FilterDropdown
@@ -29,11 +30,8 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
     }
   };
 
+  // Add or remove badges whenever value is changed, as needed.
   const updateBadges = value => {
-    console.log("updateBadges");
-    console.log("value");
-    console.log(value);
-
     if (props.setBadges !== undefined) {
       // Manage badge array
       let newBadgeArr = [];
@@ -65,7 +63,8 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
         badgesToAdd.forEach(d => {
           newBadgeArr.push(
             <div value={d.value} className={styles.badge}>
-              {d.value}
+              {d.label}
+              <Button type={"close-badge"} />
             </div>
           );
           newBadgeArrValues.push(d.value);
