@@ -47,9 +47,17 @@ const MapViewer = ({
   const [transactionType, setTransactionType] = React.useState("disbursed");
 
   // Track support type selected for the map
+
   const [supportType, setSupportType] = React.useState(
     supportTypeDefault || "funds"
   );
+
+  // Override support type if it doesn't make sense
+  if (
+    (fundType !== "" && supportType === "jee") ||
+    (fundType !== "capacity_for_needs_met" && supportType === "needs_met")
+  )
+    setSupportType("funds");
 
   // Track main map title
   const [mapTitle, setMapTitle] = React.useState("funds");
@@ -270,10 +278,8 @@ const MapViewer = ({
               className={[styles.italic]}
               label={""}
               callback={v => {
-                if (v === "jee" && fundType === "event") {
-                  setFundType("false");
-                  setSupportType(v);
-                } else setSupportType(v);
+                setFundType("");
+                setSupportTypeToSwitchTo(v);
               }}
               curVal={supportType}
               choices={[
@@ -307,8 +313,13 @@ const MapViewer = ({
             <RadioToggle
               label={""}
               callback={v => {
-                if (v === "needs_met" && entityRole !== "recipient") {
-                  setEntityRole("recipient");
+                if (
+                  v === "needs_met" &&
+                  (entityRole !== "recipient" || fundType !== "capacity")
+                ) {
+                  if (entityRole !== "recipient") setEntityRole("recipient");
+                  if (fundType !== "capacity_for_needs_met")
+                    setFundType("capacity_for_needs_met");
                   setSupportTypeToSwitchTo(v);
                 } else setSupportType(v);
               }}
@@ -559,7 +570,7 @@ const getComponentData = async ({
       "outbreak_id:not",
       null
     ]);
-  } else if (fundType === "capacity") {
+  } else if (fundType === "capacity" || fundType === "capacity_for_needs_met") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "response_or_capacity:not",
       "response"

@@ -148,13 +148,14 @@ const Explore = ({
   };
 
   React.useEffect(() => {
-    console.log("outbreakResponses");
-    console.log(outbreakResponses);
     if (activeTab === "map") {
       renderMapViewer({
+        ...mapProps,
         isDark: mapViewerComponent === null || props.isDark,
-        ...mapProps
+        supportTypeDefault: supportTypeToSwitchTo
       });
+      if (supportTypeToSwitchTo !== undefined)
+        setSupportTypeToSwitchTo(undefined);
     } else {
       renderOrgs({
         ...orgProps
@@ -169,15 +170,16 @@ const Explore = ({
     entityRole
   ]);
 
-  React.useEffect(() => {
-    if (activeTab === "map" && supportTypeToSwitchTo !== undefined) {
-      setSupportTypeToSwitchTo(undefined);
-      renderMapViewer({
-        isDark: props.isDark,
-        ...mapProps
-      });
-    }
-  }, [supportTypeToSwitchTo]);
+  // React.useEffect(() => {
+  //   if (activeTab === "map" && supportTypeToSwitchTo !== undefined) {
+  //     renderMapViewer({
+  //       ...mapProps,
+  //       isDark: props.isDark,
+  //       supportTypeDefault: supportTypeToSwitchTo
+  //     });
+  //     setSupportTypeToSwitchTo(undefined);
+  //   }
+  // }, [supportTypeToSwitchTo]);
 
   React.useEffect(() => {
     if (activeTab === "map" && mapViewerComponent !== null)

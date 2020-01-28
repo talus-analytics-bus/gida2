@@ -18,6 +18,13 @@
     display: flex;
     flex-flow: row;
     cursor: pointer;
+    &[disabled] {
+      pointer-events: none;
+      input,
+      & {
+        color: gray !important;
+      }
+    }
   }
   input {
     margin-right: 5px;

@@ -44,9 +44,21 @@ const RadioToggle = ({
           <span>
             {onClick(
               c.value,
-              <label onClick={callback ? onChange : undefined} for={c.name}>
+              <label
+                disabled={
+                  props.disabled === true || c.disabled === true
+                    ? "disabled"
+                    : ""
+                }
+                onClick={callback ? onChange : undefined}
+                for={c.name}
+              >
                 <input
-                  disabled={props.disabled === true ? "disabled" : ""}
+                  disabled={
+                    props.disabled === true || c.disabled === true
+                      ? "disabled"
+                      : ""
+                  }
                   type="radio"
                   name={c.name}
                   value={c.value}
