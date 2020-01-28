@@ -57,14 +57,39 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
         d => !curValuesList.includes(d)
       );
 
+      console.log("newBadgeArrValues");
+      console.log(newBadgeArrValues);
+      console.log("curValuesList");
+      console.log(curValuesList);
+      console.log("props.badges");
+      console.log(props.badges);
+
+      console.log("badgesToRmv");
+      console.log(badgesToRmv);
+
       if (badgesToAdd.length + badgesToRmv.length === 0) {
         return;
       } else {
         badgesToAdd.forEach(d => {
           newBadgeArr.push(
             <div value={d.value} className={styles.badge}>
-              {d.label}
-              <Button type={"close-badge"} />
+              {Util.getShortName(d.label)}
+              <Button
+                callback={() => {
+                  // remove value
+                  console.log("Removing " + d.value + " from selections.");
+                  value = value.filter(v => {
+                    if (typeof v === "object") {
+                      return v.value !== d.value;
+                    } else return v !== d.value;
+                  });
+                  updateBadges(value);
+
+                  // trigger onChange of filter dropdown
+                  onChange(value);
+                }}
+                type={"close-badge"}
+              />
             </div>
           );
           newBadgeArrValues.push(d.value);

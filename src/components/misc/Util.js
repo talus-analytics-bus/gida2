@@ -3,6 +3,23 @@ import * as d3 from "d3/dist/d3.min";
 // Utility functions and data.
 const Util = {};
 
+Util.getShortName = s => {
+  if (s === "General IHR Implementation") return s;
+  const maxLen = 50;
+  if (s.length > maxLen) {
+    const shortened = s
+      .split(" ")
+      .slice(0, 4)
+      .join(" ");
+    if (/[^a-z]$/.test(shortened.toLowerCase())) {
+      return `${shortened.slice(0, shortened.length - 1)}...`;
+    }
+    return `${shortened}...`;
+  } else {
+    return s;
+  }
+};
+
 Util.createCookie = (name, value, days) => {
   if (days) {
     var date = new Date();

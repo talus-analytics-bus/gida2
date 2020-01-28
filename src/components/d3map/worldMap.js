@@ -23,12 +23,10 @@ class WorldMap extends Chart {
     // Load world JSON data
     axios.get(`${Util.API_URL}/world_json`).then(d => {
       this.world = d.data;
-      console.log("\nGetting topo...");
       this.topoworld = topojson.feature(
         this.world,
         this.world.objects.countries
       );
-      console.log("Got topo.");
 
       // Define transform that support map navigation
       this.transform = {
@@ -42,12 +40,10 @@ class WorldMap extends Chart {
 
       // Artificially hide Antarctica
       // TODO at dataset level
-      console.log("\nGetting features...");
       this.countryData = this.topoworld.features.filter(
         // d => d.properties.NAME === "France"
         d => d.properties.NAME !== "Antarctica"
       );
-      console.log("Got features.");
 
       // Set data variable
       this.data = undefined;
@@ -81,7 +77,6 @@ class WorldMap extends Chart {
       .selectAll("." + styles.country)
       .classed(styles.hatched, false);
 
-    console.log("init = " + init);
     const duration = init ? 0 : 500;
     countryGs
       .transition()
@@ -144,9 +139,7 @@ class WorldMap extends Chart {
 
     this.addOverlay();
 
-    console.log("\nAdding countries...");
     this.addCountries();
-    console.log("Added countries.");
 
     if (this.mapSelector != ".funding-recipient-map") {
       this.addButtons();
@@ -176,8 +169,6 @@ class WorldMap extends Chart {
       .enter()
       .append("g")
       .on("mouseover", function(d) {
-        console.log("d");
-        console.log(d);
         // Highlight
         d3.select(this).raise();
         if (chart.activeCountry) chart.activeCountry.raise();
