@@ -25,14 +25,16 @@ const MapViewer = ({
   data,
   entityRole,
   setEntityRole,
-  ghsaOnly,
-  setGhsaOnly,
+  fundType,
+  setFundType,
   minYear,
   setMaxYear,
   setMinYear,
   maxYear,
   coreCapacities,
   setCoreCapacities,
+  events,
+  setEvents,
   flowTypeInfo,
   isDark,
   supportTypeDefault,
@@ -53,6 +55,8 @@ const MapViewer = ({
 
   // Track whether to show main menu
   const [showControls, setShowControls] = React.useState(true);
+  console.log("fundType");
+  console.log(fundType);
 
   React.useEffect(() => {
     if (supportTypeDefault !== undefined && supportTypeDefault !== null)
@@ -135,7 +139,7 @@ const MapViewer = ({
     />
   );
 
-  const filterSelections = ghsaOnly !== "event" ? coreCapacities : []; // TODO
+  const filterSelections = fundType !== "event" ? coreCapacities : []; // TODO
 
   const sections = [
     {
@@ -146,8 +150,8 @@ const MapViewer = ({
           <div className={styles.section}>
             <GhsaToggle
               label={""}
-              ghsaOnly={ghsaOnly}
-              setGhsaOnly={setGhsaOnly}
+              ghsaOnly={fundType}
+              setGhsaOnly={setFundType}
             />
           </div>
           <div className={styles.section}>
@@ -316,7 +320,7 @@ const MapViewer = ({
           minYear={minYear}
           maxYear={maxYear}
           coreCapacities={coreCapacities}
-          ghsaOnly={ghsaOnly}
+          ghsaOnly={fundType}
           isDark={isDark}
           setLoadingSpinnerOn={setLoadingSpinnerOn}
         />
@@ -381,15 +385,16 @@ const remountComponent = ({
   props,
   id,
   entityRole,
-  ghsaOnly
+  fundType
 }) => {
   const remount =
     component.props.minYear !== minYear ||
     component.props.maxYear !== maxYear ||
     component.props.entityRole !== entityRole ||
-    component.props.ghsaOnly !== ghsaOnly ||
+    component.props.fundType !== fundType ||
     component.props.coreCapacities.toString() !==
-      props.coreCapacities.toString();
+      props.coreCapacities.toString() ||
+    component.props.events.toString() !== props.events.toString();
   return remount;
 };
 
@@ -401,8 +406,8 @@ export const renderMapViewer = ({
   entityRole,
   setEntityRole,
   flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
+  fundType,
+  setFundType,
   supportTypeDefault,
   setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
@@ -421,7 +426,7 @@ export const renderMapViewer = ({
         props: props,
         id: id,
         entityRole: entityRole,
-        ghsaOnly: ghsaOnly,
+        fundType: fundType,
         minYear: props.minYear,
         maxYear: props.maxYear
       }))
@@ -430,8 +435,8 @@ export const renderMapViewer = ({
       setComponent: setComponent,
       id: id,
       flowTypeInfo: flowTypeInfo,
-      ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly,
+      fundType: fundType,
+      setFundType: setFundType,
       entityRole: entityRole,
       setEntityRole: setEntityRole,
       supportTypeDefault,
@@ -464,8 +469,8 @@ const getComponentData = async ({
   entityRole,
   setEntityRole,
   flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
+  fundType,
+  setFundType,
   setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
   ...props
@@ -504,17 +509,17 @@ const getComponentData = async ({
   }
 
   // If GHSA page, then filter by GHSA projects.
-  if (ghsaOnly === "true") {
+  if (fundType === "true") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
       "True"
     ]);
-  } else if (ghsaOnly === "event") {
+  } else if (fundType === "event") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "outbreak_id:not",
       null
     ]);
-  } else if (ghsaOnly === "capacity") {
+  } else if (fundType === "capacity") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "response_or_capacity:not",
       "response"
@@ -545,8 +550,8 @@ const getComponentData = async ({
       setEntityRole={setEntityRole}
       data={results}
       flowTypeInfo={flowTypeInfo}
-      ghsaOnly={ghsaOnly}
-      setGhsaOnly={setGhsaOnly}
+      fundType={fundType}
+      setFundType={setFundType}
       setComponent={setComponent}
       setLoadingSpinnerOn={setLoadingSpinnerOn}
       activeTab={props.activeTab}
@@ -556,6 +561,8 @@ const getComponentData = async ({
       setMaxYear={props.setMaxYear}
       coreCapacities={props.coreCapacities}
       setCoreCapacities={props.setCoreCapacities}
+      events={props.events}
+      setEvents={props.setEvents}
       outbreakResponses={props.outbreakResponses}
       setOutbreakResponses={props.setOutbreakResponses}
       supportTypeDefault={props.supportTypeDefault}

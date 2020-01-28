@@ -18,8 +18,6 @@ const Explore = ({
   activeTab,
   data,
   flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
   supportTypeDefault,
   setLoadingSpinnerOn,
   ...props
@@ -60,6 +58,8 @@ const Explore = ({
   const [supportTypeToSwitchTo, setSupportTypeToSwitchTo] = React.useState(
     undefined
   );
+  // Track funding type
+  const [fundType, setFundType] = React.useState("false"); // default "all"
 
   React.useEffect(() => {
     // Set isDark defaults.
@@ -85,12 +85,12 @@ const Explore = ({
         entityRole: entityRole,
         setEntityRole: setEntityRole,
         flowTypeInfo: flowTypeInfo,
-        ghsaOnly: ghsaOnly,
-        setGhsaOnly: setGhsaOnly,
+        fundType: fundType,
+        setFundType: setFundType,
         coreCapacities: coreCapacities,
         setCoreCapacities: setCoreCapacities,
-        outbreakResponses: outbreakResponses,
-        setOutbreakResponses: setOutbreakResponses,
+        events: outbreakResponses,
+        setEvents: setOutbreakResponses,
         minYear: minYear,
         setMinYear: setMinYear,
         maxYear: maxYear,
@@ -106,8 +106,8 @@ const Explore = ({
         entityRole: entityRole,
         setEntityRole: setEntityRole,
         flowTypeInfo: flowTypeInfo,
-        ghsaOnly: ghsaOnly,
-        setGhsaOnly: setGhsaOnly,
+        fundType: fundType,
+        setFundType: setFundType,
         coreCapacities: coreCapacities,
         setCoreCapacities: setCoreCapacities,
         outbreakResponses: outbreakResponses,
@@ -119,7 +119,7 @@ const Explore = ({
         setLoadingSpinnerOn
       });
     }
-  }, [activeTab, minYear, maxYear, coreCapacities, ghsaOnly, entityRole]);
+  }, [activeTab, minYear, maxYear, coreCapacities, fundType, entityRole]);
 
   React.useEffect(() => {
     if (activeTab === "map" && supportTypeToSwitchTo !== undefined) {
@@ -131,8 +131,8 @@ const Explore = ({
         entityRole: entityRole,
         setEntityRole: setEntityRole,
         flowTypeInfo: flowTypeInfo,
-        ghsaOnly: ghsaOnly,
-        setGhsaOnly: setGhsaOnly,
+        fundType: fundType,
+        setFundType: setFundType,
         coreCapacities: coreCapacities,
         setCoreCapacities: setCoreCapacities,
         outbreakResponses: outbreakResponses,
@@ -156,8 +156,8 @@ const Explore = ({
         entityRole: entityRole,
         setEntityRole: setEntityRole,
         flowTypeInfo: flowTypeInfo,
-        ghsaOnly: ghsaOnly,
-        setGhsaOnly: setGhsaOnly,
+        fundType: fundType,
+        setFundType: setFundType,
         coreCapacities: coreCapacities,
         setCoreCapacities: setCoreCapacities,
         outbreakResponses: outbreakResponses,
@@ -229,8 +229,8 @@ export const renderExplore = ({
   id,
   entityRole,
   flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
+  fundType,
+  setFundType,
   setLoadingSpinnerOn,
   ...props
 }) => {
@@ -240,8 +240,8 @@ export const renderExplore = ({
     return (
       <Explore
         flowTypeInfo={flowTypeInfo}
-        ghsaOnly={ghsaOnly}
-        setGhsaOnly={setGhsaOnly}
+        fundType={fundType}
+        setFundType={setFundType}
         setComponent={setComponent}
         activeTab={props.activeTab}
         setIsDark={props.setIsDark}
