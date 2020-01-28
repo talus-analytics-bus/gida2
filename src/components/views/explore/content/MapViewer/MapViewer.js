@@ -126,6 +126,39 @@ const MapViewer = ({
   const [curTab, setCurTab] = React.useState(
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
+
+  const filterSelections = fundType !== "event" ? coreCapacities : events;
+
+  const filterSelectionBadges = filterSelections.length > 0 && (
+    <div>
+      <div className={classNames(styles.sectionTitle, styles.filterBadges)}>
+        Filters selected:
+      </div>
+      <div>
+        {fundType !== "event" && (
+          <FilterSelections
+            {...{
+              optionList: core_capacities,
+              selections: coreCapacities,
+              setSelections: setCoreCapacities,
+              type: "coreCapacities"
+            }}
+          />
+        )}
+        {fundType === "event" && (
+          <FilterSelections
+            {...{
+              optionList: data.outbreaks,
+              selections: events,
+              setSelections: setEvents,
+              type: "events"
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+
   const filters = (
     <div>
       {fundType === "event" && (
@@ -158,10 +191,9 @@ const MapViewer = ({
           }}
         />
       )}
+      {filterSelectionBadges}
     </div>
   );
-
-  const filterSelections = fundType !== "event" ? coreCapacities : events;
 
   const disableRefinements = !["true", "false", "event", "capacity"].includes(
     fundType
@@ -228,40 +260,6 @@ const MapViewer = ({
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Filter by</div>
             {filters}
-            {filterSelections.length > 0 && (
-              <div>
-                <div
-                  className={classNames(
-                    styles.sectionTitle,
-                    styles.filterBadges
-                  )}
-                >
-                  Filters selected:
-                </div>
-                <div>
-                  {fundType !== "event" && (
-                    <FilterSelections
-                      {...{
-                        optionList: core_capacities,
-                        selections: coreCapacities,
-                        setSelections: setCoreCapacities,
-                        type: "coreCapacities"
-                      }}
-                    />
-                  )}
-                  {fundType === "event" && (
-                    <FilterSelections
-                      {...{
-                        optionList: data.outbreaks,
-                        selections: events,
-                        setSelections: setEvents,
-                        type: "events"
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )
