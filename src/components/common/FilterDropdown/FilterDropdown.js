@@ -30,85 +30,6 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
     }
   };
 
-  // Add or remove badges whenever value is changed, as needed.
-  const updateBadgesOld = value => {
-    if (props.setBadges !== undefined) {
-      // Manage badge array
-      let newBadgeArr = [];
-      let newBadgeArrValues = [];
-      const curValuesList =
-        typeof value === "object" ? value.map(d => d.value) : value;
-
-      // Add existing badges
-      if (props.badges.length > 0) {
-        props.badges.forEach(d => {
-          newBadgeArr.push(d);
-          newBadgeArrValues.push(d.props.value);
-        });
-      }
-
-      // Define badges to add to array
-      const badgesToAdd = value.filter(
-        d => !newBadgeArrValues.includes(d.value)
-      );
-
-      // Define badges to remove
-      const badgesToRmv = newBadgeArrValues.filter(
-        d => !curValuesList.includes(d)
-      );
-
-      console.log("newBadgeArrValues");
-      console.log(newBadgeArrValues);
-      console.log("curValuesList");
-      console.log(curValuesList);
-      console.log("props.badges");
-      console.log(props.badges);
-
-      console.log("badgesToRmv");
-      console.log(badgesToRmv);
-
-      if (badgesToAdd.length + badgesToRmv.length === 0) {
-        return;
-      } else {
-        badgesToAdd.forEach(d => {
-          newBadgeArr.push(
-            <div value={d.value} className={styles.badge}>
-              {Util.getShortName(d.label)}
-              <Button
-                callback={() => {
-                  // remove value
-                  console.log("Removing " + d.value + " from selections.");
-                  value = value.filter(v => {
-                    if (typeof v === "object") {
-                      return v.value !== d.value;
-                    } else return v !== d.value;
-                  });
-                  updateBadges(value);
-
-                  // trigger onChange of filter dropdown
-                  onChange(value);
-                }}
-                type={"close-badge"}
-              />
-            </div>
-          );
-          newBadgeArrValues.push(d.value);
-        });
-
-        newBadgeArr = newBadgeArr.filter(d => {
-          return !badgesToRmv.includes(d.props.value);
-        });
-        newBadgeArrValues = newBadgeArrValues.filter(d => {
-          return !badgesToRmv.includes(d);
-        });
-
-        props.setBadges(newBadgeArr);
-      }
-    }
-  };
-
-  const updateBadges = value => {};
-
   return (
     <div
       className={classNames(styles.filterDropdown, {
@@ -130,7 +51,12 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
         onChange={v => {
           onChange(v);
           // updateBadges(v);
-          if (props.updateBadges) props.updateBadges(v);
+          // if (props.updateBadges)
+          //   props.updateBadges({
+          //     valuesTmp: v,
+          //     type: label,
+          //     setValues: props.setValues
+          //   });
         }}
         getDropdownButtonLabel={({ placeholderButtonLabel, value }) => {
           if (value === undefined || value.length === 0)

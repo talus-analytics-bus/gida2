@@ -116,8 +116,60 @@ const MapViewer = ({
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
 
+  const getBadgeCancelCallbackFunc = ({
+    // currentValues,
+    currentBadges,
+    type,
+    valToRmv
+  }) => {
+    return () => {
+      // get current values selected (new object)
+      const curSelectedVals = [];
+      coreCapacities.forEach(dd => {
+        curSelectedVals.push(dd);
+      });
+
+      // filter out value to remove
+      const updatedSelectedVals = curSelectedVals.filter(dd => {
+        if (typeof dd === "object") {
+          return dd.value !== valToRmv;
+        } else return dd !== valToRmv;
+      });
+
+      // get current badge list
+      const curBadges = [];
+      currentBadges.forEach(d => {
+        curBadges.push(d);
+      });
+
+      // remove this badge
+      const updatedBadgesFromBadgeCallback = curBadges.filter(dd => {
+        if (dd.type === type) {
+          return dd.value !== valToRmv;
+        } else return true;
+      });
+
+      console.log("Removing " + valToRmv);
+      console.log("updatedSelectedVals");
+      console.log(updatedSelectedVals);
+      setCoreCapacities(updatedSelectedVals);
+    };
+  };
+
+  React.useEffect(
+    () =>
+      updateBadges({
+        valuesTmp: core_capacities.filter(d =>
+          coreCapacities.includes(d.value)
+        ),
+        type: "coreCapacities",
+        setValues: setCoreCapacities
+      }),
+    [coreCapacities]
+  );
+
   // Add a badge
-  const updateBadges = (valuesTmp, type) => {
+  const updateBadges = ({ valuesTmp, type, setValues }) => {
     // convert values to object array if not already
     const values = [];
     valuesTmp.forEach(d => {
@@ -138,7 +190,8 @@ const MapViewer = ({
 
     // check which badges need to be added
     const toAdd = values.filter(d => {
-      return !curBadgeValsOfType.includes(d.value);
+      return true;
+      // return !curBadgeValsOfType.includes(d.value);
     });
 
     // check which badges need to be removed
@@ -148,23 +201,29 @@ const MapViewer = ({
 
     // get set of updated badges and set them
     const updatedBadges = [];
-    curBadgesOfType.forEach(d => {
-      if (!toRmv.includes(d.value)) updateBadges.push(d);
-    });
+    console.log("toAdd");
+    console.log(toAdd);
+    // curBadgesOfType.forEach(d => {
+    //   if (!toRmv.includes(d.value)) updateBadges.push(d);
+    // });
     toAdd.forEach(d => {
       updatedBadges.push(
-        <div value={d.value} className={styles.badge}>
+        <div value={d.value} type={type} className={styles.badge}>
           {Util.getShortName(d.label)}
           <Button
-            callback={() => {
-              // remove value
-              console.log("Removing " + d.value + " from selections.");
-            }}
+            callback={getBadgeCancelCallbackFunc({
+              // currentValues: coreCapacities,
+              currentBadges: badges,
+              type,
+              valToRmv: d.value
+            })}
             type={"close-badge"}
           />
         </div>
       );
     });
+    console.log("updatedBadges");
+    console.log(updatedBadges);
     setBadges(updatedBadges);
   };
   const filters = (
@@ -178,6 +237,7 @@ const MapViewer = ({
         placeholder: "Select core capacities",
         onChange: v => setCoreCapacities(v.map(d => d.value)),
         curValues: coreCapacities,
+        setValues: setCoreCapacities,
         updateBadges,
         setBadges,
         badges
