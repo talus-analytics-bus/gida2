@@ -1,13 +1,14 @@
 @import "../../../assets/styles/colors.scss";
 .filterSelections {
+  display: flex;
+  flex-flow: row wrap;
   .badge {
     padding: 5px 10px;
     border-radius: $border-radius;
     background-color: #5482b0;
     color: white;
-    width: max-content;
+    white-space: nowrap;
 
-    // white-space: nowrap;
     margin: 0 5px 5px 0;
     cursor: default;
 

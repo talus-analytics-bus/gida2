@@ -10,7 +10,6 @@ import { Settings } from "../../../App.js";
 import Tab from "../../misc/Tab.js";
 import { renderMapViewer } from "./content/MapViewer/MapViewer.js";
 import { renderOrgs } from "./content/Orgs/Orgs.js";
-import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 import { Toggle } from "react-toggle-component";
 
 // FC for Explore.
@@ -220,7 +219,6 @@ const Explore = ({
                   </div>
                 </div>
               )}
-              <GhsaButton />
             </div>
           </div>
         </div>

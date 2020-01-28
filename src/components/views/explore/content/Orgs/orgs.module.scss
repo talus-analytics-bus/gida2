@@ -12,6 +12,9 @@
   .hide {
     display: none;
   }
+  .filterContainer {
+    width: 400px;
+  }
   .tables {
     display: flex;
     flex-flow: row;
@@ -50,10 +53,7 @@
   .menu {
     display: flex;
     flex-flow: column;
-    margin: 20px 0 10px;
-    border: 1px solid #ccc;
     padding: 20px;
-    max-width: 900px;
     .filterBadges {
       font-weight: bold;
       margin: 20px 0 5px;
@@ -63,13 +63,16 @@
       margin-bottom: 20px;
     }
     .menuContent {
-      justify-content: space-between;
+      // justify-content: space-between;
 
-      > div:last-child {
-        margin-right: 15px;
-      }
       > div {
-        margin-bottom: 20px;
+        margin: 0 20px 20px;
+      }
+      > div:last-child {
+        margin-right: 0;
+      }
+      > div:first-child {
+        margin-left: 0;
       }
       display: flex;
       flex-flow: row;

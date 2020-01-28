@@ -25,7 +25,6 @@ import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
-import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
 import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
@@ -767,9 +766,6 @@ const Details = ({
                 ghsaOnly={ghsaOnly}
                 setGhsaOnly={setGhsaOnly}
               />
-              <div className={styles.toggles}>
-                {pageType !== "ghsa" && <GhsaButton />}
-              </div>
             </div>
           )}
         </div>

@@ -8,7 +8,9 @@ import styles from "./drawer.module.scss";
  * @method Drawer
  */
 const Drawer = ({ label, contentSections, ...props }) => {
-  const [open, setOpen] = React.useState(props.openDefault || true);
+  const openDefault =
+    props.openDefault !== undefined ? props.openDefault : true;
+  const [open, setOpen] = React.useState(openDefault);
   return (
     <div className={styles.drawer}>
       <div onClick={() => setOpen(!open)} className={styles.header}>

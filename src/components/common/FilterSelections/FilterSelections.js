@@ -38,7 +38,12 @@ const FilterSelections = ({
   return (
     <div className={styles.filterSelections}>
       {options.map(d => (
-        <div value={d.value} type={type} className={styles.badge}>
+        <div
+          title={d.label}
+          value={d.value}
+          type={type}
+          className={styles.badge}
+        >
           {Util.getShortName(d.label)}
           <Button
             callback={getBadgeCancelCallbackFunc({

@@ -13,7 +13,11 @@ const GhsaButton = ({ ...props }) => {
     <Button
       {...{
         className: styles.ghsaButton,
-        label: "GHSA project details",
+        label: props.active ? (
+          <span className={styles.active}>GHSA</span>
+        ) : (
+          <span>GHSA</span>
+        ),
         image,
         type: "secondary",
         linkTo: "/details/ghsa"

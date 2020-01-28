@@ -13,6 +13,7 @@ import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js";
 import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
 import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
 import Chevron from "../../../../common/Chevron/Chevron.js";
+import Drawer from "../../../../common/Drawer/Drawer.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import OutbreakQuery from "../../../../misc/OutbreakQuery.js";
 import {
@@ -94,7 +95,7 @@ const Orgs = ({
   );
 
   const filters = (
-    <div>
+    <div className={styles.filterContainer}>
       {ghsaOnly === "event" && (
         <FilterDropdown
           {...{
@@ -386,69 +387,76 @@ const Orgs = ({
 
   return (
     <div className={styles.orgs}>
+      <Drawer
+        {...{
+          openDefault: false,
+          label: "Options",
+          contentSections: [
+            <div className={styles.menu}>
+              <div className={styles.menuContent}>
+                <GhsaToggle
+                  label={"Select data"}
+                  ghsaOnly={ghsaOnly}
+                  setGhsaOnly={setGhsaOnly}
+                />
+                <RadioToggle
+                  label={"Select support type"}
+                  callback={setSupportType}
+                  curVal={supportType}
+                  choices={[
+                    {
+                      name: "Financial support",
+                      value: "funds"
+                    },
+                    {
+                      name: "In-kind support",
+                      value: "inkind",
+                      tooltip:
+                        "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
+                    }
+                  ]}
+                />
+                {metricHasTransactionType && (
+                  <RadioToggle
+                    label={"Select funding type"}
+                    callback={setTransactionType}
+                    curVal={transactionType}
+                    choices={[
+                      {
+                        name: "Committed",
+                        value: "committed"
+                      },
+                      {
+                        name: "Disbursed",
+                        value: "disbursed"
+                      }
+                    ]}
+                  />
+                )}
+                {filters}
+              </div>
+
+              {
+                // TODO: add this tooltip for CC dropdown
+                // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+              }
+              <TimeSlider
+                side={"left"}
+                hide={supportType === "jee"}
+                minYearDefault={Settings.startYear}
+                maxYearDefault={Settings.endYear}
+                onAfterChange={years => {
+                  setMinYear(years[0]);
+                  setMaxYear(years[1]);
+                }}
+              />
+            </div>
+          ]
+        }}
+      />
       <div className={styles.content}>
         <div className={styles.tables}>{tableInstances.map(d => d)}</div>
         {<SourceText />}
-      </div>
-      <div className={styles.menu}>
-        <div className={styles.subtitle}>Options</div>
-        <div className={styles.menuContent}>
-          <GhsaToggle
-            label={"Select data"}
-            ghsaOnly={ghsaOnly}
-            setGhsaOnly={setGhsaOnly}
-          />
-          <RadioToggle
-            label={"Select support type"}
-            callback={setSupportType}
-            curVal={supportType}
-            choices={[
-              {
-                name: "Financial support",
-                value: "funds"
-              },
-              {
-                name: "In-kind support",
-                value: "inkind",
-                tooltip:
-                  "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
-              }
-            ]}
-          />
-          {metricHasTransactionType && (
-            <RadioToggle
-              label={"Select funding type"}
-              callback={setTransactionType}
-              curVal={transactionType}
-              choices={[
-                {
-                  name: "Committed",
-                  value: "committed"
-                },
-                {
-                  name: "Disbursed",
-                  value: "disbursed"
-                }
-              ]}
-            />
-          )}
-          {filters}
-        </div>
-
-        {
-          // TODO: add this tooltip for CC dropdown
-          // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-        }
-        <TimeSlider
-          side={"left"}
-          hide={supportType === "jee"}
-          minYearDefault={Settings.startYear}
-          maxYearDefault={Settings.endYear}
-          onAfterChange={years => {
-            setMinYear(years[0]);
-            setMaxYear(years[1]);
-          }}
-        />
       </div>
       {
         // Tooltip for info tooltip icons.

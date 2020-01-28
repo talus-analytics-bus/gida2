@@ -2,7 +2,6 @@ import React from "react";
 import classNames from "classnames";
 import Search from "../../common/Search/Search.js";
 import styles from "./home.module.scss";
-import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 import Button from "../../common/Button/Button.js";
 import mapImage from "../../../assets/images/map.png";
 
@@ -31,7 +30,6 @@ const Home = () => {
           </div>
           <div className={styles.content}>
             <Search name={"home"} expandedDefault={true} />
-            <GhsaButton />
           </div>
         </div>
       </div>

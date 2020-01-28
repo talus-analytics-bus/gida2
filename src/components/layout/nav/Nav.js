@@ -7,6 +7,7 @@ import logoDark from "../../../assets/images/logo-dark.png";
 import ReactTooltip from "react-tooltip";
 import Menu from "./content/Menu/Menu.js";
 import Search from "../../common/Search/Search.js";
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 
 const Nav = ({ page, ...props }) => {
   const logo = props.isDark ? logoDark : logoLight;
@@ -33,9 +34,10 @@ const Nav = ({ page, ...props }) => {
         )}
       >
         <Link to="/">
-          <img src={logo} alt="GIDA - Tracker" />
+          <img src={logo} className={styles.logo} alt="GIDA - Tracker" />
         </Link>
         <div className={styles.links}>
+          <GhsaButton active={page === "ghsa"} />
           <div>
             <Link
               className={

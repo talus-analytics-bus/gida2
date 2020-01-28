@@ -307,8 +307,8 @@ const App = () => {
                 exact
                 path="/details/:id"
                 render={d => {
-                  setPage(undefined);
-                  if (d.match.params.id === "ghsa")
+                  if (d.match.params.id === "ghsa") {
+                    setPage("ghsa");
                     return renderDetails({
                       ...d.match.params,
                       detailsComponent: detailsComponent,
@@ -318,10 +318,10 @@ const App = () => {
                       flowTypeInfo: flowTypeInfo,
                       setLoadingSpinnerOn
                     });
-                  else
-                    return (
-                      <Redirect to={`/details/${d.match.params.id}/funder`} />
-                    );
+                  } else setPage(undefined);
+                  return (
+                    <Redirect to={`/details/${d.match.params.id}/funder`} />
+                  );
                 }}
               />
               <Route
