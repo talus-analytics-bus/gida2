@@ -15,6 +15,7 @@ const D3Map = ({
   maxYear,
   supportType,
   coreCapacities,
+  events,
   d3MapDataFields,
   ghsaOnly,
   setNodeData,
@@ -90,6 +91,7 @@ const D3Map = ({
     minYear,
     maxYear,
     coreCapacities,
+    events,
     ghsaOnly
   ]);
 

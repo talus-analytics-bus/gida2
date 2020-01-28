@@ -48,16 +48,7 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
         styles={customStyles}
         placeholderButtonLabel={props.placeholder}
         options={options}
-        onChange={v => {
-          onChange(v);
-          // updateBadges(v);
-          // if (props.updateBadges)
-          //   props.updateBadges({
-          //     valuesTmp: v,
-          //     type: label,
-          //     setValues: props.setValues
-          //   });
-        }}
+        onChange={onChange}
         getDropdownButtonLabel={({ placeholderButtonLabel, value }) => {
           if (value === undefined || value.length === 0)
             return `${placeholderButtonLabel} (all)`;

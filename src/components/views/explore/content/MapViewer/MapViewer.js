@@ -12,6 +12,7 @@ import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js"
 import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import ScoreQuery from "../../../../misc/ScoreQuery.js";
+import OutbreakQuery from "../../../../misc/OutbreakQuery.js";
 import Tab from "../../../../misc/Tab.js";
 import { core_capacities } from "../../../../misc/Data.js";
 import SlideToggle from "../../../../common/SlideToggle/SlideToggle.js";
@@ -116,30 +117,52 @@ const MapViewer = ({
   const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
 
   // Define map menu sections
-  const [badges, setBadges] = React.useState([]);
   const [curTab, setCurTab] = React.useState(
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
-
+  console.log("events");
+  console.log(events);
+  console.log("setEvents");
+  console.log(setEvents);
   const filters = (
-    <FilterDropdown
-      {...{
-        className: [styles.italic],
-        isDark: isDark,
-        label: "IHR core capacity",
-        openDirection: "up",
-        options: core_capacities,
-        placeholder: "Select core capacities",
-        onChange: v => setCoreCapacities(v.map(d => d.value)),
-        curValues: coreCapacities,
-        setValues: setCoreCapacities,
-        setBadges,
-        badges
-      }}
-    />
+    <div>
+      {fundType === "event" && (
+        <FilterDropdown
+          {...{
+            label: "Event response",
+            options: data.outbreaks,
+            placeholder: "Select event response",
+            onChange: v => {
+              console.log(v.map(d => d.value));
+              setEvents(v.map(d => d.value));
+            },
+            curValues: events,
+            className: [styles.italic],
+            isDark: isDark,
+            openDirection: "up",
+            setValues: setEvents
+          }}
+        />
+      )}
+      {fundType !== "event" && (
+        <FilterDropdown
+          {...{
+            label: "IHR core capacity",
+            options: core_capacities,
+            placeholder: "Select core capacities",
+            onChange: v => setCoreCapacities(v.map(d => d.value)),
+            curValues: coreCapacities,
+            className: [styles.italic],
+            isDark: isDark,
+            openDirection: "up",
+            setValues: setCoreCapacities
+          }}
+        />
+      )}
+    </div>
   );
 
-  const filterSelections = fundType !== "event" ? coreCapacities : []; // TODO
+  const filterSelections = fundType !== "event" ? coreCapacities : events; // TODO
 
   const sections = [
     {
@@ -222,9 +245,6 @@ const MapViewer = ({
                       }}
                     />
                   }
-                  {badges.map(d => (
-                    <div className={styles.badge}>{d}</div>
-                  ))}
                 </div>
               </div>
             )}
@@ -320,6 +340,7 @@ const MapViewer = ({
           minYear={minYear}
           maxYear={maxYear}
           coreCapacities={coreCapacities}
+          events={events}
           ghsaOnly={fundType}
           isDark={isDark}
           setLoadingSpinnerOn={setLoadingSpinnerOn}
@@ -395,7 +416,7 @@ const remountComponent = ({
     component.props.fundType !== fundType ||
     component.props.coreCapacities.toString() !==
       props.coreCapacities.toString() ||
-    events.toString() !== events.toString();
+    component.props.events.toString() !== events.toString();
   return remount;
 };
 
@@ -413,6 +434,7 @@ export const renderMapViewer = ({
   setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
   events,
+  setEvents,
   ...props
 }) => {
   // Set IDs
@@ -445,6 +467,8 @@ export const renderMapViewer = ({
       supportTypeDefault,
       setLoadingSpinnerOn,
       setSupportTypeToSwitchTo,
+      events,
+      setEvents,
       ...props
     });
 
@@ -529,6 +553,16 @@ const getComponentData = async ({
     ]);
   }
 
+  // Flow info filters
+  const flowInfoFilters = [["events", "outbreak_id"]];
+  flowInfoFilters.forEach(type => {
+    if (props[type[0]].length > 0) {
+      baseQueryParams.filters.parent_flow_info_filters.push(
+        [type[1]].concat(props[type[0]])
+      );
+    }
+  });
+
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
@@ -537,12 +571,14 @@ const getComponentData = async ({
     }),
     jeeScores: ScoreQuery({
       type: "jee_v1"
-    })
+    }),
+    outbreaks: OutbreakQuery({})
   };
 
   // Get query results.
   setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
+  // setLoadingSpinnerOn(false);
 
   // Feed results and other data to the details component and mount it.
   setComponent(
@@ -566,8 +602,6 @@ const getComponentData = async ({
       setCoreCapacities={props.setCoreCapacities}
       events={props.events}
       setEvents={props.setEvents}
-      outbreakResponses={props.outbreakResponses}
-      setOutbreakResponses={props.setOutbreakResponses}
       supportTypeDefault={props.supportTypeDefault}
       setSupportTypeToSwitchTo={setSupportTypeToSwitchTo}
     />

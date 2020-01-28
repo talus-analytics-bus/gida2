@@ -141,6 +141,8 @@ const Explore = ({
   };
 
   React.useEffect(() => {
+    console.log("outbreakResponses");
+    console.log(outbreakResponses);
     if (activeTab === "map") {
       renderMapViewer({
         isDark: mapViewerComponent === null || props.isDark,
@@ -151,7 +153,14 @@ const Explore = ({
         ...orgProps
       });
     }
-  }, [minYear, maxYear, coreCapacities, fundType, entityRole]);
+  }, [
+    minYear,
+    maxYear,
+    coreCapacities,
+    outbreakResponses,
+    fundType,
+    entityRole
+  ]);
 
   React.useEffect(() => {
     if (activeTab === "map" && supportTypeToSwitchTo !== undefined) {
