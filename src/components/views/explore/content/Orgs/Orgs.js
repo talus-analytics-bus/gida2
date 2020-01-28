@@ -11,8 +11,10 @@ import TimeSlider from "../../../../misc/TimeSlider.js";
 import TableInstance from "../../../../chart/table/TableInstance.js";
 import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js";
 import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
+import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
 import Chevron from "../../../../common/Chevron/Chevron.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
+import OutbreakQuery from "../../../../misc/OutbreakQuery.js";
 import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
@@ -40,6 +42,8 @@ const Orgs = ({
   coreCapacities,
   setCoreCapacities,
   flowTypeInfo,
+  events,
+  setEvents,
   ...props
 }) => {
   // Track transaction type selected for the map
@@ -55,6 +59,75 @@ const Orgs = ({
   const [revealed, setRevealed] = React.useState(false);
   const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
   const [hoveredEntity, setHoveredEntity] = React.useState(undefined);
+
+  // Define filter content
+  const filterSelections = ghsaOnly !== "event" ? coreCapacities : events;
+
+  const filterSelectionBadges = filterSelections.length > 0 && (
+    <div>
+      <div className={classNames(styles.sectionTitle, styles.filterBadges)}>
+        Filters selected:
+      </div>
+      <div>
+        {ghsaOnly !== "event" && (
+          <FilterSelections
+            {...{
+              optionList: core_capacities,
+              selections: coreCapacities,
+              setSelections: setCoreCapacities,
+              type: "coreCapacities"
+            }}
+          />
+        )}
+        {ghsaOnly === "event" && (
+          <FilterSelections
+            {...{
+              optionList: data.outbreaks,
+              selections: events,
+              setSelections: setEvents,
+              type: "events"
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+
+  const filters = (
+    <div>
+      {ghsaOnly === "event" && (
+        <FilterDropdown
+          {...{
+            label: "Select event responses",
+            options: data.outbreaks,
+            placeholder: "Select event response",
+            onChange: v => setEvents(v.map(d => d.value)),
+            curValues: events,
+            className: [styles.italic],
+            isDark: false,
+            openDirection: "up",
+            setValues: setEvents
+          }}
+        />
+      )}
+      {ghsaOnly !== "event" && (
+        <FilterDropdown
+          {...{
+            label: "Select IHR core capacities",
+            options: core_capacities,
+            placeholder: "Select core capacities",
+            onChange: v => setCoreCapacities(v.map(d => d.value)),
+            curValues: coreCapacities,
+            className: [styles.italic],
+            isDark: false,
+            openDirection: "up",
+            setValues: setCoreCapacities
+          }}
+        />
+      )}
+      {filterSelectionBadges}
+    </div>
+  );
 
   const yearRange =
     minYear === maxYear ? `${minYear}` : `${minYear} - ${maxYear}`;
@@ -359,17 +432,7 @@ const Orgs = ({
               ]}
             />
           )}
-          <FilterDropdown
-            {...{
-              className: [styles.italic],
-              label: "Select IHR core capacities",
-              openDirection: "up",
-              options: core_capacities,
-              placeholder: "Select core capacities",
-              onChange: v => setCoreCapacities(v.map(d => d.value)),
-              curValues: coreCapacities
-            }}
-          />
+          {filters}
         </div>
 
         {
@@ -433,7 +496,8 @@ const remountComponent = ({
   props,
   id,
   entityRole,
-  ghsaOnly
+  ghsaOnly,
+  events
 }) => {
   const remount =
     component.props.minYear !== minYear ||
@@ -441,7 +505,8 @@ const remountComponent = ({
     component.props.entityRole !== entityRole ||
     component.props.ghsaOnly !== ghsaOnly ||
     component.props.coreCapacities.toString() !==
-      props.coreCapacities.toString();
+      props.coreCapacities.toString() ||
+    component.props.events.toString() !== events.toString();
   return remount;
 };
 
@@ -456,6 +521,8 @@ export const renderOrgs = ({
   ghsaOnly,
   setGhsaOnly,
   setLoadingSpinnerOn,
+  events,
+  setEvents,
   ...props
 }) => {
   // Set IDs
@@ -473,7 +540,8 @@ export const renderOrgs = ({
         entityRole: entityRole,
         ghsaOnly: ghsaOnly,
         minYear: props.minYear,
-        maxYear: props.maxYear
+        maxYear: props.maxYear,
+        events
       }))
   ) {
     getComponentData({
@@ -485,6 +553,8 @@ export const renderOrgs = ({
       entityRole: entityRole,
       setEntityRole: setEntityRole,
       setLoadingSpinnerOn,
+      setEvents,
+      events,
       ...props
     });
 
@@ -512,6 +582,7 @@ const getComponentData = async ({
   ghsaOnly,
   setGhsaOnly,
   setLoadingSpinnerOn,
+  setEvents,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -539,9 +610,9 @@ const getComponentData = async ({
 
   // If outbreak response filters provided, use those
   // TODO
-  if (props.outbreakResponses && props.outbreakResponses.length > 0) {
+  if (props.events && props.events.length > 0) {
     baseQueryParams.filters.parent_flow_info_filters.push(
-      ["outbreak_responses"].concat(props.outbreakResponses)
+      ["outbreak_id"].concat(props.events)
     );
   }
 
@@ -573,7 +644,8 @@ const getComponentData = async ({
     flowBundlesFocusTargets: FlowBundleFocusQuery({
       ...baseQueryParams,
       focus_node_type: "target"
-    })
+    }),
+    outbreaks: OutbreakQuery({})
   };
 
   // Get query results.
@@ -599,8 +671,8 @@ const getComponentData = async ({
       setMaxYear={props.setMaxYear}
       coreCapacities={props.coreCapacities}
       setCoreCapacities={props.setCoreCapacities}
-      outbreakResponses={props.outbreakResponses}
-      setOutbreakResponses={props.setOutbreakResponses}
+      events={props.events}
+      setEvents={setEvents}
     />
   );
 };

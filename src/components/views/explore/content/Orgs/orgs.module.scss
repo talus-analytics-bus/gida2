@@ -50,11 +50,14 @@
   .menu {
     display: flex;
     flex-flow: column;
-    margin-top: 20px;
+    margin: 20px 0 10px;
     border: 1px solid #ccc;
-    border-bottom: none;
     padding: 20px;
     max-width: 900px;
+    .filterBadges {
+      font-weight: bold;
+      margin: 20px 0 5px;
+    }
     .subtitle {
       margin-top: 0;
       margin-bottom: 20px;
