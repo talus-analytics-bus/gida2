@@ -16,6 +16,10 @@
   justify-content: space-between;
 }
 .filterDropdown {
+  > div {
+    z-index: 1001;
+  }
+
   * {
     opacity: 1;
   }

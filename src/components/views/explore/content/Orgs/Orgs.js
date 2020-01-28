@@ -106,7 +106,7 @@ const Orgs = ({
             curValues: events,
             className: [styles.italic],
             isDark: false,
-            openDirection: "up",
+            openDirection: "down",
             setValues: setEvents
           }}
         />
@@ -121,7 +121,7 @@ const Orgs = ({
             curValues: coreCapacities,
             className: [styles.italic],
             isDark: false,
-            openDirection: "up",
+            openDirection: "down",
             setValues: setCoreCapacities
           }}
         />
