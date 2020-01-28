@@ -118,6 +118,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   };
 
   const download = () => {
+    // Erase download cookie.
+    Util.eraseCookie("download_completed");
     getFlowQuery({
       curPage,
       funders,
@@ -181,7 +183,14 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     if (exportAction !== undefined && exportBody !== undefined) {
       const el = document.getElementById("download");
       if (el) {
+        setLoadingSpinnerOn(true);
         el.click();
+        const downloadCompletedCheck = setInterval(() => {
+          if (Util.readCookie("download_completed") === "yes") {
+            setLoadingSpinnerOn(false);
+            clearInterval(downloadCompletedCheck);
+          }
+        }, 500);
       }
     }
   }, [exportAction, exportBody]);

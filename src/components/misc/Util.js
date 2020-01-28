@@ -3,6 +3,30 @@ import * as d3 from "d3/dist/d3.min";
 // Utility functions and data.
 const Util = {};
 
+Util.createCookie = (name, value, days) => {
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    var expires = "; expires=" + date.toUTCString();
+  } else var expires = "";
+  document.cookie = name + "=" + value + expires + "; path=/";
+};
+
+Util.readCookie = name => {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(";");
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == " ") c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+};
+
+Util.eraseCookie = name => {
+  Util.createCookie(name, "", -1);
+};
+
 // Returns true if color is light, false otherwise
 Util.isLightColor = color => {
   if (color === undefined) return false;
