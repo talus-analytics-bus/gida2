@@ -69,9 +69,6 @@ const FundsByYear = ({
       setInitialized(true);
       return;
     } else {
-      console.log("Fund type changed to: " + fundType);
-      console.log(params);
-
       // Get new data
       const queryFunc =
         id === "ghsa" ? FlowBundleGeneralQuery : FlowBundleFocusQuery;
@@ -107,9 +104,6 @@ const FundsByYear = ({
       });
     }
   }, [fundType]);
-
-  console.log("areaLineData");
-  console.log(areaLineData);
 
   return (
     <div className={styles.fundsByYear}>
