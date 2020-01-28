@@ -9,6 +9,7 @@ import Util from "../../../../misc/Util.js";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
 import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
+import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import ScoreQuery from "../../../../misc/ScoreQuery.js";
 import Tab from "../../../../misc/Tab.js";
@@ -116,116 +117,6 @@ const MapViewer = ({
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
 
-  const getBadgeCancelCallbackFunc = ({
-    // currentValues,
-    currentBadges,
-    type,
-    valToRmv
-  }) => {
-    return () => {
-      // get current values selected (new object)
-      const curSelectedVals = [];
-      coreCapacities.forEach(dd => {
-        curSelectedVals.push(dd);
-      });
-
-      // filter out value to remove
-      const updatedSelectedVals = curSelectedVals.filter(dd => {
-        if (typeof dd === "object") {
-          return dd.value !== valToRmv;
-        } else return dd !== valToRmv;
-      });
-
-      // get current badge list
-      const curBadges = [];
-      currentBadges.forEach(d => {
-        curBadges.push(d);
-      });
-
-      // remove this badge
-      const updatedBadgesFromBadgeCallback = curBadges.filter(dd => {
-        if (dd.type === type) {
-          return dd.value !== valToRmv;
-        } else return true;
-      });
-
-      console.log("Removing " + valToRmv);
-      console.log("updatedSelectedVals");
-      console.log(updatedSelectedVals);
-      setCoreCapacities(updatedSelectedVals);
-    };
-  };
-
-  React.useEffect(
-    () =>
-      updateBadges({
-        valuesTmp: core_capacities.filter(d =>
-          coreCapacities.includes(d.value)
-        ),
-        type: "coreCapacities",
-        setValues: setCoreCapacities
-      }),
-    [coreCapacities]
-  );
-
-  // Add a badge
-  const updateBadges = ({ valuesTmp, type, setValues }) => {
-    // convert values to object array if not already
-    const values = [];
-    valuesTmp.forEach(d => {
-      if (typeof d !== "object") {
-        values.push({
-          value: d,
-          label: d,
-          type: type
-        });
-      } else values.push(d);
-    });
-
-    // get list of values that already have badges of this type
-    const curBadgesOfType = badges.filter(d => {
-      return d.type === type;
-    });
-    const curBadgeValsOfType = curBadgesOfType.map(d => d.props.value);
-
-    // check which badges need to be added
-    const toAdd = values.filter(d => {
-      return true;
-      // return !curBadgeValsOfType.includes(d.value);
-    });
-
-    // check which badges need to be removed
-    const toRmv = curBadgeValsOfType.filter(d => {
-      return !values.includes(d);
-    });
-
-    // get set of updated badges and set them
-    const updatedBadges = [];
-    console.log("toAdd");
-    console.log(toAdd);
-    // curBadgesOfType.forEach(d => {
-    //   if (!toRmv.includes(d.value)) updateBadges.push(d);
-    // });
-    toAdd.forEach(d => {
-      updatedBadges.push(
-        <div value={d.value} type={type} className={styles.badge}>
-          {Util.getShortName(d.label)}
-          <Button
-            callback={getBadgeCancelCallbackFunc({
-              // currentValues: coreCapacities,
-              currentBadges: badges,
-              type,
-              valToRmv: d.value
-            })}
-            type={"close-badge"}
-          />
-        </div>
-      );
-    });
-    console.log("updatedBadges");
-    console.log(updatedBadges);
-    setBadges(updatedBadges);
-  };
   const filters = (
     <FilterDropdown
       {...{
@@ -238,7 +129,6 @@ const MapViewer = ({
         onChange: v => setCoreCapacities(v.map(d => d.value)),
         curValues: coreCapacities,
         setValues: setCoreCapacities,
-        updateBadges,
         setBadges,
         badges
       }}
@@ -304,7 +194,7 @@ const MapViewer = ({
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Filter by</div>
             {filters}
-            {badges.length > 0 && (
+            {true && (
               <div>
                 <div
                   className={classNames(
@@ -315,6 +205,16 @@ const MapViewer = ({
                   Filters selected:
                 </div>
                 <div>
+                  {
+                    <FilterSelections
+                      {...{
+                        optionList: core_capacities,
+                        selections: coreCapacities,
+                        setSelections: setCoreCapacities,
+                        type: "coreCapacities"
+                      }}
+                    />
+                  }
                   {badges.map(d => (
                     <div className={styles.badge}>{d}</div>
                   ))}
