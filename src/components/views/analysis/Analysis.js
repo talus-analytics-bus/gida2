@@ -245,6 +245,22 @@ const Analysis = ({
   return (
     <div className={classNames(styles.analysis, "pageContainer")}>
       <div className={styles.header}>
+        <div className={styles.title}>
+          International funding by funder/recipient
+        </div>
+      </div>
+      <div className={styles.content}>
+        <p>
+          The tables below identify the funders that have committed the most
+          funds, and the recipients that have recieved the most funds. Click on
+          any entry in the tables for additional detail on that funder or
+          recipient's activities. For information on a funder or recipient not
+          included on this list, search for that country or organization below.
+        </p>
+        {<div className={styles.tables}>{tableInstances.map(d => d)}</div>}
+        {<SourceText />}
+      </div>
+      <div className={styles.header}>
         <div className={styles.title}>International funding network</div>
       </div>
       <div className={styles.content}>
@@ -316,20 +332,6 @@ const Analysis = ({
             {<SourceText />}
           </div>
         </div>
-        <div className={styles.header}>
-          <div className={styles.title}>
-            International funding by funder/recipient
-          </div>
-        </div>
-        <p>
-          The tables below identify the funders that have committed the most
-          funds, and the recipients that have recieved the most funds. Click on
-          any entry in the tables for additional detail on that funder or
-          recipient's activities. For information on a funder or recipient not
-          included on this list, search for that country or organization below.
-        </p>
-        {<div className={styles.tables}>{tableInstances.map(d => d)}</div>}
-        {<SourceText />}
       </div>
     </div>
   );
