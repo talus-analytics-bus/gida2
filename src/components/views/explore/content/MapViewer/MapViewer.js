@@ -134,6 +134,9 @@ const MapViewer = ({
       }}
     />
   );
+
+  const filterSelections = ghsaOnly !== "event" ? coreCapacities : []; // TODO
+
   const sections = [
     {
       slug: "funding",
@@ -194,7 +197,7 @@ const MapViewer = ({
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Filter by</div>
             {filters}
-            {true && (
+            {coreCapacities.length > 0 && (
               <div>
                 <div
                   className={classNames(
