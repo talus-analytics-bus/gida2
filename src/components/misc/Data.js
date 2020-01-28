@@ -414,6 +414,11 @@ export const core_capacities = [
     value: "General IHR",
     label: "General IHR Implementation",
     cat: "Other"
+  },
+  {
+    value: "Unspecified",
+    label: "Unspecified",
+    cat: "Unspecified"
   }
 ];
 
