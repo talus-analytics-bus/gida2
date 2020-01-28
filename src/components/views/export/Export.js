@@ -28,8 +28,6 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const [curPage, setCurPage] = React.useState(1);
   const [exportAction, setExportAction] = React.useState(undefined);
   const [exportBody, setExportBody] = React.useState(undefined);
-  console.log("curPage - Export.js");
-  console.log(curPage);
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
@@ -128,10 +126,13 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       coreCapacities,
       supportType,
       forExport: true,
-      paramsOnly: true,
+      paramsOnly: true, // ONLY RETURN PARAMETER SET.
       ...props
     }).then(paramsTmp => {
+      // URL query params
       const params = paramsTmp.params;
+
+      // POST body JSON
       const data = paramsTmp.data;
       data.cols = cols.filter(d => exportCols.includes(d[0]));
 
@@ -179,7 +180,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   React.useEffect(() => {
     if (exportAction !== undefined && exportBody !== undefined) {
       const el = document.getElementById("download");
-      if (el) el.click();
+      if (el) {
+        el.click();
+      }
     }
   }, [exportAction, exportBody]);
 
@@ -368,8 +371,6 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
   // Get results in parallel
   setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
-  console.log("results - export page");
-  console.log(results);
 
   // Set the component
   setComponent(

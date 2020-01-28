@@ -14,9 +14,10 @@ import TableInstance from "../../chart/table/TableInstance.js";
 const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
   // Set n records
   props.setNRecords(data.flows.paging.n_records);
+
+  // Currently unused, will be used for dynamic page size selection.
   const [curPageSize, setCurPageSize] = React.useState(5);
-  console.log("curPageSize");
-  console.log(curPageSize);
+
   React.useEffect(() => setCurPage(1), [
     props.coreCapacities,
     props.funders,
@@ -182,7 +183,6 @@ export const renderExportTable = ({
   } else if (
     component.props.exportCols.toString() !== props.exportCols.toString()
   ) {
-    console.log("Updating component because export columns were changed.");
     setComponent(
       <ExportTable {...{ ...component.props, exportCols: props.exportCols }} />
     );
@@ -268,8 +268,6 @@ const getComponentData = async ({
   // Get results in parallel
   setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
-  console.log("results - export table");
-  console.log(results);
 
   // Set the component
   setComponent(
