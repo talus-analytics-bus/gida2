@@ -42,8 +42,6 @@ const Details = ({
   setLoadingSpinnerOn,
   ...props
 }) => {
-  console.log("data");
-  console.log(data);
   let pageType;
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
