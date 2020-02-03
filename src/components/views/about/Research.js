@@ -28,8 +28,9 @@ const Research = () => {
           <em> EcoHealth</em> (2019) 16:298-305.
         </p>
         <p>
-          We invite you to share any research conducted using GIDA, so we can
-          link to it from the dashboard. Please contact us by email at{" "}
+          We invite you to share any research conducted using GIDA Health
+          Security Tracking, so we can link to it from the dashboard. Please
+          contact us by email at{" "}
           <a target="_blank" href="mailto:ihrcosting@georgetown.edu">
             ihrcosting@georgetown.edu
           </a>
