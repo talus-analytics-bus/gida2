@@ -12,6 +12,15 @@ body,
     min-height: 81vh;
   }
 
+  // Cookie consent styling
+  .cc-btn {
+    background: -moz-linear-gradient(top, #425379 0%, #213561 100%);
+    background: -ms-linear-gradient(top, #425379 0%, #213561 100%);
+    background: -o-linear-gradient(top, #425379 0%, #213561 100%);
+    background: -webkit-linear-gradient(top, #425379 0%, #213561 100%);
+    color: white;
+  }
+
   // Handle dark mode
   // TODO finish the CSS for this.
   .dark {
