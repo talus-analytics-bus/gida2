@@ -99,11 +99,10 @@ const FundsByYear = ({
         ...params,
         ...updatedParams
       });
-      setLoadingSpinnerOn(true);
+      setLoadingSpinnerOn(true, false, "AreaLine");
       query.then(d => {
         setChartData(d.master_summary.flow_types);
         setAreaLineData(getAreaLineData(d.master_summary.flow_types));
-        setLoadingSpinnerOn(false);
       });
     }
   }, [id, entityRole, fundType]);
@@ -132,6 +131,7 @@ const FundsByYear = ({
               data={areaLineData}
               id={id}
               ghsaOnly={props.ghsaOnly}
+              setLoadingSpinnerOn={setLoadingSpinnerOn}
             />
           </div>
         </div>

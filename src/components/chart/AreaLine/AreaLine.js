@@ -10,7 +10,7 @@ import ReactTooltip from "react-tooltip";
 import SimpleTable from "../table/SimpleTable.js";
 
 // FC
-const AreaLine = ({ data, entityRole, ...props }) => {
+const AreaLine = ({ data, entityRole, setLoadingSpinnerOn, ...props }) => {
   const [chart, setChart] = React.useState(null);
   const [legend, setLegend] = React.useState(null);
   const [tooltipData, setTooltipData] = React.useState(undefined);
@@ -50,6 +50,7 @@ const AreaLine = ({ data, entityRole, ...props }) => {
     setChart(chartNew);
     setLegend(chartNew.legend);
     ReactTooltip.rebuild();
+    setLoadingSpinnerOn(false, false, "AreaLine");
   }, [props.id, props.ghsaOnly, entityRole, data]);
 
   return (
