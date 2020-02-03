@@ -58,7 +58,9 @@ const Explore = ({
     undefined
   );
   // Track funding type
-  const [fundType, setFundType] = React.useState("false"); // default "all"
+  const [fundType, setFundType] = React.useState(
+    props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false"
+  ); // default "all"
 
   React.useEffect(() => {
     if (fundType === "event" && coreCapacities.length > 0)
@@ -71,8 +73,16 @@ const Explore = ({
     // Set isDark defaults.
     props.setIsDark(activeTab === "map");
 
-    // // Get rid of fund type default
-    setFundType("false");
+    // Skip fund type reset if both components are already null (first loading)
+    if (activeTab !== "map") {
+      setFundType("false");
+    } else {
+      setFundType(
+        props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false"
+      );
+    }
+
+    // Get rid of fund type default
     setCoreCapacities([]);
     setOutbreakResponses([]);
 
@@ -84,7 +94,8 @@ const Explore = ({
         coreCapacities: [],
         events: [],
         isDark: true,
-        fundType: "false"
+        fundType:
+          props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false"
       });
     } else {
       renderOrgs({
@@ -153,7 +164,10 @@ const Explore = ({
       renderMapViewer({
         ...mapProps,
         isDark: mapViewerComponent === null || props.isDark,
-        supportTypeDefault: supportTypeToSwitchTo
+        supportTypeDefault:
+          supportTypeToSwitchTo !== undefined
+            ? supportTypeToSwitchTo
+            : supportTypeDefault
       });
       if (supportTypeToSwitchTo !== undefined)
         setSupportTypeToSwitchTo(undefined);
@@ -255,6 +269,7 @@ export const renderExplore = ({
         isDark={props.isDark}
         supportTypeDefault={props.supportTypeDefault}
         setLoadingSpinnerOn={setLoadingSpinnerOn}
+        fundTypeDefault={props.fundTypeDefault}
       />
     );
   }

@@ -198,9 +198,15 @@ const App = () => {
                 path="/explore/:activeTab"
                 render={d => {
                   setPage("explore-" + d.match.params.activeTab);
+                  setExploreComponent(null);
                   // Get support type if specified.
                   const urlParams = new URLSearchParams(d.location.search);
-                  const supportTypeDefault = urlParams.get("supportType");
+                  const supportTypeDefault =
+                    d.match.params.activeTab === "map"
+                      ? urlParams.get("supportType") !== null
+                        ? urlParams.get("supportType")
+                        : undefined
+                      : undefined;
 
                   return renderExplore({
                     ...d.match.params,
@@ -214,6 +220,8 @@ const App = () => {
                     isDark: isDark,
                     setIsDark: setIsDark,
                     supportTypeDefault: supportTypeDefault,
+                    fundTypeDefault:
+                      supportTypeDefault !== undefined ? "" : "false",
                     setLoadingSpinnerOn
                   });
                 }}

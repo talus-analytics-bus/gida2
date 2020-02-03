@@ -47,7 +47,6 @@ const MapViewer = ({
   const [transactionType, setTransactionType] = React.useState("disbursed");
 
   // Track support type selected for the map
-
   const [supportType, setSupportType] = React.useState(
     supportTypeDefault || "funds"
   );
