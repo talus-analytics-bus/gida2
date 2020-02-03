@@ -375,7 +375,7 @@ const App = () => {
             </div>
           </Switch>
         </BrowserRouter>
-        {<Footer {...{ isDark }} />}
+        {<Footer {...{ isDark, isWide: page === "explore-map" }} />}
         {
           <div
             id={"loadingSpinner"}

@@ -22,23 +22,30 @@ const Footer = ({ ...props }) => {
   ];
 
   return (
-    <div className={classNames(styles.footer, { [styles.dark]: props.isDark })}>
-      {
-        <div className={styles.dataAsOf}>
-          {"Data last updated " +
-            Util.lastUpdated().toLocaleString("en-US", {
-              month: "short",
-              year: "numeric",
-              day: "numeric"
-            })}
+    <div
+      className={classNames(styles.footer, {
+        [styles.dark]: props.isDark,
+        [styles.wide]: props.isWide
+      })}
+    >
+      <div className={styles.content}>
+        {
+          <div className={styles.dataAsOf}>
+            {"Data last updated " +
+              Util.lastUpdated().toLocaleString("en-US", {
+                month: "short",
+                year: "numeric",
+                day: "numeric"
+              })}
+          </div>
+        }
+        <div className={styles.links}>
+          {images.map(d => (
+            <a target="_blank" href={d.url} alt={d.alt}>
+              <img src={d.imgSrc} />
+            </a>
+          ))}
         </div>
-      }
-      <div className={styles.links}>
-        {images.map(d => (
-          <a target="_blank" href={d.url} alt={d.alt}>
-            <img src={d.imgSrc} />
-          </a>
-        ))}
       </div>
     </div>
   );

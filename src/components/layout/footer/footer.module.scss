@@ -5,38 +5,48 @@ $button-font-size: 16px;
 $spacing: 10px;
 
 .footer {
-  display: flex;
-  flex-flow: row;
-  background-color: white;
-  justify-content: space-between;
-  align-items: flex-end;
   width: 100%;
   border-top: 1px $grey solid;
-  min-height: 70px;
-  padding: 10px;
-
-  div:first-child {
-    font-style: italic;
-    font-family: "Open Sans", sans-serif;
-    color: #999999;
-    font-size: 16px;
-  }
+  background-color: white;
   &.dark {
-    div:first-child {
-      color: #999999 !important;
+    background-color: #222;
+    .content {
+      div:first-child {
+        color: #999999 !important;
+      }
     }
   }
 
-  img {
-    height: 70px;
-    padding: 0 10px;
+  &.wide .content {
+    max-width: 1366px;
+  }
+  .content {
+    max-width: 1170px;
   }
 
-  &.dark {
-    background-color: #222;
-  }
+  .content {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: flex-end;
 
-  a:first-child:not(:last-child) img {
-    border-right: 1px solid $grey;
+    min-height: 70px;
+    padding: 10px;
+    margin: 0 auto;
+    div:first-child {
+      font-style: italic;
+      font-family: "Open Sans", sans-serif;
+      color: #999999;
+      font-size: 16px;
+    }
+
+    img {
+      height: 70px;
+      padding: 0 10px;
+    }
+
+    a:first-child:not(:last-child) img {
+      border-right: 1px solid $grey;
+    }
   }
 }
