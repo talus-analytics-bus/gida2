@@ -10,7 +10,9 @@
     }
   }
   .description {
-    max-width: unset;
+    max-width: 800px;
+    // max-width: unset;
+    font-size: 16px;
     p {
       margin: 0 0 10px;
     }
