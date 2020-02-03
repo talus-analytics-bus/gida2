@@ -691,7 +691,24 @@ const Details = ({
       ]
     : [];
 
-  const flag = `/flags/${data.nodeData.iso2 || data.nodeData.id}.png`;
+  const flagId = data.nodeData.iso2
+    ? data.nodeData.iso2.toLowerCase()
+    : "unspecified";
+
+  const ghsa = pageType === "ghsa";
+
+  const flagSrc = ghsa
+    ? `/flags/ghsa.png`
+    : `https://www.countryflags.io/${flagId}/flat/64.png`;
+  const flag =
+    data.nodeData.type === "country" || ghsa ? (
+      <img
+        onError={e => addDefaultSrc(e)}
+        className={classNames({ [styles.small]: ghsa })}
+        src={flagSrc}
+      />
+    ) : null;
+  // const flag = `/flags/${data.nodeData.iso2 || data.nodeData.id}.png`;
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
@@ -712,8 +729,6 @@ const Details = ({
     setCurTab("ihr");
   }, [entityRole]);
 
-  const ghsa = pageType === "ghsa";
-
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.details)}>
@@ -732,13 +747,7 @@ const Details = ({
         <div className={styles.countryBanner}>
           <div className={styles.bannerRow}>
             <div className={styles.countryName}>
-              {showFlag && (
-                <img
-                  className={classNames({ [styles.small]: ghsa })}
-                  src={flag}
-                  onError={e => addDefaultSrc(e)}
-                />
-              )}
+              {showFlag && flag && flag}
               <h1>{data.nodeData.name}</h1>
             </div>
             {!ghsa && (
