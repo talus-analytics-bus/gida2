@@ -171,7 +171,7 @@ const Explore = ({
   React.useEffect(() => {
     if (fundType === "event" && coreCapacities.length > 0) return;
     if (fundType !== "event" && outbreakResponses.length > 0) return;
-    if (activeTab === "map") {
+    if (activeTab === "map" && mapViewerComponent !== null) {
       renderMapViewer({
         ...mapProps,
         isDark: mapViewerComponent === null || props.isDark,
@@ -182,7 +182,7 @@ const Explore = ({
       });
       if (supportTypeToSwitchTo !== undefined)
         setSupportTypeToSwitchTo(undefined);
-    } else {
+    } else if (activeTab !== "map" && orgComponent !== null) {
       renderOrgs({
         ...orgProps
       });
