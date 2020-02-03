@@ -27,10 +27,17 @@
 
   .rightPane {
     background-color: #f2f2f2;
-    padding: 40px;
     height: 100%;
     .content {
       height: 100%;
+    }
+
+    .title,
+    .buttons {
+      padding: 20px 40px 0;
+      &.title {
+        padding-top: 40px;
+      }
     }
     .map {
       height: 100%;
@@ -39,7 +46,8 @@
       justify-content: center;
       img {
         width: 100%;
-        margin: auto;
+        margin-top: 60px;
+        margin-bottom: auto;
       }
     }
   }
