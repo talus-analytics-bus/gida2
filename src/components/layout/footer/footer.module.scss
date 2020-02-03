@@ -31,7 +31,7 @@ $spacing: 10px;
     align-items: flex-end;
 
     min-height: 70px;
-    padding: 10px;
+    padding: 10px 0;
     margin: 0 auto;
     div:first-child {
       font-style: italic;
@@ -47,6 +47,9 @@ $spacing: 10px;
 
     a:first-child:not(:last-child) img {
       border-right: 1px solid $grey;
+    }
+    a:last-child img {
+      padding-right: 0;
     }
   }
 }
