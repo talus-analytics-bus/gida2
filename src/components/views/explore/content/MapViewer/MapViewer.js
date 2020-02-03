@@ -402,6 +402,11 @@ const MapViewer = ({
     supportType !== "jee" && (
       <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
     );
+  mapTitleData.instructions = (
+    <div>
+      <i>Click country to view details.</i>
+    </div>
+  );
   setPageHeaderData(mapTitleData);
 
   return (

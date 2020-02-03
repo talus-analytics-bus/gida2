@@ -100,7 +100,8 @@ const Explore = ({
     } else {
       // Set page header data
       setPageHeaderData({
-        header: "ORGANIZATION FUNDERS AND RECIPIENTS",
+        main: "ORGANIZATION FUNDERS AND RECIPIENTS",
+        instructions: "Choose organization in table to view details.",
         instructions: "Choose organization in table to view details."
       });
 
@@ -221,6 +222,9 @@ const Explore = ({
           <div className={styles.titles}>
             <div className={styles.title}>{pageHeaderData.main}</div>
             <span>{pageHeaderData.subtitle}</span>
+            <span>
+              <i>{pageHeaderData.instructions}</i>
+            </span>
           </div>
           <div className={styles.controls}>
             <div className={styles.buttons}>

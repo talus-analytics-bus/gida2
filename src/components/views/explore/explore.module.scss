@@ -7,14 +7,20 @@
   padding-bottom: 0 !important;
   .header {
     @include header;
-    justify-content: flex-start;
-    align-items: flex-start;
-
-    .title {
-      @include title;
-    }
-    span {
-      font-size: 16px !important;
+    flex-flow: row !important;
+    justify-content: space-between;
+    align-items: flex-end;
+    .titles {
+      .title {
+        @include title;
+      }
+      span {
+        font-size: 16px !important;
+      }
+      div:last-child {
+        margin-top: 20px;
+        font-size: 14px;
+      }
     }
   }
 
@@ -51,8 +57,8 @@
     .controls {
       display: flex;
       flex-flow: row;
-      float: right;
-      margin-left: auto;
+      // float: right;
+      // margin-left: auto;
       .tabs {
         display: flex;
         flex-flow: row;
