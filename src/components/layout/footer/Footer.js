@@ -24,18 +24,14 @@ const Footer = ({ ...props }) => {
   return (
     <div className={classNames(styles.footer, { [styles.dark]: props.isDark })}>
       {
-        // <div className={styles.dataAsOf}>
-        //   {
-        //     'Showing most recent data as of ' + Util.today().toLocaleString('en-US', {
-        //       month: 'short',
-        //       year: 'numeric',
-        //       day: 'numeric',
-        //       hour: 'numeric',
-        //       minute: 'numeric',
-        //       timeZoneName: 'short',
-        //     })
-        //   }
-        // </div>
+        <div className={styles.dataAsOf}>
+          {"Data last updated " +
+            Util.lastUpdated().toLocaleString("en-US", {
+              month: "short",
+              year: "numeric",
+              day: "numeric"
+            })}
+        </div>
       }
       <div className={styles.links}>
         {images.map(d => (

@@ -720,6 +720,10 @@ Util.today = () => {
   return today; // TODO put time traveling here if needed
 };
 
+Util.lastUpdated = () => {
+  return new Date("2020-01-07");
+};
+
 Util.getDatetimeStamp = (datum, type = "year") => {
   if (!datum || datum["value"] === null) return "";
 
