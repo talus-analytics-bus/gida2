@@ -63,15 +63,16 @@
     .result {
       padding: 10px;
       color: #333;
+      position: relative;
       .name {
         height: auto;
         font-weight: bold;
+        white-space: normal;
       }
       .type {
         height: auto;
         font-style: italic;
         color: gray;
-        // text-transform: capitalize;
       }
       &:not(.noResult):hover {
         background-color: #f3f3f3;
