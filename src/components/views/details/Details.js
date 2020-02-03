@@ -68,7 +68,9 @@ const Details = ({
 
   const noResponseData = data.flows.flows.length === 0;
   const [curTab, setCurTab] = React.useState("ihr");
-  const [showFlag, setShowFlag] = React.useState(true);
+  const [showFlag, setShowFlag] = React.useState(
+    data.nodeData.type === "country"
+  );
 
   const [curPvsEdition, setCurPvsEdition] = React.useState(
     data.pvs.eds[0] || {}
@@ -904,7 +906,11 @@ export const renderDetails = ({
       setLoadingSpinnerOn
     });
 
-    return detailsComponent ? detailsComponent : <div />;
+    return detailsComponent ? (
+      detailsComponent
+    ) : (
+      <div className={"placeholder"} />
+    );
   } else {
     setLoadingSpinnerOn(false);
     return detailsComponent;
