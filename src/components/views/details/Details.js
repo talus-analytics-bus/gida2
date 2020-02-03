@@ -321,14 +321,14 @@ const Details = ({
                 prop: "ind",
                 type: "text",
                 func: d => d.indId + " " + d.ind,
-                render: d => d,
-                width: "50%"
+                render: d => d
               },
               {
                 title: "Level of advancement (1 to 5)",
                 prop: "score",
                 type: "text",
                 func: d => (d.score === "N/A" ? -9999 : d.score),
+                width: 240,
                 render: d => (
                   <ScoreBlocks
                     {...{
