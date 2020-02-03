@@ -23,6 +23,7 @@ const FundsByYear = ({
   unknownDataOnly,
   noFinancialData,
   params,
+  setLoadingSpinnerOn,
   ...props
 }) => {
   // Get area line data
@@ -98,12 +99,14 @@ const FundsByYear = ({
         ...params,
         ...updatedParams
       });
+      setLoadingSpinnerOn(true);
       query.then(d => {
         setChartData(d.master_summary.flow_types);
         setAreaLineData(getAreaLineData(d.master_summary.flow_types));
+        setLoadingSpinnerOn(false);
       });
     }
-  }, [fundType]);
+  }, [id, entityRole, fundType]);
 
   return (
     <div className={styles.fundsByYear}>

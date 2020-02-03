@@ -167,6 +167,7 @@ const Details = ({
         flowTypeInfo={flowTypeInfo}
         ghsaOnly={ghsaOnly}
         params={props.focusSummaryQueryParams}
+        setLoadingSpinnerOn={setLoadingSpinnerOn}
       />
     ),
     toggleFlowType: false,
@@ -700,7 +701,6 @@ const Details = ({
   };
 
   React.useEffect(() => {
-    // setLoadingSpinnerOn(false);
     setShowFlag(true);
     setCurPvsEdition(data.pvs.eds[0] || {});
     window.scrollTo(0, 0);
@@ -709,12 +709,8 @@ const Details = ({
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
   React.useEffect(() => {
-    // setLoadingSpinnerOn(false);
     setCurTab("ihr");
   }, [entityRole]);
-  React.useEffect(() => {
-    // setLoadingSpinnerOn(false);
-  }, [ghsaOnly]);
 
   const ghsa = pageType === "ghsa";
 
