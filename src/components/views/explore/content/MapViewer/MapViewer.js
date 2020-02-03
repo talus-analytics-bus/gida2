@@ -41,6 +41,7 @@ const MapViewer = ({
   supportTypeDefault,
   setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
+  setPageHeaderData,
   ...props
 }) => {
   // Track transaction type selected for the map
@@ -106,15 +107,73 @@ const MapViewer = ({
   const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
     .display_name;
 
-  const getMapTitle = ({ supportType, entityRole }) => {
+  // Get year range to use in title
+  const yearRange =
+    minYear === maxYear ? minYear.toString() : `${minYear} - ${maxYear}`;
+  const transactionTypeDisplay = Util.getInitCap(transactionType) + " funds";
+  const getMapTitle = ({ fundType, supportType, entityRole }) => {
     if (supportType === "funds" || supportType === "inkind") {
+      const text = {
+        role: "",
+        fund: "",
+        filters: ""
+      };
+
+      // Role text
       if (entityRole === "recipient") {
-        return "Recipients by country";
-      } else return "Funders by country";
+        text.role = "Recipients";
+      } else text.role = "Funders";
+
+      // Fund type text
+      switch (fundType) {
+        case "false":
+        case "":
+        default:
+          break;
+        case "true":
+          text.fund = " of GHSA funding";
+          break;
+        case "event":
+          text.fund = " of event response funding";
+          break;
+        case "capacity":
+          text.fund = " of IHR capacity building funding";
+          break;
+      }
+
+      // Filters text
+      if (coreCapacities.length > 0) {
+        text.filters = ` for selected IHR core capacities (${coreCapacities.join(
+          ", "
+        )})`;
+      } else if (events.length > 0) {
+        text.filters = " for selected event responses";
+      }
+
+      // Return composite
+      return {
+        detailed: `${text.role}${text.fund}`,
+        subtitle: `${flowTypeDisplayName} (${yearRange})${text.filters}`,
+        main: `${text.role}${text.fund} by country`
+      };
     } else if (supportType === "jee") {
-      return "JEE score by country";
+      const filterText =
+        coreCapacities.length > 0
+          ? `; for selected IHR core capacities (${coreCapacities.join(", ")})`
+          : "";
+      return {
+        main: "JEE score by country",
+        subtitle: `JEE score data as of 2020-01-15${filterText}`
+      };
     } else if (supportType === "needs_met") {
-      return "Combined financial resources and need metric";
+      const filterText =
+        coreCapacities.length > 0
+          ? `; for selected IHR core capacities (${coreCapacities.join(", ")})`
+          : "";
+      return {
+        main: "Combined financial resources and need by country",
+        subtitle: `JEE score data as of 2020-01-15${filterText}`
+      };
     } else return "[Error] Unknown map metric";
   };
 
@@ -338,16 +397,21 @@ const MapViewer = ({
     }
   ];
 
+  const mapTitleData = getMapTitle({ fundType, supportType, entityRole });
+  mapTitleData.entityRoleToggle = supportType !== "needs_met" &&
+    supportType !== "jee" && (
+      <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
+    );
+  setPageHeaderData(mapTitleData);
+
   return (
     <div className={classNames(styles.mapViewer, { [styles.dark]: isDark })}>
       <div className={styles.header}>
-        <div className={styles.labels}>
-          <div>{getMapTitle({ supportType, entityRole })}</div>
-          {metricHasTransactionType && <div>{flowTypeDisplayName}</div>}
-        </div>
-        {supportType !== "needs_met" && supportType !== "jee" && (
-          <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
-        )}
+        {
+          //   supportType !== "needs_met" && supportType !== "jee" && (
+          //   <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
+          // )
+        }
       </div>
       <div className={styles.content}>
         <Map
@@ -454,13 +518,14 @@ export const renderMapViewer = ({
   setSupportTypeToSwitchTo,
   events,
   setEvents,
+  setPageHeaderData,
   ...props
 }) => {
   // Set IDs
   id = parseInt(id);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else if (
     component === null ||
     (component &&
@@ -488,10 +553,11 @@ export const renderMapViewer = ({
       setSupportTypeToSwitchTo,
       events,
       setEvents,
+      setPageHeaderData,
       ...props
     });
 
-    return component ? component : <div />;
+    return component ? component : <div className={"placeholder"} />;
   } else if (component.props.isDark !== props.isDark) {
     setComponent(
       <MapViewer {...{ ...component.props, isDark: props.isDark }} />
@@ -519,6 +585,7 @@ const getComponentData = async ({
   setFundType,
   setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
+  setPageHeaderData,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -623,6 +690,7 @@ const getComponentData = async ({
       setEvents={props.setEvents}
       supportTypeDefault={props.supportTypeDefault}
       setSupportTypeToSwitchTo={setSupportTypeToSwitchTo}
+      setPageHeaderData={setPageHeaderData}
     />
   );
 };

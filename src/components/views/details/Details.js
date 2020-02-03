@@ -886,7 +886,7 @@ export const renderDetails = ({
   setGhsaOnly
 }) => {
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else if (
     detailsComponent === null ||
     (detailsComponent &&

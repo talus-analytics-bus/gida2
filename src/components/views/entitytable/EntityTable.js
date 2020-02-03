@@ -524,7 +524,7 @@ export const renderEntityTable = ({
 
   // Get data
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else if (
     component === null ||
     (component &&
@@ -554,7 +554,7 @@ export const renderEntityTable = ({
     ) : (
       <div />
     );
-    // return component ? component : <div />;
+    // return component ? component : <div className={"placeholder"}/>;
   } else {
     return component;
   }

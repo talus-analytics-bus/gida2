@@ -1,9 +1,15 @@
 @import "../../assets/styles/colors.scss";
 .d3Map {
   height: 100%;
+  &.loading {
+    min-height: 1000px;
+  }
   .worldMap {
     background-color: none;
-    height: 595px;
+    height: 100%;
+    min-height: 70vh;
+    // min-height: 595px;
+    // height: 595px;
   }
   .defsSvg {
     position: fixed;

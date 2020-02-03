@@ -537,7 +537,7 @@ export const renderOrgs = ({
   id = parseInt(id);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else if (
     component === null ||
     (component &&
@@ -566,7 +566,7 @@ export const renderOrgs = ({
       ...props
     });
 
-    return component ? component : <div />;
+    return component ? component : <div className={"placeholder"} />;
   } else {
     setLoadingSpinnerOn(false);
     return component;

@@ -37,7 +37,7 @@ const AnalysisData = ({
     });
   }, [minYear, maxYear, coreCapacities, ghsaOnly]);
 
-  if (component === null) return <div />;
+  if (component === null) return <div className={"placeholder"} />;
   else return component;
 };
 
@@ -52,7 +52,7 @@ export const renderAnalysisData = ({
   ...props
 }) => {
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else {
     return (
       <AnalysisData

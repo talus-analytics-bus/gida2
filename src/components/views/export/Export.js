@@ -330,14 +330,14 @@ export const renderExport = ({
 }) => {
   // Get data
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else if (component === null) {
     getComponentData({
       setComponent: setComponent,
       setLoadingSpinnerOn
     });
 
-    return component ? component : <div />;
+    return component ? component : <div className={"placeholder"}/>;
   } else {
     return component;
   }

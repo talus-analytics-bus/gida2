@@ -371,7 +371,7 @@ export const renderAnalysis = ({
   ...props
 }) => {
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else if (
     component === null ||
     (component &&
@@ -399,7 +399,7 @@ export const renderAnalysis = ({
       ...props
     });
 
-    return component ? component : <div />;
+    return component ? component : <div className={"placeholder"}/>;
   } else {
     return component;
   }

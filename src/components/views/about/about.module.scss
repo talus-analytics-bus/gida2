@@ -1,6 +1,8 @@
 @import "../../../assets/styles/colors.scss";
 
 .about {
+  min-height: 81vh;
+
   .header {
     @include header;
     .title {

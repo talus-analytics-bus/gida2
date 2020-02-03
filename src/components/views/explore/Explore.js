@@ -98,6 +98,13 @@ const Explore = ({
           props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false"
       });
     } else {
+      // Set page header data
+      setPageHeaderData({
+        header: "ORGANIZATION FUNDERS AND RECIPIENTS",
+        instructions: "Choose organization in table to view details."
+      });
+
+      // Render component
       renderOrgs({
         ...orgProps,
         coreCapacities: [],
@@ -116,6 +123,7 @@ const Explore = ({
 
   // Get header data
   const headerData = getHeaderData(activeTab);
+  const [pageHeaderData, setPageHeaderData] = React.useState({});
 
   const mapProps = {
     component: mapViewerComponent,
@@ -133,6 +141,7 @@ const Explore = ({
     setMinYear: setMinYear,
     maxYear: maxYear,
     setMaxYear: setMaxYear,
+    setPageHeaderData,
     supportTypeDefault,
     setLoadingSpinnerOn,
     setSupportTypeToSwitchTo
@@ -154,6 +163,7 @@ const Explore = ({
     setMinYear: setMinYear,
     maxYear: maxYear,
     setMaxYear: setMaxYear,
+    setPageHeaderData,
     setLoadingSpinnerOn
   };
 
@@ -194,7 +204,7 @@ const Explore = ({
   }, [props.isDark]);
 
   // Return JSX
-  if (headerData === undefined) return <div />;
+  if (headerData === undefined) return <div className={"placeholder"} />;
   else
     return (
       <div
@@ -208,10 +218,13 @@ const Explore = ({
         )}
       >
         <div className={styles.header}>
-          <div className={styles.title}>{headerData.header}</div>
-          <span>{headerData.instructions}</span>
+          <div className={styles.titles}>
+            <div className={styles.title}>{pageHeaderData.main}</div>
+            <span>{pageHeaderData.subtitle}</span>
+          </div>
           <div className={styles.controls}>
             <div className={styles.buttons}>
+              {pageHeaderData.entityRoleToggle}
               {activeTab === "map" && (
                 <div className={styles.darkToggle}>
                   <Toggle
@@ -256,7 +269,7 @@ export const renderExplore = ({
   ...props
 }) => {
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else {
     return (
       <Explore

@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import styles from "./d3map.module.scss";
 import TableInstance from "../chart/table/TableInstance.js";
 import WorldMap from "./worldMap.js";
@@ -105,7 +106,11 @@ const D3Map = ({
   );
 
   return (
-    <div className={styles.d3Map}>
+    <div
+      className={classNames(styles.d3Map, {
+        [styles.loading]: worldMap === null
+      })}
+    >
       {
         // placeholderTable
       }

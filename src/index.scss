@@ -5,9 +5,13 @@ body,
 #root {
   > div {
     > div:nth-child(2) {
-      min-height: 80vh;
+      // min-height: 80vh;
     }
   }
+  .placeholder {
+    min-height: 81vh;
+  }
+
   // Handle dark mode
   // TODO finish the CSS for this.
   .dark {
@@ -42,6 +46,8 @@ body,
     max-width: 1170px;
     &.wide {
       max-width: 1366px;
+      height: 100%;
+      min-height: unset;
     }
     margin: 0 auto;
     &.noPadding {

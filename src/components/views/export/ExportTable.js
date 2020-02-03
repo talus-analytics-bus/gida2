@@ -169,7 +169,7 @@ export const renderExportTable = ({
 }) => {
   // Get data
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className={"placeholder"} />;
   } else if (remountComponent({ component, curPage, ...props })) {
     getComponentData({
       setComponent: setComponent,
@@ -179,7 +179,7 @@ export const renderExportTable = ({
       ...props
     });
 
-    return component ? component : <div />;
+    return component ? component : <div className={"placeholder"}/>;
   } else if (
     component.props.exportCols.toString() !== props.exportCols.toString()
   ) {
