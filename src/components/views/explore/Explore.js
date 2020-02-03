@@ -214,7 +214,8 @@ const Explore = ({
           { wide: activeTab === "map" },
           styles.explore,
           {
-            [styles.dark]: props.isDark
+            [styles.dark]: props.isDark,
+            [styles[activeTab]]: true
           }
         )}
       >

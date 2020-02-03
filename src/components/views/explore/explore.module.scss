@@ -4,7 +4,9 @@
   // min-height: 80vh;
   min-height: 81vh !important;
 
-  padding-bottom: 0 !important;
+  &.map {
+    padding-bottom: 0 !important;
+  }
   .header {
     @include header;
     flex-flow: row !important;
