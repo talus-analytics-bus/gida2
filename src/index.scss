@@ -3,11 +3,11 @@
 html,
 body,
 #root {
-  > div {
-    > div:nth-child(2) {
-      // min-height: 80vh;
-    }
-  }
+  // > div {
+  //   > div:nth-child(2) {
+  //     // min-height: 80vh;
+  //   }
+  // }
   .placeholder {
     min-height: 81vh;
   }
