@@ -290,6 +290,7 @@ const Details = ({
                 prop: "cat",
                 type: "text",
                 func: d => d.cat,
+                width: 120,
                 render: d => (
                   <div
                     style={{ backgroundColor: pvsCats[d - 1][1] }}
@@ -320,7 +321,8 @@ const Details = ({
                 prop: "ind",
                 type: "text",
                 func: d => d.indId + " " + d.ind,
-                render: d => d
+                render: d => d,
+                width: "50%"
               },
               {
                 title: "Level of advancement (1 to 5)",
