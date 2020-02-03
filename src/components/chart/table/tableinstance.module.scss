@@ -1,9 +1,7 @@
 @import "../../../assets/styles/colors.scss";
 
 .tableInstance {
-  // width: max-content;
-  overflow: scroll;
-  // max-width: 800px;
+  overflow: auto;
 
   table {
     -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
@@ -19,11 +17,6 @@
     text-align: left;
     vertical-align: middle;
     margin: auto 0;
-    // display: flex;
-    // > span:first-child {
-    //   flex-flow: row;
-    //   align-items: center;
-    // }
   }
 
   // Mods to native styling
