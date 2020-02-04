@@ -45,7 +45,8 @@ export const jeeColors = [
 ];
 
 export const blues = [
-  "#e0eed8",
+  "#def6d0",
+  // "#e0eed8",
   "#d0e4c3",
   "#a3cfca",
   "#99c9c3",
