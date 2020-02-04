@@ -11,6 +11,7 @@ import Checkbox from "../../common/Checkbox/Checkbox.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import { core_capacities } from "../../misc/Data.js";
 import Button from "../../common/Button/Button.js";
+import axios from "axios";
 
 // Content components
 import { renderExportTable, getFlowQuery } from "./ExportTable.js";
@@ -118,7 +119,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
 
   const download = () => {
     // Erase download cookie.
-    Util.eraseCookie("download_completed");
+    Util.createCookie("download_completed", "no");
     getFlowQuery({
       curPage,
       funders,
@@ -173,6 +174,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       <div>
         <button id={"download"}>Send request to POST</button>
       </div>
+      //{" "}
     </form>
   );
 
@@ -337,7 +339,7 @@ export const renderExport = ({
       setLoadingSpinnerOn
     });
 
-    return component ? component : <div className={"placeholder"}/>;
+    return component ? component : <div className={"placeholder"} />;
   } else {
     return component;
   }

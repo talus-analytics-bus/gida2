@@ -20,13 +20,26 @@ Util.getShortName = s => {
   }
 };
 
+const getCookieDomain = () => {
+  if (window.location.href.search("talusanalytics") > -1)
+    return "talusanalytics.com";
+  else if (window.location.href.search("ghscosting") > -1) {
+    return "ghscosting.org";
+  } else {
+    return "localhost";
+  }
+};
+
+const COOKIE_DOMAIN = getCookieDomain();
+
 Util.createCookie = (name, value, days) => {
   if (days) {
     var date = new Date();
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
     var expires = "; expires=" + date.toUTCString();
   } else var expires = "";
-  document.cookie = name + "=" + value + expires + "; path=/";
+  const domain = (document.cookie =
+    name + "=" + value + expires + `; domain=${COOKIE_DOMAIN}; path=/`);
 };
 
 Util.readCookie = name => {
