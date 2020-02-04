@@ -75,11 +75,6 @@ const App = () => {
           if (waitingFor.length === 0) {
             // el.classList.toggle(styles.on, false);
             setSpinnerOn(false);
-            console.log("el");
-            console.log(el);
-          } else {
-            console.log("waitingFor");
-            console.log(waitingFor);
           }
         }
       }
