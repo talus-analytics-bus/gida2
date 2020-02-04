@@ -106,6 +106,8 @@ const Details = ({
 
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.focusSummary.flow_bundles[0] === undefined;
+  if (noData) setLoadingSpinnerOn(false);
+
   const noFinancialData = noData
     ? true
     : data.focusSummary.master_summary.flow_types["disbursed_funds"] ===

@@ -552,7 +552,7 @@ export const renderEntityTable = ({
         }}
       />
     ) : (
-      <div />
+      <div className={"placeholder"} />
     );
     // return component ? component : <div className={"placeholder"}/>;
   } else {
