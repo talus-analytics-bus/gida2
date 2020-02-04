@@ -16,7 +16,7 @@ import { renderExport } from "./components/views/export/Export.js";
 import { renderAnalysisData } from "./components/views/analysis/AnalysisData.js";
 import Background from "./components/views/about/Background.js";
 import DataSources from "./components/views/about/DataSources.js";
-import Research from "./components/views/about/Research.js";
+import Citations from "./components/views/about/Citations.js";
 import Submit from "./components/views/about/Submit.js";
 import spinnerImg from "./assets/images/spinner.svg";
 
@@ -350,10 +350,10 @@ const App = () => {
               />
               <Route
                 exact
-                path="/about/research"
+                path="/about/citations"
                 render={d => {
                   setPage("about");
-                  return <Research />;
+                  return <Citations />;
                 }}
               />
               <Route

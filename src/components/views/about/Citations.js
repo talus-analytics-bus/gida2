@@ -3,13 +3,13 @@ import styles from "./about.module.scss";
 import classNames from "classnames";
 
 // JSX for about page.
-const Research = () => {
+const Citations = () => {
   // Scroll to top of window afer loading.
   React.useEffect(() => window.scrollTo(0, 0), []);
   return (
     <div className={classNames(styles.about, "pageContainer")}>
       <div className={styles.header}>
-        <div className={styles.title}>Research</div>
+        <div className={styles.title}>Citations</div>
       </div>
       <div className={styles.description}>
         <p>
@@ -103,4 +103,4 @@ const Research = () => {
   );
 };
 
-export default Research;
+export default Citations;
