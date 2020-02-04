@@ -73,7 +73,7 @@ const Nav = ({ page, ...props }) => {
                 links: [
                   <Link to="/about/background">Background</Link>,
                   <Link to="/about/data">Data sources</Link>,
-                  <Link to="/about/research">Research</Link>,
+                  <Link to="/about/citations">Citations</Link>,
                   <Link to="/about/submit">Submit data</Link>
                 ],
                 openMenu,
