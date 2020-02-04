@@ -72,13 +72,16 @@ const FundsByYear = ({
     } else {
       setLoadingSpinnerOn(true, false, "AreaLine");
       // Get new data
-      const queryFunc =
-        id === "ghsa" ? FlowBundleGeneralQuery : FlowBundleFocusQuery;
+      const queryFunc = FlowBundleFocusQuery;
+      // const queryFunc =
+      //   id === "ghsa" ? FlowBundleGeneralQuery : FlowBundleFocusQuery;
 
       // update params as needed
       const updatedParams = {
         filters: { parent_flow_info_filters: [] },
         summaries: { flow_info_summary: ["year"] }
+        // focus_node_type: "target",
+        // focus_node_ids: null
       };
       if (fundType === "true") {
         updatedParams.filters.parent_flow_info_filters.push([
@@ -95,6 +98,13 @@ const FundsByYear = ({
           "response_or_capacity:not",
           "response"
         ]);
+      }
+      if (id === "ghsa") {
+        if (fundType !== "true")
+          updatedParams.filters.parent_flow_info_filters.push([
+            "ghsa_funding",
+            "True"
+          ]);
       }
       const query = queryFunc({
         ...params,

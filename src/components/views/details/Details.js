@@ -42,6 +42,8 @@ const Details = ({
   setLoadingSpinnerOn,
   ...props
 }) => {
+  console.log("data");
+  console.log(data);
   let pageType;
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
@@ -971,8 +973,7 @@ const getComponentData = async ({
   // If GHSA page, then filter by GHSA projects, and add "year" filter to the
   // summaries.
   // TODO ADD summaries to FlowBundleGeneralQuery so we don't need this hack.
-  if (id === "ghsa" || ghsaOnly === "true") {
-    baseQueryParams.summaries.flow_info_summary.push("year");
+  if (ghsaOnly === "true") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
       "True"
@@ -987,6 +988,15 @@ const getComponentData = async ({
       "response_or_capacity:not",
       "response"
     ]);
+  }
+
+  if (id === "ghsa") {
+    baseQueryParams.summaries.flow_info_summary.push("year");
+    if (ghsaOnly !== "true")
+      baseQueryParams.filters.parent_flow_info_filters.push([
+        "ghsa_funding",
+        "True"
+      ]);
   }
 
   const flowQueryParams = {
@@ -1069,7 +1079,7 @@ const getComponentData = async ({
       responseStart={then}
       responseEnd={now}
       setLoadingSpinnerOn={setLoadingSpinnerOn}
-      focusSummaryQueryParams={baseQueryParams}
+      focusSummaryQueryParams={focusSummaryQueryParams}
     />
   );
 };
