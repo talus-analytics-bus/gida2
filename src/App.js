@@ -53,6 +53,7 @@ const App = () => {
 
   // Track data selections
   const [ghsaOnly, setGhsaOnly] = React.useState("false");
+  const [spinnerOn, setSpinnerOn] = React.useState(false);
 
   // Track whether styling is dark or light
   const [isDark, setIsDark] = React.useState(false);
@@ -65,13 +66,24 @@ const App = () => {
         return el.classList.contains(styles.on);
       } else {
         if (val) {
-          el.classList.add(styles.on);
+          el.classList.toggle(styles.on, true);
+          setSpinnerOn(true);
           if (id) waitingFor.push(id);
         } else {
           if (id) waitingFor.pop();
-          if (waitingFor.length === 0) el.classList.remove(styles.on);
+          if (waitingFor.length === 0) {
+            el.classList.toggle(styles.on, false);
+            setSpinnerOn(false);
+            console.log("el");
+            console.log(el);
+          } else {
+            console.log("waitingFor");
+            console.log(waitingFor);
+          }
         }
       }
+    } else {
+      console.log("No element found");
     }
   };
 
@@ -90,6 +102,9 @@ const App = () => {
   React.useEffect(() => {
     getAppData();
   }, []);
+  React.useEffect(() => {
+    console.log("spinnerOn = " + spinnerOn);
+  }, [spinnerOn]);
 
   // Define what columns to show in tables
   const valueColsInkind = ["provided_inkind", "committed_inkind"];
@@ -380,7 +395,7 @@ const App = () => {
           <div
             id={"loadingSpinner"}
             className={classNames(styles.loadingSpinner, {
-              [styles.on]: page !== "home" && page !== "about"
+              [styles.on]: page !== "home" && page !== "about" && spinnerOn
             })}
           >
             <img src={spinnerImg} />
