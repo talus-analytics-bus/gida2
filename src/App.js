@@ -63,16 +63,17 @@ const App = () => {
     const el = document.getElementById("loadingSpinner");
     if (el) {
       if (get) {
-        return el.classList.contains(styles.on);
+        return spinnerOn;
+        // return el.classList.contains(styles.on);
       } else {
         if (val) {
-          el.classList.toggle(styles.on, true);
+          // el.classList.toggle(styles.on, true);
           setSpinnerOn(true);
           if (id) waitingFor.push(id);
         } else {
           if (id) waitingFor.pop();
           if (waitingFor.length === 0) {
-            el.classList.toggle(styles.on, false);
+            // el.classList.toggle(styles.on, false);
             setSpinnerOn(false);
             console.log("el");
             console.log(el);
