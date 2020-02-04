@@ -921,7 +921,6 @@ export const renderDetails = ({
       <div className={"placeholder"} />
     );
   } else {
-    setLoadingSpinnerOn(false);
     return detailsComponent;
   }
 };

@@ -70,6 +70,7 @@ const FundsByYear = ({
       setInitialized(true);
       return;
     } else {
+      setLoadingSpinnerOn(true, false, "AreaLine");
       // Get new data
       const queryFunc =
         id === "ghsa" ? FlowBundleGeneralQuery : FlowBundleFocusQuery;
@@ -99,7 +100,6 @@ const FundsByYear = ({
         ...params,
         ...updatedParams
       });
-      setLoadingSpinnerOn(true, false, "AreaLine");
       query.then(d => {
         setChartData(d.master_summary.flow_types);
         setAreaLineData(getAreaLineData(d.master_summary.flow_types));
