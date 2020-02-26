@@ -32,13 +32,13 @@ const getFlowValues = ({
   // Define the flows that should be used to get the flow values.
   const flowsTmp =
     supportTypeForValues === "funds"
-      ? ["committed_funds", "disbursed_funds"]
-      : ["committed_inkind", "provided_inkind"];
+      ? ["disbursed_funds", "committed_funds"]
+      : ["provided_inkind", "committed_inkind"];
 
   let flows;
   if (transactionType !== undefined) {
-    if (transactionType === "committed") flows = [flowsTmp[0]];
-    else flows = [flowsTmp[1]];
+    if (transactionType === "committed") flows = [flowsTmp[1]];
+    else flows = [flowsTmp[0]];
   } else {
     flows = flowsTmp;
   }

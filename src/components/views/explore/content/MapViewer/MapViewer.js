@@ -303,12 +303,12 @@ const MapViewer = ({
                   curVal={disableRefinements ? "" : transactionType}
                   choices={[
                     {
-                      name: "Committed",
-                      value: "committed"
-                    },
-                    {
                       name: "Disbursed",
                       value: "disbursed"
+                    },
+                    {
+                      name: "Committed",
+                      value: "committed"
                     }
                   ]}
                 />

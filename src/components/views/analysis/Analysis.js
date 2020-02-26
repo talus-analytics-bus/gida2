@@ -32,7 +32,7 @@ const Analysis = ({
   ...props
 }) => {
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = React.useState("committed");
+  const [transactionType, setTransactionType] = React.useState("disbursed");
   const [chordComponent, setChordComponent] = React.useState(null);
   const [selectedEntity, setSelectedEntity] = React.useState(null);
   const [selectedEntityInfo, setSelectedEntityInfo] = React.useState(null);
@@ -164,16 +164,6 @@ const Analysis = ({
                 })
             },
             {
-              title: "Committed",
-              prop: "committed_funds",
-              type: "num",
-              func: d =>
-                d.flow_types.committed_funds !== undefined
-                  ? d.flow_types.committed_funds.focus_node_weight
-                  : "",
-              render: d => Util.formatValue(d, "committed_funds")
-            },
-            {
               title: "Disbursed",
               prop: "disbursed_funds",
               type: "num",
@@ -182,6 +172,16 @@ const Analysis = ({
                   ? d.flow_types.disbursed_funds.focus_node_weight
                   : "",
               render: d => Util.formatValue(d, "disbursed_funds")
+            },
+            {
+              title: "Committed",
+              prop: "committed_funds",
+              type: "num",
+              func: d =>
+                d.flow_types.committed_funds !== undefined
+                  ? d.flow_types.committed_funds.focus_node_weight
+                  : "",
+              render: d => Util.formatValue(d, "committed_funds")
             }
           ]}
           tableData={data[table[3]].flow_bundles.filter(
@@ -303,12 +303,12 @@ const Analysis = ({
                 curVal={transactionType}
                 choices={[
                   {
-                    name: "Committed",
-                    value: "committed"
-                  },
-                  {
                     name: "Disbursed",
                     value: "disbursed"
+                  },
+                  {
+                    name: "Committed",
+                    value: "committed"
                   }
                 ]}
               />
@@ -399,7 +399,7 @@ export const renderAnalysis = ({
       ...props
     });
 
-    return component ? component : <div className={"placeholder"}/>;
+    return component ? component : <div className={"placeholder"} />;
   } else {
     return component;
   }

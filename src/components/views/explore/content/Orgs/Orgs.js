@@ -48,7 +48,7 @@ const Orgs = ({
   ...props
 }) => {
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = React.useState("committed");
+  const [transactionType, setTransactionType] = React.useState("disbursed");
 
   // Track support type selected for the map
   const [supportType, setSupportType] = React.useState("funds");
@@ -423,12 +423,12 @@ const Orgs = ({
                     curVal={transactionType}
                     choices={[
                       {
-                        name: "Committed",
-                        value: "committed"
-                      },
-                      {
                         name: "Disbursed",
                         value: "disbursed"
+                      },
+                      {
+                        name: "Committed",
+                        value: "committed"
                       }
                     ]}
                   />
