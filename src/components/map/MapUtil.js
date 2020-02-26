@@ -35,7 +35,7 @@ export const pvsCats = [
   ["Market Access", "#9bd3f9"]
 ];
 
-export const jeeColors = ["#ccc", "#ac1329", "#d28831", "#006840"];
+export const jeeColors = ["#ccc", "#a91726", "#f9a510", "#007c47"];
 
 // // Old color series with shades of yellow and green.
 // // Do not use in GU sites.

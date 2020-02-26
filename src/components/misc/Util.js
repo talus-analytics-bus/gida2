@@ -850,39 +850,24 @@ Util.formatLabel = ft => {
 };
 
 Util.getScoreName = score => {
-  if (score < 2) {
+  if (score < 1.5) {
     return "No Capacity";
-  } else if (score < 3) {
+  } else if (score < 2.5) {
     return "Limited Capacity";
-  } else if (score < 4) {
+  } else if (score < 3) {
     return "Developed Capacity";
-  } else if (score < 5) return "Demonstrated Capacity";
+  } else if (score < 4.5) return "Demonstrated Capacity";
   return "Sustained Capacity";
 };
 
 Util.getScoreShortName = score => {
   if (score === -9999 || score === "zzz") return "Unspecified";
-  else if (score < 2) {
+  else if (score < 1.5) {
     return "None";
   } else if (score < 3) {
     return "Limited or Developed";
-  } else if (score < 4) {
-    return "Limited or Developed";
-  } else if (score < 5) return "Demonstrated or Sustained";
-  return "Sustained or Sustained";
+  } else return "Demonstrated or Sustained";
 };
-
-// Util.getScoreShortName = score => {
-//   if (score === -9999 || score === "zzz") return "Unspecified";
-//   else if (score < 2) {
-//     return "None";
-//   } else if (score < 3) {
-//     return "Limited";
-//   } else if (score < 4) {
-//     return "Developed";
-//   } else if (score < 5) return "Demonstrated";
-//   return "Sustained";
-// };
 
 // Formats value based on column name
 Util.formatValue = (val, cn, units = true, round = false) => {
