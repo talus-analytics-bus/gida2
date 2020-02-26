@@ -75,14 +75,20 @@
       align-items: center;
 
       &.scaleOrdinal {
-        margin-bottom: $rect-height;
+        // margin-bottom: $rect-height;
+        display: grid;
+        grid-template-rows: auto;
+        grid-auto-flow: column;
+        align-items: start;
         .bucket {
-          margin: 0 20px;
-          align-items: center;
+          display: grid;
+          grid-template-rows: $rect-height auto;
+          grid-template-columns: repeat(auto-fill, $rect-width * 2);
+          grid-auto-flow: column;
+          text-align: center;
+          justify-items: center;
           .label {
             left: unset;
-            margin-top: $rect-height;
-            position: absolute;
           }
         }
       }

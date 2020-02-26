@@ -35,14 +35,18 @@ export const pvsCats = [
   ["Market Access", "#9bd3f9"]
 ];
 
-export const jeeColors = [
-  "#ccc",
-  "#ac1329",
-  "#ecb97e",
-  "#d28831",
-  "#00995e",
-  "#006840"
-];
+export const jeeColors = ["#ccc", "#ac1329", "#d28831", "#006840"];
+
+// // Old color series with shades of yellow and green.
+// // Do not use in GU sites.
+// export const jeeColors = [
+//   "#ccc",
+//   "#ac1329",
+//   "#ecb97e",
+//   "#d28831",
+//   "#00995e",
+//   "#006840"
+// ];
 
 export const blues = [
   "#def6d0",
@@ -240,11 +244,17 @@ export const getMapColorScale = ({
       domain: [
         "Unspecified",
         "None",
-        "Limited",
-        "Developed",
-        "Demonstrated",
-        "Sustained"
+        "Limited or Developed",
+        "Demonstrated or Sustained"
       ],
+      // domain: [
+      //   "Unspecified",
+      //   "None",
+      //   "Limited",
+      //   "Developed",
+      //   "Demonstrated",
+      //   "Sustained"
+      // ],
       range: jeeColors,
       type: "scaleOrdinal"
     });
