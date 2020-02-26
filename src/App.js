@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom";
+import BrowserDetection from "react-browser-detection";
 
 // layout
 import Nav from "./components/layout/nav/Nav.js";
@@ -30,6 +31,9 @@ import FlowTypeQuery from "./components/misc/FlowTypeQuery.js";
 
 // testing components
 import SimpleTable from "./components/chart/table/SimpleTable.js";
+
+// Misc
+import Modal from "reactjs-popup";
 
 //: React.FC
 const App = () => {
@@ -193,7 +197,50 @@ const App = () => {
     return baseCols.concat(valueColInfo);
   };
 
+  // Track the current page.
   const [page, setPage] = React.useState(undefined);
+
+  // Define a modal to show if an unexpected or unsupported browser is detected
+  const browserModal = browser => (
+    <Modal
+      position="top center"
+      on="click"
+      closeOnDocumentClick
+      defaultOpen={true}
+      modal
+    >
+      {close => (
+        <div className={styles.modal}>
+          <div className={styles.header}>Please try a different browser</div>
+          <div className={styles.content}>
+            <div className={styles.text}>
+              <p>
+                This site was designed for Chrome and Firefox desktop browsers,
+                but you seem to be using {browser}.
+              </p>
+              <p>
+                If this is correct, please open this site in Chrome or Firefox
+                for desktop instead.
+              </p>
+            </div>
+            <button className={classNames("button", "modal")} onClick={close}>
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+
+  const modalToShow = {
+    chrome: () => "",
+    firefox: () => "",
+    safari: browser => browserModal("Safari"),
+    edge: browser => browserModal("Edge"),
+    ie: browser => browserModal("Internet Explorer"),
+    opera: browser => browserModal("Opera"),
+    default: browser => browserModal("an unsupported browser")
+  };
 
   // JSX for main app.
   if (loading) return <div />;
@@ -385,6 +432,7 @@ const App = () => {
               />
             </div>
           </Switch>
+          <BrowserDetection>{modalToShow}</BrowserDetection>
         </BrowserRouter>
         {<Footer {...{ isDark, isWide: page === "explore-map" }} />}
         {

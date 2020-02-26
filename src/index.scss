@@ -21,6 +21,10 @@ body,
     color: white;
   }
 
+  .popup-overlay {
+    z-index: 1001 !important;
+  }
+
   // Handle dark mode
   // TODO finish the CSS for this.
   .dark {
