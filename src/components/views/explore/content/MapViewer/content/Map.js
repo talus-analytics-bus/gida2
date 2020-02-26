@@ -344,7 +344,8 @@ const Map = ({
           d3MapDataFields,
           ghsaOnly,
           setNodeData,
-          setLoadingSpinnerOn
+          setLoadingSpinnerOn,
+          isDark
         }}
       />
       <div className={styles.legend}>

@@ -78,5 +78,8 @@
   }
   .content {
     height: 100%;
+    &.dark {
+      background-color: #333;
+    }
   }
 }

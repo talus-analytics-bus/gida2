@@ -22,6 +22,7 @@ const D3Map = ({
   setNodeData,
   setTooltipNodeData,
   setLoadingSpinnerOn,
+  isDark,
   ...props
 }) => {
   const [mapLoaded, setMapLoaded] = React.useState(false);
@@ -114,7 +115,14 @@ const D3Map = ({
       {
         // placeholderTable
       }
-      {<div className={styles.worldMap} />}
+      {
+        <div
+          className={classNames(styles.worldMap, {
+            [styles.dark]: isDark,
+            [styles.loaded]: !init
+          })}
+        />
+      }
       {
         // Append defs svg
         <svg className={styles.defsSvg} height="100%" width="100%">

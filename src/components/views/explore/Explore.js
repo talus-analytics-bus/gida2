@@ -254,7 +254,11 @@ const Explore = ({
             </div>
           </div>
         </div>
-        <div className={styles.content}>
+        <div
+          className={classNames(styles.content, {
+            [styles.dark]: props.isDark
+          })}
+        >
           {activeTab === "map" ? mapViewerComponent : orgComponent}
         </div>
       </div>
