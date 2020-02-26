@@ -354,6 +354,7 @@ const Map = ({
             supportType,
             flowType,
             isDark,
+            entityRole,
             style: { borderBottom: "none" }
           }}
         />

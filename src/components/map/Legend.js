@@ -11,7 +11,9 @@ import SlideToggle from "../common/SlideToggle/SlideToggle.js";
  * @param  {[type]}       flowType    [description]
  * @return {[type]}                   [description]
  */
-const getLegendTitle = ({ supportType, flowType }) => {
+const getLegendTitle = ({ supportType, flowType, entityRole }) => {
+  const f = entityRole === "funder";
+  const currency = "(in USD)";
   switch (supportType) {
     case "jee":
       return "Average JEE score for selected core capacities";
@@ -23,13 +25,21 @@ const getLegendTitle = ({ supportType, flowType }) => {
     case "inkind":
       switch (flowType) {
         case "disbursed_funds":
-          return "Funds received (in USD)";
+          return f
+            ? `Funds disbursed ${currency}`
+            : `Disbursed funds received ${currency}`;
         case "committed_funds":
-          return "Funds committed (in USD)";
+          return f
+            ? `Funds committed ${currency}`
+            : `Committed funds received ${currency}`;
         case "provided_inkind":
-          return "In-kind support projects received";
+          return f
+            ? "In-kind support projects provided"
+            : "In-kind support projects received";
         case "committed_inkind":
-          return "In-kind support projects committed";
+          return f
+            ? "In-kind support projects committed"
+            : "Committed in-kind support projects received";
         default:
           return flowType;
       }
@@ -194,6 +204,7 @@ const Legend = ({
   title,
   className,
   isDark,
+  entityRole,
   ...props
 }) => {
   // Track whether legend is visible or not
@@ -213,7 +224,8 @@ const Legend = ({
         className={classNames(styles.content, { [styles.show]: show })}
       >
         <div>
-          {title === undefined && getLegendTitle({ supportType, flowType })}
+          {title === undefined &&
+            getLegendTitle({ supportType, flowType, entityRole })}
           {title !== undefined && title}
         </div>
         <div className={styles.entries}>
