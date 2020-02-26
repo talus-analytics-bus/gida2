@@ -12,12 +12,20 @@ const Footer = ({ ...props }) => {
     {
       imgSrc: props.isDark ? guDark : gu,
       url: "https://ghss.georgetown.edu/",
-      alt: "Georgetown University Center for Global Health Science and Security"
+      alt:
+        "Georgetown University Center for Global Health Science and Security",
+      txt: null
     },
     {
       imgSrc: props.isDark ? talusDark : talus,
       url: "http://talusanalytics.com/",
-      alt: "Talus Analytics, LLC"
+      alt: "Talus Analytics, LLC",
+      txt: "Built by",
+      style: {
+        height: "60px",
+        position: "relative",
+        top: "5px"
+      }
     }
   ];
 
@@ -42,7 +50,8 @@ const Footer = ({ ...props }) => {
         <div className={styles.links}>
           {images.map(d => (
             <a target="_blank" href={d.url} alt={d.alt}>
-              <img src={d.imgSrc} />
+              <img style={d.style} src={d.imgSrc} />
+              {d.txt && <div>{d.txt}</div>}
             </a>
           ))}
         </div>

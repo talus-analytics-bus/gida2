@@ -24,6 +24,7 @@ $spacing: 10px;
     max-width: 1170px;
   }
 
+  $item-spacing: 30px;
   .content {
     display: flex;
     flex-flow: row;
@@ -42,7 +43,7 @@ $spacing: 10px;
 
     img {
       height: 70px;
-      padding: 0 10px;
+      padding: 0 $item-spacing;
     }
 
     a:first-child:not(:last-child) img {
@@ -50,6 +51,17 @@ $spacing: 10px;
     }
     a:last-child img {
       padding-right: 0;
+    }
+    a {
+      position: relative;
+      > div {
+        position: absolute;
+        top: -25px;
+        left: $item-spacing;
+        font-size: 0.9em;
+        pointer-events: none;
+        color: #333;
+      }
     }
   }
 }
