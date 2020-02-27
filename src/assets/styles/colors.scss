@@ -132,3 +132,9 @@ $phone-width-narrow: 375px;
     margin-top: 20px;
   }
 }
+
+@mixin spaceChildrenHoriz($size) {
+  > *:not(:last-child) {
+    margin-right: $size;
+  }
+}
