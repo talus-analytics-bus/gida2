@@ -12,10 +12,10 @@
   }
 
   &.dark {
-    background-color: #222 !important;
+    background-color: $dark-background-color !important;
     &:hover,
     &:active {
-      background-color: #333 !important;
+      background-color: lighten($dark-background-color, 10%) !important;
     }
   }
 

@@ -149,9 +149,9 @@
   &.dark {
     .content {
       .menu {
-        background-color: #222;
+        background-color: $dark-background-color;
         button.tabToggle {
-          background-color: #222 !important;
+          background-color: #222 $dark-background-color;
           &:not(.selected) {
             background-color: transparent !important;
           }

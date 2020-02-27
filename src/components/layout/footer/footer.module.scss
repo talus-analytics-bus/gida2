@@ -9,7 +9,7 @@ $spacing: 10px;
   border-top: 1px $grey solid;
   background-color: white;
   &.dark {
-    background-color: #222;
+    background-color: $dark-background-color;
     .content {
       div:first-child {
         color: #999999 !important;

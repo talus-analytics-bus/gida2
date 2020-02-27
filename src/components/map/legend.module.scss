@@ -142,7 +142,7 @@
   // DARK MODE SETTINGS
   &.dark {
     .content {
-      background-color: #222;
+      background-color: $dark-background-color;
     }
   }
 }
