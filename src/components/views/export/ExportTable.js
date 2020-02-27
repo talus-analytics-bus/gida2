@@ -95,6 +95,7 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
       title: `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
       prop: "committed_funds",
       type: "num",
+      className: d => (d > 0 ? "num" : "num-with-text"),
       func: d =>
         d.flow_types.committed_funds !== undefined
           ? d.flow_types.committed_funds.focus_node_weight
@@ -105,6 +106,7 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
       title: `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
       prop: "disbursed_funds",
       type: "num",
+      className: d => (d > 0 ? "num" : "num-with-text"),
       func: d =>
         d.flow_types.disbursed_funds !== undefined
           ? d.flow_types.disbursed_funds.focus_node_weight
@@ -179,7 +181,7 @@ export const renderExportTable = ({
       ...props
     });
 
-    return component ? component : <div className={"placeholder"}/>;
+    return component ? component : <div className={"placeholder"} />;
   } else if (
     component.props.exportCols.toString() !== props.exportCols.toString()
   ) {

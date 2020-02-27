@@ -129,6 +129,7 @@ const Details = ({
       prop: "total",
       func: d => (d[curFlowType] ? d[curFlowType].total : undefined),
       type: "num",
+      className: d => (d > 0 ? "num" : "num-with-text"),
       title: `Total ${
         curFlowType === "disbursed_funds" ? "disbursed" : "committed"
       }`,
@@ -146,6 +147,7 @@ const Details = ({
       return {
         func: d => (d[curFlowType] ? d[curFlowType][c[0]] : undefined),
         type: "num",
+        className: d => (d > 0 ? "num" : "num-with-text"),
         title: c[1],
         prop: c[1],
         render: v => Util.formatValue(v, "disbursed_funds")
@@ -640,6 +642,7 @@ const Details = ({
                                 curFlowTypeName + ' (or "In-kind support")',
                               prop: "amount",
                               type: "num",
+                              className: d => (d > 0 ? "num" : "num-with-text"),
                               func: d => {
                                 // Check whether the monetary amount is available
                                 const ft = d.flow_types[curFlowType];

@@ -372,6 +372,7 @@ const Orgs = ({
               title: flowTypeDisplayName,
               prop: "value",
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               func: d => d.value_raw,
               render: d => Util.formatValue(d, flowType)
             }

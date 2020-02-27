@@ -167,6 +167,7 @@ const Analysis = ({
               title: "Disbursed",
               prop: "disbursed_funds",
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               func: d =>
                 d.flow_types.disbursed_funds !== undefined
                   ? d.flow_types.disbursed_funds.focus_node_weight
@@ -177,6 +178,7 @@ const Analysis = ({
               title: "Committed",
               prop: "committed_funds",
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               func: d =>
                 d.flow_types.committed_funds !== undefined
                   ? d.flow_types.committed_funds.focus_node_weight

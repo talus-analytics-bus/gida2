@@ -69,6 +69,7 @@ const EntityTable = ({
         prop: match.name,
         render: val => Util.formatValue(val, match.name),
         type: "num",
+        className: d => (d > 0 ? "num" : "num-with-text"),
         func: d => d[ft] || undefined
       };
     });
@@ -181,6 +182,7 @@ const EntityTable = ({
                   ? d.flow_types.disbursed_funds.focus_node_weight
                   : undefined,
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "disbursed_funds",
               render: val => Util.formatValue(val, "disbursed_funds"),
               defaultContent: "n/a"
@@ -194,6 +196,7 @@ const EntityTable = ({
                   ? d.flow_types.committed_funds.focus_node_weight
                   : undefined,
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "committed_funds",
               render: val => Util.formatValue(val, "committed_funds"),
               defaultContent: "n/a"
@@ -222,6 +225,7 @@ const EntityTable = ({
                   ? d.flow_types.disbursed_funds.focus_node_weight
                   : undefined,
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "disbursed_funds",
               render: val => Util.formatValue(val, "disbursed_funds"),
               defaultContent: "n/a"
@@ -235,6 +239,7 @@ const EntityTable = ({
                   ? d.flow_types.committed_funds.focus_node_weight
                   : undefined,
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "committed_funds",
               render: val => Util.formatValue(val, "committed_funds"),
               defaultContent: "n/a"
@@ -266,6 +271,7 @@ const EntityTable = ({
                   ? d.flow_types.disbursed_funds.focus_node_weight
                   : undefined,
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "disbursed_funds",
               render: val => Util.formatValue(val, "disbursed_funds"),
               defaultContent: "n/a"
@@ -279,6 +285,7 @@ const EntityTable = ({
                   ? d.flow_types.committed_funds.focus_node_weight
                   : undefined,
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "committed_funds",
               render: val => Util.formatValue(val, "committed_funds"),
               defaultContent: "n/a"
@@ -395,6 +402,7 @@ const EntityTable = ({
                   ? d.flow_types.provided_inkind.focus_node_weight
                   : undefined,
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "provided_inkind",
               render: val => Util.formatValue(val, "inkind"),
               defaultContent: "n/a"
@@ -406,6 +414,7 @@ const EntityTable = ({
                   ? d.flow_types.committed_inkind.focus_node_weight
                   : undefined,
               type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "committed_inkind",
               render: val => Util.formatValue(val, "inkind"),
               defaultContent: "n/a"

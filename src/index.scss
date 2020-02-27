@@ -134,6 +134,17 @@ body,
       }
     }
   }
+
+  // Universal table cell styles
+  // Ensure currency amounts are decimal-aligned and do not wrap
+  td.num {
+    text-align: right;
+    white-space: nowrap;
+  }
+  td.num-with-text,
+  td.empty-cell {
+    text-align: right;
+  }
 }
 
 @import "../node_modules/react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
