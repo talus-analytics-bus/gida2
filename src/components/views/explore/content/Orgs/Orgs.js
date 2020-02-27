@@ -277,8 +277,13 @@ const Orgs = ({
   const tables = [
     [
       <div className={styles.subtitle}>
-        <Chevron type={"funder"} />
-        <div>Top funders ({yearRange})</div>
+        <div className={"flexrow"}>
+          <Chevron type={"funder"} />
+          <div>Top organizational funders ({yearRange})</div>
+        </div>
+        <div class={"normal"}>
+          <i>Countries and government agencies not shown</i>
+        </div>
       </div>,
       "Funder",
       "source",
@@ -286,8 +291,13 @@ const Orgs = ({
     ],
     [
       <div className={styles.subtitle}>
-        <Chevron type={"recipient"} />
-        <div>Top recipients ({yearRange})</div>
+        <div className={"flexrow"}>
+          <Chevron type={"recipient"} />
+          <div>Top organizational recipients ({yearRange})</div>
+        </div>
+        <div class={"normal"}>
+          <i>Countries and government agencies not shown</i>
+        </div>
       </div>,
       "Recipient",
       "target",

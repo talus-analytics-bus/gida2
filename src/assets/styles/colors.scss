@@ -14,6 +14,9 @@ $selected-blue: #449fb7;
 $data-blue: #5781ab;
 $dark-grey-2: #4d4d4d;
 
+$font-size: 16px;
+$font-color: $dark-grey;
+
 $recipient-red: #67001f;
 $funder-blue: #053061;
 
@@ -114,8 +117,8 @@ $phone-width-narrow: 375px;
   font-family: "rawline", sans-serif;
 
   display: flex;
-  flex-flow: row;
-  align-items: center;
+  flex-flow: column;
+  // align-items: center;
   svg {
     top: 5px;
   }

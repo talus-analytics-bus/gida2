@@ -3,13 +3,15 @@
 html,
 body,
 #root {
-  // > div {
-  //   > div:nth-child(2) {
-  //     // min-height: 80vh;
-  //   }
-  // }
   .placeholder {
     min-height: 81vh;
+  }
+
+  .normal {
+    font-size: $font-size;
+    font-weight: normal;
+    font-family: "Open Sans", sans;
+    color: $font-color;
   }
 
   // Cookie consent styling
@@ -144,6 +146,14 @@ body,
   td.num-with-text,
   td.empty-cell {
     text-align: right;
+  }
+
+  // Flex styling
+  .flexrow {
+    display: flex;
+  }
+  .flexrow + div {
+    margin-top: 10px;
   }
 }
 
