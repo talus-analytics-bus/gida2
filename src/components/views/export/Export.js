@@ -50,7 +50,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     ],
     [
       "disbursed_funds",
-      `Amount committed (${Settings.startYear} - ${Settings.endYear})`
+      `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`
     ]
   ];
 
