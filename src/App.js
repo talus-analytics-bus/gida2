@@ -452,7 +452,7 @@ const App = () => {
 
 export const Settings = {
   startYear: 2014,
-  endYear: 2019
+  endYear: 2020
 };
 
 export default App;

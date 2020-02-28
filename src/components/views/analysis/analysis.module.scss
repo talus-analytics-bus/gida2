@@ -9,6 +9,7 @@
   }
   .subtitle {
     @include subtitle;
+    flex-flow: row;
   }
   p {
     max-width: 900px;
