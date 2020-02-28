@@ -32,6 +32,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
     funders.length > 0 ||
+    outbreaks.length > 0 ||
     recipients.length > 0;
 
   const cols = [
