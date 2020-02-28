@@ -44,6 +44,10 @@ const EntityTable = ({
   // Get master summary
   const masterSummary = data.flowBundles.master_summary;
 
+  // If allowing pair tables, use correct pair table slug for routing.
+  const ENABLE_PAIR_TABLES = false;
+  const pairTableSlug = ENABLE_PAIR_TABLES ? "pair-table" : "table";
+
   // List of all flow types
   const allFlowTypes = [
     "disbursed_funds",
@@ -89,7 +93,7 @@ const EntityTable = ({
         urlType:
           entityRole === "funder" || pageType === "ghsa"
             ? "table"
-            : "pair-table",
+            : pairTableSlug,
         nodeList: JSON.parse(d),
         entityRole: "funder",
         id: id,
@@ -107,7 +111,7 @@ const EntityTable = ({
         urlType:
           entityRole === "recipient" || pageType === "ghsa"
             ? "table"
-            : "pair-table",
+            : pairTableSlug,
         nodeList: JSON.parse(d),
         entityRole: "recipient",
         id: id,
@@ -142,7 +146,7 @@ const EntityTable = ({
                   urlType:
                     entityRole === "funder" || pageType === "ghsa"
                       ? "table"
-                      : "pair-table",
+                      : pairTableSlug,
                   nodeList: JSON.parse(d),
                   entityRole: "funder",
                   id: id,
@@ -159,7 +163,7 @@ const EntityTable = ({
                   urlType:
                     entityRole === "recipient" || pageType === "ghsa"
                       ? "table"
-                      : "pair-table",
+                      : pairTableSlug,
                   nodeList: JSON.parse(d),
                   entityRole: "recipient",
                   id: id,
@@ -365,7 +369,7 @@ const EntityTable = ({
                   urlType:
                     entityRole === "funder" || pageType === "ghsa"
                       ? "table"
-                      : "pair-table",
+                      : pairTableSlug,
                   nodeList: JSON.parse(d),
                   entityRole: "funder",
                   id: id,
@@ -382,7 +386,7 @@ const EntityTable = ({
                   urlType:
                     entityRole === "recipient" || pageType === "ghsa"
                       ? "table"
-                      : "pair-table",
+                      : pairTableSlug,
                   nodeList: JSON.parse(d),
                   entityRole: "recipient",
                   id: id,
