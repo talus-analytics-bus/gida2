@@ -108,7 +108,6 @@ const Details = ({
 
   // True if there are no data to show for the entire page, false otherwise.
   const noData = data.focusSummary.flow_bundles[0] === undefined;
-  if (noData) setLoadingSpinnerOn(false);
 
   const noFinancialData = noData
     ? true
@@ -116,6 +115,9 @@ const Details = ({
         undefined &&
       data.focusSummary.master_summary.flow_types["committed_funds"] ===
         undefined;
+
+  if (noData || noFinancialData)
+    setLoadingSpinnerOn(false, false, undefined, true);
 
   // True if the only available data to show are for "unknown" values (specific
   // value no reported).

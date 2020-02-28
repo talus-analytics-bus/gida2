@@ -63,7 +63,12 @@ const App = () => {
   const [isDark, setIsDark] = React.useState(false);
   const loadingSpinnerOn = false;
   const waitingFor = [];
-  const setLoadingSpinnerOn = (val, get = false, id = undefined) => {
+  const setLoadingSpinnerOn = (
+    val,
+    get = false,
+    id = undefined,
+    override = false
+  ) => {
     const el = document.getElementById("loadingSpinner");
     if (el) {
       if (get) {
@@ -76,7 +81,7 @@ const App = () => {
           if (id) waitingFor.push(id);
         } else {
           if (id) waitingFor.pop();
-          if (waitingFor.length === 0) {
+          if (waitingFor.length === 0 || override) {
             // el.classList.toggle(styles.on, false);
             setSpinnerOn(false);
           }

@@ -72,7 +72,7 @@ const FundsByYear = ({
     if (!initialized) {
       setInitialized(true);
       return;
-    } else {
+    } else if (!unknownDataOnly && !noFinancialData) {
       setLoadingSpinnerOn(true, false, "AreaLine");
       // Get new data
       const queryFunc = FlowBundleFocusQuery;
@@ -117,6 +117,8 @@ const FundsByYear = ({
         setChartData(d.master_summary.flow_types);
         setAreaLineData(getAreaLineData(d.master_summary.flow_types));
       });
+    } else {
+      setLoadingSpinnerOn(false);
     }
   }, [id, entityRole, fundType]);
 
