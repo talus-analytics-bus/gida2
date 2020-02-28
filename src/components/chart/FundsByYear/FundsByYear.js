@@ -35,8 +35,11 @@ const FundsByYear = ({
       };
 
       flowTypeInfo.forEach(ft => {
-        if (data[ft.name] === undefined) yearDatum[ft.name] = "n/a";
-        else {
+        if (data[ft.name] === undefined) {
+          yearDatum[ft.name] = "n/a";
+        } else if (ft.flow_type_id > 2) {
+          return;
+        } else {
           const yearDatumVal = data[ft.name].summaries.year[i.toString()];
           if (yearDatumVal !== undefined) yearDatum[ft.name] = yearDatumVal;
           else yearDatum[ft.name] = "n/a";
