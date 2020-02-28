@@ -606,8 +606,8 @@ const getComponentData = async ({
     by_neighbor: false,
     filters: { parent_flow_info_filters: [] },
     summaries: {},
-    include_master_summary: false,
-    node_category: ["country"]
+    include_master_summary: false
+    // node_category: ["country"]
     // by_node_categories: ["country", "organization"]
   };
 
