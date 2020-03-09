@@ -39,12 +39,20 @@ const Footer = ({ ...props }) => {
       <div className={styles.content}>
         {
           <div className={styles.dataAsOf}>
-            {"Data last updated " +
-              Util.lastUpdated().toLocaleString("en-US", {
-                month: "short",
-                year: "numeric",
-                day: "numeric"
-              })}
+            Data last updated{" "}
+            {Util.lastUpdated({}).toLocaleString("en-US", {
+              month: "short",
+              year: "numeric",
+              day: "numeric"
+            })}
+            . <br />
+            Data sourced from IATI last updated{" "}
+            {Util.lastUpdated({ type: "iati" }).toLocaleString("en-US", {
+              month: "short",
+              year: "numeric",
+              day: "numeric"
+            })}
+            .
           </div>
         }
         <div className={styles.links}>

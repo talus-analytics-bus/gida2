@@ -733,8 +733,14 @@ Util.today = () => {
   return today; // TODO put time traveling here if needed
 };
 
-Util.lastUpdated = () => {
-  return new Date("2020-01-07");
+Util.lastUpdated = ({ type = "all" }) => {
+  switch (type) {
+    case "iati":
+      return new Date("2020-01-06 12:00 PM");
+    case "all":
+    default:
+      return new Date("2020-02-28 12:00 PM");
+  }
 };
 
 Util.getDatetimeStamp = (datum, type = "year") => {
