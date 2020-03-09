@@ -664,7 +664,7 @@ Util.roman = i => {
 const getApiUrl = () => {
   if (process.env.NODE_ENV === "production") {
     if (window.location.href.search("https") > -1)
-      return "https://gida-tracking-api.talusanalytics.com/";
+      return "https://gida-tracking-api.ghscosting.org/";
     else return "http://gida-tracking-api-dev.us-west-1.elasticbeanstalk.com/";
   } else return "http://localhost:5002";
 };
