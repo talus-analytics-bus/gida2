@@ -28,10 +28,10 @@ const Background = ({ ...props }) => {
           security.
         </p>
         <p>
-          The Georgetown Infectious Disease Atlas (GIDA) Health Security
+          The Georgetown Infectious Disease Atlas (GIDA) Global Health Security
           Tracking site was developed to provide a shared resource to map the
           flow of committed and disbursed funds for global health security. GIDA
-          Health Security Tracking allows both funders and recipients to
+          Global Health Security Tracking allows both funders and recipients to
           identify gaps and prioritize future investments, and helps to
           highlight the ways in which funds can be allocated most effectively to
           have the greatest impact. This platform and effort will serve as the
@@ -49,15 +49,15 @@ const Background = ({ ...props }) => {
           .
         </p>
         <p>
-          GIDA Health Security Tracking was created by the Georgetown University
-          Center for Global Health Science and Security in partnership with
-          Talus Analytics. This project was funded by a grant to Georgetown
-          University by the Open Philanthropy Project.&nbsp;
+          GIDA Global Health Security Tracking was created by the Georgetown
+          University Center for Global Health Science and Security in
+          partnership with Talus Analytics. This project was funded by a grant
+          to Georgetown University by the Open Philanthropy Project.&nbsp;
         </p>
         <p>
           We welcome user questions and comments. We also invite you to share
-          any research conducted using GIDA Health Security Tracking, so we can
-          link to it from the dashboard.
+          any research conducted using GIDA Global Health Security Tracking, so
+          we can link to it from the dashboard.
         </p>
         <p>
           Please submit comments or any other inquires by email at&nbsp;

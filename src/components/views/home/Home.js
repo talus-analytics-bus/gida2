@@ -12,17 +12,17 @@ const Home = () => {
       <div className={styles.leftPane}>
         <div className={styles.welcomeContainer}>
           <div className={styles.welcomeText}>
-            Welcome to the Georgetown Health Security Tracking site
+            Welcome to the Georgetown Global Health Security Tracking site
           </div>
 
           <div className={styles.welcomeDesc}>
             <p>
-              The Georgetown Infectious Disease Atlas (GIDA) Health Security
-              Tracking site maps the flow of funding and in-kind support for
-              global health security. Use the search bar below to view more
-              details about a funder or recipient's activities, or click the
-              buttons above the map on the right to explore global funding and
-              capacity.
+              The Georgetown Infectious Disease Atlas (GIDA) Global Health
+              Security Tracking site maps the flow of funding and in-kind
+              support for global health security. Use the search bar below to
+              view more details about a funder or recipient's activities, or
+              click the buttons above the map on the right to explore global
+              funding and capacity.
             </p>
             <p className={styles.instructions}>
               This site is designed to be used in Chrome or Firefox desktop

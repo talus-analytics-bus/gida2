@@ -461,7 +461,7 @@ const App = () => {
 };
 
 export const Settings = {
-  startYear: 2014,
+  startYear: 2000,
   endYear: 2020
 };
 
