@@ -49,6 +49,7 @@ const App = () => {
   // Try components
   const [detailsComponent, setDetailsComponent] = React.useState(null);
   const [entityTableComponent, setEntityTableComponent] = React.useState(null);
+  const [entityTableFundType, setEntityTableFundType] = React.useState("false");
   const [exploreComponent, setExploreComponent] = React.useState(null);
   const [exportComponent, setExportComponent] = React.useState(null);
   const [analysisDataComponent, setAnalysisDataComponent] = React.useState(
@@ -313,6 +314,10 @@ const App = () => {
                 path="/table/:id/:entityRole"
                 render={d => {
                   setPage(undefined);
+                  const defaultGhsaOnly =
+                    d.match.params.id === "ghsa"
+                      ? "false"
+                      : entityTableFundType;
                   return renderEntityTable({
                     ...d.match.params,
                     component: entityTableComponent,
@@ -320,8 +325,8 @@ const App = () => {
                     loading: loading,
                     setLoading: setLoading,
                     flowTypeInfo: flowTypeInfo,
-                    ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly,
+                    ghsaOnly: defaultGhsaOnly,
+                    setGhsaOnly: setEntityTableFundType,
                     setLoadingSpinnerOn
                   });
                 }}
@@ -368,8 +373,8 @@ const App = () => {
                     loading: loading,
                     setLoading: setLoading,
                     flowTypeInfo: flowTypeInfo,
-                    ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly,
+                    ghsaOnly: entityTableFundType,
+                    setGhsaOnly: setEntityTableFundType,
                     setLoadingSpinnerOn
                   });
                 }}
