@@ -46,7 +46,7 @@ const Footer = ({ ...props }) => {
               day: "numeric"
             })}
             . <br />
-            Data sourced from IATI last updated{" "}
+            Data from IATI last updated{" "}
             {Util.lastUpdated({ type: "iati" }).toLocaleString("en-US", {
               month: "short",
               year: "numeric",
