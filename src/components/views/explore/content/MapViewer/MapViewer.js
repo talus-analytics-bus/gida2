@@ -52,12 +52,32 @@ const MapViewer = ({
     supportTypeDefault || "funds"
   );
 
-  // Override support type if it doesn't make sense
-  if (
-    (fundType !== "" && supportType === "jee") ||
-    (fundType !== "capacity_for_needs_met" && supportType === "needs_met")
-  )
-    setSupportType("funds");
+  // define score toggle options
+  const score_toggle_data = [
+    {
+      name: "JEE score",
+      value: "jee",
+      tooltip:
+        "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
+    }
+  ];
+
+  // same for combined toggle options
+  const combined_toggle_data = [
+    {
+      name: "Combined financial resources and need metric",
+      value: "needs_met",
+      tooltip:
+        "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
+    }
+  ];
+
+  // // Override support type if it doesn't make sense
+  // if (
+  //   (fundType !== "" && supportType === "jee") ||
+  //   (fundType !== "capacity_for_needs_met" && supportType === "needs_met")
+  // )
+  //   setSupportType("funds");
 
   // Track main map title
   const [mapTitle, setMapTitle] = React.useState("funds");
@@ -184,6 +204,38 @@ const MapViewer = ({
   const [curTab, setCurTab] = React.useState(
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
+
+  // when map options tab is changed, if the current radio selection for the
+  // main data to show on the map is not on this tab, then set a reasonable
+  // default (e.g., the first radio option).
+  const score_data_names = score_toggle_data.map(d => d.value);
+  const combined_data_names = combined_toggle_data.map(d => d.value);
+  React.useEffect(() => {
+    // Case A: Tabbed to "Funding" and fundType is not defined, so set to
+    // 'false' (all).
+    if (
+      curTab === "funding" &&
+      ["", "capacity_for_needs_met"].includes(fundType)
+    ) {
+      setFundType("false");
+      setSupportTypeToSwitchTo("funds");
+
+      // Case B: Tabbed to "Scores" and support type is not a score.
+    } else if (curTab === "scores" && !score_data_names.includes(supportType)) {
+      setFundType("");
+      setSupportTypeToSwitchTo(score_data_names[0]);
+
+      // Case C: Tabbed to "Combined" and and support type is not a combined
+      // metric.
+    } else if (
+      curTab === "combined" &&
+      !combined_data_names.includes(supportType)
+    ) {
+      setFundType("capacity_for_needs_met"); // TODO dynamically
+      setEntityRole("recipient");
+      setSupportTypeToSwitchTo("needs_met"); // TODO dynamically
+    }
+  }, [curTab]);
 
   const filterSelections = fundType !== "event" ? coreCapacities : events;
 
@@ -336,19 +388,7 @@ const MapViewer = ({
                 setSupportTypeToSwitchTo(v);
               }}
               curVal={supportType}
-              choices={[
-                {
-                  name: "JEE score",
-                  value: "jee",
-                  tooltip:
-                    "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
-                }
-                // {
-                //   name: "PVS score",
-                //   value: "pvs",
-                //   tooltip: ""
-                // }
-              ]}
+              choices={score_toggle_data}
             />
           </div>
           <div className={styles.section}>
@@ -378,14 +418,7 @@ const MapViewer = ({
                 } else setSupportType(v);
               }}
               curVal={supportType}
-              choices={[
-                {
-                  name: "Combined financial resources and need metric",
-                  value: "needs_met",
-                  tooltip:
-                    "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
-                }
-              ]}
+              choices={combined_toggle_data}
             />
           </div>
           <div className={styles.section}>
@@ -400,7 +433,13 @@ const MapViewer = ({
   const mapTitleData = getMapTitle({ fundType, supportType, entityRole });
   mapTitleData.entityRoleToggle = supportType !== "needs_met" &&
     supportType !== "jee" && (
-      <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
+      <EntityRoleToggle
+        entityRole={entityRole}
+        callback={v => {
+          setEntityRole(v);
+          setSupportTypeToSwitchTo(supportType);
+        }}
+      />
     );
   mapTitleData.instructions = (
     <div>

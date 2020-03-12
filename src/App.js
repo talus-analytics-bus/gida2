@@ -108,9 +108,6 @@ const App = () => {
   React.useEffect(() => {
     getAppData();
   }, []);
-  React.useEffect(() => {
-    console.log("spinnerOn = " + spinnerOn);
-  }, [spinnerOn]);
 
   // Define what columns to show in tables
   const valueColsInkind = ["provided_inkind", "committed_inkind"];
