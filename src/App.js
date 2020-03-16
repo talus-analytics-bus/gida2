@@ -219,7 +219,7 @@ const App = () => {
             <div className={styles.text}>
               <p>
                 This site was designed for Chrome and Firefox desktop browsers,
-                but you seem to be using {browser}.
+                but you seem to be using an unsupported browser.
               </p>
               <p>
                 If this is correct, please open this site in Chrome or Firefox
