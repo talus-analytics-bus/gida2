@@ -45,14 +45,6 @@ const Footer = ({ ...props }) => {
               year: "numeric",
               day: "numeric"
             })}
-            . <br />
-            Data from IATI last updated{" "}
-            {Util.lastUpdated({ type: "iati" }).toLocaleString("en-US", {
-              month: "short",
-              year: "numeric",
-              day: "numeric"
-            })}
-            .
           </div>
         }
         <div className={styles.links}>
