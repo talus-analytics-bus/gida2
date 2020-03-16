@@ -25,6 +25,12 @@ body,
 
   .popup-overlay {
     z-index: 1001 !important;
+
+    @media only screen and (max-width: 600px) {
+      .popup-content {
+        width: 90vw !important;
+      }
+    }
   }
 
   // Handle dark mode

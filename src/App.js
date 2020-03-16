@@ -236,13 +236,13 @@ const App = () => {
   );
 
   const modalToShow = {
-    chrome: () => "",
+    // chrome: () => "",
     firefox: () => "",
     safari: browser => browserModal("Safari"),
     edge: browser => browserModal("Edge"),
     ie: browser => browserModal("Internet Explorer"),
     opera: browser => browserModal("Opera"),
-    default: browser => browserModal("an unsupported browser")
+    chrome: browser => browserModal("an unsupported browser")
   };
 
   // JSX for main app.
