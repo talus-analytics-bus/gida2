@@ -736,10 +736,10 @@ Util.today = () => {
 Util.lastUpdated = ({ type = "all" }) => {
   switch (type) {
     case "iati":
-      return new Date("2020-03-12 12:00 PM");
+      return new Date("2020-04-12 12:00 PM");
     case "all":
     default:
-      return new Date("2020-03-12 12:00 PM");
+      return new Date("2020-04-12 12:00 PM");
   }
 };
 
