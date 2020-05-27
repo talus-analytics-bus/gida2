@@ -487,7 +487,7 @@ export const getNodeLinkList = ({
   return nodeList.map((node, i) => {
     const url = urlFunc(node.id);
     const type = node.type;
-    const doUrl = urlTypes.includes(type);
+    const doUrl = urlTypes.includes(type) && node.name !== "Not reported";
     const skipUrlBecauseIsTargetInRecipientCol =
       otherId && node.id === otherId && entityRole === "recipient";
     const skipUrlBecauseIsSourceInFunderCol =
