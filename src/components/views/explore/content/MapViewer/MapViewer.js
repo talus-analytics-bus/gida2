@@ -183,7 +183,7 @@ const MapViewer = ({
           : "";
       return {
         main: "JEE score by country",
-        subtitle: `JEE score data as of Feb 25, 2020${filterText}`
+        subtitle: `JEE score data as of May 27, 2020${filterText}`
       };
     } else if (supportType === "needs_met") {
       const filterText =
@@ -192,7 +192,7 @@ const MapViewer = ({
           : "";
       return {
         main: "Combined financial resources and need by country",
-        subtitle: `JEE score data as of Feb 25, 2020${filterText}`
+        subtitle: `JEE score data as of May 27, 2020${filterText}`
       };
     } else return "[Error] Unknown map metric";
   };
