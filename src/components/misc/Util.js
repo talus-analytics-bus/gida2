@@ -744,7 +744,7 @@ Util.lastUpdated = ({ type = "all" }) => {
       return new Date("2020-07-01 12:00 PM");
     case "all":
     default:
-      return new Date("2020-07-01 12:00 PM");
+      return new Date("2020-07-29 12:00 PM");
   }
 };
 
