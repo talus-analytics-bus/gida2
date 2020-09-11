@@ -50,7 +50,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tslint": "./node_modules/.bin/tslint",
-    "deploy": "CI=false yarn build && aws s3 sync build/ s3://gida-tracking  --acl public-read --delete",
+    "deploy": "CI=false REACT_APP_API_URL=https://gida-tracking-api.ghscosting.org yarn build && aws s3 sync build/ s3://gida-tracking  --acl public-read --delete",
     "deploy-dev": "CI=false REACT_APP_API_URL=https://gida-tracking-api-test.ghscosting.org yarn build && aws s3 sync build/ s3://gida-tracking-dev  --acl public-read --delete"
   },
   "eslintConfig": {
