@@ -14,18 +14,20 @@
   .pageButtons {
     button {
       border-width: 1px 1px 1px 0;
-      color: #337ab7;
+      color: #333;
       padding: 6px 12px;
-      background-color: white;
+      background-color: transparent;
+      border: none;
+      outline: none;
 
-      &:first-child {
-        border-radius: 4px 0 0 4px;
-        border-left-width: 1px;
-      }
-      &:last-child {
-        border-radius: 0 4px 4px 0;
-        border-left-width: 0;
-      }
+      // &:first-child {
+      //   border-radius: 4px 0 0 4px;
+      //   border-left-width: 1px;
+      // }
+      // &:last-child {
+      //   border-radius: 0 4px 4px 0;
+      //   border-left-width: 0;
+      // }
       &.selected {
         border-color: #337ab7;
         background-color: #337ab7;
@@ -37,9 +39,11 @@
         border-color: #ddd;
       }
       &:active {
-        border-style: solid;
-        outline: 5px auto -webkit-focus-ring-color;
-        outline-offset: -2px;
+        // border-style: solid;
+        // outline: 5px auto -webkit-focus-ring-color;
+        // outline-offset: -2px;
+        color: #337ab7;
+        background-color: darken(#eee, 2%);
       }
       &[disabled] {
         color: #333;
