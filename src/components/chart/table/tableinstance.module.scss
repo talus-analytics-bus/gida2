@@ -21,6 +21,19 @@
     background-color: #f2f2f2;
   }
 
+  // Pagination styling
+  li,
+  li[class="disabled"] {
+    > a {
+      color: #333;
+      background-color: transparent;
+      border: none;
+    }
+    &[class="disabled"] > a:hover {
+      background-color: transparent;
+    }
+  }
+
   // Mods to native styling
   [id="page-menu"] {
     margin-left: 10px;

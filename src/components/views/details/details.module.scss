@@ -88,6 +88,8 @@
       position: relative;
       padding: 10px;
       border-radius: $border-radius $border-radius 0 0;
+      border-color: #ccc;
+      border-width: 1px;
 
       &:not(.selected) {
         background-color: transparent;
