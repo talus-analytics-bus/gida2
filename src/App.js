@@ -8,7 +8,7 @@ import Nav from "./components/layout/nav/Nav.js";
 import Footer from "./components/layout/footer/Footer.js";
 
 // queries
-import { execute, FlowTypeQuery } from "./components/misc/Queries";
+import { execute, FlowType, Stakeholder } from "./components/misc/Queries";
 
 // views
 import Home from "./components/views/home/Home.js";
@@ -94,7 +94,7 @@ const App = () => {
 
   async function getAppData() {
     const queries = {
-      flowTypeInfo: FlowTypeQuery({}),
+      flowTypeInfo: FlowType({}),
     };
 
     const results = execute({ queries });

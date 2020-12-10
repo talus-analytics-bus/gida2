@@ -1,9 +1,6 @@
 import axios from "axios";
 
-export const NodeSumsQuery = async function({
-  direction = "origin",
-  ...props
-}) {
+export const NodeSums = async function({ direction = "origin", ...props }) {
   // Send request
   // Await response
   const res = await axios({
@@ -19,10 +16,10 @@ export const NodeSumsQuery = async function({
 
 /**
  * Get flow type data from API.
- * @method FlowTypeQuery
+ * @method FlowType
  */
 
-export const FlowTypeQuery = async function({ flow_type_ids }) {
+export const FlowType = async function({ flow_type_ids }) {
   // Define URL parameters -- the ids of flow types to get info for, if any
   const params = new URLSearchParams();
   const noneVals = [null, undefined];
@@ -44,6 +41,41 @@ export const FlowTypeQuery = async function({ flow_type_ids }) {
   );
 
   // Return response data
+  return res.data;
+};
+
+/**
+ * Get place data from API. Populates the place menu.
+ * when complete.
+ */
+
+export const Stakeholder = async function({
+  id,
+  search,
+  by,
+  limit,
+  filters = null,
+}) {
+  const params = new URLSearchParams();
+  const toCheck = [
+    ["id", id],
+    ["search", search],
+    ["by", by],
+    ["limit", limit],
+  ];
+  toCheck.forEach(([k, v]) => {
+    if (![undefined, null, ""].includes(v)) {
+      params.append(k, v);
+    }
+  });
+  const res = await axios.post(
+    `${process.env.REACT_APP_API_URL}/post/stakeholders`,
+    { filters },
+    {
+      params,
+    }
+  );
+
   return res.data;
 };
 

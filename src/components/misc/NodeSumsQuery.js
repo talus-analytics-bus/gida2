@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const NodeSumsQuery = async function({
+const NodeSums = async function({
   direction = 'origin',
   ...props
 }) {
@@ -20,4 +20,4 @@ const NodeSumsQuery = async function({
   return res.data;
 };
 
-export default NodeSumsQuery;
+export default NodeSums;

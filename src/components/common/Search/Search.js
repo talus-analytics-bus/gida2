@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./search.module.scss";
-import NodeQuery from "../../misc/NodeQuery.js";
+import { Stakeholder } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 
 /**
@@ -25,8 +25,21 @@ const Search = ({ callback, name, ...props }) => {
     } else {
       // Find country or org matches
       // Return them by setting the country values
-      const results = await NodeQuery({ search: val });
-      setResults(results.slice(0, 5));
+      const searchableSubcats = [
+        "government",
+        "organization",
+        // "region",
+        "state_/_department_/_territory",
+        "agency",
+        "other",
+        "sub-organization",
+      ];
+      const results = await Stakeholder({
+        search: val,
+        limit: 5,
+        filters: { subcat: searchableSubcats },
+      });
+      setResults(results);
     }
   };
 
@@ -44,22 +57,22 @@ const Search = ({ callback, name, ...props }) => {
 
   const getResults = results => {
     if (callback === undefined) {
-      return results.map(d => (
-        <Link
-          onClick={unset}
-          to={`/details/${d.id}/${
-            d.primary_role === "source" ? "funder" : "recipient"
-          }`}
-        >
-          <div className={styles.result}>
-            <div className={styles.name}>{d.name}</div>
-            <div className={styles.type}>
-              {Util.getInitCap(d.type)}, mainly{" "}
-              {d.primary_role === "source" ? "funder" : "recipient"}
+      return results.map(d => {
+        d = { cat: "Stakeholder", ...d };
+        let catTmp = d["cat"];
+        if (catTmp.startsWith("ngo")) catTmp = "NGO";
+        const cat = catTmp.replaceAll("_", " ").trim();
+        return (
+          <Link onClick={unset} to={`/details/${d.id}/${d.primary_role}`}>
+            <div className={styles.result}>
+              <div className={styles.name}>{d.name}</div>
+              <div className={styles.type}>
+                {Util.getInitCap(cat)}, mainly {d.primary_role}
+              </div>
             </div>
-          </div>
-        </Link>
-      ));
+          </Link>
+        );
+      });
     } else
       return results.map(d => (
         <div
@@ -96,7 +109,7 @@ const Search = ({ callback, name, ...props }) => {
     <div onClick={() => setShowResults(true)} className={styles.search}>
       <div
         className={classNames(styles.searchBar, {
-          [styles.expanded]: expanded
+          [styles.expanded]: expanded,
         })}
       >
         <div className={styles.field}>
@@ -121,7 +134,7 @@ const Search = ({ callback, name, ...props }) => {
         <div
           style={{ display: showResults ? "flex" : "none" }}
           className={classNames(styles.results, {
-            [styles.dark]: props.isDark
+            [styles.dark]: props.isDark,
           })}
         >
           {results.length > 0 && getResults(results)}

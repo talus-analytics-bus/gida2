@@ -3,7 +3,7 @@ import Util from "./Util.js";
 
 /**
  * Get outbreak data from API.
- * @method FlowTypeQuery
+ * @method FlowType
  */
 
 const OutbreakQuery = async function({ ...props }) {
