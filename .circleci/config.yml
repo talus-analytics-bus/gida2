@@ -93,7 +93,7 @@ jobs:
           name: cloudfront invalidation
           command: |
             aws cloudfront create-invalidation \
-            --distribution-id E6J9FWVEWFDBG \
+            --distribution-id EYL69FA0BI36W \
             --paths "/*"
 
 workflows:
