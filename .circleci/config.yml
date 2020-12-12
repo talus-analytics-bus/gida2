@@ -74,16 +74,11 @@ jobs:
       - aws-cli/configure
 
       - run:
-          name: Setup environment variables
-          command: |
-            echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
-
-      - run:
           name: "What was my custom environment variable?"
           command: echo ${MY_ENV_VAR}
 
       - run:
-          name: yarn build
+          name: yarn build:dev
           command: rm yarn.lock; yarn install --network-timeout 1000000
 
       - run:
@@ -104,3 +99,4 @@ workflows:
             branches:
               only:
                 - dev
+                - update-api
