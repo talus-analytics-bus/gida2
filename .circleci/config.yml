@@ -83,7 +83,18 @@ jobs:
 
       - run:
           name: deploy
-          command: yarn run deploy-dev
+          command: aws s3 sync public/ s3://gida-tracking-dev --acl public-read --delete
+
+      # - run:
+      #     name: deploy
+      #     command: yarn run deploy-dev
+
+      - run:
+          name: cloudfront invalidation
+          command: |
+            aws cloudfront create-invalidation \
+            --distribution-id E6J9FWVEWFDBG \
+            --paths "/*"
 
 workflows:
   version: 2
