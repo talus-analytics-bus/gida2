@@ -14,20 +14,26 @@ import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js"
 import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
 import Chevron from "../../../../common/Chevron/Chevron.js";
 import Drawer from "../../../../common/Drawer/Drawer.js";
-import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
-import OutbreakQuery from "../../../../misc/OutbreakQuery.js";
 import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
   getMapColorScale,
   getMapMetricValue,
   greens,
-  purples
+  purples,
 } from "../../../../map/MapUtil.js";
+import {
+  execute,
+  NodeSums,
+  FlowType,
+  Outbreak,
+  Stakeholder,
+} from "../../../../misc/Queries";
 import { getNodeData, getTableRowData } from "../../../../misc/Data.js";
 import { getNodeLinkList } from "../../../../misc/Data.js";
 import SourceText from "../../../../common/SourceText/SourceText.js";
 import InfoBox from "../../../../map/InfoBox.js";
+import { appContext } from "../../../../misc/ContextProvider";
 
 // FC for Orgs.
 const Orgs = ({
@@ -62,6 +68,9 @@ const Orgs = ({
   const [hoveredEntity, setHoveredEntity] = React.useState(undefined);
 
   // Define filter content
+  const outbreakOptions = data.outbreaks.map(d => {
+    return { value: d.id, label: d.name };
+  });
   const filterSelections = ghsaOnly !== "event" ? coreCapacities : events;
 
   const filterSelectionBadges = filterSelections.length > 0 && (
@@ -76,17 +85,17 @@ const Orgs = ({
               optionList: core_capacities,
               selections: coreCapacities,
               setSelections: setCoreCapacities,
-              type: "coreCapacities"
+              type: "coreCapacities",
             }}
           />
         )}
         {ghsaOnly === "event" && (
           <FilterSelections
             {...{
-              optionList: data.outbreaks,
+              optionList: outbreakOptions,
               selections: events,
               setSelections: setEvents,
-              type: "events"
+              type: "events",
             }}
           />
         )}
@@ -100,14 +109,14 @@ const Orgs = ({
         <FilterDropdown
           {...{
             label: "Select event responses",
-            options: data.outbreaks,
+            options: outbreakOptions,
             placeholder: "Select event response",
             onChange: v => setEvents(v.map(d => d.value)),
             curValues: events,
             className: [styles.italic],
             isDark: false,
             openDirection: "down",
-            setValues: setEvents
+            setValues: setEvents,
           }}
         />
       )}
@@ -122,7 +131,7 @@ const Orgs = ({
             className: [styles.italic],
             isDark: false,
             openDirection: "down",
-            setValues: setCoreCapacities
+            setValues: setCoreCapacities,
           }}
         />
       )}
@@ -163,7 +172,7 @@ const Orgs = ({
   // Get flow type
   const flowType = getFlowTypeFromArgs({
     transactionType: transactionType,
-    supportType: supportType
+    supportType: supportType,
   });
 
   // Get pretty name for flow type
@@ -200,8 +209,8 @@ const Orgs = ({
             nodeList: JSON.parse(d),
             entityRole: entityRoleForColDef,
             id: undefined,
-            otherId: undefined
-          })
+            otherId: undefined,
+          }),
       },
       {
         title: "Map metric raw value",
@@ -213,8 +222,8 @@ const Orgs = ({
             supportType,
             flowType,
             coreCapacities,
-            forTooltip: false
-          })
+            forTooltip: false,
+          }),
       },
       {
         title: "Map metric display value",
@@ -227,8 +236,8 @@ const Orgs = ({
             supportType,
             flowType,
             coreCapacities,
-            forTooltip: true
-          })
+            forTooltip: true,
+          }),
       },
       {
         title: "Unknown value explanation (if applicable)",
@@ -242,10 +251,16 @@ const Orgs = ({
               d,
               supportType,
               flowType,
-              coreCapacities
+              coreCapacities,
             }),
-            entityRole: entityRoleForColDef
-          })
+            entityRole: entityRoleForColDef,
+          }),
+      },
+      {
+        title: "Stakeholder slug",
+        prop: "stakeholderSlug",
+        type: "text",
+        render: d => d,
       },
       {
         title: "Map tooltip label",
@@ -258,18 +273,24 @@ const Orgs = ({
             flowType,
             minYear,
             maxYear,
-            entityRoleForColDef
+            entityRoleForColDef,
           }),
         func: d =>
           getMapMetricValue({
             d,
             supportType,
             flowType,
-            coreCapacities
-          })
-      }
+            coreCapacities,
+          }),
+      },
     ];
   };
+
+  // // get table data
+  // const tableData = [];
+  // for (const [k, v] of Object.entries(data.nodeSumsOrigin)) {
+  //   tableData.push;
+  // }
 
   // Get top funder table and top recipient table
   const tableInstances = [];
@@ -286,8 +307,8 @@ const Orgs = ({
         </div>
       </div>,
       "Funder",
-      "source",
-      "flowBundlesFocusSources"
+      "origin",
+      "nodeSumsOrigin",
     ],
     [
       <div className={styles.subtitle}>
@@ -301,26 +322,40 @@ const Orgs = ({
       </div>,
       "Recipient",
       "target",
-      "flowBundlesFocusTargets"
-    ]
+      "nodeSumsTarget",
+    ],
   ];
+  // getNodeLinkList({
+  //   urlType: "details",
+  //   nodeList: JSON.parse(d),
+  //   entityRole: table[1].toLowerCase(),
+  //   id: undefined,
+  //   otherId: undefined,
+  // }),
+  tables.forEach(([subtitleJsx, role, roleSlug, dataKey]) => {
+    const orgTableData = [];
+    for (const [k, v] of Object.entries(data[dataKey])) {
+      if (v[flowType] !== undefined) {
+        orgTableData.push({
+          [roleSlug]: getNodeLinkList({
+            urlType: "details",
+            nodeList: data.stakeholders[k],
+            entityRole: role.toLowerCase(),
+            id: undefined,
+            otherId: undefined,
+          }),
+          // [roleSlug]: data.stakeholders[k][0].name,
+          value_raw: v[flowType],
+          value: v[flowType],
+          stakeholderSlug: k,
+        });
+      }
+    }
 
-  tables.forEach(table => {
-    const orgTableData = getTableRowData({
-      tableRowDefs: getTableColDefs(table[2], table[1].toLowerCase()),
-      data: data[table[3]].flow_bundles.filter(d => {
-        if (table[2] === "target") {
-          if (d.target[0].name === "Not reported") return false;
-        }
-        return d.flow_types[flowType] !== undefined;
-      })
-    });
+    const tableRowDefs = getTableColDefs(roleSlug, role.toLowerCase()); // target, recipient
 
-    const updateTooltipData = (dStr, nodeType, dataKey, mapData) => {
-      const d = JSON.parse(dStr)[0];
-      const datum = data[dataKey].flow_bundles.find(
-        dd => dd[nodeType][0].id === d.id
-      );
+    const updateTooltipData = ({ d, nodeType, dataKey, mapData }) => {
+      const datum = data[dataKey][d.slug];
 
       // Get tooltip data on hover
       const tooltipData =
@@ -333,14 +368,14 @@ const Orgs = ({
               jeeScores: [],
               coreCapacities: [],
               colorScale: () => {
-                if (nodeType === "source") return greens[greens.length - 1];
+                if (nodeType === "origin") return greens[greens.length - 1];
                 else return purples[purples.length - 1];
               },
-              entityRole: nodeType === "source" ? "funder" : "recipient",
+              entityRole: nodeType === "origin" ? "funder" : "recipient",
               minYear,
               maxYear,
               flowType,
-              simple: false
+              simple: false,
             })
           : undefined;
       if (tooltipData && tooltipData.colorValue === undefined)
@@ -351,32 +386,31 @@ const Orgs = ({
     };
     tableInstances.push(
       <div>
-        <h2>{table[0]}</h2>
+        <h2>{subtitleJsx}</h2>
         <TableInstance
-          tooltipFunc={d => {
+          key={roleSlug}
+          tooltipFunc={function(d) {
             return {
               "data-tip": "",
               "data-for": "orgTooltip",
               onMouseOver: () =>
-                updateTooltipData(d[table[2]], table[2], table[3], [d])
+                updateTooltipData({
+                  d: data.stakeholders[d.stakeholderSlug][0],
+                  nodeType: roleSlug,
+                  dataKey,
+                  mapData: [d],
+                }),
             };
           }}
           paging={true}
           noNativeSorting={true}
           tableColumns={[
             {
-              title: table[1],
-              prop: table[2],
+              title: role,
+              prop: roleSlug,
               type: "text",
-              func: d => d[table[2]],
-              render: d =>
-                getNodeLinkList({
-                  urlType: "details",
-                  nodeList: JSON.parse(d),
-                  entityRole: table[1].toLowerCase(),
-                  id: undefined,
-                  otherId: undefined
-                })
+              func: d => d[roleSlug],
+              render: d => d,
             },
             {
               title: flowTypeDisplayName,
@@ -384,8 +418,14 @@ const Orgs = ({
               type: "num",
               className: d => (d > 0 ? "num" : "num-with-text"),
               func: d => d.value_raw,
-              render: d => Util.formatValue(d, flowType)
-            }
+              render: d => Util.formatValue(d, flowType),
+            },
+            {
+              title: "Stakeholder slug",
+              prop: "stakeholderSlug",
+              type: "text",
+              hide: true,
+            },
           ]}
           tableData={orgTableData}
           sortByProp={"value"}
@@ -417,14 +457,14 @@ const Orgs = ({
                   choices={[
                     {
                       name: "Financial support",
-                      value: "funds"
+                      value: "funds",
                     },
                     {
                       name: "In-kind support",
                       value: "inkind",
                       tooltip:
-                        "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
-                    }
+                        "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages.",
+                    },
                   ]}
                 />
                 {metricHasTransactionType && (
@@ -435,12 +475,12 @@ const Orgs = ({
                     choices={[
                       {
                         name: "Disbursed",
-                        value: "disbursed"
+                        value: "disbursed",
                       },
                       {
                         name: "Committed",
-                        value: "committed"
-                      }
+                        value: "committed",
+                      },
                     ]}
                   />
                 )}
@@ -456,8 +496,8 @@ const Orgs = ({
                   }}
                 />
               </div>
-            </div>
-          ]
+            </div>,
+          ],
         }}
       />
       <div className={styles.content}>
@@ -492,7 +532,7 @@ const Orgs = ({
                   nodeData: tooltipNodeData,
                   infoBoxData: tooltipData,
                   setNodeData: setTooltipNodeData,
-                  revealed
+                  revealed,
                 }}
               />
             )
@@ -511,7 +551,7 @@ const remountComponent = ({
   id,
   entityRole,
   ghsaOnly,
-  events
+  events,
 }) => {
   const remount =
     component.props.minYear !== minYear ||
@@ -555,7 +595,7 @@ export const renderOrgs = ({
         ghsaOnly: ghsaOnly,
         minYear: props.minYear,
         maxYear: props.maxYear,
-        events
+        events,
       }))
   ) {
     getComponentData({
@@ -569,7 +609,7 @@ export const renderOrgs = ({
       setLoadingSpinnerOn,
       setEvents,
       events,
-      ...props
+      ...props,
     });
 
     return component ? component : <div className={"placeholder"} />;
@@ -611,7 +651,7 @@ const getComponentData = async ({
     filters: { parent_flow_info_filters: [] },
     summaries: {},
     include_master_summary: false,
-    node_category: ["organization"]
+    node_category: ["organization"],
     // by_node_categories: ["country", "organization"]
   };
 
@@ -622,49 +662,110 @@ const getComponentData = async ({
     );
   }
 
-  // If outbreak response filters provided, use those
-  // TODO
-  if (props.events && props.events.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters.push(
-      ["outbreak_id"].concat(props.events)
-    );
-  }
+  // // If outbreak response filters provided, use those
+  // // TODO
+  // if (props.events && props.events.length > 0) {
+  //   baseQueryParams.filters.parent_flow_info_filters.push(
+  //     ["outbreak_id"].concat(props.events)
+  //   );
+  // }
 
   // If GHSA page, then filter by GHSA projects.
   if (ghsaOnly === "true")
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
-      "True"
+      "True",
     ]);
   else if (ghsaOnly === "event") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "outbreak_id:not",
-      null
+      null,
     ]);
   } else if (ghsaOnly === "capacity") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "response_or_capacity:not",
-      "response"
+      "response",
     ]);
   }
 
   // Define queries for typical details page.
+  const allowedCats = [
+    // "world",
+    // "government",
+    "international_organization_",
+    "private_sector",
+    "foundation",
+    "international_organization",
+    // "country",
+    "ngo",
+    "ngo_",
+    "other",
+    "academia",
+  ];
+  const allowedSubcats = [
+    // "government",
+    "organization",
+    // "region",
+    // "state_/_department_/_territory",
+    // "agency",
+    "other",
+    "sub-organization",
+  ];
+  const nodeSumsFilters = {
+    "Stakeholder.cat": allowedCats,
+    "Stakeholder.subcat": allowedSubcats,
+    "Stakeholder.slug": [["neq", "not-reported"]],
+    "Flow.year": [["gt_eq", props.minYear], ["lt_eq", props.maxYear]],
+  };
+
+  // add assistance type filter
+  if (ghsaOnly === "true") {
+    nodeSumsFilters["Flow.is_ghsa"] = [true];
+  } else if (ghsaOnly === "event") {
+    nodeSumsFilters["Flow.response_or_capacity"] = ["response"];
+  } else if (ghsaOnly === "capacity") {
+    nodeSumsFilters["Flow.response_or_capacity"] = ["capacity"];
+  }
+
+  // add outbreak events filters
+  if (props.events && props.events.length > 0) {
+    nodeSumsFilters["Event.id"] = props.events;
+  }
+  if (props.coreCapacities.length > 0) {
+    nodeSumsFilters["Core_Capacity.name"] = props.coreCapacities;
+  }
+
+  // // CONTEXT
+  // const context = useContext(appContext) || defaultContext;
+
   const queries = {
-    // Information about the entity
-    flowBundlesFocusSources: FlowBundleFocusQuery({
-      ...baseQueryParams,
-      focus_node_type: "source"
+    nodeSumsOrigin: NodeSums({
+      direction: "origin",
+      filters: nodeSumsFilters,
     }),
-    flowBundlesFocusTargets: FlowBundleFocusQuery({
-      ...baseQueryParams,
-      focus_node_type: "target"
+    nodeSumsTarget: NodeSums({
+      direction: "target",
+      filters: nodeSumsFilters,
     }),
-    outbreaks: OutbreakQuery({})
+    flowTypeInfo: FlowType({}),
+    outbreaks: Outbreak({}),
+    stakeholders: Stakeholder({ by: "slug" }),
+
+    // // Information about the entity
+    // flowBundlesFocusSources: FlowBundleFocusQuery({
+    //   ...baseQueryParams,
+    //   focus_node_type: "origin",
+    // }),
+    // flowBundlesFocusTargets: FlowBundleFocusQuery({
+    //   ...baseQueryParams,
+    //   focus_node_type: "target",
+    // }),
+    // outbreaks: OutbreakQuery({}),
   };
 
   // Get query results.
   setLoadingSpinnerOn(true);
-  const results = await Util.getQueryResults(queries);
+  const results = await execute({ queries });
   setLoadingSpinnerOn(false);
 
   // Feed results and other data to the details component and mount it.
@@ -674,7 +775,7 @@ const getComponentData = async ({
       entityRole={entityRole}
       setEntityRole={setEntityRole}
       data={results}
-      flowTypeInfo={flowTypeInfo}
+      flowTypeInfo={results.flowTypeInfo}
       ghsaOnly={ghsaOnly}
       setGhsaOnly={setGhsaOnly}
       setComponent={setComponent}

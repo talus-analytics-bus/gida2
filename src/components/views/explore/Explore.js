@@ -26,12 +26,12 @@ const Explore = ({
     if (tab === "org") {
       return {
         header: "EXPLORE ORGANIZATION FUNDERS AND RECIPIENTS",
-        instructions: "Choose organization in table to view details."
+        instructions: "Choose organization in table to view details.",
       };
     } else if (tab === "map") {
       return {
         header: "EXPLORE COUNTRIES ON A MAP",
-        instructions: "Choose country on map to view details."
+        instructions: "Choose country on map to view details.",
       };
     }
     return undefined;
@@ -43,7 +43,7 @@ const Explore = ({
   const [curComponent, setCurComponent] = React.useState(null);
 
   // Track entity role selected for the map
-  const [entityRole, setEntityRole] = React.useState("recipient");
+  const [entityRole, setEntityRole] = React.useState("recipient"); // hi
 
   // Track min and max year of data (consistent across tabs)
   const [minYear, setMinYear] = React.useState(Settings.startYear);
@@ -95,14 +95,14 @@ const Explore = ({
         events: [],
         isDark: true,
         fundType:
-          props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false"
+          props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false",
       });
     } else {
       // Set page header data
       setPageHeaderData({
         main: "ORGANIZATION FUNDERS AND RECIPIENTS",
         instructions: "Choose organization in table to view details.",
-        instructions: "Choose organization in table to view details."
+        instructions: "Choose organization in table to view details.",
       });
 
       // Render component
@@ -110,7 +110,7 @@ const Explore = ({
         ...orgProps,
         coreCapacities: [],
         events: [],
-        ghsaOnly: "false"
+        ghsaOnly: "false",
       });
     }
   }, [activeTab]);
@@ -145,7 +145,7 @@ const Explore = ({
     setPageHeaderData,
     supportTypeDefault,
     setLoadingSpinnerOn,
-    setSupportTypeToSwitchTo
+    setSupportTypeToSwitchTo,
   };
 
   const orgProps = {
@@ -165,7 +165,7 @@ const Explore = ({
     maxYear: maxYear,
     setMaxYear: setMaxYear,
     setPageHeaderData,
-    setLoadingSpinnerOn
+    setLoadingSpinnerOn,
   };
 
   React.useEffect(() => {
@@ -180,13 +180,13 @@ const Explore = ({
         supportTypeDefault:
           supportTypeToSwitchTo !== undefined
             ? supportTypeToSwitchTo
-            : supportTypeDefault
+            : supportTypeDefault,
       });
       if (supportTypeToSwitchTo !== undefined)
         setSupportTypeToSwitchTo(undefined);
     } else if (activeTab !== "map" && orgComponent !== null) {
       renderOrgs({
-        ...orgProps
+        ...orgProps,
       });
     }
   }, [
@@ -195,14 +195,14 @@ const Explore = ({
     coreCapacities,
     outbreakResponses,
     fundType,
-    entityRole
+    entityRole,
   ]);
 
   React.useEffect(() => {
     if (activeTab === "map" && mapViewerComponent !== null)
       renderMapViewer({
         isDark: props.isDark,
-        ...mapProps
+        ...mapProps,
       });
   }, [props.isDark]);
 
@@ -217,7 +217,7 @@ const Explore = ({
           styles.explore,
           {
             [styles.dark]: props.isDark,
-            [styles[activeTab]]: true
+            [styles[activeTab]]: true,
           }
         )}
       >
@@ -258,7 +258,7 @@ const Explore = ({
         </div>
         <div
           className={classNames(styles.content, {
-            [styles.dark]: props.isDark
+            [styles.dark]: props.isDark,
           })}
         >
           {activeTab === "map" ? mapViewerComponent : orgComponent}

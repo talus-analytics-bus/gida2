@@ -74,11 +74,11 @@ const Nav = ({ page, ...props }) => {
                   <Link to="/about/background">Background</Link>,
                   <Link to="/about/data">Data sources</Link>,
                   <Link to="/about/citations">Citations</Link>,
-                  <Link to="/about/submit">Submit data</Link>
+                  <Link to="/about/submit">Submit data</Link>,
                 ],
                 openMenu,
                 setOpenMenu,
-                isDark: props.isDark
+                isDark: props.isDark,
               }}
             />
           </div>

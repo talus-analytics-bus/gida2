@@ -8,7 +8,7 @@ export const greens = [
   "#569778",
   "#3d8662",
   "#217249",
-  "#045f32"
+  "#045f32",
 ];
 
 export const purples = [
@@ -18,7 +18,7 @@ export const purples = [
   "#75559d",
   "#713286",
   "#6a1266",
-  "#3c003a"
+  "#3c003a",
 ];
 
 export const pvsColors = [
@@ -26,13 +26,13 @@ export const pvsColors = [
   "#974299",
   "#721277",
   "#5B045B",
-  "#440042"
+  "#440042",
 ];
 export const pvsCats = [
   ["Human, Physical and Financial Resources", "#2f456b"],
   ["Technical Authority and Capacity", "#5683ba"],
   ["Interaction with the Actors Concerned", "#6aa7e2"],
-  ["Market Access", "#9bd3f9"]
+  ["Market Access", "#9bd3f9"],
 ];
 
 export const jeeColors = ["#ccc", "#a91726", "#f9a510", "#007c47"];
@@ -56,7 +56,7 @@ export const blues = [
   "#99c9c3",
   "#82b8d1",
   "#6296be",
-  "#32649f"
+  "#32649f",
 ].reverse();
 
 /**
@@ -75,13 +75,11 @@ export const getMapMetricValue = ({
   flowType,
   coreCapacities,
   forTooltip = false,
-  scores = {}
+  scores = {},
 }) => {
   if (["funds", "inkind"].includes(supportType)) {
     // Get assistance flow values
-    return d.flow_types[flowType]
-      ? d.flow_types[flowType].focus_node_weight
-      : undefined;
+    return d[flowType];
   } else if (supportType === "jee") {
     // Get JEE score values.
     const nodes = d.target ? d.target : d.source;
@@ -89,7 +87,7 @@ export const getMapMetricValue = ({
     const jeeScores = getJeeScores({
       scores: scores, // TODO
       iso2: iso2, // TODO
-      coreCapacities
+      coreCapacities,
     });
     const avgJeeScore = d3.mean(jeeScores, d => d.score);
     return avgJeeScore;
@@ -106,14 +104,14 @@ export const getMapMetricValue = ({
       const jeeScores = getJeeScores({
         scores: scores, // TODO
         iso2: iso2, // TODO
-        coreCapacities
+        coreCapacities,
       });
 
       const avgJeeScore = d3.mean(jeeScores, d => d.score);
 
       return calculateNeedsMet({
         datum: d,
-        avgCapScores: avgJeeScore
+        avgCapScores: avgJeeScore,
       });
     }
   }
@@ -133,7 +131,7 @@ export const getMapColorScale = ({
   flowType,
   jeeScores,
   coreCapacities,
-  entityRole
+  entityRole,
 }) => {
   const colorScaleMaker = ({ domain, range, type }) => {
     const baseScale = d3[type || "scaleThreshold"]()
@@ -170,7 +168,7 @@ export const getMapColorScale = ({
     return colorScaleMaker({
       domain: [5, 10, 15, 20, 25],
       // domain: [5, 10, 15, 20, 25, 30],
-      range: entityRole === "funder" ? greens : purples
+      range: entityRole === "funder" ? greens : purples,
     });
   } else if (supportType === "funds") {
     // Get values for use in calculating quantile scales.
@@ -185,7 +183,7 @@ export const getMapColorScale = ({
     return colorScaleMaker({
       domain: values,
       range: entityRole === "funder" ? greens : purples,
-      type: "scaleQuantile"
+      type: "scaleQuantile",
     });
   } else if (supportType === "needs_met") {
     // Get values for use in calculating quantile scales.
@@ -197,16 +195,16 @@ export const getMapColorScale = ({
         const scores = getJeeScores({
           scores: jeeScores,
           iso2: placeId,
-          coreCapacities
+          coreCapacities,
         });
         const avgJeeScore = d3.mean(scores, d => d.score);
         fakeData.push({
           flow_types: {
             disbursed_funds: {
-              focus_node_weight: 0
-            }
+              focus_node_weight: 0,
+            },
           },
-          target: [{ id: parseInt(placeId), name: "TBD", type: "country" }]
+          target: [{ id: parseInt(placeId), name: "TBD", type: "country" }],
         });
       }
     }
@@ -219,14 +217,14 @@ export const getMapColorScale = ({
         const allScores = getJeeScores({
           scores: jeeScores, // TODO
           iso2: iso2, // TODO
-          coreCapacities
+          coreCapacities,
         });
 
         const avgJeeScore = d3.mean(allScores, d => d.score);
 
         return calculateNeedsMet({
           datum: d,
-          avgCapScores: avgJeeScore // TODO
+          avgCapScores: avgJeeScore, // TODO
         });
       })
       .filter(d => d !== null && d !== "unknown" && d >= 0);
@@ -236,7 +234,7 @@ export const getMapColorScale = ({
       // domain: values,
       range: [blues[0], blues[blues.length - 1]],
       // range: blues,
-      type: "scaleLinear"
+      type: "scaleLinear",
       // type: "scaleQuantile"
     });
   } else if (supportType === "jee") {
@@ -245,7 +243,7 @@ export const getMapColorScale = ({
         "Unspecified",
         "None",
         "Limited or Developed",
-        "Demonstrated or Sustained"
+        "Demonstrated or Sustained",
       ],
       // domain: [
       //   "Unspecified",
@@ -256,7 +254,7 @@ export const getMapColorScale = ({
       //   "Sustained"
       // ],
       range: jeeColors,
-      type: "scaleOrdinal"
+      type: "scaleOrdinal",
     });
   } else
     return d3
@@ -281,7 +279,7 @@ export const getMapTooltipLabel = ({
   flowType,
   supportType,
   minYear,
-  maxYear
+  maxYear,
 }) => {
   if (val === -8888 || val === "yyy") {
     return <span className={"text-sm"}>Specific amounts not indicated</span>;

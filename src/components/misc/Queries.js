@@ -1,12 +1,16 @@
 import axios from "axios";
 
-export const NodeSums = async function({ direction = "origin", ...props }) {
+export const NodeSums = async function({
+  direction = "origin",
+  filters,
+  ...props
+}) {
   // Send request
   // Await response
   const res = await axios({
     method: "post",
     url: `${process.env.REACT_APP_API_URL}/post/node_sums`,
-    data: {},
+    data: { filters },
     params: {
       direction,
     },
@@ -49,6 +53,7 @@ export const FlowType = async function({ flow_type_ids }) {
  * when complete.
  */
 
+const allStakeholders = {};
 export const Stakeholder = async function({
   id,
   search,
@@ -68,6 +73,10 @@ export const Stakeholder = async function({
       params.append(k, v);
     }
   });
+  const gotAll = params.toString() === "";
+  if (gotAll && allStakeholders[by] !== undefined) {
+    return allStakeholders[by];
+  }
   const res = await axios.post(
     `${process.env.REACT_APP_API_URL}/post/stakeholders`,
     { filters },
@@ -75,7 +84,33 @@ export const Stakeholder = async function({
       params,
     }
   );
+  if (gotAll && allStakeholders[by] !== undefined) {
+    allStakeholders[by] = res.data;
+  } else return res.data;
+};
 
+/**
+ * Get outbreak data from API.
+ * @method FlowType
+ */
+
+export const Outbreak = async function({ ...props }) {
+  // Define URL parameters //
+  const params = {};
+
+  // Define URL params
+  const config = {
+    params: params,
+  };
+
+  // Send request
+  // Await response
+  const res = await axios.get(
+    `${process.env.REACT_APP_API_URL}/get/outbreaks`,
+    config
+  );
+
+  // Return response data
   return res.data;
 };
 

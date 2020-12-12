@@ -25,7 +25,7 @@ const TableInstance = ({
       sortByProp !== undefined
         ? {
             prop: sortByProp,
-            order: props.sortOrder ? props.sortOrder : "descending"
+            order: props.sortOrder ? props.sortOrder : "descending",
           }
         : {};
     const initialDataTmp = useRowDataAsIs
@@ -33,7 +33,7 @@ const TableInstance = ({
       : getTableRowData({
           tableRowDefs: tableColumns,
           data: tableData,
-          filterFcn: filterFcn
+          filterFcn: filterFcn,
         });
 
     let initialData =
@@ -57,7 +57,7 @@ const TableInstance = ({
           [styles.noNativeSorting]: props.noNativeSorting === true,
           [styles.noNativePageSizeSelect]:
             props.noNativePageSizeSelect === true ||
-            props.noNativePageSizeSelect === undefined
+            props.noNativePageSizeSelect === undefined,
         })}
       >
         <DataTable
