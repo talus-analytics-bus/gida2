@@ -2,6 +2,11 @@ import React from "react";
 import Util from "../misc/Util.js";
 import * as d3 from "d3/dist/d3.min";
 import { calculateNeedsMet, getJeeScores } from "../misc/Data.js";
+
+// define values that indicate "unknown credit" to source or target stakeholder
+const UNKNOWN_CREDIT_VALUES = ["unknown", -8888];
+const isUnknownCredit = v => UNKNOWN_CREDIT_VALUES.includes(v);
+
 export const greens = [
   "#eaeff1",
   "#99c2ae",
@@ -312,12 +317,8 @@ export const getMapTooltipLabel = ({
  * @return {[type]}                              [description]
  */
 export const getUnknownValueExplanation = ({ datum, value, entityRole }) => {
-  if (value === "unknown" || value === -8888) {
-    const nodeType = entityRole === "funder" ? "source" : "target";
-    // const nodesToShow =
-    //   datum[nodeType].length > 1
-    //     ? "multilateral group"
-    //     : datum[nodeType][0].name;
+  if (isUnknownCredit(value)) {
+    const nodeType = entityRole === "funder" ? "origin" : "target";
     return (
       <span>
         {datum[nodeType][0].name} included as {entityRole} for multilateral
