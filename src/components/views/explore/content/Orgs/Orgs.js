@@ -263,6 +263,12 @@ const Orgs = ({
         render: d => d,
       },
       {
+        title: "Stakeholder name",
+        prop: "stakeholderName",
+        type: "text",
+        render: d => d,
+      },
+      {
         title: "Map tooltip label",
         prop: "tooltip_label",
         type: "text",
@@ -336,18 +342,19 @@ const Orgs = ({
     const orgTableData = [];
     for (const [k, v] of Object.entries(data[dataKey])) {
       if (v[flowType] !== undefined) {
+        const stakeholderInfo = data.stakeholders[k];
         orgTableData.push({
           [roleSlug]: getNodeLinkList({
             urlType: "details",
-            nodeList: data.stakeholders[k],
+            nodeList: stakeholderInfo,
             entityRole: role.toLowerCase(),
             id: undefined,
             otherId: undefined,
           }),
-          // [roleSlug]: data.stakeholders[k][0].name,
           value_raw: v[flowType],
           value: v[flowType],
           stakeholderSlug: k,
+          stakeholderName: stakeholderInfo[0].name,
         });
       }
     }
@@ -421,8 +428,14 @@ const Orgs = ({
               render: d => Util.formatValue(d, flowType),
             },
             {
-              title: "Stakeholder slug",
+              title: "Stakeholder slug (for data binding)",
               prop: "stakeholderSlug",
+              type: "text",
+              hide: true,
+            },
+            {
+              title: "Stakeholder name (for searching)",
+              prop: "stakeholderName",
               type: "text",
               hide: true,
             },
