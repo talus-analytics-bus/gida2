@@ -1,5 +1,5 @@
 import * as d3 from "d3/dist/d3.min";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { DataTable } from "react-data-components";
 import { getTableRowData } from "../../misc/Data.js";
@@ -18,8 +18,18 @@ const TableInstance = ({
   filterFcn = d => true,
   ...props
 }) => {
-  // console.log("tableColumns");
-  // console.log(tableColumns);
+  // define table `component` to return as table instance when data updated
+  const [component, setComponent] = useState(null);
+
+  // count number of data updates so key of table instance is incremented
+  const [updateCount, setUpdateCount] = useState(0);
+
+  /**
+   * Build the table component, called each time `tableData` changes
+   * @method buildTable
+   * @param  {[type]}   tableData [description]
+   * @return {[type]}             [description]
+   */
   const buildTable = tableData => {
     const sortBy =
       sortByProp !== undefined
@@ -45,9 +55,6 @@ const TableInstance = ({
     }
     if (props.limit !== undefined)
       initialData = initialData.slice(0, props.limit);
-
-    // console.log("initialData");
-    // console.log(initialData);
     return (
       <div
         className={classNames("tableInstance", styles.tableInstance, {
@@ -61,6 +68,7 @@ const TableInstance = ({
         })}
       >
         <DataTable
+          key={updateCount}
           columns={tableColumns.filter(d => d.hide !== true)}
           initialData={initialData}
           initialPageLength={
@@ -73,7 +81,12 @@ const TableInstance = ({
       </div>
     );
   };
-  const component = buildTable(tableData);
+
+  // update table component whenever the data are changed
+  useEffect(() => {
+    setUpdateCount(updateCount + 1);
+    setComponent(buildTable(tableData));
+  }, [tableData]);
   return component;
 };
 
