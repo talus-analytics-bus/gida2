@@ -206,7 +206,7 @@ Util.getCumulativeCount = (data, nMonth = 12, lagMonths = 0) => {
     stale_flag: start.stale_flag,
     updated_at: start.updated_at,
     value: cumulativeCount,
-    n_null: nNull
+    n_null: nNull,
   };
 };
 
@@ -249,7 +249,7 @@ Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
     start_obs: start.observation_id,
     startDatum: start,
     endDatum: end,
-    incomplete: start.n_null > 0 || end.n_null > 0
+    incomplete: start.n_null > 0 || end.n_null > 0,
   };
 };
 
@@ -297,7 +297,7 @@ Util.getDeltaData = datum => {
       delta: datum["percent_change"],
       deltaSign: Util.getDeltaSign(datum["percent_change"]),
       deltaFmt: Util.percentizeDelta(datum["percent_change"]),
-      direction: direction
+      direction: direction,
     };
   } else return {};
 };
@@ -313,7 +313,7 @@ Util.changeColors = {
   negLight: valueGreen2,
   pos: valueRed,
   posLight: valueRed2,
-  missing: "#b3b3b3"
+  missing: "#b3b3b3",
 };
 
 // Color series used to indicate relative vaccination coverage from least to
@@ -324,7 +324,7 @@ Util.vaccinationColors = [
   "#7fcdbb",
   "#41b6c4",
   "#2c7fb8",
-  "#303d91"
+  "#303d91",
 ];
 
 // const vaccinationColorScale = (val) => {
@@ -350,16 +350,16 @@ Util.getMetricChartParams = metric => {
           const firstStr = fakeObsDt.toLocaleString("en-us", {
             month: "short",
             year: "numeric",
-            timeZone: "UTC"
+            timeZone: "UTC",
           });
           const lastStr = firstObsDt.toLocaleString("en-us", {
             month: "short",
             year: "numeric",
-            timeZone: "UTC"
+            timeZone: "UTC",
           });
 
           return `${firstStr} to ${lastStr}`;
-        }
+        },
       };
     case "caseload_totalpop":
       return {
@@ -370,7 +370,7 @@ Util.getMetricChartParams = metric => {
         getUnits: val => (val === 1 ? "case" : "cases"),
         sort: "desc",
         label: "Total cases of measles",
-        name: "Total cases of measles"
+        name: "Total cases of measles",
       };
     case "incidence_monthly":
       return {
@@ -382,7 +382,7 @@ Util.getMetricChartParams = metric => {
         getUnits: val =>
           val === 1 ? "case per 1M population" : "cases per 1M population",
         label: "Monthly incidence of measles (cases per 1M population)",
-        name: "Monthly incidence rate"
+        name: "Monthly incidence rate",
       };
     case "incidence_yearly":
       return {
@@ -394,7 +394,7 @@ Util.getMetricChartParams = metric => {
         getUnits: val =>
           val === 1 ? "case per 1M population" : "cases per 1M population",
         label: "Yearly incidence of measles (cases per 1M population)",
-        name: "Yearly incidence rate"
+        name: "Yearly incidence rate",
       };
     case "monthlycaseload_totalpop":
       return {
@@ -403,7 +403,7 @@ Util.getMetricChartParams = metric => {
         metric: "monthlycaseload_totalpop",
         sort: "desc",
         temporal_resolution: "monthly",
-        label: "Cases reported globally"
+        label: "Cases reported globally",
       };
 
     case "coverage_mcv1_infant": // DEBUG
@@ -414,7 +414,7 @@ Util.getMetricChartParams = metric => {
         temporal_resolution: "yearly",
         sort: "asc",
         label: "Vaccination coverage (% of infants)",
-        dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year")
+        dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year"),
       };
 
     case "avg_coverage_mcv1_infant": // DEBUG
@@ -426,7 +426,7 @@ Util.getMetricChartParams = metric => {
         sort: "asc",
         defaultTicks: [0, 50, 100],
         label: "Average vaccination coverage",
-        dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year")
+        dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year"),
       };
   }
 };
@@ -532,7 +532,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "month",
         value: datum.value === null ? null : Util.comma(datum.value),
-        label: datum.value === 1 ? "case" : "cases"
+        label: datum.value === 1 ? "case" : "cases",
       };
     case "incidence_monthly": // DEBUG
       return {
@@ -540,7 +540,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "month",
         value: datum.value === null ? null : Util.formatIncidence(datum.value),
-        label: "cases per 1M population"
+        label: "cases per 1M population",
       };
     case "monthlycaseload_totalpop": // DEBUG
       return {
@@ -548,7 +548,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "month",
         value: Util.comma(datum.value),
-        label: "cases"
+        label: "cases",
       };
     case "coverage_mcv1_infant": // DEBUG
       return {
@@ -556,7 +556,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "year",
         value: datum.value ? Util.percentize(datum.value) : null,
-        label: "of infants"
+        label: "of infants",
       };
     case "avg_coverage_mcv1_infant": // DEBUG
       return {
@@ -564,7 +564,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "year",
         value: Util.percentize(datum.value),
-        label: "of infants"
+        label: "of infants",
       };
     case "total_population":
       return {
@@ -572,7 +572,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "year",
         value: Util.formatSI(datum.value),
-        label: "cases"
+        label: "cases",
       };
   }
 };
@@ -580,20 +580,20 @@ Util.getTooltipItem = datum => {
 Util.quantiles = [
   {
     name: "Very low",
-    value: 0.2
+    value: 0.2,
   },
   {
     name: "Low",
-    value: 0.6
+    value: 0.6,
   },
   {
     name: "Average",
-    value: 1.4
+    value: 1.4,
   },
   {
     name: "High",
-    value: 4.1
-  }
+    value: 4.1,
+  },
 ];
 
 // const getIncidenceQuantile = (allObsTmp, countryObs) => {
@@ -687,19 +687,19 @@ Util.getDateTimeRange = item => {
   const firstStr = new Date(first.replace(/-/g, "/")).toLocaleString("en-us", {
     month: "short",
     year: "numeric",
-    timeZone: "UTC"
+    timeZone: "UTC",
   });
   const firstStrNoYear = new Date(first.replace(/-/g, "/")).toLocaleString(
     "en-us",
     {
       month: "short",
-      timeZone: "UTC"
+      timeZone: "UTC",
     }
   );
   const lastStr = new Date(last.replace(/-/g, "/")).toLocaleString("en-us", {
     month: "short",
     year: "numeric",
-    timeZone: "UTC"
+    timeZone: "UTC",
   });
   const sameYear = first.slice(0, 4) === last.slice(0, 4);
 
@@ -757,12 +757,12 @@ Util.getDatetimeStamp = (datum, type = "year") => {
     datetimeStamp = new Date(date_time).toLocaleString("en-US", {
       month: "short",
       year: "numeric",
-      timeZone: "UTC"
+      timeZone: "UTC",
     });
   } else if (type === "year") {
     datetimeStamp = new Date(date_time).toLocaleString("en-US", {
       year: "numeric",
-      timeZone: "UTC"
+      timeZone: "UTC",
     });
   }
   return `${datetimeStamp}`;
@@ -971,14 +971,14 @@ Util.formatDatetime = input => {
     minute: "2-digit",
     second: "2-digit",
     year: "numeric",
-    day: "numeric"
+    day: "numeric",
   });
 };
 Util.formatDate = input => {
   return input.toLocaleString("en-us", {
     month: "short",
     year: "numeric",
-    day: "numeric"
+    day: "numeric",
   });
 };
 
