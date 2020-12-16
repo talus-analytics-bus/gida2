@@ -36,7 +36,7 @@ const TopTable = ({
   // when certain selections change, retrieve updated data
   useEffect(() => {
     updateData();
-  }, []);
+  }, [direction]);
 
   // CONSTANTS // ---------------------------------------------------------- //
   // Define standard colums for Top Funders and Top Recipients tables.
