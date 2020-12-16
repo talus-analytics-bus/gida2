@@ -31,7 +31,7 @@ const StackBar = ({
   const [tooltipData, setTooltipData] = React.useState(undefined);
 
   const jeeColorScale = getMapColorScale({
-    supportType: "jee"
+    supportType: "jee",
   });
 
   const chartData = data.filter(
@@ -72,13 +72,13 @@ const StackBar = ({
     setTooltipData,
     tooltipClassName: styles.stackBarTooltip,
     sort,
-    placeType
+    placeType,
   };
   React.useEffect(() => {
     if (render) {
       const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
         ...stackBarParams,
-        data: chartData
+        data: chartData,
       });
       setStackBar(stackBarNew);
     }
@@ -87,7 +87,7 @@ const StackBar = ({
   React.useEffect(() => {
     if (stackBar !== null) {
       stackBar.updateStackBar(chartData, flowType, {
-        ...stackBarParams
+        ...stackBarParams,
       });
     }
   }, [flowType]);
@@ -95,7 +95,7 @@ const StackBar = ({
     if (stackBar !== null) {
       stackBar.updateStackBar(chartData, flowType, {
         ...stackBarParams,
-        sortOnly: true
+        sortOnly: true,
       });
     }
   }, [sort]);
@@ -112,19 +112,19 @@ const StackBar = ({
           choices={[
             {
               name: "Amount",
-              value: "amount"
+              value: "amount",
             },
             {
               name: "JEE score",
-              value: "jee"
-            }
+              value: "jee",
+            },
           ]}
         />
       )}
       <div
         style={{
           visibility: display ? "visible" : "hidden",
-          height: display ? "auto" : 0
+          height: display ? "auto" : 0,
         }}
         className={styles.stackBarChart}
       />
