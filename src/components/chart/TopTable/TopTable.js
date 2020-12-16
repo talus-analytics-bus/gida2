@@ -13,12 +13,15 @@ const TopTable = ({
   otherEntityRole,
   otherNodeType,
   direction,
+  staticStakeholders,
   ...props
 }) => {
   // // CONTEXT //
   // const context = useContext(appContext) || defaultContext;
   const [data, setData] = useState(null);
-  const [stakeholders, setStakeholders] = useState(null);
+  const [stakeholders, setStakeholders] = useState(
+    staticStakeholders !== undefined ? staticStakeholders : null
+  );
   const updateData = async () => {
     // top funder / recipient table
     const queries = {
@@ -35,11 +38,14 @@ const TopTable = ({
           ],
         },
       }),
-      stakeholders: Stakeholder({ by: "id" }),
     };
+    if (staticStakeholders === undefined)
+      queries.stakeholders = Stakeholder({ by: "id" });
     const results = await execute({ queries });
     setData(results.data);
-    setStakeholders(results.stakeholders);
+    if (staticStakeholders === undefined) {
+      setStakeholders(results.stakeholders);
+    }
   };
 
   // when certain selections change, retrieve updated data

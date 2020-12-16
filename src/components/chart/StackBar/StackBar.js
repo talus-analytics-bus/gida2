@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Util from "../../misc/Util.js";
 import styles from "./stackbar.module.scss";
 import ReactTooltip from "react-tooltip";
@@ -6,6 +6,7 @@ import tooltipStyles from "../../common/tooltip.module.scss";
 import * as d3 from "d3/dist/d3.min";
 import D3StackBar from "./D3StackBar.js";
 import RadioToggle from "../../misc/RadioToggle.js";
+import { execute, Stakeholder } from "../../misc/Queries";
 import Legend from "../../map/Legend.js";
 import { getMapColorScale } from "../../map/MapUtil.js";
 
@@ -24,15 +25,30 @@ const StackBar = ({
   id,
   render,
   placeType,
+  staticStakeholders,
   ...props
 }) => {
-  const [stackBar, setStackBar] = React.useState(null);
-  const [sort, setSort] = React.useState("amount"); // or jee
-  const [tooltipData, setTooltipData] = React.useState(undefined);
+  const [stackBar, setStackBar] = useState(null);
+  const [stakeholders, setStakeholders] = useState(
+    staticStakeholders !== undefined ? staticStakeholders : null
+  );
+  const [sort, setSort] = useState("amount"); // or jee
+  const [tooltipData, setTooltipData] = useState(undefined);
 
   const jeeColorScale = getMapColorScale({
     supportType: "jee",
   });
+
+  const updateData = async () => {
+    // top funder / recipient table
+    const queries = {};
+    if (staticStakeholders === undefined)
+      queries.stakeholders = Stakeholder({ by: "id" });
+    const results = await execute({ queries });
+    if (staticStakeholders === undefined) {
+      setStakeholders(results.stakeholders);
+    }
+  };
 
   const chartData = data.filter(
     d =>
@@ -43,7 +59,7 @@ const StackBar = ({
 
   // Show chart?
   const display = chartData.length > 0;
-  const showJee = nodeType !== "source";
+  const showJee = nodeType !== "origin";
 
   const legend =
     id !== "ghsa" && display && showJee ? (
@@ -74,24 +90,33 @@ const StackBar = ({
     sort,
     placeType,
   };
-  React.useEffect(() => {
-    if (render) {
+  useEffect(() => {
+    if (render && stakeholders !== null) {
+      // apply stakeholder names
+      chartData.forEach(d => {
+        const names = d[otherNodeType]
+          .map(dd => {
+            return stakeholders[dd][0].name;
+          })
+          .join("; ");
+        d[otherNodeType] = names;
+      });
       const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
         ...stackBarParams,
         data: chartData,
       });
       setStackBar(stackBarNew);
     }
-  }, [id, nodeType, ghsaOnly, render]);
+  }, [id, nodeType, ghsaOnly, render, stakeholders]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (stackBar !== null) {
       stackBar.updateStackBar(chartData, flowType, {
         ...stackBarParams,
       });
     }
   }, [flowType]);
-  React.useEffect(() => {
+  useEffect(() => {
     if (stackBar !== null) {
       stackBar.updateStackBar(chartData, flowType, {
         ...stackBarParams,
@@ -100,7 +125,12 @@ const StackBar = ({
     }
   }, [sort]);
 
-  const jeeWhite = nodeType === "source" || placeType !== "country";
+  useEffect(() => {
+    // on initial load, check for stakeholders data
+    if (stakeholders === null) updateData();
+  }, []);
+
+  const jeeWhite = nodeType === "origin" || placeType !== "country";
 
   return (
     <div className={styles.stackbar}>

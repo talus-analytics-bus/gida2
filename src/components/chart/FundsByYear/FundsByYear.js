@@ -81,39 +81,6 @@ const FundsByYear = ({
     } else if (!unknownDataOnly && !noFinancialData) {
       setLoadingSpinnerOn(true, false, "AreaLine");
       updateData();
-      // // Get new data
-      // const queryFunc = NodeSums;
-      //
-      // // update params as needed
-      // // TODO update to match new API
-      // const filters = {
-      //   "Stakeholder.id": [id],
-      //   "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-      //   "Flow.year": [
-      //     ["gt_eq", Settings.startYear],
-      //     ["lt_eq", Settings.endYear],
-      //   ],
-      // };
-      // if (fundType === "true") {
-      //   filters["Flow.is_ghsa"] = [true];
-      // } else if (fundType === "event") {
-      //   filters["Flow.response_or_capacity"] = ["response"];
-      // } else if (fundType === "capacity") {
-      //   filters["Flow.response_or_capacity"] = ["capacity"];
-      // }
-      // if (id === "ghsa") {
-      //   if (fundType !== "true") filters["Flow.is_ghsa"] = [true];
-      // }
-      // const query = queryFunc({
-      //   direction,
-      //   group_by: "Flow.year",
-      //   filters,
-      // });
-      // query.then(d => {
-      //   const dValues = Object.values(d);
-      //   setChartData(dValues);
-      //   setAreaLineData(getAreaLineData(dValues));
-      // });
     } else {
       setLoadingSpinnerOn(false);
     }
@@ -140,7 +107,7 @@ const FundsByYear = ({
             <AreaLine
               entityRole={entityRole}
               flowTypeInfo={flowTypeInfo}
-              data={data.lines}
+              data={data.points}
               id={id}
               ghsaOnly={props.ghsaOnly}
               setLoadingSpinnerOn={setLoadingSpinnerOn}

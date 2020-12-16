@@ -412,21 +412,22 @@ const Details = ({
                 </p>
               ),
               // TODO fix StackBar
-              // content: (
-              //   <StackBar
-              //     data={data.ccBarChart}
-              //     flowType={curFlowType}
-              //     flowTypeName={curFlowTypeName}
-              //     attributeType={"core_capacities"}
-              //     nodeType={nodeType}
-              //     otherNodeType={otherNodeType}
-              //     jeeScores={data.jeeScores[data.nodeData.id]}
-              //     placeType={data.nodeData.type}
-              //     id={id}
-              //     ghsaOnly={ghsaOnly}
-              //     render={curTab === "ihr"}
-              //   />
-              // ),
+              content: (
+                <StackBar
+                  data={data.ccBarChart.points}
+                  staticStakeholders={props.nodesData}
+                  flowType={curFlowType}
+                  flowTypeName={curFlowTypeName}
+                  attributeType={"core_capacities"}
+                  nodeType={nodeType}
+                  otherNodeType={otherNodeType}
+                  jeeScores={data.jeeScores[data.nodeData.id]}
+                  placeType={data.nodeData.type}
+                  id={id}
+                  ghsaOnly={ghsaOnly}
+                  render={curTab === "ihr"}
+                />
+              ),
               toggleFlowType: true,
               hide: noData || unknownDataOnly || noFinancialData,
             },
@@ -456,6 +457,7 @@ const Details = ({
                     otherEntityRole,
                     otherNodeType,
                     direction: otherDirection,
+                    staticStakeholders: data.nodesData,
                   }}
                 />
               ),
@@ -472,6 +474,7 @@ const Details = ({
                     otherEntityRole,
                     otherNodeType,
                     direction,
+                    staticStakeholders: data.nodesData,
                   }}
                 />
               ),
@@ -867,8 +870,6 @@ export const renderDetails = ({
   setLoadingSpinnerOn,
   setGhsaOnly,
 }) => {
-  console.log("flowTypeInfo");
-  console.log(flowTypeInfo);
   if (loading) {
     return <div className={"placeholder"} />;
   } else if (
@@ -919,59 +920,6 @@ const getComponentData = async ({
   const direction = entityRole === "funder" ? "origin" : "target";
   const otherDirection = direction === "origin" ? "target" : "origin";
 
-  // // Define typical base query parameters used in Flow,
-  // // NodeSums, and FlowBundleGeneralQuery. These are adapted and
-  // // modified in code below.
-  // const nodeType =
-  //   entityRole === undefined
-  //     ? "target"
-  //     : entityRole === "recipient"
-  //     ? "target"
-  //     : "source";
-  // const otherNodeType = entityRole === "recipient" ? "source" : "target";
-  // const baseQueryParams = {
-  //   focus_node_ids: id === "ghsa" ? null : [id],
-  //   // focus_node_type: nodeType,
-  //   flow_type_ids: [1, 2, 3, 4],
-  //   start_date: `${Settings.startYear}-01-01`,
-  //   end_date: `${Settings.endYear}-12-31`,
-  //   by_neighbor: false,
-  //   filters: { parent_flow_info_filters: [] },
-  //   summaries: {
-  //     flow_info_summary: ["core_capacities", "core_elements"],
-  //   },
-  //   include_master_summary: true,
-  // };
-
-  // If GHSA page, then filter by GHSA projects, and add "year" filter to the
-  // summaries.
-  // TODO ADD summaries to FlowBundleGeneralQuery so we don't need this hack.
-  // if (ghsaOnly === "true") {
-  //   baseQueryParams.filters.parent_flow_info_filters.push([
-  //     "ghsa_funding",
-  //     "True",
-  //   ]);
-  // } else if (ghsaOnly === "event") {
-  //   baseQueryParams.filters.parent_flow_info_filters.push([
-  //     "outbreak_id:not",
-  //     null,
-  //   ]);
-  // } else if (ghsaOnly === "capacity") {
-  //   baseQueryParams.filters.parent_flow_info_filters.push([
-  //     "response_or_capacity:not",
-  //     "response",
-  //   ]);
-  // }
-
-  // if (id === "ghsa") {
-  //   baseQueryParams.summaries.flow_info_summary.push("year");
-  //   if (ghsaOnly !== "true")
-  //     baseQueryParams.filters.parent_flow_info_filters.push([
-  //       "ghsa_funding",
-  //       "True",
-  //     ]);
-  // }
-
   // define common filters for most queries
   const commonFilters = {};
 
@@ -980,23 +928,9 @@ const getComponentData = async ({
     commonFilters["Flow.is_ghsa"] = [true];
   }
 
-  // const flowQueryParams = {
-  //   ...JSON.parse(JSON.stringify(baseQueryParams)),
-  //   by_outbreak: true,
-  //   flow_type_ids: [5],
-  //   include_general_amounts: true,
-  // };
-  // flowQueryParams.filters.parent_flow_info_filters.push([
-  //   "outbreak_id:not",
-  //   null,
-  // ]);
-
-  // // Define queries for typical details page.
-  // const now = new Date(`${Settings.endYear}-12-31`);
-  // const then = new Date(`${Settings.startYear}-01-01`);
   const queries = {
     // Information about the entity
-    nodeData: Stakeholder({ id }),
+    nodesData: Stakeholder({ by: "id" }),
 
     jeeScores: Assessment({
       scoreType: "JEE v1",
@@ -1007,66 +941,19 @@ const getComponentData = async ({
       scoreType: "PVS",
     }),
 
-    // Flow bundles by source/target specific pairing, oriented from the other
-    // node type (e.g., for a given source node whose page this is, return one
-    // row per target node it has a flow with)
-    // flowBundlesFocusOther: NodeSums({
-    //   ...baseQueryParams,
-    //   by_neighbor: true,
-    // }),
-    // byYear: NodeSums({
-    //   format: "line_chart",
-    //   direction, // "target"
-    //   group_by: "Flow.year",
-    //   filters: {
-    //     ...commonFilters,
-    //     "Stakeholder.id": [id],
-    //     "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-    //     "Flow.year": [
-    //       ["gt_eq", Settings.startYear],
-    //       ["lt_eq", Settings.endYear],
-    //     ],
-    //   },
-    // }),
     flows: Flow({
       ...commonFilters,
-      // ...flowQueryParams,
-      // start_date: Util.formatDatetimeApi(then),
-      // end_date: Util.formatDatetimeApi(now),
     }),
   };
 
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
-  // let focusSummaryQueryParams;
   if (id === "ghsa") {
     // TODO
-    // queries["flowBundles"] = NodeSums(baseQueryParams);
-    // // queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
-    // focusSummaryQueryParams = {
-    //   ...baseQueryParams,
-    //   // focus_node_type: entityRole === "recipient" ? "target" : "source",
-    //   focus_node_ids: null,
-    // };
-    // queries["focusSummary"] = NodeSums(focusSummaryQueryParams);
   } else {
-    // // top funder / recipient table
-    // queries.topTable = NodeSums({
-    //   format: "table",
-    //   direction: otherDirection, // "origin"
-    //   group_by: "Core_Element.name",
-    //   filters: {
-    //     "OtherStakeholder.id": [id],
-    //     "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-    //     "Flow.year": [
-    //       ["gt_eq", Settings.startYear],
-    //       ["lt_eq", Settings.endYear],
-    //     ],
-    //   },
-    // });
-
     // core capacity bar chart
     queries.ccBarChart = NodeSums({
+      format: "stack_bar_chart",
       direction: otherDirection, // "origin"
       group_by: "Core_Capacity.name",
       preserve_stakeholder_groupings: true,
@@ -1079,27 +966,14 @@ const getComponentData = async ({
         ],
       },
     });
-
-    // focusSummaryQueryParams = {
-    //   ...baseQueryParams,
-    //   by_neighbor: false,
-    //   summaries: {
-    //     flow_info_summary: ["core_capacities", "core_elements", "year"],
-    //   },
-    // };
-    // queries["focusSummary"] = NodeSums({
-    //   direction: entityRole === "recipient" ? "target" : "origin",
-    //   filters: focusSummaryQueryParams,
-    // });
   }
 
   // Get query results.
   setLoadingSpinnerOn(true);
   const results = await execute({ queries });
-  // const results = await Util.getQueryResults(queries);
 
   // use first and only node result
-  results.nodeData = results.nodeData[0];
+  results.nodeData = results.nodesData[id][0];
 
   // Feed results and other data to the details component and mount it.
   setDetailsComponent(
