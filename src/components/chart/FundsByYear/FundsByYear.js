@@ -28,20 +28,31 @@ const FundsByYear = ({
   const [data, setData] = useState(null);
   const direction = entityRole === "funder" ? "origin" : "target";
   const updateData = async () => {
+    // define filters
+    const filters = {
+      "Stakeholder.id": [id],
+      "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+    };
+
+    // apply filters to the fund type
+    if (fundType === "true") {
+      filters["Flow.is_ghsa"] = [true];
+    } else if (fundType === "event") {
+      filters["Flow.response_or_capacity"] = ["response"];
+    } else if (fundType === "capacity") {
+      filters["Flow.response_or_capacity"] = ["capacity"];
+    }
+    if (id === "ghsa") {
+      if (fundType !== "true") filters["Flow.is_ghsa"] = [true];
+    }
+
     const queries = {
       byYear: NodeSums({
         format: "line_chart",
         direction, // "target"
         group_by: "Flow.year",
-        filters: {
-          // ...commonFilters,
-          "Stakeholder.id": [id],
-          "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-          "Flow.year": [
-            ["gt_eq", Settings.startYear],
-            ["lt_eq", Settings.endYear],
-          ],
-        },
+        filters,
       }),
     };
     const results = await execute({ queries });
@@ -62,7 +73,6 @@ const FundsByYear = ({
   // If data type toggle changes, update the data (but not initially, to avoid
   // unnecessary API calls).
   const [fundType, setFundType] = useState("false"); // all
-
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
     if (!initialized) {
