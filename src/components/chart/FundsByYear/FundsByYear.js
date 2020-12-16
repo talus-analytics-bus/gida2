@@ -25,9 +25,12 @@ const FundsByYear = ({
   setLoadingSpinnerOn,
   ...props
 }) => {
+  console.log("data");
+  console.log(data);
   const direction = entityRole === "funder" ? "origin" : "target";
   // Get area line data
   const getAreaLineData = data => {
+    return data.lines;
     const areaLineData = [];
     for (let i = Settings.startYear; i <= Settings.endYear; i++) {
       const yearDatum = {
@@ -47,6 +50,8 @@ const FundsByYear = ({
       });
       areaLineData.push(yearDatum);
     }
+    console.log("areaLineData");
+    console.log(areaLineData);
     return areaLineData;
   };
 
@@ -126,8 +131,8 @@ const FundsByYear = ({
                 selectpicker: true,
               }}
             />
-            <TotalByFlowType flowType="disbursed_funds" data={chartData} />
-            <TotalByFlowType flowType="committed_funds" data={chartData} />
+            <TotalByFlowType flowType="disbursed_funds" data={data.totals} />
+            <TotalByFlowType flowType="committed_funds" data={data.totals} />
             {linkToEntityTable}
           </div>
           <div className={styles.areaLine}>

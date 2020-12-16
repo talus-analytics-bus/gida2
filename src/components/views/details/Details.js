@@ -115,13 +115,10 @@ const Details = ({
   // True if there are no data to show for the entire page, false otherwise.
   // TODO make work with new API
   const noData = false;
-  // const noData = data.focusSummary.length === 0;
-  console.log("data");
-  console.log(data);
   const noFinancialData = noData
     ? true
-    : data.byYear["chn"]["disbursed_funds"] === undefined &&
-      data.byYear["chn"]["committed_funds"] === undefined;
+    : data.byYear.totals["disbursed_funds"] === undefined &&
+      data.byYear.totals["committed_funds"] === undefined;
 
   if (noData || noFinancialData)
     setLoadingSpinnerOn(false, false, undefined, true);
@@ -178,7 +175,7 @@ const Details = ({
       <FundsByYear
         id={id}
         entityRole={entityRole}
-        data={Object.values(data.byYear)}
+        data={data.byYear}
         unknownDataOnly={unknownDataOnly}
         noFinancialData={noFinancialData}
         flowTypeInfo={flowTypeInfo}
@@ -1055,6 +1052,7 @@ const getComponentData = async ({
     //   by_neighbor: true,
     // }),
     byYear: NodeSums({
+      format: "line_chart",
       direction, // "target"
       group_by: "Flow.year",
       filters: {
