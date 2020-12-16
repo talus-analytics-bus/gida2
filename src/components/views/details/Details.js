@@ -1134,6 +1134,9 @@ const getComponentData = async ({
   setLoadingSpinnerOn(true);
   const results = await Util.getQueryResults(queries);
 
+  // use first and only node result
+  results.nodeData = results.nodeData[0];
+
   // Feed results and other data to the details component and mount it.
   setDetailsComponent(
     <Details
