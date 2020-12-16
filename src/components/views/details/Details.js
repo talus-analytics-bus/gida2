@@ -12,7 +12,13 @@ import {
 import Util from "../../misc/Util.js";
 
 // queries
-import { Stakeholder, Assessment, Flow, NodeSums } from "../../misc/Queries";
+import {
+  execute,
+  Stakeholder,
+  Assessment,
+  Flow,
+  NodeSums,
+} from "../../misc/Queries";
 
 import { purples, greens, pvsCats, pvsColors } from "../../map/MapUtil.js";
 
@@ -1132,7 +1138,8 @@ const getComponentData = async ({
 
   // Get query results.
   setLoadingSpinnerOn(true);
-  const results = await Util.getQueryResults(queries);
+  const results = await execute({ queries });
+  // const results = await Util.getQueryResults(queries);
 
   // use first and only node result
   results.nodeData = results.nodeData[0];
