@@ -34,6 +34,7 @@ import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
 import ReactTooltip from "react-tooltip";
 import tooltipStyles from "../../common/tooltip.module.scss";
+import TopTable from "../../chart/TopTable/TopTable";
 
 // FC for Details.
 const Details = ({
@@ -65,8 +66,8 @@ const Details = ({
 
   // Define the other node type based on the current entity role, which is used
   // in certain charts.
-  const nodeType = entityRole === "funder" ? "source" : "target";
-  const otherNodeType = entityRole === "funder" ? "target" : "source";
+  const nodeType = entityRole === "funder" ? "origin" : "target";
+  const otherNodeType = entityRole === "funder" ? "target" : "origin";
 
   // Track whether viewing committed or disbursed/provided assistance
   const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
@@ -89,8 +90,8 @@ const Details = ({
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
 
-  // Track the Top Recipients/Funders table data
-  const topTableData = data.topTable;
+  // // Track the Top Recipients/Funders table data
+  // const topTableData = data.topTable;
 
   // const topTableData = getSummaryAttributeWeightsByNode({
   //     data: data.flowBundlesFocusOther.flow_bundles,
@@ -104,8 +105,8 @@ const Details = ({
   //       d[otherNodeType].length > 1)
   // );
 
-  // If on GHSA page, get "other" top table to display.
-  const topTableDataOther = pageType === "ghsa" ? data.topTableOther : null;
+  // // If on GHSA page, get "other" top table to display.
+  // const topTableDataOther = pageType === "ghsa" ? data.topTableOther : null;
 
   // // If on GHSA page, get "other" top table to display.
   // const topTableDataOther =
@@ -139,36 +140,36 @@ const Details = ({
   // });
 
   // Define standard colums for Top Funders and Top Recipients tables.
-  const topTableCols = [
-    {
-      prop: "_tot",
-      func: d => (d[curFlowType] ? d[curFlowType]._tot : undefined),
-      type: "num",
-      className: d => (d > 0 ? "num" : "num-with-text"),
-      title: `Total ${
-        curFlowType === "disbursed_funds" ? "disbursed" : "committed"
-      }`,
-      render: v => Util.formatValue(v, "disbursed_funds"),
-    },
-  ].concat(
-    [
-      ["P", "Prevent"],
-      ["D", "Detect"],
-      ["R", "Respond"],
-      ["Other", "Other"],
-      ["General IHR", "General IHR Implementation"],
-      ["Unspecified", "Unspecified"],
-    ].map(c => {
-      return {
-        func: d => (d[curFlowType] ? d[curFlowType][c[0]] : undefined),
-        type: "num",
-        className: d => (d > 0 ? "num" : "num-with-text"),
-        title: c[1],
-        prop: c[1],
-        render: v => Util.formatValue(v, "disbursed_funds"),
-      };
-    })
-  );
+  // const topTableCols = [
+  //   {
+  //     prop: "_tot",
+  //     func: d => (d[curFlowType] ? d[curFlowType]._tot : undefined),
+  //     type: "num",
+  //     className: d => (d > 0 ? "num" : "num-with-text"),
+  //     title: `Total ${
+  //       curFlowType === "disbursed_funds" ? "disbursed" : "committed"
+  //     }`,
+  //     render: v => Util.formatValue(v, "disbursed_funds"),
+  //   },
+  // ].concat(
+  //   [
+  //     ["P", "Prevent"],
+  //     ["D", "Detect"],
+  //     ["R", "Respond"],
+  //     ["Other", "Other"],
+  //     ["General IHR", "General IHR Implementation"],
+  //     ["Unspecified", "Unspecified"],
+  //   ].map(c => {
+  //     return {
+  //       func: d => (d[curFlowType] ? d[curFlowType][c[0]] : undefined),
+  //       type: "num",
+  //       className: d => (d > 0 ? "num" : "num-with-text"),
+  //       title: c[1],
+  //       prop: c[1],
+  //       render: v => Util.formatValue(v, "disbursed_funds"),
+  //     };
+  //   })
+  // );
 
   // Define header charts
   const pageHeaderContent = {
@@ -448,35 +449,14 @@ const Details = ({
                 </p>
               ),
               content: (
-                <TableInstance
-                  sortByProp={"_tot"}
-                  paging={true}
-                  tableColumns={[
-                    {
-                      title: Util.getInitCap(
-                        Util.getRoleTerm({
-                          type: "noun",
-                          role: otherEntityRole,
-                        })
-                      ),
-                      prop: otherNodeType,
-                      type: "text",
-                      func: d => JSON.stringify(d[otherNodeType]),
-                      render: d => "mvm",
-                      // render: d =>
-                      //   getNodeLinkList({
-                      //     urlType: "details",
-                      //     nodeList: JSON.parse(d),
-                      //     entityRole: otherEntityRole,
-                      //     id: id,
-                      //   }),
-                    },
-                  ].concat(topTableCols)}
-                  tableData={
-                    topTableData
-                      ? topTableData.filter(d => d[curFlowType] !== undefined)
-                      : []
-                  }
+                <TopTable
+                  {...{
+                    id,
+                    curFlowType,
+                    otherEntityRole,
+                    otherNodeType,
+                    direction: otherDirection,
+                  }}
                 />
               ),
               toggleFlowType: true,
@@ -485,35 +465,14 @@ const Details = ({
             {
               header: <h2>Top {entityRole}s</h2>,
               content: pageType === "ghsa" && (
-                <TableInstance
-                  sortByProp={"_tot"}
-                  tableColumns={[
-                    {
-                      title: Util.getInitCap(
-                        Util.getRoleTerm({
-                          type: "noun",
-                          role: entityRole,
-                        })
-                      ),
-                      prop: nodeType,
-                      type: "text",
-                      func: d => JSON.stringify(d[nodeType]),
-                      render: d =>
-                        getNodeLinkList({
-                          urlType: "details",
-                          nodeList: JSON.parse(d),
-                          entityRole: entityRole,
-                          id: id,
-                        }),
-                    },
-                  ].concat(topTableCols)}
-                  tableData={
-                    topTableDataOther
-                      ? topTableDataOther.filter(
-                          d => d[curFlowType] !== undefined
-                        )
-                      : []
-                  }
+                <TopTable
+                  {...{
+                    id,
+                    curFlowType,
+                    otherEntityRole,
+                    otherNodeType,
+                    direction,
+                  }}
                 />
               ),
               toggleFlowType: true,
@@ -1093,20 +1052,20 @@ const getComponentData = async ({
     // };
     // queries["focusSummary"] = NodeSums(focusSummaryQueryParams);
   } else {
-    // top funder / recipient table
-    queries.topTable = NodeSums({
-      format: "table",
-      direction: otherDirection, // "origin"
-      group_by: "Core_Element.name",
-      filters: {
-        "OtherStakeholder.id": [id],
-        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-        "Flow.year": [
-          ["gt_eq", Settings.startYear],
-          ["lt_eq", Settings.endYear],
-        ],
-      },
-    });
+    // // top funder / recipient table
+    // queries.topTable = NodeSums({
+    //   format: "table",
+    //   direction: otherDirection, // "origin"
+    //   group_by: "Core_Element.name",
+    //   filters: {
+    //     "OtherStakeholder.id": [id],
+    //     "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+    //     "Flow.year": [
+    //       ["gt_eq", Settings.startYear],
+    //       ["lt_eq", Settings.endYear],
+    //     ],
+    //   },
+    // });
 
     // core capacity bar chart
     queries.ccBarChart = NodeSums({
