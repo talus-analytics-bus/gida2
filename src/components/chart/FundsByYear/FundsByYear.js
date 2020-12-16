@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./fundsbyyear.module.scss";
@@ -10,14 +10,13 @@ import { Settings } from "../../../App.js";
 import tableIcon from "../../../assets/images/table-funds.svg";
 import Button from "../../common/Button/Button.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
-import { NodeSums } from "../../misc/Queries";
+import { execute, NodeSums } from "../../misc/Queries";
 
 // Data functions
 // FC
 const FundsByYear = ({
   id,
   entityRole,
-  data,
   flowTypeInfo,
   unknownDataOnly,
   noFinancialData,
@@ -25,34 +24,29 @@ const FundsByYear = ({
   setLoadingSpinnerOn,
   ...props
 }) => {
-  console.log("data");
-  console.log(data);
+  // STATE //
+  const [data, setData] = useState(null);
   const direction = entityRole === "funder" ? "origin" : "target";
-  // Get area line data
-  const getAreaLineData = data => {
-    return data.lines;
-    const areaLineData = [];
-    for (let i = Settings.startYear; i <= Settings.endYear; i++) {
-      const yearDatum = {
-        attribute: i.toString(),
-      };
-
-      flowTypeInfo.forEach(ft => {
-        if (data[ft.name] === undefined) {
-          yearDatum[ft.name] = "n/a";
-        } else if (ft.flow_type_id > 2) {
-          return;
-        } else {
-          const yearDatumVal = data[ft.name][i.toString()];
-          if (yearDatumVal !== undefined) yearDatum[ft.name] = yearDatumVal;
-          else yearDatum[ft.name] = "n/a";
-        }
-      });
-      areaLineData.push(yearDatum);
-    }
-    console.log("areaLineData");
-    console.log(areaLineData);
-    return areaLineData;
+  const updateData = async () => {
+    const queries = {
+      byYear: NodeSums({
+        format: "line_chart",
+        direction, // "target"
+        group_by: "Flow.year",
+        filters: {
+          // ...commonFilters,
+          "Stakeholder.id": [id],
+          "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+          "Flow.year": [
+            ["gt_eq", Settings.startYear],
+            ["lt_eq", Settings.endYear],
+          ],
+        },
+      }),
+    };
+    const results = await execute({ queries });
+    setData(results.byYear);
+    if (!initialized) setInitialized(true);
   };
 
   // Get link to entitytable page
@@ -67,52 +61,49 @@ const FundsByYear = ({
 
   // If data type toggle changes, update the data (but not initially, to avoid
   // unnecessary API calls).
-  const [fundType, setFundType] = React.useState("false"); // all
-  const [chartData, setChartData] = React.useState(data);
-  const [areaLineData, setAreaLineData] = React.useState(
-    getAreaLineData(chartData)
-  );
-  const [initialized, setInitialized] = React.useState(false);
-  React.useEffect(() => {
+  const [fundType, setFundType] = useState("false"); // all
+
+  const [initialized, setInitialized] = useState(false);
+  useEffect(() => {
     if (!initialized) {
-      setInitialized(true);
+      updateData();
       return;
     } else if (!unknownDataOnly && !noFinancialData) {
       setLoadingSpinnerOn(true, false, "AreaLine");
-
-      // Get new data
-      const queryFunc = NodeSums;
-
-      // update params as needed
-      // TODO update to match new API
-      const filters = {
-        "Stakeholder.id": [id],
-        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-        "Flow.year": [
-          ["gt_eq", Settings.startYear],
-          ["lt_eq", Settings.endYear],
-        ],
-      };
-      if (fundType === "true") {
-        filters["Flow.is_ghsa"] = [true];
-      } else if (fundType === "event") {
-        filters["Flow.response_or_capacity"] = ["response"];
-      } else if (fundType === "capacity") {
-        filters["Flow.response_or_capacity"] = ["capacity"];
-      }
-      if (id === "ghsa") {
-        if (fundType !== "true") filters["Flow.is_ghsa"] = [true];
-      }
-      const query = queryFunc({
-        direction,
-        group_by: "Flow.year",
-        filters,
-      });
-      query.then(d => {
-        const dValues = Object.values(d);
-        setChartData(dValues);
-        setAreaLineData(getAreaLineData(dValues));
-      });
+      updateData();
+      // // Get new data
+      // const queryFunc = NodeSums;
+      //
+      // // update params as needed
+      // // TODO update to match new API
+      // const filters = {
+      //   "Stakeholder.id": [id],
+      //   "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      //   "Flow.year": [
+      //     ["gt_eq", Settings.startYear],
+      //     ["lt_eq", Settings.endYear],
+      //   ],
+      // };
+      // if (fundType === "true") {
+      //   filters["Flow.is_ghsa"] = [true];
+      // } else if (fundType === "event") {
+      //   filters["Flow.response_or_capacity"] = ["response"];
+      // } else if (fundType === "capacity") {
+      //   filters["Flow.response_or_capacity"] = ["capacity"];
+      // }
+      // if (id === "ghsa") {
+      //   if (fundType !== "true") filters["Flow.is_ghsa"] = [true];
+      // }
+      // const query = queryFunc({
+      //   direction,
+      //   group_by: "Flow.year",
+      //   filters,
+      // });
+      // query.then(d => {
+      //   const dValues = Object.values(d);
+      //   setChartData(dValues);
+      //   setAreaLineData(getAreaLineData(dValues));
+      // });
     } else {
       setLoadingSpinnerOn(false);
     }
@@ -120,7 +111,7 @@ const FundsByYear = ({
 
   return (
     <div className={styles.fundsByYear}>
-      {!unknownDataOnly && !noFinancialData && (
+      {data !== null && !unknownDataOnly && !noFinancialData && (
         <div className={styles.content}>
           <div className={styles.totals}>
             <GhsaToggle
@@ -139,7 +130,7 @@ const FundsByYear = ({
             <AreaLine
               entityRole={entityRole}
               flowTypeInfo={flowTypeInfo}
-              data={areaLineData}
+              data={data.lines}
               id={id}
               ghsaOnly={props.ghsaOnly}
               setLoadingSpinnerOn={setLoadingSpinnerOn}

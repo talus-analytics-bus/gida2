@@ -121,10 +121,11 @@ const Details = ({
   // True if there are no data to show for the entire page, false otherwise.
   // TODO make work with new API
   const noData = false;
-  const noFinancialData = noData
-    ? true
-    : data.byYear.totals["disbursed_funds"] === undefined &&
-      data.byYear.totals["committed_funds"] === undefined;
+  const noFinancialData = noData ? true : false;
+  // const noFinancialData = noData
+  //   ? true
+  //   : data.byYear.totals["disbursed_funds"] === undefined &&
+  //     data.byYear.totals["committed_funds"] === undefined;
 
   if (noData || noFinancialData)
     setLoadingSpinnerOn(false, false, undefined, true);
@@ -181,7 +182,6 @@ const Details = ({
       <FundsByYear
         id={id}
         entityRole={entityRole}
-        data={data.byYear}
         unknownDataOnly={unknownDataOnly}
         noFinancialData={noFinancialData}
         flowTypeInfo={flowTypeInfo}
@@ -1057,20 +1057,20 @@ const getComponentData = async ({
     //   ...baseQueryParams,
     //   by_neighbor: true,
     // }),
-    byYear: NodeSums({
-      format: "line_chart",
-      direction, // "target"
-      group_by: "Flow.year",
-      filters: {
-        ...commonFilters,
-        "Stakeholder.id": [id],
-        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-        "Flow.year": [
-          ["gt_eq", Settings.startYear],
-          ["lt_eq", Settings.endYear],
-        ],
-      },
-    }),
+    // byYear: NodeSums({
+    //   format: "line_chart",
+    //   direction, // "target"
+    //   group_by: "Flow.year",
+    //   filters: {
+    //     ...commonFilters,
+    //     "Stakeholder.id": [id],
+    //     "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+    //     "Flow.year": [
+    //       ["gt_eq", Settings.startYear],
+    //       ["lt_eq", Settings.endYear],
+    //     ],
+    //   },
+    // }),
     flows: Flow({
       ...commonFilters,
       // ...flowQueryParams,
