@@ -97,7 +97,7 @@ const App = () => {
       flowTypeInfo: FlowType({}),
     };
 
-    const results = execute({ queries });
+    const results = await execute({ queries });
     setFlowTypeInfo(results.flowTypeInfo);
     setLoading(false);
   }

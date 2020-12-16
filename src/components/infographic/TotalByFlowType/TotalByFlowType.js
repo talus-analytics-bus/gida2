@@ -9,12 +9,12 @@ const TotalByFlowType = ({ flowType, data, ...props }) => {
   return (
     <div
       className={classNames(styles.totalByFlowType, {
-        [styles.inline]: props.inline
+        [styles.inline]: props.inline,
       })}
     >
       <div
         className={classNames(styles.value, {
-          [styles.unknown]: amount === "unknown"
+          [styles.unknown]: amount === "unknown",
         })}
       >
         {Util.formatValue(amount, flowType)}
@@ -34,9 +34,9 @@ const getAmountByFlowType = (flowType, data) => {
       // Add them up
       let total;
       data.forEach(d => {
-        if (d.flow_types[flowType] === undefined) return;
+        if (d[flowType] === undefined) return;
         else {
-          const curVal = d.flow_types[flowType].focus_node_weight;
+          const curVal = d[flowType];
           if (total === undefined) total = curVal;
           else if (curVal !== "unknown") total += curVal;
         }
@@ -46,7 +46,7 @@ const getAmountByFlowType = (flowType, data) => {
     } else {
       const flowTypeData = data[flowType];
       if (flowTypeData !== undefined) {
-        return flowTypeData["focus_node_weight"];
+        return flowTypeData;
       } else return 0;
     }
   }

@@ -7,14 +7,13 @@ import {
   getNodeLinkList,
   getWeightsBySummaryAttributeSimple,
   getSummaryAttributeWeightsByNode,
-  isUnknownDataOnly
+  isUnknownDataOnly,
 } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
-import FlowQuery from "../../misc/FlowQuery.js";
-import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
-import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
-import NodeQuery from "../../misc/NodeQuery.js";
-import ScoreQuery from "../../misc/ScoreQuery.js";
+
+// queries
+import { Stakeholder, Assessment, Flow, NodeSums } from "../../misc/Queries";
+
 import { purples, greens, pvsCats, pvsColors } from "../../map/MapUtil.js";
 
 // Content components
@@ -42,8 +41,9 @@ const Details = ({
   setLoadingSpinnerOn,
   ...props
 }) => {
-  console.log("data");
-  console.log(data);
+  const direction = entityRole === "funder" ? "origin" : "target";
+  const otherDirection = direction === "origin" ? "target" : "origin";
+
   let pageType;
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
@@ -66,7 +66,8 @@ const Details = ({
   const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
   const [pvsTooltipData, setPvsTooltipData] = React.useState(undefined);
 
-  const noResponseData = data.flows.flows.length === 0;
+  // TODO handle response data
+  const noResponseData = data.flows.length === 0;
   const [curTab, setCurTab] = React.useState("ihr");
   const [showFlag, setShowFlag] = React.useState(
     data.nodeData.type === "country"
@@ -83,47 +84,55 @@ const Details = ({
     .display_name;
 
   // Track the Top Recipients/Funders table data
-  const topTableData = getSummaryAttributeWeightsByNode({
-    data: data.flowBundlesFocusOther.flow_bundles,
-    field: "core_elements",
-    flowTypes: ["disbursed_funds", "committed_funds"],
-    nodeType: otherNodeType
-  }).filter(
-    d =>
-      d[otherNodeType] !== undefined &&
-      (d[otherNodeType][0].name !== "Not reported" ||
-        d[otherNodeType].length > 1)
-  );
+  const topTableData = data.topTable;
+
+  // const topTableData = getSummaryAttributeWeightsByNode({
+  //     data: data.flowBundlesFocusOther.flow_bundles,
+  //   field: "core_elements",
+  //   flowTypes: ["disbursed_funds", "committed_funds"],
+  //   nodeType: otherNodeType,
+  // }).filter(
+  //   d =>
+  //     d[otherNodeType] !== undefined &&
+  //     (d[otherNodeType][0].name !== "Not reported" ||
+  //       d[otherNodeType].length > 1)
+  // );
 
   // If on GHSA page, get "other" top table to display.
-  const topTableDataOther =
-    pageType === "ghsa"
-      ? getSummaryAttributeWeightsByNode({
-          data: data.focusSummary.flow_bundles,
-          field: "core_elements",
-          flowTypes: ["disbursed_funds", "committed_funds"],
-          nodeType: nodeType
-        }).filter(d => d[nodeType].name !== "Not reported")
-      : null;
+  const topTableDataOther = pageType === "ghsa" ? data.topTableOther : null;
+
+  // // If on GHSA page, get "other" top table to display.
+  // const topTableDataOther =
+  //   pageType === "ghsa"
+  //     ? getSummaryAttributeWeightsByNode({
+  //         data: data.focusSummary,
+  //         field: "core_elements",
+  //         flowTypes: ["disbursed_funds", "committed_funds"],
+  //         nodeType: nodeType,
+  //       }).filter(d => d[nodeType].name !== "Not reported")
+  //     : null;
 
   // True if there are no data to show for the entire page, false otherwise.
-  const noData = data.focusSummary.flow_bundles[0] === undefined;
-
+  // TODO make work with new API
+  const noData = false;
+  // const noData = data.focusSummary.length === 0;
+  console.log("data");
+  console.log(data);
   const noFinancialData = noData
     ? true
-    : data.focusSummary.master_summary.flow_types["disbursed_funds"] ===
-        undefined &&
-      data.focusSummary.master_summary.flow_types["committed_funds"] ===
-        undefined;
+    : data.byYear["chn"]["disbursed_funds"] === undefined &&
+      data.byYear["chn"]["committed_funds"] === undefined;
 
   if (noData || noFinancialData)
     setLoadingSpinnerOn(false, false, undefined, true);
 
   // True if the only available data to show are for "unknown" values (specific
   // value no reported).
-  const unknownDataOnly = isUnknownDataOnly({
-    masterSummary: data.focusSummary.master_summary
-  });
+  // TODO make work with new API
+  const unknownDataOnly = false;
+  // const unknownDataOnly = isUnknownDataOnly({
+  //   masterSummary: data.focusSummary.master_summary,
+  // });
 
   // Define standard colums for Top Funders and Top Recipients tables.
   const topTableCols = [
@@ -135,8 +144,8 @@ const Details = ({
       title: `Total ${
         curFlowType === "disbursed_funds" ? "disbursed" : "committed"
       }`,
-      render: v => Util.formatValue(v, "disbursed_funds")
-    }
+      render: v => Util.formatValue(v, "disbursed_funds"),
+    },
   ].concat(
     [
       ["P", "Prevent"],
@@ -144,7 +153,7 @@ const Details = ({
       ["R", "Respond"],
       ["Other", "Other"],
       ["General IHR", "General IHR Implementation"],
-      ["Unspecified", "Unspecified"]
+      ["Unspecified", "Unspecified"],
     ].map(c => {
       return {
         func: d => (d[curFlowType] ? d[curFlowType][c[0]] : undefined),
@@ -152,7 +161,7 @@ const Details = ({
         className: d => (d > 0 ? "num" : "num-with-text"),
         title: c[1],
         prop: c[1],
-        render: v => Util.formatValue(v, "disbursed_funds")
+        render: v => Util.formatValue(v, "disbursed_funds"),
       };
     })
   );
@@ -169,17 +178,16 @@ const Details = ({
       <FundsByYear
         id={id}
         entityRole={entityRole}
-        data={data.focusSummary.master_summary.flow_types}
+        data={Object.values(data.byYear)}
         unknownDataOnly={unknownDataOnly}
         noFinancialData={noFinancialData}
         flowTypeInfo={flowTypeInfo}
         ghsaOnly={ghsaOnly}
-        params={props.focusSummaryQueryParams}
         setLoadingSpinnerOn={setLoadingSpinnerOn}
       />
     ),
     toggleFlowType: false,
-    hide: noData
+    hide: noData,
   };
 
   // Define details content sections.
@@ -243,7 +251,7 @@ const Details = ({
       cols: ["Edition number", "Score"],
       rows: allEdVals.map((dd, ii) => {
         return [dd.ed, dd.score];
-      })
+      }),
     };
     setPvsTooltipData(tooltipData);
   };
@@ -306,7 +314,7 @@ const Details = ({
                   >
                     {Util.roman(d)}
                   </div>
-                )
+                ),
               },
               {
                 title: "Indicator ID",
@@ -314,7 +322,7 @@ const Details = ({
                 type: "text",
                 func: d => d.indId,
                 render: d => d,
-                hide: true
+                hide: true,
               },
               {
                 title: "Indicator name (only)",
@@ -322,14 +330,14 @@ const Details = ({
                 type: "text",
                 func: d => d.ind,
                 render: d => d,
-                hide: true
+                hide: true,
               },
               {
                 title: "Core competency",
                 prop: "ind",
                 type: "text",
                 func: d => d.indId + " " + d.ind,
-                render: d => d
+                render: d => d,
               },
               {
                 title: "Level of advancement (1 to 5)",
@@ -342,11 +350,11 @@ const Details = ({
                     {...{
                       value: d,
                       rangeArray: [1, 2, 3, 4, 5],
-                      colors: pvsColors
+                      colors: pvsColors,
                     }}
                   />
-                )
-              }
+                ),
+              },
             ]}
             tableData={data.pvs.scores.filter(d => d.ed === curPvsEdition.ed)}
             sortOrder={"ascending"}
@@ -355,8 +363,8 @@ const Details = ({
         </div>
       ),
       toggleFlowType: false,
-      hide: noData || unknownDataOnly || noFinancialData
-    }
+      hide: noData || unknownDataOnly || noFinancialData,
+    },
   ];
 
   const tabSections = showTabs
@@ -393,7 +401,7 @@ const Details = ({
                   The chart below shows the funds{" "}
                   {Util.getRoleTerm({
                     type: "adjective",
-                    role: entityRole
+                    role: entityRole,
                   })}{" "}
                   by core capacity. Only funded core capacities are shown. Hover
                   over a bar to see additional funding details.
@@ -401,15 +409,7 @@ const Details = ({
               ),
               content: (
                 <StackBar
-                  data={getWeightsBySummaryAttributeSimple({
-                    field: "core_capacities",
-                    flowTypes: ["disbursed_funds", "committed_funds"],
-                    data: data.flowBundlesFocusOther.flow_bundles,
-                    // data: data.flowBundles.flow_bundles,
-                    byOtherNode: true,
-                    nodeType: nodeType,
-                    otherNodeType: otherNodeType
-                  })}
+                  data={data.ccBarChart}
                   flowType={curFlowType}
                   flowTypeName={curFlowTypeName}
                   attributeType={"core_capacities"}
@@ -423,7 +423,7 @@ const Details = ({
                 />
               ),
               toggleFlowType: true,
-              hide: noData || unknownDataOnly || noFinancialData
+              hide: noData || unknownDataOnly || noFinancialData,
             },
             {
               header: <h2>Top {otherEntityRole}s</h2>,
@@ -433,12 +433,12 @@ const Details = ({
                   of funds{" "}
                   {Util.getRoleTerm({
                     type: "adjective",
-                    role: otherEntityRole
+                    role: otherEntityRole,
                   })}
                   . Click on a{" "}
                   {Util.getRoleTerm({
                     type: "noun",
-                    role: otherEntityRole
+                    role: otherEntityRole,
                   })}{" "}
                   name to view their profile.
                 </p>
@@ -452,7 +452,7 @@ const Details = ({
                       title: Util.getInitCap(
                         Util.getRoleTerm({
                           type: "noun",
-                          role: otherEntityRole
+                          role: otherEntityRole,
                         })
                       ),
                       prop: otherNodeType,
@@ -463,9 +463,9 @@ const Details = ({
                           urlType: "details",
                           nodeList: JSON.parse(d),
                           entityRole: otherEntityRole,
-                          id: id
-                        })
-                    }
+                          id: id,
+                        }),
+                    },
                   ].concat(topTableCols)}
                   tableData={
                     topTableData
@@ -475,7 +475,7 @@ const Details = ({
                 />
               ),
               toggleFlowType: true,
-              hide: noData || unknownDataOnly || noFinancialData
+              hide: noData || unknownDataOnly || noFinancialData,
             },
             {
               header: <h2>Top {entityRole}s</h2>,
@@ -487,7 +487,7 @@ const Details = ({
                       title: Util.getInitCap(
                         Util.getRoleTerm({
                           type: "noun",
-                          role: entityRole
+                          role: entityRole,
                         })
                       ),
                       prop: nodeType,
@@ -498,9 +498,9 @@ const Details = ({
                           urlType: "details",
                           nodeList: JSON.parse(d),
                           entityRole: entityRole,
-                          id: id
-                        })
-                    }
+                          id: id,
+                        }),
+                    },
                   ].concat(topTableCols)}
                   tableData={
                     topTableDataOther
@@ -516,16 +516,16 @@ const Details = ({
                 noData ||
                 pageType !== "ghsa" ||
                 unknownDataOnly ||
-                noFinancialData
-            }
-          ]
+                noFinancialData,
+            },
+          ],
         },
         {
           slug: "event",
           header: "Event response funding",
           hide: noResponseData,
           content:
-            data.flows.flows.length > 0
+            data.flows.length > 0
               ? [
                   {
                     header: (
@@ -543,14 +543,14 @@ const Details = ({
                                 // month: "short",
                                 // day: "numeric",
                                 year: "numeric",
-                                timeZone: "UTC"
+                                timeZone: "UTC",
                               })}{" "}
                               -{" "}
                               {props.responseEnd.toLocaleString("en-us", {
                                 // month: "short",
                                 // day: "numeric",
                                 year: "numeric",
-                                timeZone: "UTC"
+                                timeZone: "UTC",
                               })}
                             </span>
                           }
@@ -580,27 +580,27 @@ const Details = ({
                               prop: "year_range",
                               type: "text",
                               func: d => d.flow_info.outbreak.year_range,
-                              render: d => d
+                              render: d => d,
                             },
                             {
                               title: "Event response",
                               prop: "event",
                               type: "text",
                               func: d => d.flow_info.outbreak.name,
-                              render: d => d
+                              render: d => d,
                             },
                             {
                               title: "Project name",
                               prop: "project_name",
                               type: "text",
                               func: d => d.flow_info.project_name,
-                              render: d => d
+                              render: d => d,
                             },
                             {
                               title: Util.getInitCap(
                                 Util.getRoleTerm({
                                   type: "noun",
-                                  role: "funder"
+                                  role: "funder",
                                 })
                               ),
                               prop: "source",
@@ -611,14 +611,14 @@ const Details = ({
                                   urlType: "details",
                                   nodeList: JSON.parse(d),
                                   entityRole: "funder",
-                                  id: id
-                                })
+                                  id: id,
+                                }),
                             },
                             {
                               title: Util.getInitCap(
                                 Util.getRoleTerm({
                                   type: "noun",
-                                  role: "recipient"
+                                  role: "recipient",
                                 })
                               ),
                               prop: "target",
@@ -629,15 +629,15 @@ const Details = ({
                                   urlType: "details",
                                   nodeList: JSON.parse(d),
                                   entityRole: "recipient",
-                                  id: id
-                                })
+                                  id: id,
+                                }),
                             },
                             {
                               title: "Funding year(s)",
                               prop: "year_range_proj",
                               type: "text",
                               func: d => d.year_range,
-                              render: d => Util.formatValue(d, "year_range")
+                              render: d => Util.formatValue(d, "year_range"),
                             },
                             {
                               title:
@@ -668,17 +668,17 @@ const Details = ({
                                       "In-kind support",
                                       "inkind"
                                     )
-                                  : Util.formatValue(d, curFlowType)
-                            }
+                                  : Util.formatValue(d, curFlowType),
+                            },
                           ]}
-                          tableData={data.flows.flows}
+                          tableData={data.flows}
                           hide={r => r.amount === -9999}
                         />
                       </div>
                     ),
                     toggleFlowType: true,
-                    hide: noData || unknownDataOnly || noFinancialData
-                  }
+                    hide: noData || unknownDataOnly || noFinancialData,
+                  },
                 ]
               : [
                   {
@@ -689,16 +689,16 @@ const Details = ({
                       </div>
                     ),
                     toggleFlowType: false,
-                    hide: noData || unknownDataOnly || noFinancialData
-                  }
-                ]
+                    hide: noData || unknownDataOnly || noFinancialData,
+                  },
+                ],
         },
         {
           slug: "pvs",
           header: "PVS scores",
           content: pvsTabContent,
-          hide: data.pvs.scores.length === 0 || entityRole === "funder"
-        }
+          hide: data.pvs.scores.length === 0 || entityRole === "funder",
+        },
       ]
     : [];
 
@@ -748,7 +748,7 @@ const Details = ({
           <div
             style={{
               backgroundColor:
-                entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)"
+                entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)",
             }}
             className={styles.entityRole}
           >
@@ -794,7 +794,7 @@ const Details = ({
             .map(s => (
               <button
                 className={classNames(styles.tabToggle, {
-                  [styles.selected]: s.slug === curTab
+                  [styles.selected]: s.slug === curTab,
                 })}
                 onClick={() => setCurTab(s.slug)}
               >
@@ -903,8 +903,10 @@ export const renderDetails = ({
   flowTypeInfo,
   ghsaOnly,
   setLoadingSpinnerOn,
-  setGhsaOnly
+  setGhsaOnly,
 }) => {
+  console.log("flowTypeInfo");
+  console.log(flowTypeInfo);
   if (loading) {
     return <div className={"placeholder"} />;
   } else if (
@@ -921,7 +923,7 @@ export const renderDetails = ({
       flowTypeInfo: flowTypeInfo,
       ghsaOnly: ghsaOnly,
       setGhsaOnly: setGhsaOnly,
-      setLoadingSpinnerOn
+      setLoadingSpinnerOn,
     });
 
     return detailsComponent ? (
@@ -949,122 +951,183 @@ const getComponentData = async ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
-  setLoadingSpinnerOn
+  setLoadingSpinnerOn,
 }) => {
-  // Define typical base query parameters used in FlowQuery,
-  // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
-  // modified in code below.
-  const nodeType =
-    entityRole === undefined
-      ? "target"
-      : entityRole === "recipient"
-      ? "target"
-      : "source";
-  const otherNodeType = entityRole === "recipient" ? "source" : "target";
-  const baseQueryParams = {
-    focus_node_ids: id === "ghsa" ? null : [id],
-    focus_node_type: nodeType,
-    flow_type_ids: [1, 2, 3, 4],
-    start_date: `${Settings.startYear}-01-01`,
-    end_date: `${Settings.endYear}-12-31`,
-    by_neighbor: false,
-    filters: { parent_flow_info_filters: [] },
-    summaries: {
-      flow_info_summary: ["core_capacities", "core_elements"]
-    },
-    include_master_summary: true
-  };
+  // define directions for queries
+  const direction = entityRole === "funder" ? "origin" : "target";
+  const otherDirection = direction === "origin" ? "target" : "origin";
+
+  // // Define typical base query parameters used in Flow,
+  // // NodeSums, and FlowBundleGeneralQuery. These are adapted and
+  // // modified in code below.
+  // const nodeType =
+  //   entityRole === undefined
+  //     ? "target"
+  //     : entityRole === "recipient"
+  //     ? "target"
+  //     : "source";
+  // const otherNodeType = entityRole === "recipient" ? "source" : "target";
+  // const baseQueryParams = {
+  //   focus_node_ids: id === "ghsa" ? null : [id],
+  //   // focus_node_type: nodeType,
+  //   flow_type_ids: [1, 2, 3, 4],
+  //   start_date: `${Settings.startYear}-01-01`,
+  //   end_date: `${Settings.endYear}-12-31`,
+  //   by_neighbor: false,
+  //   filters: { parent_flow_info_filters: [] },
+  //   summaries: {
+  //     flow_info_summary: ["core_capacities", "core_elements"],
+  //   },
+  //   include_master_summary: true,
+  // };
 
   // If GHSA page, then filter by GHSA projects, and add "year" filter to the
   // summaries.
   // TODO ADD summaries to FlowBundleGeneralQuery so we don't need this hack.
-  if (ghsaOnly === "true") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "ghsa_funding",
-      "True"
-    ]);
-  } else if (ghsaOnly === "event") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "outbreak_id:not",
-      null
-    ]);
-  } else if (ghsaOnly === "capacity") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "response_or_capacity:not",
-      "response"
-    ]);
+  // if (ghsaOnly === "true") {
+  //   baseQueryParams.filters.parent_flow_info_filters.push([
+  //     "ghsa_funding",
+  //     "True",
+  //   ]);
+  // } else if (ghsaOnly === "event") {
+  //   baseQueryParams.filters.parent_flow_info_filters.push([
+  //     "outbreak_id:not",
+  //     null,
+  //   ]);
+  // } else if (ghsaOnly === "capacity") {
+  //   baseQueryParams.filters.parent_flow_info_filters.push([
+  //     "response_or_capacity:not",
+  //     "response",
+  //   ]);
+  // }
+
+  // if (id === "ghsa") {
+  //   baseQueryParams.summaries.flow_info_summary.push("year");
+  //   if (ghsaOnly !== "true")
+  //     baseQueryParams.filters.parent_flow_info_filters.push([
+  //       "ghsa_funding",
+  //       "True",
+  //     ]);
+  // }
+
+  // define common filters for most queries
+  const commonFilters = {};
+
+  // if GHSA page, filter by `is_ghsa === true`
+  if (id == "ghsa") {
+    commonFilters["Flow.is_ghsa"] = [true];
   }
 
-  if (id === "ghsa") {
-    baseQueryParams.summaries.flow_info_summary.push("year");
-    if (ghsaOnly !== "true")
-      baseQueryParams.filters.parent_flow_info_filters.push([
-        "ghsa_funding",
-        "True"
-      ]);
-  }
+  // const flowQueryParams = {
+  //   ...JSON.parse(JSON.stringify(baseQueryParams)),
+  //   by_outbreak: true,
+  //   flow_type_ids: [5],
+  //   include_general_amounts: true,
+  // };
+  // flowQueryParams.filters.parent_flow_info_filters.push([
+  //   "outbreak_id:not",
+  //   null,
+  // ]);
 
-  const flowQueryParams = {
-    ...JSON.parse(JSON.stringify(baseQueryParams)),
-    by_outbreak: true,
-    flow_type_ids: [5],
-    include_general_amounts: true
-  };
-  flowQueryParams.filters.parent_flow_info_filters.push([
-    "outbreak_id:not",
-    null
-  ]);
-
-  // Define queries for typical details page.
-  const now = new Date(`${Settings.endYear}-12-31`);
-  const then = new Date(`${Settings.startYear}-01-01`);
+  // // Define queries for typical details page.
+  // const now = new Date(`${Settings.endYear}-12-31`);
+  // const then = new Date(`${Settings.startYear}-01-01`);
   const queries = {
     // Information about the entity
-    nodeData: NodeQuery({ node_id: id }),
+    nodeData: Stakeholder({ id }),
 
-    jeeScores: ScoreQuery({
-      type: "jee_v1"
+    jeeScores: Assessment({
+      scoreType: "JEE v1",
     }),
 
-    pvs: ScoreQuery({
+    pvs: Assessment({
       id,
-      scoreType: "pvs"
+      scoreType: "PVS",
     }),
 
     // Flow bundles by source/target specific pairing, oriented from the other
     // node type (e.g., for a given source node whose page this is, return one
     // row per target node it has a flow with)
-    flowBundlesFocusOther: FlowBundleFocusQuery({
-      ...baseQueryParams,
-      by_neighbor: true
+    // flowBundlesFocusOther: NodeSums({
+    //   ...baseQueryParams,
+    //   by_neighbor: true,
+    // }),
+    byYear: NodeSums({
+      direction, // "target"
+      group_by: "Flow.year",
+      filters: {
+        ...commonFilters,
+        "Stakeholder.id": [id],
+        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+        "Flow.year": [
+          ["gt_eq", Settings.startYear],
+          ["lt_eq", Settings.endYear],
+        ],
+      },
     }),
-    flows: FlowQuery({
-      ...flowQueryParams,
-      start_date: Util.formatDatetimeApi(then),
-      end_date: Util.formatDatetimeApi(now)
-    })
+    flows: Flow({
+      ...commonFilters,
+      // ...flowQueryParams,
+      // start_date: Util.formatDatetimeApi(then),
+      // end_date: Util.formatDatetimeApi(now),
+    }),
   };
 
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
-  let focusSummaryQueryParams;
+  // let focusSummaryQueryParams;
   if (id === "ghsa") {
-    queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
-    focusSummaryQueryParams = {
-      ...baseQueryParams,
-      focus_node_type: entityRole === "recipient" ? "target" : "source",
-      focus_node_ids: null
-    };
-    queries["focusSummary"] = FlowBundleFocusQuery(focusSummaryQueryParams);
+    // TODO
+    // queries["flowBundles"] = NodeSums(baseQueryParams);
+    // // queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
+    // focusSummaryQueryParams = {
+    //   ...baseQueryParams,
+    //   // focus_node_type: entityRole === "recipient" ? "target" : "source",
+    //   focus_node_ids: null,
+    // };
+    // queries["focusSummary"] = NodeSums(focusSummaryQueryParams);
   } else {
-    focusSummaryQueryParams = {
-      ...baseQueryParams,
-      by_neighbor: false,
-      summaries: {
-        flow_info_summary: ["core_capacities", "core_elements", "year"]
-      }
-    };
-    queries["focusSummary"] = FlowBundleFocusQuery(focusSummaryQueryParams);
+    // top funder / recipient table
+    queries.topTable = NodeSums({
+      format: "table",
+      direction: otherDirection, // "origin"
+      group_by: "Core_Element.name",
+      filters: {
+        "OtherStakeholder.id": [id],
+        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+        "Flow.year": [
+          ["gt_eq", Settings.startYear],
+          ["lt_eq", Settings.endYear],
+        ],
+      },
+    });
+
+    // core capacity bar chart
+    queries.ccBarChart = NodeSums({
+      direction: otherDirection, // "origin"
+      group_by: "Core_Capacity.name",
+      preserve_stakeholder_groupings: true,
+      filters: {
+        "OtherStakeholder.id": [id],
+        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+        "Flow.year": [
+          ["gt_eq", Settings.startYear],
+          ["lt_eq", Settings.endYear],
+        ],
+      },
+    });
+
+    // focusSummaryQueryParams = {
+    //   ...baseQueryParams,
+    //   by_neighbor: false,
+    //   summaries: {
+    //     flow_info_summary: ["core_capacities", "core_elements", "year"],
+    //   },
+    // };
+    // queries["focusSummary"] = NodeSums({
+    //   direction: entityRole === "recipient" ? "target" : "origin",
+    //   filters: focusSummaryQueryParams,
+    // });
   }
 
   // Get query results.
@@ -1081,10 +1144,7 @@ const getComponentData = async ({
       ghsaOnly={ghsaOnly}
       setGhsaOnly={setGhsaOnly}
       setComponent={setDetailsComponent}
-      responseStart={then}
-      responseEnd={now}
       setLoadingSpinnerOn={setLoadingSpinnerOn}
-      focusSummaryQueryParams={focusSummaryQueryParams}
     />
   );
 };
