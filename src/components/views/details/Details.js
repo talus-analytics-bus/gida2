@@ -956,7 +956,7 @@ const getComponentData = async ({
       format: "stack_bar_chart",
       direction: otherDirection, // "origin"
       group_by: "Core_Capacity.name",
-      preserve_stakeholder_groupings: true,
+      preserve_stakeholder_groupings: false,
       filters: {
         "OtherStakeholder.id": [id],
         "Flow.flow_type": ["disbursed_funds", "committed_funds"],
