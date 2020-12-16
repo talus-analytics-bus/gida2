@@ -137,8 +137,8 @@ const Details = ({
   // Define standard colums for Top Funders and Top Recipients tables.
   const topTableCols = [
     {
-      prop: "total",
-      func: d => (d[curFlowType] ? d[curFlowType].total : undefined),
+      prop: "_tot",
+      func: d => (d[curFlowType] ? d[curFlowType]._tot : undefined),
       type: "num",
       className: d => (d > 0 ? "num" : "num-with-text"),
       title: `Total ${
@@ -407,21 +407,22 @@ const Details = ({
                   over a bar to see additional funding details.
                 </p>
               ),
-              content: (
-                <StackBar
-                  data={data.ccBarChart}
-                  flowType={curFlowType}
-                  flowTypeName={curFlowTypeName}
-                  attributeType={"core_capacities"}
-                  nodeType={nodeType}
-                  otherNodeType={otherNodeType}
-                  jeeScores={data.jeeScores[data.nodeData.id]}
-                  placeType={data.nodeData.type}
-                  id={id}
-                  ghsaOnly={ghsaOnly}
-                  render={curTab === "ihr"}
-                />
-              ),
+              // TODO fix StackBar
+              // content: (
+              //   <StackBar
+              //     data={data.ccBarChart}
+              //     flowType={curFlowType}
+              //     flowTypeName={curFlowTypeName}
+              //     attributeType={"core_capacities"}
+              //     nodeType={nodeType}
+              //     otherNodeType={otherNodeType}
+              //     jeeScores={data.jeeScores[data.nodeData.id]}
+              //     placeType={data.nodeData.type}
+              //     id={id}
+              //     ghsaOnly={ghsaOnly}
+              //     render={curTab === "ihr"}
+              //   />
+              // ),
               toggleFlowType: true,
               hide: noData || unknownDataOnly || noFinancialData,
             },
@@ -445,7 +446,7 @@ const Details = ({
               ),
               content: (
                 <TableInstance
-                  sortByProp={"total"}
+                  sortByProp={"_tot"}
                   paging={true}
                   tableColumns={[
                     {
@@ -458,13 +459,14 @@ const Details = ({
                       prop: otherNodeType,
                       type: "text",
                       func: d => JSON.stringify(d[otherNodeType]),
-                      render: d =>
-                        getNodeLinkList({
-                          urlType: "details",
-                          nodeList: JSON.parse(d),
-                          entityRole: otherEntityRole,
-                          id: id,
-                        }),
+                      render: d => "mvm",
+                      // render: d =>
+                      //   getNodeLinkList({
+                      //     urlType: "details",
+                      //     nodeList: JSON.parse(d),
+                      //     entityRole: otherEntityRole,
+                      //     id: id,
+                      //   }),
                     },
                   ].concat(topTableCols)}
                   tableData={
@@ -481,7 +483,7 @@ const Details = ({
               header: <h2>Top {entityRole}s</h2>,
               content: pageType === "ghsa" && (
                 <TableInstance
-                  sortByProp={"total"}
+                  sortByProp={"_tot"}
                   tableColumns={[
                     {
                       title: Util.getInitCap(
