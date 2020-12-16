@@ -10,8 +10,7 @@ import { Settings } from "../../../App.js";
 import tableIcon from "../../../assets/images/table-funds.svg";
 import Button from "../../common/Button/Button.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
-import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
-import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
+import { NodeSums } from "../../misc/Queries";
 
 // Data functions
 // FC
@@ -26,12 +25,13 @@ const FundsByYear = ({
   setLoadingSpinnerOn,
   ...props
 }) => {
+  const direction = entityRole === "funder" ? "origin" : "target";
   // Get area line data
   const getAreaLineData = data => {
     const areaLineData = [];
     for (let i = Settings.startYear; i <= Settings.endYear; i++) {
       const yearDatum = {
-        attribute: i.toString()
+        attribute: i.toString(),
       };
 
       flowTypeInfo.forEach(ft => {
@@ -40,7 +40,7 @@ const FundsByYear = ({
         } else if (ft.flow_type_id > 2) {
           return;
         } else {
-          const yearDatumVal = data[ft.name].summaries.year[i.toString()];
+          const yearDatumVal = data[ft.name][i.toString()];
           if (yearDatumVal !== undefined) yearDatum[ft.name] = yearDatumVal;
           else yearDatum[ft.name] = "n/a";
         }
@@ -74,48 +74,39 @@ const FundsByYear = ({
       return;
     } else if (!unknownDataOnly && !noFinancialData) {
       setLoadingSpinnerOn(true, false, "AreaLine");
+
       // Get new data
-      const queryFunc = FlowBundleFocusQuery;
-      // const queryFunc =
-      //   id === "ghsa" ? FlowBundleGeneralQuery : FlowBundleFocusQuery;
+      const queryFunc = NodeSums;
 
       // update params as needed
-      const updatedParams = {
-        filters: { parent_flow_info_filters: [] },
-        summaries: { flow_info_summary: ["year"] }
-        // focus_node_type: "target",
-        // focus_node_ids: null
+      // TODO update to match new API
+      const filters = {
+        "Stakeholder.id": [id],
+        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+        "Flow.year": [
+          ["gt_eq", Settings.startYear],
+          ["lt_eq", Settings.endYear],
+        ],
       };
       if (fundType === "true") {
-        updatedParams.filters.parent_flow_info_filters.push([
-          "ghsa_funding",
-          "True"
-        ]);
+        filters["Flow.is_ghsa"] = [true];
       } else if (fundType === "event") {
-        updatedParams.filters.parent_flow_info_filters.push([
-          "outbreak_id:not",
-          null
-        ]);
+        filters["Flow.response_or_capacity"] = ["response"];
       } else if (fundType === "capacity") {
-        updatedParams.filters.parent_flow_info_filters.push([
-          "response_or_capacity:not",
-          "response"
-        ]);
+        filters["Flow.response_or_capacity"] = ["capacity"];
       }
       if (id === "ghsa") {
-        if (fundType !== "true")
-          updatedParams.filters.parent_flow_info_filters.push([
-            "ghsa_funding",
-            "True"
-          ]);
+        if (fundType !== "true") filters["Flow.is_ghsa"] = [true];
       }
       const query = queryFunc({
-        ...params,
-        ...updatedParams
+        direction,
+        group_by: "Flow.year",
+        filters,
       });
       query.then(d => {
-        setChartData(d.master_summary.flow_types);
-        setAreaLineData(getAreaLineData(d.master_summary.flow_types));
+        const dValues = Object.values(d);
+        setChartData(dValues);
+        setAreaLineData(getAreaLineData(dValues));
       });
     } else {
       setLoadingSpinnerOn(false);
@@ -132,7 +123,7 @@ const FundsByYear = ({
                 label: "Show funding type",
                 setGhsaOnly: setFundType,
                 ghsaOnly: fundType,
-                selectpicker: true
+                selectpicker: true,
               }}
             />
             <TotalByFlowType flowType="disbursed_funds" data={chartData} />
