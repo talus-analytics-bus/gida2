@@ -77,7 +77,7 @@ const Details = ({
   const noResponseData = data.flows.length === 0;
   const [curTab, setCurTab] = React.useState("ihr");
   const [showFlag, setShowFlag] = React.useState(
-    data.nodeData.type === "country"
+    data.nodeData.cat === "country"
   );
 
   const [curPvsEdition, setCurPvsEdition] = React.useState(
@@ -666,9 +666,7 @@ const Details = ({
       ]
     : [];
 
-  const flagId = data.nodeData.iso2
-    ? data.nodeData.iso2.toLowerCase()
-    : "unspecified";
+  const flagId = data.nodeData.slug ? data.nodeData.slug : "unspecified";
 
   const ghsa = pageType === "ghsa";
 
@@ -676,7 +674,7 @@ const Details = ({
     ? `/flags/ghsa.png`
     : `https://www.countryflags.io/${flagId}/flat/64.png`;
   const flag =
-    data.nodeData.type === "country" || ghsa ? (
+    data.nodeData.cat === "country" || ghsa ? (
       <img
         onError={e => addDefaultSrc(e)}
         className={classNames({ [styles.small]: ghsa })}
