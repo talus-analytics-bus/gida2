@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Util from "../../misc/Util";
-import { execute, NodeSums } from "../../misc/Queries";
+import React, { useState, useEffect, useContext } from "react";
+import Util, { isEmpty } from "../../misc/Util";
+import { getNodeLinkList } from "../../misc/Data";
+import { execute, NodeSums, Stakeholder } from "../../misc/Queries";
 import TableInstance from "../table/TableInstance";
 import { Settings } from "../../../App.js";
+// import { appContext, defaultContext } from "../../misc/ContextProvider";
 
 // FC for TopTable.
 const TopTable = ({
@@ -13,26 +15,33 @@ const TopTable = ({
   direction,
   ...props
 }) => {
+  // // CONTEXT //
+  // const context = useContext(appContext) || defaultContext;
   const [data, setData] = useState(null);
+  const [stakeholders, setStakeholders] = useState(null);
   const updateData = async () => {
     // top funder / recipient table
-    const queries = {};
-    queries.data = NodeSums({
-      format: "table",
-      direction, // "origin"
-      group_by: "Core_Element.name",
-      filters: {
-        "OtherStakeholder.id": [id],
-        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-        "Flow.year": [
-          ["gt_eq", Settings.startYear],
-          ["lt_eq", Settings.endYear],
-        ],
-      },
-    });
+    const queries = {
+      data: NodeSums({
+        format: "table",
+        direction, // "origin"
+        group_by: "Core_Element.name",
+        filters: {
+          "OtherStakeholder.id": [id],
+          "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+          "Flow.year": [
+            ["gt_eq", Settings.startYear],
+            ["lt_eq", Settings.endYear],
+          ],
+        },
+      }),
+      stakeholders: Stakeholder({ by: "id" }),
+    };
     const results = await execute({ queries });
     setData(results.data);
+    setStakeholders(results.stakeholders);
   };
+
   // when certain selections change, retrieve updated data
   useEffect(() => {
     updateData();
@@ -71,7 +80,7 @@ const TopTable = ({
     })
   );
 
-  if (data === null)
+  if (data === null || stakeholders === null)
     return (
       <div>{[curFlowType, otherEntityRole, otherNodeType].join("; ")}</div>
     );
@@ -90,15 +99,23 @@ const TopTable = ({
             ),
             prop: otherNodeType,
             type: "text",
-            func: d => JSON.stringify(d[otherNodeType]),
-            render: d => "mvm",
-            // render: d =>
-            //   getNodeLinkList({
-            //     urlType: "details",
-            //     nodeList: JSON.parse(d),
-            //     entityRole: otherEntityRole,
-            //     id: id,
-            //   }),
+            func: d => {
+              // split ids on semicolon
+              const ids = d.id.split("; ");
+              const shArr = [];
+              ids.forEach(id => {
+                shArr.push(stakeholders[d.id][0]);
+              });
+              return JSON.stringify(shArr);
+            },
+            // render: d => d,
+            render: d =>
+              getNodeLinkList({
+                urlType: "details",
+                nodeList: JSON.parse(d),
+                entityRole: otherEntityRole,
+                id: id,
+              }),
           },
         ].concat(topTableCols)}
         tableData={data ? data.filter(d => d[curFlowType] !== undefined) : []}
