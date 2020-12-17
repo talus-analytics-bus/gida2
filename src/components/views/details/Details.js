@@ -414,7 +414,7 @@ const Details = ({
               // TODO fix StackBar
               content: (
                 <StackBar
-                  data={data.ccBarChart.points}
+                  data={data.stackBar.points}
                   staticStakeholders={props.nodesData}
                   flowType={curFlowType}
                   flowTypeName={curFlowTypeName}
@@ -952,7 +952,7 @@ const getComponentData = async ({
     // TODO
   } else {
     // core capacity bar chart
-    queries.ccBarChart = NodeSums({
+    queries.stackBar = NodeSums({
       format: "stack_bar_chart",
       direction: otherDirection, // "origin"
       group_by: "Core_Capacity.name",
