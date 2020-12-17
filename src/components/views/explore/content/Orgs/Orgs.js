@@ -257,8 +257,8 @@ const Orgs = ({
           }),
       },
       {
-        title: "Stakeholder slug",
-        prop: "stakeholderSlug",
+        title: "Stakeholder ID",
+        prop: "shID",
         type: "text",
         render: d => d,
       },
@@ -353,7 +353,7 @@ const Orgs = ({
           }),
           value_raw: v[flowType],
           value: v[flowType],
-          stakeholderSlug: k,
+          shID: k,
           stakeholderName: stakeholderInfo[0].name,
         });
       }
@@ -362,7 +362,7 @@ const Orgs = ({
     const tableRowDefs = getTableColDefs(roleSlug, role.toLowerCase()); // target, recipient
 
     const updateTooltipData = ({ d, nodeType, dataKey, mapData }) => {
-      const datum = data[dataKey][d.slug];
+      const datum = data[dataKey][d.id];
 
       // Get tooltip data on hover
       const tooltipData =
@@ -402,7 +402,7 @@ const Orgs = ({
               "data-for": "orgTooltip",
               onMouseOver: () =>
                 updateTooltipData({
-                  d: data.stakeholders[d.stakeholderSlug][0],
+                  d: data.stakeholders[d.shID][0],
                   nodeType: roleSlug,
                   dataKey,
                   mapData: [d],
@@ -429,7 +429,7 @@ const Orgs = ({
             },
             {
               title: "Stakeholder slug (for data binding)",
-              prop: "stakeholderSlug",
+              prop: "shID",
               type: "text",
               hide: true,
             },
@@ -762,7 +762,7 @@ const getComponentData = async ({
     }),
     flowTypeInfo: FlowType({}),
     outbreaks: Outbreak({}),
-    stakeholders: Stakeholder({ by: "slug" }),
+    stakeholders: Stakeholder({ by: "id" }),
 
     // // Information about the entity
     // flowBundlesFocusSources: FlowBundleFocusQuery({
