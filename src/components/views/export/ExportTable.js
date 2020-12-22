@@ -196,73 +196,7 @@ export const renderExportTable = ({
   }
 };
 
-export const getFlowQuery = ({ curPage, ...props }) => {
-  return FlowQuery({
-    ...getFlowQueryParams({ curPage, ...props }),
-    flow_type_ids: [5],
-  });
-};
-
-export const getFlowQueryParams = ({ curPage, ...props }) => {
-  // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
-  const baseQueryParams = {
-    focus_node_ids: null,
-    focus_node_type: "source",
-    flow_type_ids: [5],
-    start_date: `${Settings.startYear}-01-01`,
-    end_date: `${Settings.endYear}-12-31`,
-    page_size: 10,
-    page: curPage,
-    for_export: props.forExport === true,
-    paramsOnly: props.paramsOnly === true,
-
-    // Add filters as appropriate.
-    filters: {},
-  };
-
-  // If funders specified, filter
-  const placeFilterTypes = [["funders", "source"], ["recipients", "target"]];
-  placeFilterTypes.forEach(type => {
-    if (props[type[0]].length > 0) {
-      baseQueryParams.filters.place_filters.push(
-        [type[1]].concat(props[type[0]].map(d => d.value))
-      );
-    }
-  });
-
-  // Flow info filters
-  const flowInfoFilters = [
-    ["supportType", "assistance_type"],
-    ["coreCapacities", "core_capacities"],
-    ["outbreaks", "outbreak_id"],
-  ];
-  flowInfoFilters.forEach(type => {
-    if (props[type[0]].length > 0) {
-      baseQueryParams.filters.flow_info_filters.push(
-        [type[1]].concat(props[type[0]].map(d => d.value))
-      );
-    }
-  });
-
-  // Set base query params for FlowQuery
-  return baseQueryParams;
-};
-
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for special detail pages like GHSA and response
- * @method getComponentData
- * @param  {[type]}       setDetailsComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setComponent,
-  setLoadingSpinnerOn,
-  curPage,
-  setCurPage,
-  ...props
-}) => {
+export const getFlowQuery = ({ props, curPage, forExport = false }) => {
   // Define queries for typical ExportTable page.
   const flowFilters = {};
 
@@ -286,16 +220,45 @@ const getComponentData = async ({
       ["any", "Event.id", props.outbreaks.map(d => d.value)],
     ];
   }
+  const standardProps = {
+    filters: flowFilters,
+    originIds: props.funders.map(d => d.value),
+    targetIds: props.recipients.map(d => d.value),
+    pagesize: 10,
+    page: curPage,
+  };
+  if (!forExport)
+    return Flow({
+      ...standardProps,
+      forExport: false,
+    });
+  else
+    return Flow({
+      ...standardProps,
+      forExport: true,
+    });
+};
+
+/**
+ * Returns data for the details page given the entity type and id.
+ * TODO make this work for special detail pages like GHSA and response
+ * @method getComponentData
+ * @param  {[type]}       setDetailsComponent [description]
+ * @param  {[type]}       id                  [description]
+ * @param  {[type]}       entityRole          [description]
+ */
+const getComponentData = async ({
+  setComponent,
+  setLoadingSpinnerOn,
+  curPage,
+  setCurPage,
+  ...props
+}) => {
+  const flowQuery = getFlowQuery({ props, curPage });
 
   const queries = {
     // Information about the entity
-    flows: Flow({
-      filters: flowFilters,
-      originIds: props.funders.map(d => d.value),
-      targetIds: props.recipients.map(d => d.value),
-      pagesize: 10,
-      page: curPage,
-    }),
+    flows: flowQuery,
   };
 
   // Get results in parallel

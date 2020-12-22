@@ -124,13 +124,14 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     Util.createCookie("download_completed", "no");
     getFlowQuery({
       curPage,
-      funders,
-      recipients,
-      outbreaks,
-      coreCapacities,
-      supportType,
+      props: {
+        funders,
+        recipients,
+        coreCapacities,
+        outbreaks,
+        supportType,
+      },
       forExport: true,
-      paramsOnly: true, // ONLY RETURN PARAMETER SET.
       ...props,
     }).then(paramsTmp => {
       // URL query params
@@ -140,14 +141,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       const data = paramsTmp.data;
       data.cols = cols.filter(d => exportCols.includes(d[0]));
 
-      const queryString = Object.keys(params)
-        .map(key => {
-          if (params[key] !== null && params[key] !== undefined) {
-            return key + "=" + params[key];
-          } else return undefined;
-        })
-        .filter(d => d)
-        .join("&");
+      const queryString = params.toString();
 
       const exportBodyRows = [];
       for (let key in data) {
@@ -165,7 +159,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         );
       }
       const exportBody = exportBodyRows;
-      setExportAction(Util.API_URL + "/flows?" + queryString);
+      setExportAction(
+        process.env.REACT_APP_API_URL + "/post/export?" + queryString
+      );
       setExportBody(exportBody);
     });
   };

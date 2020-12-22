@@ -45,6 +45,7 @@ const Flow = async function({
   filters = {},
   page,
   pagesize,
+  forExport = false,
 }) {
   // Define POST body data
   const data = { filters };
@@ -61,16 +62,21 @@ const Flow = async function({
     }
   });
 
-  // Send request
-  // Await response
-  const res = await axios.post(
-    `${process.env.REACT_APP_API_URL}/post/flows`,
-    data,
-    { params }
-  );
+  // if for export, only return data and props for use in other queries
+  if (forExport) {
+    return { params, data };
+  } else {
+    // Send request
+    // Await response
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}/post/flows`,
+      data,
+      { params }
+    );
 
-  // Return response data
-  return res.data;
+    // Return response data
+    return res.data;
+  }
 };
 
 /**
