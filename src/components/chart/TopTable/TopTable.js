@@ -110,7 +110,7 @@ const TopTable = ({
               const ids = d.id.split("; ");
               const shArr = [];
               ids.forEach(id => {
-                shArr.push(stakeholders[d.id][0]);
+                shArr.push(stakeholders[d.id]);
               });
               return JSON.stringify(shArr);
             },

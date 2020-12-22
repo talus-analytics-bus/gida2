@@ -43,8 +43,8 @@ const Flow = async function({
   originIds,
   targetIds,
   filters = {},
-  page,
-  pagesize,
+  page = 1,
+  pagesize = 1e6,
   forExport = false,
 }) {
   // Define POST body data
@@ -142,13 +142,7 @@ export const Assessment = async function({ ...props }) {
  */
 
 const allStakeholders = {};
-export const Stakeholder = async function({
-  id,
-  search,
-  by,
-  limit,
-  filters = null,
-}) {
+export const Stakeholder = async function({ id, search, by, limit, filters }) {
   const params = new URLSearchParams();
   const toCheck = [
     ["id", id],

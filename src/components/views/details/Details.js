@@ -942,7 +942,9 @@ const getComponentData = async ({
     }),
 
     flows: Flow({
-      ...commonFilters,
+      filters: { "Project_Constants.response_or_capacity": ["response"] },
+      [direction + "Ids"]: [id],
+      [otherDirection + "Ids"]: [],
     }),
   };
 
@@ -974,7 +976,9 @@ const getComponentData = async ({
   const results = await execute({ queries });
 
   // use first and only node result
-  results.nodeData = results.nodesData[id][0];
+  results.nodeData = results.nodesData[id];
+  console.log("results");
+  console.log(results);
 
   // Feed results and other data to the details component and mount it.
   setDetailsComponent(

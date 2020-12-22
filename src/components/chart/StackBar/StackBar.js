@@ -96,7 +96,7 @@ const StackBar = ({
       chartData.forEach(d => {
         const names = d[otherNodeType]
           .map(dd => {
-            return stakeholders[dd][0].name;
+            return stakeholders[dd].name;
           })
           .join("; ");
         d[otherNodeType] = names;
