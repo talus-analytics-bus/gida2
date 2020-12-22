@@ -56,7 +56,6 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   ];
 
   const [exportCols, setExportCols] = React.useState(cols.map(d => d[0]));
-
   const remove = (arr, aTmp) => {
     const a = aTmp;
     let what,

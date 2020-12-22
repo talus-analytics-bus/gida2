@@ -86,7 +86,7 @@ const TableInstance = ({
   useEffect(() => {
     setUpdateCount(updateCount + 1);
     setComponent(buildTable(tableData));
-  }, [tableData]);
+  }, [tableData, tableColumns]);
   return component;
 };
 
