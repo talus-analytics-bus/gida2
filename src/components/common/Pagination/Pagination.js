@@ -93,7 +93,7 @@ const Pagination = ({
           {next}
           {end}
         </div>
-        {showPageNum && (
+        {true && (
           <div className={styles.pageNum}>
             Page {Util.comma(curPage)} of {Util.comma(nPages)}
           </div>

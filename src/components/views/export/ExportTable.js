@@ -2,6 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import styles from "./exporttable.module.scss";
 import { Settings } from "../../../App.js";
+import { execute, Flow } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
 import Chevron from "../../common/Chevron/Chevron.js";
@@ -11,7 +12,14 @@ import Pagination from "../../common/Pagination/Pagination.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 
 // FC for ExportTable.
-const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
+const ExportTable = ({
+  data,
+  exportCols,
+  curPage,
+  setCurPage,
+  stakeholders,
+  ...props
+}) => {
   // Set n records
   props.setNRecords(data.flows.paging.n_records);
 
@@ -23,42 +31,42 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
     props.funders,
     props.recipients,
     props.outbreaks,
-    props.supportType
+    props.supportType,
   ]);
 
   const cols = [
     {
       title: "Project name",
-      prop: "project_name",
+      prop: "name",
       type: "text",
-      func: d => d.flow_info.project_name
+      func: d => d.name,
     },
     {
       title: "Project description",
-      prop: "description",
+      prop: "desc",
       type: "text",
-      func: d => d.flow_info.description
+      func: d => d.desc,
     },
     {
       title: "Data source",
-      prop: "data_sources",
+      prop: "sources",
       type: "text",
-      func: d => d.data_sources.filter(dd => dd.trim() !== "").join("; ")
+      func: d =>
+        d.sources !== undefined
+          ? d.sources.filter(dd => dd.trim() !== "").join("; ")
+          : "",
     },
     {
       title: "Core capacities",
-      prop: "core_capacities",
+      prop: "ccs",
       type: "text",
-      func: d =>
-        d.flow_info.core_capacities
-          ? d.flow_info.core_capacities.join("; ")
-          : ""
+      func: d => (d.ccs ? d.ccs.join("; ") : ""),
     },
     {
       title: "Transaction year range",
-      prop: "year_range",
+      prop: "years",
       type: "text",
-      func: d => (d.year_range ? d.year_range : "")
+      func: d => (d.years ? d.years : ""),
     },
     {
       title: (
@@ -67,9 +75,9 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
           <div>Funder</div>
         </div>
       ),
-      prop: "source",
+      prop: "origins",
       type: "text",
-      func: d => d.source.map(dd => dd.name).join("; ")
+      func: d => d.origins.map(dd => stakeholders[dd].name).join("; "),
     },
     {
       title: (
@@ -78,41 +86,35 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
           <div>Recipient</div>
         </div>
       ),
-      prop: "target",
+      prop: "targets",
       type: "text",
-      func: d => d.target.map(dd => dd.name).join("; ")
+      func: d => d.targets.map(dd => stakeholders[dd].name).join("; "),
     },
     {
       title: "Support type",
       prop: "assistance_type",
       type: "text",
-      func: d =>
-        d.flow_info.assistance_type == "financial"
-          ? "Direct financial support"
-          : "In-kind support"
+      func: d => {
+        if (!d.is_inkind) return "Financial assistance";
+        else return "In-kind support";
+      },
     },
     {
-      title: `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
+      title: `Amount committed`,
       prop: "committed_funds",
       type: "num",
       className: d => (d > 0 ? "num" : "num-with-text"),
-      func: d =>
-        d.flow_types.committed_funds !== undefined
-          ? d.flow_types.committed_funds.focus_node_weight
-          : "",
-      render: d => Util.formatValue(d, "committed_funds")
+      func: d => (d.committed_funds !== null ? d.committed_funds : ""),
+      render: d => Util.formatValue(d, "committed_funds"),
     },
     {
-      title: `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
+      title: `Amount disbursed`,
       prop: "disbursed_funds",
       type: "num",
       className: d => (d > 0 ? "num" : "num-with-text"),
-      func: d =>
-        d.flow_types.disbursed_funds !== undefined
-          ? d.flow_types.disbursed_funds.focus_node_weight
-          : "",
-      render: d => Util.formatValue(d, "disbursed_funds")
-    }
+      func: d => (d.disbursed_funds !== null ? d.disbursed_funds : ""),
+      render: d => Util.formatValue(d, "disbursed_funds"),
+    },
   ].filter(d => exportCols.includes(d.prop));
 
   const dataTable = (
@@ -121,7 +123,7 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
       noNativeSearch={true}
       noNativeSorting={true}
       tableColumns={cols}
-      tableData={data.flows.flows}
+      tableData={data.flows.data}
     />
   );
   // Return JSX
@@ -135,7 +137,7 @@ const ExportTable = ({ data, exportCols, curPage, setCurPage, ...props }) => {
                 curPage,
                 setCurPage,
                 setCurPageSize,
-                nPages: data.flows.paging.n_pages
+                nPages: data.flows.paging.n_pages,
               }}
             />
           }
@@ -178,7 +180,7 @@ export const renderExportTable = ({
       setLoadingSpinnerOn,
       curPage,
       setCurPage,
-      ...props
+      ...props,
     });
 
     return component ? component : <div className={"placeholder"} />;
@@ -197,7 +199,7 @@ export const renderExportTable = ({
 export const getFlowQuery = ({ curPage, ...props }) => {
   return FlowQuery({
     ...getFlowQueryParams({ curPage, ...props }),
-    flow_type_ids: [5]
+    flow_type_ids: [5],
   });
 };
 
@@ -215,7 +217,7 @@ export const getFlowQueryParams = ({ curPage, ...props }) => {
     paramsOnly: props.paramsOnly === true,
 
     // Add filters as appropriate.
-    filters: { place_filters: [], flow_info_filters: [] }
+    filters: {},
   };
 
   // If funders specified, filter
@@ -232,7 +234,7 @@ export const getFlowQueryParams = ({ curPage, ...props }) => {
   const flowInfoFilters = [
     ["supportType", "assistance_type"],
     ["coreCapacities", "core_capacities"],
-    ["outbreaks", "outbreak_id"]
+    ["outbreaks", "outbreak_id"],
   ];
   flowInfoFilters.forEach(type => {
     if (props[type[0]].length > 0) {
@@ -262,9 +264,31 @@ const getComponentData = async ({
   ...props
 }) => {
   // Define queries for typical ExportTable page.
+  const flowFilters = {};
+
+  // CCs
+  if (props.coreCapacities.length > 0) {
+    flowFilters["Project.core_capacities"] = [
+      ["any", props.coreCapacities.map(d => d.value)],
+    ];
+  }
+
+  // assistance type
+  if (props.supportType.length === 1) {
+    flowFilters["Project.is_inkind"] = [
+      props.supportType[0].value === "inkind",
+    ];
+  }
+
   const queries = {
     // Information about the entity
-    flows: getFlowQuery({ curPage, ...props })
+    flows: Flow({
+      filters: flowFilters,
+      originIds: props.funders.map(d => d.value),
+      targetIds: props.recipients.map(d => d.value),
+      pagesize: 10,
+      page: curPage,
+    }),
   };
 
   // Get results in parallel
@@ -279,7 +303,7 @@ const getComponentData = async ({
         curPage,
         setCurPage,
         exportCols: props.exportCols,
-        ...props
+        ...props,
       }}
     />
   );

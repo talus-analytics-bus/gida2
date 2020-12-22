@@ -3,6 +3,7 @@ import classNames from "classnames";
 import styles from "./export.module.scss";
 import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
+import { execute, Stakeholder, Outbreak } from "../../misc/Queries";
 import FlowQuery from "../../misc/FlowQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 import OutbreakQuery from "../../misc/OutbreakQuery.js";
@@ -36,22 +37,22 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     recipients.length > 0;
 
   const cols = [
-    ["project_name", "Project name", true],
-    ["description", "Project description"],
-    ["data_sources", "Data source"],
-    ["core_capacities", "Core capacities"],
-    ["source", "Funder"],
-    ["target", "Recipient"],
+    ["name", "Project name", true],
+    ["desc", "Project description"],
+    ["sources", "Data source"],
+    ["ccs", "Core capacities"],
+    ["origins", "Funder"],
+    ["targets", "Recipient"],
     ["assistance_type", "Support type"],
-    ["year_range", "Transaction year range"],
+    ["years", "Transaction year range"],
     [
       "committed_funds",
-      `Amount committed (${Settings.startYear} - ${Settings.endYear})`
+      `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
     ],
     [
       "disbursed_funds",
-      `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`
-    ]
+      `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
+    ],
   ];
 
   const [exportCols, setExportCols] = React.useState(cols.map(d => d[0]));
@@ -95,8 +96,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       setComponent: setExportTable,
       setLoadingSpinnerOn,
       curPage,
-      setCurPage
-    }
+      setCurPage,
+      stakeholders: data.stakeholders,
+    },
   });
 
   const filterTest = (
@@ -105,7 +107,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         label: "",
         options: core_capacities,
         placeholder: "Funding by core capacity",
-        onChange: setCoreCapacities
+        onChange: setCoreCapacities,
       }}
     />
   );
@@ -130,7 +132,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       supportType,
       forExport: true,
       paramsOnly: true, // ONLY RETURN PARAMETER SET.
-      ...props
+      ...props,
     }).then(paramsTmp => {
       // URL query params
       const params = paramsTmp.params;
@@ -157,7 +159,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
               {...{
                 name: key,
                 id: key,
-                value: JSON.stringify(d)
+                value: JSON.stringify(d),
               }}
             />
           </div>
@@ -225,7 +227,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: core_capacities,
                     placeholder: "Funding by core capacity",
                     onChange: setCoreCapacities,
-                    curValues: coreCapacities
+                    curValues: coreCapacities,
                   }}
                 />
                 <FilterDropdown
@@ -233,30 +235,34 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     label: "",
                     options: [
                       { value: "financial", label: "Direct financial support" },
-                      { value: "inkind", label: "In-kind support" }
+                      { value: "inkind", label: "In-kind support" },
                     ],
                     placeholder: "Support type",
                     onChange: setSupportType,
                     curValues: supportType,
-                    isSearchable: false
+                    isSearchable: false,
                   }}
                 />
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: data.entities,
+                    options: Object.values(data.stakeholders).map(d => {
+                      return { value: d.id, label: d.name };
+                    }),
                     placeholder: "Funder",
                     onChange: setFunders,
-                    curValues: funders
+                    curValues: funders,
                   }}
                 />
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: data.entities,
+                    options: Object.values(data.stakeholders).map(d => {
+                      return { value: d.id, label: d.name };
+                    }),
                     placeholder: "Recipient",
                     onChange: setRecipients,
-                    curValues: recipients
+                    curValues: recipients,
                   }}
                 />
                 <FilterDropdown
@@ -265,7 +271,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: data.outbreaks,
                     placeholder: "Event response",
                     onChange: setOutbreaks,
-                    curValues: outbreaks
+                    curValues: outbreaks,
                   }}
                 />
               </div>
@@ -285,7 +291,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                               label: d[1],
                               value: d[0],
                               curChecked: exportCols.includes(d[0]),
-                              callback: updateExportCols
+                              callback: updateExportCols,
                             }}
                           />
                         )
@@ -316,8 +322,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   {exportFlowJsx}
                 </div>
               </div>
-            </div>
-          ]
+            </div>,
+          ],
         }}
       />
       {dataTable}
@@ -329,7 +335,7 @@ export const renderExport = ({
   component,
   setComponent,
   setLoadingSpinnerOn,
-  loading
+  loading,
 }) => {
   // Get data
   if (loading) {
@@ -337,7 +343,7 @@ export const renderExport = ({
   } else if (component === null) {
     getComponentData({
       setComponent: setComponent,
-      setLoadingSpinnerOn
+      setLoadingSpinnerOn,
     });
 
     return component ? component : <div className={"placeholder"} />;
@@ -365,7 +371,7 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
     end_date: `${Settings.endYear}-12-31`,
 
     // Add filters as appropriate.
-    filters: {}
+    filters: {},
   };
 
   // Set base query params for FlowQuery
@@ -374,13 +380,13 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
   // Define queries for typical Export page.
   const queries = {
     // Information about the entity
-    entities: NodeQuery({ setKeys: "value,label" }),
-    outbreaks: OutbreakQuery({})
+    stakeholders: Stakeholder({ by: "id" }),
+    outbreaks: Outbreak({}),
   };
 
   // Get results in parallel
   setLoadingSpinnerOn(true);
-  const results = await Util.getQueryResults(queries);
+  const results = await execute({ queries });
 
   // Set the component
   setComponent(

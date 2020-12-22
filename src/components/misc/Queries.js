@@ -40,74 +40,33 @@ export /**
  */
 
 const Flow = async function({
-  focus_node_type,
-  focus_node_ids = null,
-  node_category = null,
-  flow_type_ids,
-  start_date,
-  end_date,
-  return_child_flows = true,
-  bundle_child_flows = true,
-  bundle_child_flows_by_neighbor = true,
+  originIds,
+  targetIds,
   filters = {},
-  pair_node_id,
-  by_outbreak,
-  include_general_amounts,
   page,
-  page_size,
-  for_export = false,
-  ...props
+  pagesize,
 }) {
-  // // Define URL parameters //
-  // const params = {
-  //   focus_node_type: focus_node_type,
-  //   focus_node_ids:
-  //     focus_node_ids !== null ? focus_node_ids.join(",") : focus_node_ids,
-  //   node_category:
-  //     node_category !== null ? node_category.join(",") : node_category,
-  //   flow_type_ids: flow_type_ids.join(","),
-  //   return_child_flows: return_child_flows,
-  //   bundle_child_flows: bundle_child_flows,
-  //   bundle_child_flows_by_neighbor: bundle_child_flows_by_neighbor,
-  //   pair_node_id: pair_node_id,
-  //   by_outbreak: by_outbreak,
-  //   include_general_amounts: include_general_amounts,
-  //   for_export: for_export,
-  // };
-  // if (params.for_export !== true) {
-  //   if (page) params.page = page;
-  //   if (page_size) params.page_size = page_size;
-  // }
-  //
-  // // Send start and end dates if they are provided, otherwise do not send.
-  // end_date = typeof end_date !== "undefined" ? end_date : start_date;
-  // if (end_date !== undefined) params.end_date = end_date;
-  // if (start_date !== undefined) params.start_date = start_date;
-
   // Define POST body data
-  const data = filters;
-
-  // if (props.paramsOnly === true) return { params: params, data: data };
+  const data = { filters };
 
   // Define URL params
-  const config = {
-    params: {},
-  };
+  const params = new URLSearchParams({ page, pagesize });
 
-  // // If for export, set content type
-  // if (params.for_export) {
-  //   config.headers = {
-  //     "Content-Type":
-  //       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  //   };
-  // }
+  const toAdd = [["origin_ids", originIds], ["target_ids", targetIds]];
+  toAdd.forEach(([key, values]) => {
+    if (values.length > 0) {
+      values.forEach(v => {
+        params.append(key, v);
+      });
+    }
+  });
 
   // Send request
   // Await response
   const res = await axios.post(
     `${process.env.REACT_APP_API_URL}/post/flows`,
     data,
-    config
+    { params }
   );
 
   // Return response data
