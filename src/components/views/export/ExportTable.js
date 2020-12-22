@@ -268,15 +268,22 @@ const getComponentData = async ({
 
   // CCs
   if (props.coreCapacities.length > 0) {
-    flowFilters["Project.core_capacities"] = [
+    flowFilters["Project_Constants.core_capacities"] = [
       ["any", props.coreCapacities.map(d => d.value)],
     ];
   }
 
   // assistance type
   if (props.supportType.length === 1) {
-    flowFilters["Project.is_inkind"] = [
+    flowFilters["Project_Constants.is_inkind"] = [
       props.supportType[0].value === "inkind",
+    ];
+  }
+
+  // outbreak events
+  if (props.outbreaks.length > 0) {
+    flowFilters["Project.events"] = [
+      ["any", "Event.id", props.outbreaks.map(d => d.value)],
     ];
   }
 

@@ -267,7 +267,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: data.outbreaks,
+                    options: data.outbreaks.map(d => {
+                      return { value: d.id, label: d.name };
+                    }),
                     placeholder: "Event response",
                     onChange: setOutbreaks,
                     curValues: outbreaks,
