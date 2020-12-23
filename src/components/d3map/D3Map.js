@@ -4,6 +4,7 @@ import styles from "./d3map.module.scss";
 import TableInstance from "../chart/table/TableInstance.js";
 import WorldMap from "./worldMap.js";
 import Util from "../misc/Util.js";
+import { Stakeholder } from "../misc/Queries";
 import axios from "axios";
 
 // FC
@@ -47,10 +48,8 @@ const D3Map = ({
     if (worldMap !== null) {
       worldMap.params.activeCountry = activeCountry;
       if (activeCountry !== null) {
-        axios(`${Util.API_URL}/place`, {
-          params: { id: activeCountry },
-        }).then(d => {
-          setNodeData(d.data[0]);
+        Stakeholder({ iso3: activeCountry }).then(d => {
+          setNodeData(d[0]);
         });
       } else {
         setNodeData(undefined);
@@ -62,10 +61,8 @@ const D3Map = ({
   React.useEffect(() => {
     if (worldMap !== null) {
       if (tooltipCountry !== null) {
-        axios(`${Util.API_URL}/place`, {
-          params: { id: tooltipCountry },
-        }).then(d => {
-          setTooltipNodeData(d.data[0]);
+        Stakeholder({ iso3: tooltipCountry }).then(d => {
+          setTooltipNodeData(d[0]);
         });
       } else {
         setTooltipNodeData(undefined);

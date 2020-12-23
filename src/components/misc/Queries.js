@@ -142,9 +142,17 @@ export const Assessment = async function({ ...props }) {
  */
 
 const allStakeholders = {};
-export const Stakeholder = async function({ id, search, by, limit, filters }) {
+export const Stakeholder = async function({
+  id,
+  iso3,
+  search,
+  by,
+  limit,
+  filters,
+}) {
   const params = new URLSearchParams();
   const toCheck = [
+    ["iso3", iso3],
     ["id", id],
     ["search", search],
     ["by", by],

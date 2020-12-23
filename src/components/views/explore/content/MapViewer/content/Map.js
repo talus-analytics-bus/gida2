@@ -295,11 +295,11 @@ const Map = ({
   // Get datum for the selected node, if it exists.
   const datumForInfoBox =
     nodeData !== undefined
-      ? data.find(d => d[nodeType].find(dd => dd.id === nodeData.id))
+      ? data.find(d => d[nodeType].iso3 === nodeData.iso3)
       : undefined;
   const datumForTooltip =
     tooltipNodeData !== undefined
-      ? data.find(d => d[nodeType].find(dd => dd.id === tooltipNodeData.id))
+      ? data.find(d => d[nodeType].iso3 === tooltipNodeData.iso3)
       : undefined;
 
   const infoBoxData = getInfoBoxData({

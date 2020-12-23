@@ -144,7 +144,7 @@ export const getInfoBoxData = ({
   }
   const nodeMapData =
     nodeDataToCheck !== undefined
-      ? mapData.find(d => d.id === nodeDataToCheck.id)
+      ? mapData.find(d => d.iso3 === nodeDataToCheck.iso3)
       : undefined;
   let infoBoxData = {
     scoreOfNode: scoreOfNode,
