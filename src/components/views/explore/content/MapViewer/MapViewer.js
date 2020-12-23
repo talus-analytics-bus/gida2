@@ -699,15 +699,23 @@ const getComponentData = async ({
     }
   });
 
-  // Define queries for typical details page.
+  // Define filters for node sums query
+  const filters = {
+    "Stakeholder.cat": ["country", "government"],
+  };
+
+  // CCs
+  if (props.coreCapacities.length > 0) {
+    filters["Core_Capacity.name"] = props.coreCapacities;
+  }
+
+  // Define queries for map page.
   const queries = {
     // Information about the entity
     nodeSums: NodeSums({
       format: "map",
       direction: entityRole === "recipient" ? "target" : "origin",
-      filters: {
-        "Stakeholder.cat": ["country", "government"],
-      },
+      filters,
     }),
     jeeScores: Assessment({
       scoreType: "JEE v1",
