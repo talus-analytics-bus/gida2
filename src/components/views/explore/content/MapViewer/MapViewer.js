@@ -243,6 +243,10 @@ const MapViewer = ({
     }
   }, [curTab]);
 
+  const outbreakOptions = data.outbreaks.map(d => {
+    return { value: d.id, label: d.name };
+  });
+
   const filterSelections = fundType !== "event" ? coreCapacities : events;
 
   const filterSelectionBadges = filterSelections.length > 0 && (
@@ -264,7 +268,7 @@ const MapViewer = ({
         {fundType === "event" && (
           <FilterSelections
             {...{
-              optionList: data.outbreaks,
+              optionList: outbreakOptions,
               selections: events,
               setSelections: setEvents,
               type: "events",
@@ -281,7 +285,7 @@ const MapViewer = ({
         <FilterDropdown
           {...{
             label: "Event response",
-            options: data.outbreaks,
+            options: outbreakOptions,
             placeholder: "Select event response",
             onChange: v => setEvents(v.map(d => d.value)),
             curValues: events,
