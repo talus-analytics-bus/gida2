@@ -6,6 +6,12 @@ import GhsaToggle from "../../../../misc/GhsaToggle.js";
 import RadioToggle from "../../../../misc/RadioToggle.js";
 import { Settings } from "../../../../../App.js";
 import Util from "../../../../misc/Util.js";
+import {
+  execute,
+  NodeSums,
+  Assessment,
+  Outbreak,
+} from "../../../../misc/Queries";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
 import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
@@ -58,8 +64,8 @@ const MapViewer = ({
       name: "JEE score",
       value: "jee",
       tooltip:
-        "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats."
-    }
+        "The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats.",
+    },
   ];
 
   // same for combined toggle options
@@ -68,8 +74,8 @@ const MapViewer = ({
       name: "Combined financial resources and need metric",
       value: "needs_met",
       tooltip:
-        "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need."
-    }
+        "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need.",
+    },
   ];
 
   // // Override support type if it doesn't make sense
@@ -120,7 +126,7 @@ const MapViewer = ({
   // Get flow type
   const flowType = getFlowTypeFromArgs({
     transactionType: transactionType,
-    supportType: supportType
+    supportType: supportType,
   });
 
   // Get pretty name for flow type
@@ -136,7 +142,7 @@ const MapViewer = ({
       const text = {
         role: "",
         fund: "",
-        filters: ""
+        filters: "",
       };
 
       // Role text
@@ -174,7 +180,7 @@ const MapViewer = ({
       return {
         detailed: `${text.role}${text.fund}`,
         subtitle: `${flowTypeDisplayName} (${yearRange})${text.filters}`,
-        main: `${text.role}${text.fund} by country`
+        main: `${text.role}${text.fund} by country`,
       };
     } else if (supportType === "jee") {
       const filterText =
@@ -183,7 +189,7 @@ const MapViewer = ({
           : "";
       return {
         main: "JEE score by country",
-        subtitle: `JEE score data as of May 27, 2020${filterText}`
+        subtitle: `JEE score data as of May 27, 2020${filterText}`,
       };
     } else if (supportType === "needs_met") {
       const filterText =
@@ -192,7 +198,7 @@ const MapViewer = ({
           : "";
       return {
         main: "Combined financial resources and need by country",
-        subtitle: `JEE score data as of May 27, 2020${filterText}`
+        subtitle: `JEE score data as of May 27, 2020${filterText}`,
       };
     } else return "[Error] Unknown map metric";
   };
@@ -251,7 +257,7 @@ const MapViewer = ({
               optionList: core_capacities,
               selections: coreCapacities,
               setSelections: setCoreCapacities,
-              type: "coreCapacities"
+              type: "coreCapacities",
             }}
           />
         )}
@@ -261,7 +267,7 @@ const MapViewer = ({
               optionList: data.outbreaks,
               selections: events,
               setSelections: setEvents,
-              type: "events"
+              type: "events",
             }}
           />
         )}
@@ -282,7 +288,7 @@ const MapViewer = ({
             className: [styles.italic],
             isDark: isDark,
             openDirection: "up",
-            setValues: setEvents
+            setValues: setEvents,
           }}
         />
       )}
@@ -297,7 +303,7 @@ const MapViewer = ({
             className: [styles.italic],
             isDark: isDark,
             openDirection: "up",
-            setValues: setCoreCapacities
+            setValues: setCoreCapacities,
           }}
         />
       )}
@@ -335,14 +341,14 @@ const MapViewer = ({
                   choices={[
                     {
                       name: "Financial support",
-                      value: "funds"
+                      value: "funds",
                     },
                     {
                       name: "In-kind support",
                       value: "inkind",
                       tooltip:
-                        "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages."
-                    }
+                        "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages.",
+                    },
                   ]}
                 />
               </div>
@@ -356,12 +362,12 @@ const MapViewer = ({
                   choices={[
                     {
                       name: "Disbursed",
-                      value: "disbursed"
+                      value: "disbursed",
                     },
                     {
                       name: "Committed",
-                      value: "committed"
-                    }
+                      value: "committed",
+                    },
                   ]}
                 />
               </div>
@@ -372,7 +378,7 @@ const MapViewer = ({
             {filters}
           </div>
         </div>
-      )
+      ),
     },
     {
       slug: "scores",
@@ -396,7 +402,7 @@ const MapViewer = ({
             {filters}
           </div>
         </div>
-      )
+      ),
     },
     {
       slug: "combined",
@@ -426,8 +432,8 @@ const MapViewer = ({
             {filters}
           </div>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   const mapTitleData = getMapTitle({ fundType, supportType, entityRole });
@@ -462,7 +468,7 @@ const MapViewer = ({
           supportType={supportType}
           entityRole={entityRole}
           flowType={flowType}
-          data={data.flowBundlesMap.flow_bundles}
+          data={data.nodeSums}
           jeeScores={data.jeeScores}
           minYear={minYear}
           maxYear={maxYear}
@@ -477,7 +483,7 @@ const MapViewer = ({
             {...{
               label: "controls",
               show: showControls,
-              setShow: setShowControls
+              setShow: setShowControls,
             }}
           />
           <div
@@ -502,7 +508,7 @@ const MapViewer = ({
                 .map(s => (
                   <button
                     className={classNames(styles.tabToggle, {
-                      [styles.selected]: s.slug === curTab
+                      [styles.selected]: s.slug === curTab,
                     })}
                     onClick={() => setCurTab(s.slug)}
                   >
@@ -534,7 +540,7 @@ const remountComponent = ({
   id,
   entityRole,
   fundType,
-  events
+  events,
 }) => {
   const remount =
     component.props.minYear !== minYear ||
@@ -581,7 +587,7 @@ export const renderMapViewer = ({
         fundType: fundType,
         minYear: props.minYear,
         maxYear: props.maxYear,
-        events
+        events,
       }))
   ) {
     getComponentData({
@@ -598,7 +604,7 @@ export const renderMapViewer = ({
       events,
       setEvents,
       setPageHeaderData,
-      ...props
+      ...props,
     });
 
     return component ? component : <div className={"placeholder"} />;
@@ -645,7 +651,7 @@ const getComponentData = async ({
     by_neighbor: false,
     filters: { parent_flow_info_filters: [] },
     summaries: {},
-    include_master_summary: false
+    include_master_summary: false,
     // node_category: ["country"]
     // by_node_categories: ["country", "organization"]
   };
@@ -669,17 +675,17 @@ const getComponentData = async ({
   if (fundType === "true") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
-      "True"
+      "True",
     ]);
   } else if (fundType === "event") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "outbreak_id:not",
-      null
+      null,
     ]);
   } else if (fundType === "capacity" || fundType === "capacity_for_needs_met") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "response_or_capacity:not",
-      "response"
+      "response",
     ]);
   }
 
@@ -696,19 +702,23 @@ const getComponentData = async ({
   // Define queries for typical details page.
   const queries = {
     // Information about the entity
-    flowBundlesMap: FlowBundleFocusQuery({
-      ...baseQueryParams
+    nodeSums: NodeSums({
+      format: "map",
+      direction: entityRole === "recipient" ? "target" : "origin",
+      filters: {
+        "Stakeholder.cat": ["country", "government"],
+      },
     }),
-    jeeScores: ScoreQuery({
-      type: "jee_v1"
+    jeeScores: Assessment({
+      scoreType: "JEE v1",
     }),
-    outbreaks: OutbreakQuery({})
+    outbreaks: Outbreak({}),
   };
 
   // Get query results.
   setLoadingSpinnerOn(true);
-  const results = await Util.getQueryResults(queries);
-  // setLoadingSpinnerOn(false);
+  const results = await execute({ queries });
+  console.log(results);
 
   // Feed results and other data to the details component and mount it.
   setComponent(

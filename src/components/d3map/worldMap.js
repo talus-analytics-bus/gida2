@@ -7,6 +7,7 @@ import Chart from "../chart/Chart.js";
 import Util from "../misc/Util.js";
 import axios from "axios";
 import styles from "./worldmap.module.scss";
+import world from "./world_only_simple.json";
 
 /**
  * Creates a D3.js world map in the container provided
@@ -21,54 +22,49 @@ class WorldMap extends Chart {
     this.mapSelector = selector;
 
     // Load world JSON data
-    axios.get(`${Util.API_URL}/world_json`).then(d => {
-      this.world = d.data;
-      this.topoworld = topojson.feature(
-        this.world,
-        this.world.objects.countries
-      );
+    this.world = world;
+    this.topoworld = topojson.feature(this.world, this.world.objects.country);
 
-      // Define transform that support map navigation
-      this.transform = {
-        k: 1,
-        x: 0,
-        y: 0
-      };
+    // Define transform that support map navigation
+    this.transform = {
+      k: 1,
+      x: 0,
+      y: 0,
+    };
 
-      // Define default zoom level of map
-      this.zoomLevel = 1;
+    // Define default zoom level of map
+    this.zoomLevel = 1;
 
-      // Artificially hide Antarctica
-      // TODO at dataset level
-      this.countryData = this.topoworld.features.filter(
-        // d => d.properties.NAME === "France"
-        d => d.properties.NAME !== "Antarctica"
-      );
+    // Artificially hide Antarctica
+    // TODO at dataset level
+    this.countryData = this.topoworld.features.filter(
+      // d => d.properties.NAME === "France"
+      d => d.properties.NAME !== "Antarctica"
+    );
 
-      // Set data variable
-      this.data = undefined;
+    // Set data variable
+    this.data = undefined;
 
-      // Set class of SVG to include "map"
-      // TODO check this
-      this.svg.classed("map, true");
+    // Set class of SVG to include "map"
+    // TODO check this
+    this.svg.classed("map, true");
 
-      // When the chart is clicked, set stopped to true.
-      this.chart.on("click", this.stopped, true);
+    // When the chart is clicked, set stopped to true.
+    this.chart.on("click", this.stopped, true);
 
-      // Define margins
-      this.margin = {
-        top: 30
-      };
+    // Define margins
+    this.margin = {
+      top: 30,
+    };
 
-      // Initialize chart
-      this.init();
+    // Initialize chart
+    this.init();
 
-      // Draw map
-      this.draw();
+    // Draw map
+    this.draw();
 
-      // Set map as loaded
-      params.setMapLoaded(true);
-    });
+    // Set map as loaded
+    params.setMapLoaded(true);
   }
 
   colorCountries(data, init = false) {
@@ -88,7 +84,7 @@ class WorldMap extends Chart {
       .delay(duration)
       .duration(1000)
       .style("fill", function(d) {
-        const match = data.find(dd => dd.id === d.properties.place_id);
+        const match = data.find(dd => dd.iso3 === d.properties.iso3);
         if (match !== undefined) {
           // Set hatch if needed
           d3.select(this).classed(
@@ -172,7 +168,7 @@ class WorldMap extends Chart {
         // Highlight
         d3.select(this).raise();
         if (chart.activeCountry) chart.activeCountry.raise();
-        chart.params.setTooltipCountry(d.properties.place_id);
+        chart.params.setTooltipCountry(d.properties.iso3);
         // Tooltip
         // chart.params.setTooltipContent(
         //   <div>
@@ -182,8 +178,8 @@ class WorldMap extends Chart {
       })
       .on("click", function(d) {
         const country = d3.select(this);
-        if (chart.params.activeCountry !== d.properties.place_id) {
-          chart.params.setActiveCountry(d.properties.place_id);
+        if (chart.params.activeCountry !== d.properties.iso3) {
+          chart.params.setActiveCountry(d.properties.iso3);
           chart.zoomTo(d);
           chart[styles.countries].selectAll("g").classed(styles.active, false);
           country.classed(styles.active, true);
@@ -206,11 +202,7 @@ class WorldMap extends Chart {
     countryGroup
       .append("path")
       .datum(
-        topojson.mesh(
-          this.world,
-          this.world.objects.countries,
-          (a, b) => a !== b
-        )
+        topojson.mesh(this.world, this.world.objects.country, (a, b) => a !== b)
       )
       .attr("class", styles.boundary)
       .attr("d", d => this.path(d));

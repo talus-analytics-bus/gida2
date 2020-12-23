@@ -37,7 +37,7 @@ const D3Map = ({
       setMapLoaded,
       setActiveCountry,
       activeCountry,
-      setTooltipCountry
+      setTooltipCountry,
     });
     setWorldMap(worldMapNew);
   }, []);
@@ -48,7 +48,7 @@ const D3Map = ({
       worldMap.params.activeCountry = activeCountry;
       if (activeCountry !== null) {
         axios(`${Util.API_URL}/place`, {
-          params: { id: activeCountry }
+          params: { id: activeCountry },
         }).then(d => {
           setNodeData(d.data[0]);
         });
@@ -63,7 +63,7 @@ const D3Map = ({
     if (worldMap !== null) {
       if (tooltipCountry !== null) {
         axios(`${Util.API_URL}/place`, {
-          params: { id: tooltipCountry }
+          params: { id: tooltipCountry },
         }).then(d => {
           setTooltipNodeData(d.data[0]);
         });
@@ -79,7 +79,11 @@ const D3Map = ({
       setLoadingSpinnerOn(false);
       worldMap.colorCountries(
         mapData.map(dd => {
-          return { id: dd.id, value: dd.value, color: colorScale(dd.color) };
+          return {
+            iso3: dd.iso3,
+            value: dd.value,
+            color: colorScale(dd.color),
+          };
         }),
         init
       );
@@ -94,22 +98,22 @@ const D3Map = ({
     maxYear,
     coreCapacities,
     events,
-    ghsaOnly
+    ghsaOnly,
   ]);
 
-  const placeholderTable = (
-    <TableInstance
-      useRowDataAsIs={true}
-      tableColumns={d3MapDataFields}
-      tableData={mapData}
-      sortByProp={"value_raw"}
-    />
-  );
+  // const placeholderTable = (
+  //   <TableInstance
+  //     useRowDataAsIs={true}
+  //     tableColumns={d3MapDataFields}
+  //     tableData={mapData}
+  //     sortByProp={"value_raw"}
+  //   />
+  // );
 
   return (
     <div
       className={classNames(styles.d3Map, {
-        [styles.loading]: worldMap === null
+        [styles.loading]: worldMap === null,
       })}
     >
       {
@@ -119,7 +123,7 @@ const D3Map = ({
         <div
           className={classNames(styles.worldMap, {
             [styles.dark]: isDark,
-            [styles.loaded]: !init
+            [styles.loaded]: !init,
           })}
         />
       }

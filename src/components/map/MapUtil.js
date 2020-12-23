@@ -177,11 +177,11 @@ export const getMapColorScale = ({
     });
   } else if (supportType === "funds") {
     // Get values for use in calculating quantile scales.
-    const values = data
+    console.log("data");
+    console.log(data);
+    const values = Object.values(data)
       .map(d => {
-        return d.flow_types[flowType]
-          ? d.flow_types[flowType].focus_node_weight
-          : null;
+        return d[flowType] !== undefined ? d[flowType] : null;
       })
       .filter(d => d !== null && d !== "unknown");
 
@@ -321,8 +321,8 @@ export const getUnknownValueExplanation = ({ datum, value, entityRole }) => {
     const nodeType = entityRole === "funder" ? "origin" : "target";
     return (
       <span>
-        {datum[nodeType][0].name} included as {entityRole} for multilateral
-        group projects
+        {datum[nodeType].name} included as {entityRole} for multilateral group
+        projects
       </span>
     );
   } else return undefined;
