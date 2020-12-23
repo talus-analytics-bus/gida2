@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Util, { isEmpty } from "../../misc/Util";
-import { getNodeLinkList } from "../../misc/Data";
+import { getNodeLinkList, parseIdsAsNames } from "../../misc/Data";
 import { execute, NodeSums, Stakeholder } from "../../misc/Queries";
 import TableInstance from "../table/TableInstance";
 import { Settings } from "../../../App.js";
@@ -105,16 +105,7 @@ const TopTable = ({
             ),
             prop: otherNodeType,
             type: "text",
-            func: d => {
-              // split ids on semicolon
-              const ids = d.id.split("; ");
-              const shArr = [];
-              ids.forEach(id => {
-                shArr.push(stakeholders[d.id]);
-              });
-              return JSON.stringify(shArr);
-            },
-            // render: d => d,
+            func: d => parseIdsAsNames({ d, stakeholders }),
             render: d =>
               getNodeLinkList({
                 urlType: "details",

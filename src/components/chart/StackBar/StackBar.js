@@ -28,6 +28,7 @@ const StackBar = ({
   staticStakeholders,
   ...props
 }) => {
+  const [processedData, setProcessedData] = useState(false);
   const [stackBar, setStackBar] = useState(null);
   const [stakeholders, setStakeholders] = useState(
     staticStakeholders !== undefined ? staticStakeholders : null
@@ -93,14 +94,16 @@ const StackBar = ({
   useEffect(() => {
     if (render && stakeholders !== null) {
       // apply stakeholder names
-      chartData.forEach(d => {
-        const names = d[otherNodeType]
-          .map(dd => {
-            return stakeholders[dd].name;
-          })
-          .join("; ");
-        d[otherNodeType] = names;
-      });
+      // if (!processedData)
+      //   chartData.forEach(d => {
+      //     setProcessedData(true);
+      //     const names = d[otherNodeType]
+      //       .map(dd => {
+      //         return stakeholders[dd].name;
+      //       })
+      //       .join("; ");
+      //     d[otherNodeType] = names;
+      //   });
       const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
         ...stackBarParams,
         data: chartData,
@@ -129,6 +132,25 @@ const StackBar = ({
     // on initial load, check for stakeholders data
     if (stakeholders === null) updateData();
   }, []);
+
+  // useEffect(() => {
+  //   if (
+  //     chartData !== null &&
+  //     stakeholders !== null &&
+  //     chartData.processed !== true
+  //   ) {
+  //     chartData.processed = true;
+  //     chartData.forEach(d => {
+  //       console.log(d);
+  //       const names = d[otherNodeType]
+  //         .map(dd => {
+  //           return stakeholders[dd].name;
+  //         })
+  //         .join("; ");
+  //       d[otherNodeType] = names;
+  //     });
+  //   }
+  // }, [chartData, stakeholders]);
 
   const jeeWhite = nodeType === "origin" || placeType !== "country";
 

@@ -879,3 +879,17 @@ export const getNodeData = id => {
       };
   }
 };
+
+// given datum `d` from NodeSums or Flows, and dict of stakeholder info
+// `stakeholders` with keys of stakeholder IDs, return list of names
+export const parseIdsAsNames = ({ d, field = "id", stakeholders }) => {
+  const value = d[field];
+  const ids = typeof value === "object" ? value : d[field].split("; ");
+
+  // split ids on semicolon
+  const shArr = [];
+  ids.forEach(id => {
+    shArr.push(stakeholders[id]);
+  });
+  return JSON.stringify(shArr);
+};

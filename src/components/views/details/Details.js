@@ -8,6 +8,7 @@ import {
   getWeightsBySummaryAttributeSimple,
   getSummaryAttributeWeightsByNode,
   isUnknownDataOnly,
+  parseIdsAsNames,
 } from "../../misc/Data.js";
 import Util from "../../misc/Util.js";
 
@@ -18,6 +19,7 @@ import {
   Assessment,
   Flow,
   NodeSums,
+  Outbreak,
 } from "../../misc/Queries";
 
 import { purples, greens, pvsCats, pvsColors } from "../../map/MapUtil.js";
@@ -74,7 +76,7 @@ const Details = ({
   const [pvsTooltipData, setPvsTooltipData] = React.useState(undefined);
 
   // TODO handle response data
-  const noResponseData = data.flows.length === 0;
+  const noResponseData = data.flows.paging.n_records === 0;
   const [curTab, setCurTab] = React.useState("ihr");
   const [showFlag, setShowFlag] = React.useState(
     data.nodeData.cat === "country"
@@ -197,19 +199,19 @@ const Details = ({
   // Define details content sections.
   const showTabs = !noData && !unknownDataOnly && !noFinancialData;
 
-  // For response event funding: get totals.
-  const responseEventTotals = (
+  // For event response funding: get totals.
+  const eventResponseTotals = (
     <div className={styles.totals}>
       <TotalByFlowType
         inline={true}
         flowType="disbursed_funds"
-        data={data.flows.flows}
+        data={data.flows.data}
         label={"event response funding"}
       />
       <TotalByFlowType
         inline={true}
         flowType="committed_funds"
-        data={data.flows.flows}
+        data={data.flows.data}
         label={"event response funding"}
       />
     </div>
@@ -492,7 +494,7 @@ const Details = ({
           header: "Event response funding",
           hide: noResponseData,
           content:
-            data.flows.length > 0
+            !noResponseData > 0
               ? [
                   {
                     header: (
@@ -504,22 +506,22 @@ const Details = ({
                             // <span>in past 12 months</span>
                           }
                           {
-                            // Date range
-                            <span className={styles.timeFrame}>
-                              {props.responseStart.toLocaleString("en-us", {
-                                // month: "short",
-                                // day: "numeric",
-                                year: "numeric",
-                                timeZone: "UTC",
-                              })}{" "}
-                              -{" "}
-                              {props.responseEnd.toLocaleString("en-us", {
-                                // month: "short",
-                                // day: "numeric",
-                                year: "numeric",
-                                timeZone: "UTC",
-                              })}
-                            </span>
+                            // // Date range
+                            // <span className={styles.timeFrame}>
+                            //   {props.responseStart.toLocaleString("en-us", {
+                            //     // month: "short",
+                            //     // day: "numeric",
+                            //     year: "numeric",
+                            //     timeZone: "UTC",
+                            //   })}{" "}
+                            //   -{" "}
+                            //   {props.responseEnd.toLocaleString("en-us", {
+                            //     // month: "short",
+                            //     // day: "numeric",
+                            //     year: "numeric",
+                            //     timeZone: "UTC",
+                            //   })}
+                            // </span>
                           }
                         </h2>
                       </div>
@@ -533,34 +535,32 @@ const Details = ({
                           listed here may not apply specifically to{" "}
                           {data.nodeData.name}.
                         </p>
-                        {responseEventTotals}
+                        {eventResponseTotals}
                       </div>
                     ),
                     content: (
                       <div>
                         <TableInstance
                           paging={true}
-                          sortByProp={"year_range"}
+                          sortByProp={"years"}
                           tableColumns={[
-                            {
-                              title: "Event year",
-                              prop: "year_range",
-                              type: "text",
-                              func: d => d.flow_info.outbreak.year_range,
-                              render: d => d,
-                            },
                             {
                               title: "Event response",
                               prop: "event",
                               type: "text",
-                              func: d => d.flow_info.outbreak.name,
+                              func: d => {
+                                return data.outbreaks
+                                  .filter(dd => d.events.includes(dd.id))
+                                  .map(dd => dd.name)
+                                  .join("· ");
+                              },
                               render: d => d,
                             },
                             {
                               title: "Project name",
                               prop: "project_name",
                               type: "text",
-                              func: d => d.flow_info.project_name,
+                              func: d => d.name,
                               render: d => d,
                             },
                             {
@@ -570,14 +570,19 @@ const Details = ({
                                   role: "funder",
                                 })
                               ),
-                              prop: "source",
+                              prop: "origins",
                               type: "text",
-                              func: d => JSON.stringify(d.source),
+                              func: d =>
+                                parseIdsAsNames({
+                                  d,
+                                  stakeholders: data.nodesData,
+                                  field: "origins",
+                                }),
                               render: d =>
                                 getNodeLinkList({
                                   urlType: "details",
                                   nodeList: JSON.parse(d),
-                                  entityRole: "funder",
+                                  entityRole,
                                   id: id,
                                 }),
                             },
@@ -588,14 +593,19 @@ const Details = ({
                                   role: "recipient",
                                 })
                               ),
-                              prop: "target",
+                              prop: "targets",
                               type: "text",
-                              func: d => JSON.stringify(d.target),
+                              func: d =>
+                                parseIdsAsNames({
+                                  d,
+                                  stakeholders: data.nodesData,
+                                  field: "targets",
+                                }),
                               render: d =>
                                 getNodeLinkList({
                                   urlType: "details",
                                   nodeList: JSON.parse(d),
-                                  entityRole: "recipient",
+                                  entityRole: otherEntityRole,
                                   id: id,
                                 }),
                             },
@@ -603,8 +613,8 @@ const Details = ({
                               title: "Funding year(s)",
                               prop: "year_range_proj",
                               type: "text",
-                              func: d => d.year_range,
-                              render: d => Util.formatValue(d, "year_range"),
+                              func: d => d.years,
+                              render: d => d,
                             },
                             {
                               title:
@@ -614,17 +624,16 @@ const Details = ({
                               className: d => (d > 0 ? "num" : "num-with-text"),
                               func: d => {
                                 // Check whether the monetary amount is available
-                                const ft = d.flow_types[curFlowType];
-                                const financial = ft !== undefined;
-                                if (financial) return ft.focus_node_weight;
+                                const ft = d[curFlowType];
+                                const financial = !d.is_inkind;
+                                if (financial) return ft;
                                 else {
                                   // If no financial, check for inkind
                                   const inkindField =
                                     curFlowType === "disbursed_funds"
                                       ? "provided_inkind"
                                       : "committed_inkind";
-                                  const inkind =
-                                    d.flow_types[inkindField] !== undefined;
+                                  const inkind = d[inkindField] !== null;
                                   if (inkind) return -7777;
                                   else return -9999;
                                 }
@@ -638,7 +647,7 @@ const Details = ({
                                   : Util.formatValue(d, curFlowType),
                             },
                           ]}
-                          tableData={data.flows}
+                          tableData={data.flows.data}
                           hide={r => r.amount === -9999}
                         />
                       </div>
@@ -931,6 +940,7 @@ const getComponentData = async ({
   const queries = {
     // Information about the entity
     nodesData: Stakeholder({ by: "id" }),
+    outbreaks: Outbreak({}),
 
     jeeScores: Assessment({
       scoreType: "JEE v1",
