@@ -103,19 +103,22 @@ export const getMapMetricValue = ({
     } else {
       // Get JEE score values.
       const node = d.target ? d.target : d.origin;
-      const iso2 = node.iso2;
-      const jeeScores = getJeeScores({
-        scores,
-        iso2,
-        coreCapacities,
-      });
+      if (node === undefined) return -9999;
+      else {
+        const iso3 = node.iso3;
+        const jeeScores = getJeeScores({
+          scores,
+          iso3,
+          coreCapacities,
+        });
 
-      const avgJeeScore = d3.mean(jeeScores, d => d.score);
+        const avgJeeScore = d3.mean(jeeScores, d => d.score);
 
-      return calculateNeedsMet({
-        datum: d,
-        avgCapScores: avgJeeScore,
-      });
+        return calculateNeedsMet({
+          datum: d,
+          avgCapScores: avgJeeScore,
+        });
+      }
     }
   }
   return -9999;
@@ -175,8 +178,6 @@ export const getMapColorScale = ({
     });
   } else if (supportType === "funds") {
     // Get values for use in calculating quantile scales.
-    console.log("data");
-    console.log(data);
     const values = Object.values(data)
       .map(d => {
         return d[flowType] !== undefined ? d[flowType] : null;
@@ -191,15 +192,13 @@ export const getMapColorScale = ({
   } else if (supportType === "needs_met") {
     // Get values for use in calculating quantile scales.
     const fakeData = [];
-    for (let placeId in jeeScores.scores) {
-      console.log("placeId");
-      console.log(placeId);
-      const match = data.find(d => d.target.id === parseInt(placeId));
+    for (let iso3 in jeeScores.scores) {
+      const match = data.find(d => d.target.iso3 === iso3);
       if (match === undefined) {
         // Get score avg.
         const scores = getJeeScores({
           scores: jeeScores,
-          iso2: placeId,
+          iso3,
           coreCapacities,
         });
         const avgJeeScore = d3.mean(scores, d => d.score);
@@ -207,9 +206,7 @@ export const getMapColorScale = ({
           disbursed_funds: 0,
           target: [
             {
-              id: parseInt(placeId),
               iso3: "TBD",
-              iso2: "TBD",
               name: "TBD",
               type: "country",
             },
@@ -222,10 +219,10 @@ export const getMapColorScale = ({
       .map(d => {
         // Get JEE score values.
         const node = d.target ? d.target : d.origin;
-        const iso2 = node.iso2;
+        const iso3 = node.iso3;
         const allScores = getJeeScores({
           scores: jeeScores,
-          iso2,
+          iso3,
           coreCapacities,
         });
 
