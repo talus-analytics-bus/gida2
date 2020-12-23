@@ -105,7 +105,7 @@ const TopTable = ({
             ),
             prop: otherNodeType,
             type: "text",
-            func: d => parseIdsAsNames({ d, stakeholders }),
+            func: d => JSON.stringify(d[otherNodeType]),
             render: d =>
               getNodeLinkList({
                 urlType: "details",
