@@ -107,7 +107,15 @@ const FundsByYear = ({
             <AreaLine
               entityRole={entityRole}
               flowTypeInfo={flowTypeInfo}
-              data={data.points}
+              data={data.points.map(d => {
+                const newD = {};
+                flowTypeInfo.forEach(ft => {
+                  if (d[ft.name] !== "n/a") {
+                    newD[ft.name] = d[ft.name] >= 0 ? d[ft.name] : 0;
+                  }
+                });
+                return { ...d, ...newD };
+              })}
               id={id}
               ghsaOnly={props.ghsaOnly}
               setLoadingSpinnerOn={setLoadingSpinnerOn}
