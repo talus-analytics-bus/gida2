@@ -346,7 +346,7 @@ const Orgs = ({
         orgTableData.push({
           [roleSlug]: getNodeLinkList({
             urlType: "details",
-            nodeList: stakeholderInfo,
+            nodeList: [stakeholderInfo],
             entityRole: role.toLowerCase(),
             id: undefined,
             otherId: undefined,
@@ -354,7 +354,7 @@ const Orgs = ({
           value_raw: v[flowType],
           value: v[flowType],
           shID: k,
-          stakeholderName: stakeholderInfo[0].name,
+          stakeholderName: stakeholderInfo.name,
         });
       }
     }
