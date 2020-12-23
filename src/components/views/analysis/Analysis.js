@@ -13,6 +13,7 @@ import Chord from "./content/Chord.js";
 import Search from "../../common/Search/Search.js";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { execute, NodeSums } from "../../misc/Queries";
 import { core_capacities, getNodeLinkList } from "../../misc/Data.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import SourceText from "../../common/SourceText/SourceText.js";
@@ -57,8 +58,8 @@ const Analysis = ({
         <div>Top funders</div>
       </div>,
       "Funder",
-      "source",
-      "flowBundlesFocusSources"
+      "origin",
+      "nodeSumsOrigin",
     ],
     [
       <div className={styles.subtitle}>
@@ -67,8 +68,8 @@ const Analysis = ({
       </div>,
       "Recipient",
       "target",
-      "flowBundlesFocusTargets"
-    ]
+      "nodeSumsTarget",
+    ],
   ];
 
   React.useEffect(() => {
@@ -142,26 +143,26 @@ const Analysis = ({
     </div>
   );
 
-  tables.forEach(table => {
+  tables.forEach(([header, role, roleSlug, dataKey]) => {
     tableInstances.push(
       <div>
-        {table[0]}
+        {header}
         <TableInstance
           paging={true}
           tableColumns={[
             {
-              title: table[1],
-              prop: table[2],
+              title: role,
+              prop: roleSlug,
               type: "text",
-              func: d => JSON.stringify(d[table[2]]),
+              func: d => JSON.stringify(d[roleSlug]),
               render: d =>
                 getNodeLinkList({
                   urlType: "details",
                   nodeList: JSON.parse(d),
-                  entityRole: table[1].toLowerCase(),
+                  entityRole: role.toLowerCase(),
                   id: undefined,
-                  otherId: undefined
-                })
+                  otherId: undefined,
+                }),
             },
             {
               title: "Disbursed",
@@ -169,10 +170,8 @@ const Analysis = ({
               type: "num",
               className: d => (d > 0 ? "num" : "num-with-text"),
               func: d =>
-                d.flow_types.disbursed_funds !== undefined
-                  ? d.flow_types.disbursed_funds.focus_node_weight
-                  : "",
-              render: d => Util.formatValue(d, "disbursed_funds")
+                d.disbursed_funds !== undefined ? d.disbursed_funds : "",
+              render: d => Util.formatValue(d, "disbursed_funds"),
             },
             {
               title: "Committed",
@@ -180,15 +179,11 @@ const Analysis = ({
               type: "num",
               className: d => (d > 0 ? "num" : "num-with-text"),
               func: d =>
-                d.flow_types.committed_funds !== undefined
-                  ? d.flow_types.committed_funds.focus_node_weight
-                  : "",
-              render: d => Util.formatValue(d, "committed_funds")
-            }
+                d.committed_funds !== undefined ? d.committed_funds : "",
+              render: d => Util.formatValue(d, "committed_funds"),
+            },
           ]}
-          tableData={data[table[3]].flow_bundles.filter(
-            d => d[table[2]][0].name !== "Not reported"
-          )}
+          tableData={data[dataKey]}
           sortByProp={"disbursed_funds"}
           limit={10}
           noNativePaging={true}
@@ -214,24 +209,25 @@ const Analysis = ({
   //   setMaxYear: setMaxYear
   // });
 
-  const chordContent = (
-    <Chord
-      chordData={data.flowBundlesGeneral.flow_bundles}
-      flowTypeInfo={flowTypeInfo}
-      ghsaOnly={ghsaOnly}
-      setGhsaOnly={setGhsaOnly}
-      activeTab={props.activeTab}
-      outbreakResponses={props.outbreakResponses}
-      coreCapacities={coreCapacities}
-      minYear={props.minYear}
-      maxYear={props.maxYear}
-      transactionType={transactionType}
-      selectedEntity={selectedEntity}
-      setSelectedEntity={setSelectedEntity}
-      setEntityArcInfo={setEntityArcInfo}
-      setShowInfo={setShowInfo}
-    />
-  );
+  const chordContent = null;
+  // const chordContent = (
+  //   <Chord
+  //     chordData={data.flowBundlesGeneral}
+  //     flowTypeInfo={flowTypeInfo}
+  //     ghsaOnly={ghsaOnly}
+  //     setGhsaOnly={setGhsaOnly}
+  //     activeTab={props.activeTab}
+  //     outbreakResponses={props.outbreakResponses}
+  //     coreCapacities={coreCapacities}
+  //     minYear={props.minYear}
+  //     maxYear={props.maxYear}
+  //     transactionType={transactionType}
+  //     selectedEntity={selectedEntity}
+  //     setSelectedEntity={setSelectedEntity}
+  //     setEntityArcInfo={setEntityArcInfo}
+  //     setShowInfo={setShowInfo}
+  //   />
+  // );
 
   const chordLegend = (
     <div className={styles.legend}>
@@ -277,63 +273,65 @@ const Analysis = ({
           may differ from those shown elsewhere in this site because
           transactions with multiple funders or recipients are not included.
         </p>
-        <div className={styles.chordDiagram}>
-          <div className={styles.chordContainer}>
-            {chordContent}
-            {chordLegend}
-          </div>
-          <div className={styles.menuContainer}>
-            <div className={styles.menu}>
-              <Search
-                name={"analysis"}
-                callback={setSelectedEntity}
-                expandedDefault={true}
-              />
-
-              <TimeSlider
-                minYearDefault={Settings.startYear}
-                maxYearDefault={Settings.endYear}
-                onAfterChange={years => {
-                  setMinYear(years[0]);
-                  setMaxYear(years[1]);
-                }}
-              />
-              <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-              <RadioToggle
-                label={"Choose"}
-                callback={setTransactionType}
-                curVal={transactionType}
-                choices={[
-                  {
-                    name: "Disbursed",
-                    value: "disbursed"
-                  },
-                  {
-                    name: "Committed",
-                    value: "committed"
-                  }
-                ]}
-              />
-              {
-                // TODO: add this tooltip for CC dropdown
-                // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-              }
-              <FilterDropdown
-                {...{
-                  className: [styles.italic],
-                  label: "IHR core capacities",
-                  openDirection: "down",
-                  options: core_capacities,
-                  placeholder: "Select core capacities",
-                  onChange: v => setCoreCapacities(v.map(d => d.value)),
-                  curValues: coreCapacities
-                }}
-              />
-              {info}
-            </div>
-            {<SourceText />}
-          </div>
-        </div>
+        {
+          // <div className={styles.chordDiagram}>
+          //   <div className={styles.chordContainer}>
+          //     {chordContent}
+          //     {chordLegend}
+          //   </div>
+          //   <div className={styles.menuContainer}>
+          //     <div className={styles.menu}>
+          //       <Search
+          //         name={"analysis"}
+          //         callback={setSelectedEntity}
+          //         expandedDefault={true}
+          //       />
+          //
+          //       <TimeSlider
+          //         minYearDefault={Settings.startYear}
+          //         maxYearDefault={Settings.endYear}
+          //         onAfterChange={years => {
+          //           setMinYear(years[0]);
+          //           setMaxYear(years[1]);
+          //         }}
+          //       />
+          //       <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+          //       <RadioToggle
+          //         label={"Choose"}
+          //         callback={setTransactionType}
+          //         curVal={transactionType}
+          //         choices={[
+          //           {
+          //             name: "Disbursed",
+          //             value: "disbursed",
+          //           },
+          //           {
+          //             name: "Committed",
+          //             value: "committed",
+          //           },
+          //         ]}
+          //       />
+          //       {
+          //         // TODO: add this tooltip for CC dropdown
+          //         // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+          //       }
+          //       <FilterDropdown
+          //         {...{
+          //           className: [styles.italic],
+          //           label: "IHR core capacities",
+          //           openDirection: "down",
+          //           options: core_capacities,
+          //           placeholder: "Select core capacities",
+          //           onChange: v => setCoreCapacities(v.map(d => d.value)),
+          //           curValues: coreCapacities,
+          //         }}
+          //       />
+          //       {info}
+          //     </div>
+          //     {<SourceText />}
+          //   </div>
+          // </div>
+        }
       </div>
     </div>
   );
@@ -346,7 +344,7 @@ const remountComponent = ({
   props,
   id,
   ghsaOnly,
-  coreCapacities
+  coreCapacities,
 }) => {
   const remount =
     component.props.minYear !== minYear ||
@@ -383,7 +381,7 @@ export const renderAnalysis = ({
         ghsaOnly: ghsaOnly,
         coreCapacities: coreCapacities,
         minYear: minYear,
-        maxYear: maxYear
+        maxYear: maxYear,
       }))
   ) {
     getComponentData({
@@ -398,7 +396,7 @@ export const renderAnalysis = ({
       setMinYear: setMinYear,
       setMaxYear: setMaxYear,
       setLoadingSpinnerOn,
-      ...props
+      ...props,
     });
 
     return component ? component : <div className={"placeholder"} />;
@@ -446,48 +444,45 @@ const getComponentData = async ({
     filters: { parent_flow_info_filters: [] },
     summaries: {},
     include_master_summary: false,
-    single_source_and_target: true
+    single_source_and_target: true,
   };
 
   // If core capacity filters provided, use those
   if (coreCapacities.length > 0) {
     baseQueryParams.filters.parent_flow_info_filters = [
-      ["core_capacities"].concat(coreCapacities)
+      ["core_capacities"].concat(coreCapacities),
     ];
   }
 
   // If GHSA page, then filter by GHSA projects.
   if (id === "ghsa" || ghsaOnly === "true")
     baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "True"]
+      ["ghsa_funding", "True"],
     ];
   else if (ghsaOnly === "event") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "outbreak_id:not",
-      null
+      null,
     ]);
   } else if (ghsaOnly === "capacity") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "response_or_capacity:not",
-      "response"
+      "response",
     ]);
   }
 
   // Define queries for typical details page.
   const queries = {
-    // Information about the entity
-    flowBundlesGeneral: FlowBundleGeneralQuery({
-      ...baseQueryParams,
-      focus_node_type: null
+    // TODO chords
+    flowBundlesGeneral: NodeSums({}),
+    nodeSumsOrigin: NodeSums({
+      format: "table",
+      direction: "origin",
     }),
-    flowBundlesFocusSources: FlowBundleFocusQuery({
-      ...baseQueryParams,
-      focus_node_type: "source"
+    nodeSumsTarget: NodeSums({
+      format: "table",
+      direction: "target",
     }),
-    flowBundlesFocusTargets: FlowBundleFocusQuery({
-      ...baseQueryParams,
-      focus_node_type: "target"
-    })
   };
 
   // Get query results.
