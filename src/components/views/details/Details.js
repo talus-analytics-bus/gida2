@@ -684,7 +684,8 @@ const Details = ({
 
   const flagSrc = ghsa
     ? `/flags/ghsa.png`
-    : `https://www.countryflags.io/${flagId}/flat/64.png`;
+    : `https://flags.talusanalytics.com/1000px/${flagId}.png`;
+  // : `https://www.countryflags.io/${flagId}/flat/64.png`;
   const flag =
     data.nodeData.cat === "country" || ghsa ? (
       <img
