@@ -109,7 +109,7 @@ const Analysis = ({
         <div className={styles.row}>
           <div className={styles.metric}>
             <div className={styles.value}>
-              {Util.money(selectedEntityInfo.source)}
+              {Util.money(selectedEntityInfo.origin)}
             </div>
             <div className={styles.label}>
               Total {transactionTypeNoun} funded
@@ -432,43 +432,7 @@ const getComponentData = async ({
   // Define typical base query parameters used in FlowQuery,
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
   // modified in code below.
-  const nodeType = entityRole === "recipient" ? "target" : "source";
-  const baseQueryParams = {
-    focus_node_ids: null,
-    focus_node_type: nodeType,
-    flow_type_ids: [1, 2],
-    start_date: `${minYear}-01-01`, // TODO check these two
-    end_date: `${maxYear}-12-31`,
-    by_neighbor: false,
-    filters: { parent_flow_info_filters: [] },
-    summaries: {},
-    include_master_summary: false,
-    single_source_and_target: true,
-  };
-
-  // If core capacity filters provided, use those
-  if (coreCapacities.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters = [
-      ["core_capacities"].concat(coreCapacities),
-    ];
-  }
-
-  // If GHSA page, then filter by GHSA projects.
-  if (id === "ghsa" || ghsaOnly === "true")
-    baseQueryParams.filters.parent_flow_info_filters = [
-      ["ghsa_funding", "True"],
-    ];
-  else if (ghsaOnly === "event") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "outbreak_id:not",
-      null,
-    ]);
-  } else if (ghsaOnly === "capacity") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "response_or_capacity:not",
-      "response",
-    ]);
-  }
+  const nodeType = entityRole === "recipient" ? "target" : "origin";
 
   const filters = {
     "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
