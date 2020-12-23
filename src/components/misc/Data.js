@@ -272,11 +272,10 @@ export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
  * @return {[type]}                                 [description]
  */
 const debugNeedsMet = false;
+// TODO move to API
 export const calculateNeedsMet = ({ datum, avgCapScores }) => {
   // Get the disbursed funds received for this datum.
-  const disbursedFundsReceived = datum.flow_types["disbursed_funds"]
-    ? datum.flow_types["disbursed_funds"].focus_node_weight
-    : undefined;
+  const disbursedFundsReceived = datum["disbursed_funds"];
 
   if (
     (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&

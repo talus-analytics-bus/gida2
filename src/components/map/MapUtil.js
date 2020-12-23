@@ -87,11 +87,11 @@ export const getMapMetricValue = ({
     return d[flowType];
   } else if (supportType === "jee") {
     // Get JEE score values.
-    const nodes = d.target ? d.target : d.source;
-    const iso2 = nodes[0].id.toString();
+    const node = d.target ? d.target : d.origin;
+    const iso2 = node.iso2;
     const jeeScores = getJeeScores({
-      scores: scores, // TODO
-      iso2: iso2, // TODO
+      scores,
+      iso2,
       coreCapacities,
     });
     const avgJeeScore = d3.mean(jeeScores, d => d.score);
@@ -99,16 +99,14 @@ export const getMapMetricValue = ({
   } else if (supportType === "needs_met") {
     // Get "needs met" values
     if (forTooltip) {
-      return d.flow_types["disbursed_funds"]
-        ? d.flow_types["disbursed_funds"].focus_node_weight
-        : undefined;
+      return d["disbursed_funds"];
     } else {
       // Get JEE score values.
-      const nodes = d.target ? d.target : d.source;
-      const iso2 = nodes[0].id.toString();
+      const node = d.target ? d.target : d.origin;
+      const iso2 = node.iso2;
       const jeeScores = getJeeScores({
-        scores: scores, // TODO
-        iso2: iso2, // TODO
+        scores,
+        iso2,
         coreCapacities,
       });
 
@@ -193,8 +191,10 @@ export const getMapColorScale = ({
   } else if (supportType === "needs_met") {
     // Get values for use in calculating quantile scales.
     const fakeData = [];
-    for (let placeId in jeeScores) {
-      const match = data.find(d => d.target[0].id === parseInt(placeId));
+    for (let placeId in jeeScores.scores) {
+      console.log("placeId");
+      console.log(placeId);
+      const match = data.find(d => d.target.id === parseInt(placeId));
       if (match === undefined) {
         // Get score avg.
         const scores = getJeeScores({
@@ -204,12 +204,16 @@ export const getMapColorScale = ({
         });
         const avgJeeScore = d3.mean(scores, d => d.score);
         fakeData.push({
-          flow_types: {
-            disbursed_funds: {
-              focus_node_weight: 0,
+          disbursed_funds: 0,
+          target: [
+            {
+              id: parseInt(placeId),
+              iso3: "TBD",
+              iso2: "TBD",
+              name: "TBD",
+              type: "country",
             },
-          },
-          target: [{ id: parseInt(placeId), name: "TBD", type: "country" }],
+          ],
         });
       }
     }
@@ -217,11 +221,11 @@ export const getMapColorScale = ({
       .concat(fakeData)
       .map(d => {
         // Get JEE score values.
-        const nodes = d.target ? d.target : d.source;
-        const iso2 = nodes[0].id.toString();
+        const node = d.target ? d.target : d.origin;
+        const iso2 = node.iso2;
         const allScores = getJeeScores({
-          scores: jeeScores, // TODO
-          iso2: iso2, // TODO
+          scores: jeeScores,
+          iso2,
           coreCapacities,
         });
 
