@@ -34,6 +34,25 @@ export const NodeSums = async function({
   return res.data;
 };
 
+export const Chords = async function({ format, filters, group_by, ...props }) {
+  // define params
+  const params = new URLSearchParams();
+  bindParams({
+    params,
+    toCheck: [["format", format], ["group_by", group_by]],
+  });
+
+  // Send request
+  // Await response
+  const res = await axios({
+    method: "post",
+    url: `${process.env.REACT_APP_API_URL}/post/chords`,
+    data: { filters },
+    params,
+  });
+  return res.data;
+};
+
 export /**
  * Get flow data from API.
  * @method FlowQuery

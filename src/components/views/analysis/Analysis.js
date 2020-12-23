@@ -13,7 +13,7 @@ import Chord from "./content/Chord.js";
 import Search from "../../common/Search/Search.js";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { execute, NodeSums } from "../../misc/Queries";
+import { execute, NodeSums, Chords } from "../../misc/Queries";
 import { core_capacities, getNodeLinkList } from "../../misc/Data.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import SourceText from "../../common/SourceText/SourceText.js";
@@ -206,28 +206,27 @@ const Analysis = ({
   //   minYear: minYear,
   //   setMinYear: setMinYear,
   //   maxYear: maxYear,
-  //   setMaxYear: setMaxYear
+  //   setMaxYear: setMaxYear,
   // });
 
-  const chordContent = null;
-  // const chordContent = (
-  //   <Chord
-  //     chordData={data.flowBundlesGeneral}
-  //     flowTypeInfo={flowTypeInfo}
-  //     ghsaOnly={ghsaOnly}
-  //     setGhsaOnly={setGhsaOnly}
-  //     activeTab={props.activeTab}
-  //     outbreakResponses={props.outbreakResponses}
-  //     coreCapacities={coreCapacities}
-  //     minYear={props.minYear}
-  //     maxYear={props.maxYear}
-  //     transactionType={transactionType}
-  //     selectedEntity={selectedEntity}
-  //     setSelectedEntity={setSelectedEntity}
-  //     setEntityArcInfo={setEntityArcInfo}
-  //     setShowInfo={setShowInfo}
-  //   />
-  // );
+  const chordContent = (
+    <Chord
+      chordData={data.chords}
+      flowTypeInfo={flowTypeInfo}
+      ghsaOnly={ghsaOnly}
+      setGhsaOnly={setGhsaOnly}
+      activeTab={props.activeTab}
+      outbreakResponses={props.outbreakResponses}
+      coreCapacities={coreCapacities}
+      minYear={props.minYear}
+      maxYear={props.maxYear}
+      transactionType={transactionType}
+      selectedEntity={selectedEntity}
+      setSelectedEntity={setSelectedEntity}
+      setEntityArcInfo={setEntityArcInfo}
+      setShowInfo={setShowInfo}
+    />
+  );
 
   const chordLegend = (
     <div className={styles.legend}>
@@ -274,63 +273,63 @@ const Analysis = ({
           transactions with multiple funders or recipients are not included.
         </p>
         {
-          // <div className={styles.chordDiagram}>
-          //   <div className={styles.chordContainer}>
-          //     {chordContent}
-          //     {chordLegend}
-          //   </div>
-          //   <div className={styles.menuContainer}>
-          //     <div className={styles.menu}>
-          //       <Search
-          //         name={"analysis"}
-          //         callback={setSelectedEntity}
-          //         expandedDefault={true}
-          //       />
-          //
-          //       <TimeSlider
-          //         minYearDefault={Settings.startYear}
-          //         maxYearDefault={Settings.endYear}
-          //         onAfterChange={years => {
-          //           setMinYear(years[0]);
-          //           setMaxYear(years[1]);
-          //         }}
-          //       />
-          //       <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-          //       <RadioToggle
-          //         label={"Choose"}
-          //         callback={setTransactionType}
-          //         curVal={transactionType}
-          //         choices={[
-          //           {
-          //             name: "Disbursed",
-          //             value: "disbursed",
-          //           },
-          //           {
-          //             name: "Committed",
-          //             value: "committed",
-          //           },
-          //         ]}
-          //       />
-          //       {
-          //         // TODO: add this tooltip for CC dropdown
-          //         // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-          //       }
-          //       <FilterDropdown
-          //         {...{
-          //           className: [styles.italic],
-          //           label: "IHR core capacities",
-          //           openDirection: "down",
-          //           options: core_capacities,
-          //           placeholder: "Select core capacities",
-          //           onChange: v => setCoreCapacities(v.map(d => d.value)),
-          //           curValues: coreCapacities,
-          //         }}
-          //       />
-          //       {info}
-          //     </div>
-          //     {<SourceText />}
-          //   </div>
-          // </div>
+          <div className={styles.chordDiagram}>
+            <div className={styles.chordContainer}>
+              {chordContent}
+              {chordLegend}
+            </div>
+            <div className={styles.menuContainer}>
+              <div className={styles.menu}>
+                <Search
+                  name={"analysis"}
+                  callback={setSelectedEntity}
+                  expandedDefault={true}
+                />
+
+                <TimeSlider
+                  minYearDefault={Settings.startYear}
+                  maxYearDefault={Settings.endYear}
+                  onAfterChange={years => {
+                    setMinYear(years[0]);
+                    setMaxYear(years[1]);
+                  }}
+                />
+                <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+                <RadioToggle
+                  label={"Choose"}
+                  callback={setTransactionType}
+                  curVal={transactionType}
+                  choices={[
+                    {
+                      name: "Disbursed",
+                      value: "disbursed",
+                    },
+                    {
+                      name: "Committed",
+                      value: "committed",
+                    },
+                  ]}
+                />
+                {
+                  // TODO: add this tooltip for CC dropdown
+                  // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+                }
+                <FilterDropdown
+                  {...{
+                    className: [styles.italic],
+                    label: "IHR core capacities",
+                    openDirection: "down",
+                    options: core_capacities,
+                    placeholder: "Select core capacities",
+                    onChange: v => setCoreCapacities(v.map(d => d.value)),
+                    curValues: coreCapacities,
+                  }}
+                />
+                {info}
+              </div>
+              {<SourceText />}
+            </div>
+          </div>
         }
       </div>
     </div>
@@ -473,8 +472,7 @@ const getComponentData = async ({
 
   // Define queries for typical details page.
   const queries = {
-    // TODO chords
-    flowBundlesGeneral: NodeSums({}),
+    chords: Chords({ format: "chord" }),
     nodeSumsOrigin: NodeSums({
       format: "table",
       direction: "origin",
