@@ -702,11 +702,26 @@ const getComponentData = async ({
   // Define filters for node sums query
   const filters = {
     "Stakeholder.cat": ["country", "government"],
+    "Flow.year": [["gt_eq", props.minYear], ["lt_eq", props.maxYear]],
   };
 
   // CCs
   if (props.coreCapacities.length > 0) {
     filters["Core_Capacity.name"] = props.coreCapacities;
+  }
+
+  // add assistance type filter
+  if (fundType === "true") {
+    filters["Flow.is_ghsa"] = [true];
+  } else if (fundType === "event") {
+    filters["Flow.response_or_capacity"] = ["response"];
+  } else if (fundType === "capacity") {
+    filters["Flow.response_or_capacity"] = ["capacity"];
+  }
+
+  // add outbreak events filters
+  if (props.events && props.events.length > 0) {
+    filters["Event.id"] = props.events;
   }
 
   // Define queries for map page.
