@@ -282,13 +282,17 @@ class D3Chord extends Chart {
         chart.params.setSelectedEntity(null);
       } else chart.params.setSelectedEntity(d.data.id);
     };
-    const offset = (arcsData.region[0].theta2 - arcsData.region[0].theta1) / 2;
-    arcTypes.forEach(arcType => {
-      arcsData[arcType.type].forEach(d => {
-        d.theta1 -= offset;
-        d.theta2 -= offset;
+    debugger;
+    let offset = 0;
+    if (arcsData.region.length > 0) {
+      offset = (arcsData.region[0].theta2 - arcsData.region[0].theta1) / 2;
+      arcTypes.forEach(arcType => {
+        arcsData[arcType.type].forEach(d => {
+          d.theta1 -= offset;
+          d.theta2 -= offset;
+        });
       });
-    });
+    }
 
     this.params.setEntityArcInfo(arcsData.entity);
 

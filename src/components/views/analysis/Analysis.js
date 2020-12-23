@@ -470,16 +470,40 @@ const getComponentData = async ({
     ]);
   }
 
+  const filters = {
+    "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
+    "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+  };
+
+  // add assistance type filter
+  if (ghsaOnly === "true") {
+    filters["Flow.is_ghsa"] = [true];
+  } else if (ghsaOnly === "event") {
+    filters["Flow.response_or_capacity"] = ["response"];
+  } else if (ghsaOnly === "capacity") {
+    filters["Flow.response_or_capacity"] = ["capacity"];
+  }
+
+  // add outbreak events filters
+  if (props.events && props.events.length > 0) {
+    filters["Event.id"] = props.events;
+  }
+  if (coreCapacities.length > 0) {
+    filters["Core_Capacity.name"] = coreCapacities;
+  }
+
   // Define queries for typical details page.
   const queries = {
-    chords: Chords({ format: "chord" }),
+    chords: Chords({ format: "chord", filters }),
     nodeSumsOrigin: NodeSums({
       format: "table",
       direction: "origin",
+      filters,
     }),
     nodeSumsTarget: NodeSums({
       format: "table",
       direction: "target",
+      filters,
     }),
   };
 
