@@ -119,7 +119,7 @@ export const getInfoBoxData = ({
     // Get JEE score (avg) to display.
     const jeeScoresToAvg = getJeeScores({
       scores: jeeScores, // TODO
-      iso2: nodeDataToCheck.id, // TODO
+      iso3: nodeDataToCheck.iso3, // TODO
       coreCapacities,
     });
 
@@ -234,13 +234,13 @@ export const getInfoBoxData = ({
   return infoBoxData;
 };
 
-// Given the full set of JEE scores, an ISO2 code, and a set of core capacities,
+// Given the full set of JEE scores, an iso3 code, and a set of core capacities,
 // returns the average core capacity score for each defined core capacity for
-// the location with the provided ISO2 code.
-export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
+// the location with the provided iso3 code.
+export const getJeeScores = ({ scores, iso3, coreCapacities }) => {
   // TODO
-  if (iso2 === undefined) return [];
-  const scoresForPlace = scores[iso2];
+  if (iso3 === undefined) return [];
+  const scoresForPlace = scores[iso3];
   if (scoresForPlace === undefined) return [];
   const ccsToInclude =
     coreCapacities.length > 0

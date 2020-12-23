@@ -229,62 +229,46 @@ const Map = ({
     mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data: dataArr });
 
     if (supportType === "needs_met") {
-      for (let placeId in jeeScores) {
-        const match = mapData.find(d => d.id === parseInt(placeId));
+      for (let iso3 in jeeScores) {
+        const match = mapData.find(d => d.id === parseInt(iso3));
         if (match === undefined) {
           // Get score avg.
           const scores = getJeeScores({
             scores: jeeScores,
-            iso2: placeId,
+            iso3,
             coreCapacities,
           });
           const avgJeeScore = d3.mean(scores, d => d.score);
 
           const datum = {
-            flow_types: {
-              disbursed_funds: {
-                focus_node_weight: 0,
-              },
-            },
+            disbursed_funds: 0,
           };
           const value = calculateNeedsMet({ datum, avgCapScores: avgJeeScore });
           mapData.push({
-            id: parseInt(placeId),
+            iso3,
             value: 0,
             value_raw: value,
             tooltip_label: 0,
             color: value,
             target: JSON.stringify([
               {
-                id: placeId,
+                iso3: "TBD",
                 name: "TBD",
                 type: "country",
               },
             ]),
           });
-          // data.push({
-          //   flow_types: { disbursed_funds: { focus_node_weight: 0 } },
-          //   target: [
-          //     {
-          //       id: placeId,
-          //       name: "TBD",
-          //       type: "country"
-          //     }
-          //   ]
-          // });
         }
       }
     }
   } else {
     const jeeScoreData = [];
-    // if place not in data...
-    for (let place_id in jeeScores) {
+    for (let iso3 in jeeScores) {
       jeeScoreData.push({
-        [nodeType]: [
-          {
-            id: parseInt(place_id),
-          },
-        ],
+        [nodeType]: {
+          iso3,
+        },
+        value_raw: 5,
       });
     }
     mapData = getTableRowData({

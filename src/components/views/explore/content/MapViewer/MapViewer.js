@@ -737,6 +737,7 @@ const getComponentData = async ({
       filters,
     }),
     jeeScores: Assessment({
+      format: "map",
       scoreType: "JEE v1",
     }),
     outbreaks: Outbreak({}),

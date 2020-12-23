@@ -88,10 +88,10 @@ export const getMapMetricValue = ({
   } else if (supportType === "jee") {
     // Get JEE score values.
     const node = d.target ? d.target : d.origin;
-    const iso2 = node.iso2;
+    const iso3 = node.iso3;
     const jeeScores = getJeeScores({
       scores,
-      iso2,
+      iso3,
       coreCapacities,
     });
     const avgJeeScore = d3.mean(jeeScores, d => d.score);

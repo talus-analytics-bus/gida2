@@ -119,6 +119,7 @@ export const Assessment = async function({ ...props }) {
 
   if (props.id) params.append("stakeholder_id", props.id);
   if (props.scoreType) params.append("type", props.scoreType);
+  if (props.format) params.append("format", props.format);
 
   // Define URL params
   const config = {
