@@ -59,12 +59,13 @@ export /**
  */
 
 const Flow = async function({
-  originIds,
-  targetIds,
+  originIds = [],
+  targetIds = [],
   filters = {},
   page = 1,
   pagesize = 1e6,
   forExport = false,
+  format = [],
 }) {
   // Define POST body data
   const data = { filters };
@@ -72,9 +73,13 @@ const Flow = async function({
   // Define URL params
   const params = new URLSearchParams({ page, pagesize });
 
-  const toAdd = [["origin_ids", originIds], ["target_ids", targetIds]];
+  const toAdd = [
+    ["origin_ids", originIds],
+    ["target_ids", targetIds],
+    ["format", format],
+  ];
   toAdd.forEach(([key, values]) => {
-    if (values.length > 0) {
+    if (values !== undefined && values.length > 0) {
       values.forEach(v => {
         params.append(key, v);
       });

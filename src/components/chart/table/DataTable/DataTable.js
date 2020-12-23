@@ -24,7 +24,7 @@ const DataTable = ({
         <TableInstance
           {...{
             ...props,
-            tableData: d.flows
+            tableData: d.data,
           }}
         />
       );
