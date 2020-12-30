@@ -282,7 +282,6 @@ class D3Chord extends Chart {
         chart.params.setSelectedEntity(null);
       } else chart.params.setSelectedEntity(d.data.id);
     };
-    debugger;
     let offset = 0;
     if (arcsData.region.length > 0) {
       offset = (arcsData.region[0].theta2 - arcsData.region[0].theta1) / 2;
