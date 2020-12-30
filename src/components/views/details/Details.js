@@ -92,44 +92,12 @@ const Details = ({
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
 
-  // // Track the Top Recipients/Funders table data
-  // const topTableData = data.topTable;
-
-  // const topTableData = getSummaryAttributeWeightsByNode({
-  //     data: data.flowBundlesFocusOther.flow_bundles,
-  //   field: "core_elements",
-  //   flowTypes: ["disbursed_funds", "committed_funds"],
-  //   nodeType: otherNodeType,
-  // }).filter(
-  //   d =>
-  //     d[otherNodeType] !== undefined &&
-  //     (d[otherNodeType][0].name !== "Not reported" ||
-  //       d[otherNodeType].length > 1)
-  // );
-
-  // // If on GHSA page, get "other" top table to display.
-  // const topTableDataOther = pageType === "ghsa" ? data.topTableOther : null;
-
-  // // If on GHSA page, get "other" top table to display.
-  // const topTableDataOther =
-  //   pageType === "ghsa"
-  //     ? getSummaryAttributeWeightsByNode({
-  //         data: data.focusSummary,
-  //         field: "core_elements",
-  //         flowTypes: ["disbursed_funds", "committed_funds"],
-  //         nodeType: nodeType,
-  //       }).filter(d => d[nodeType].name !== "Not reported")
-  //     : null;
-
   // True if there are no data to show for the entire page, false otherwise.
   // TODO make work with new API
   const noData = false;
   const noFinancialData = noData ? true : false;
-  // const noFinancialData = noData
-  //   ? true
-  //   : data.byYear.totals["disbursed_funds"] === undefined &&
-  //     data.byYear.totals["committed_funds"] === undefined;
 
+  // stop loading spinner if no data
   if (noData || noFinancialData)
     setLoadingSpinnerOn(false, false, undefined, true);
 
@@ -137,41 +105,6 @@ const Details = ({
   // value no reported).
   // TODO make work with new API
   const unknownDataOnly = false;
-  // const unknownDataOnly = isUnknownDataOnly({
-  //   masterSummary: data.focusSummary.master_summary,
-  // });
-
-  // Define standard colums for Top Funders and Top Recipients tables.
-  // const topTableCols = [
-  //   {
-  //     prop: "_tot",
-  //     func: d => (d[curFlowType] ? d[curFlowType]._tot : undefined),
-  //     type: "num",
-  //     className: d => (d > 0 ? "num" : "num-with-text"),
-  //     title: `Total ${
-  //       curFlowType === "disbursed_funds" ? "disbursed" : "committed"
-  //     }`,
-  //     render: v => Util.formatValue(v, "disbursed_funds"),
-  //   },
-  // ].concat(
-  //   [
-  //     ["P", "Prevent"],
-  //     ["D", "Detect"],
-  //     ["R", "Respond"],
-  //     ["Other", "Other"],
-  //     ["General IHR", "General IHR Implementation"],
-  //     ["Unspecified", "Unspecified"],
-  //   ].map(c => {
-  //     return {
-  //       func: d => (d[curFlowType] ? d[curFlowType][c[0]] : undefined),
-  //       type: "num",
-  //       className: d => (d > 0 ? "num" : "num-with-text"),
-  //       title: c[1],
-  //       prop: c[1],
-  //       render: v => Util.formatValue(v, "disbursed_funds"),
-  //     };
-  //   })
-  // );
 
   // Define header charts
   const pageHeaderContent = {
@@ -457,8 +390,8 @@ const Details = ({
                     id,
                     curFlowType,
                     otherEntityRole,
-                    otherNodeType,
-                    direction: otherDirection,
+                    otherNodeType: direction,
+                    direction,
                     staticStakeholders: data.nodesData,
                   }}
                 />
@@ -473,9 +406,9 @@ const Details = ({
                   {...{
                     id,
                     curFlowType,
-                    otherEntityRole,
-                    otherNodeType,
-                    direction,
+                    otherEntityRole: entityRole,
+                    otherNodeType: otherDirection,
+                    direction: otherDirection,
                     staticStakeholders: data.nodesData,
                   }}
                 />
@@ -934,7 +867,8 @@ const getComponentData = async ({
   const commonFilters = {};
 
   // if GHSA page, filter by `is_ghsa === true`
-  if (id == "ghsa") {
+  const isGhsaPage = id === "ghsa";
+  if (isGhsaPage) {
     commonFilters["Flow.is_ghsa"] = [true];
   }
 
@@ -951,45 +885,51 @@ const getComponentData = async ({
       id,
       scoreType: "PVS",
     }),
+  };
 
-    flows: Flow({
-      filters: { "Project_Constants.response_or_capacity": ["response"] },
-      [direction + "Ids"]: [id],
-      [otherDirection + "Ids"]: [],
-    }),
+  // core capacity bar chart filters
+  const stackBarFilters = {
+    "Core_Capacity.name": [["neq", "Unspecified"]],
+    "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+    "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
   };
 
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
-  if (id === "ghsa") {
-    // TODO
-  } else {
-    // core capacity bar chart
-    queries.stackBar = NodeSums({
-      format: "stack_bar_chart",
-      direction: otherDirection, // "origin"
-      group_by: "Core_Capacity.name",
-      preserve_stakeholder_groupings: false,
+  if (isGhsaPage) {
+    // get flows for GHSA
+    queries.flows = Flow({
       filters: {
-        "OtherStakeholder.id": [id],
-        "Core_Capacity.name": [["neq", "Unspecified"]],
-        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-        "Flow.year": [
-          ["gt_eq", Settings.startYear],
-          ["lt_eq", Settings.endYear],
-        ],
+        "Project_Constants.response_or_capacity": ["response"],
+        "Project_Constants.is_ghsa": [true],
       },
     });
+  } else {
+    stackBarFilters["OtherStakeholder.id"] = [id];
+
+    // get flows for defined target/origin
+    queries.flows = Flow({
+      filters: { "Project_Constants.response_or_capacity": ["response"] },
+      [direction + "Ids"]: [id],
+      [otherDirection + "Ids"]: [],
+    });
   }
+  // TODO move to StackBar component
+  queries.stackBar = NodeSums({
+    format: "stack_bar_chart",
+    direction: otherDirection, // "origin"
+    group_by: "Core_Capacity.name",
+    preserve_stakeholder_groupings: false,
+    filters: stackBarFilters,
+  });
 
   // Get query results.
   setLoadingSpinnerOn(true);
   const results = await execute({ queries });
 
   // use first and only node result
-  results.nodeData = results.nodesData[id];
-  console.log("results");
-  console.log(results);
+  if (!isGhsaPage) results.nodeData = results.nodesData[id];
+  else results.nodeData = { id: -9999, name: "GHSA" };
 
   // Feed results and other data to the details component and mount it.
   setDetailsComponent(

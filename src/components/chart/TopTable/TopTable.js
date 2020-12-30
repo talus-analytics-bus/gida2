@@ -16,27 +16,34 @@ const TopTable = ({
   staticStakeholders,
   ...props
 }) => {
+  // CONSTANTS // ---------------------------------------------------------- //
+  const isGhsaPage = id === "ghsa";
+
   // // CONTEXT //
   // const context = useContext(appContext) || defaultContext;
   const [data, setData] = useState(null);
   const [stakeholders, setStakeholders] = useState(
     staticStakeholders !== undefined ? staticStakeholders : null
   );
-  const updateData = async () => {
+  const getData = async () => {
+    const filters = {
+      "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+    };
+
+    if (!isGhsaPage) {
+      filters["OtherStakeholder.id"] = [id];
+    } else {
+      filters["Flow.is_ghsa"] = [true];
+    }
+
     // top funder / recipient table
     const queries = {
       data: NodeSums({
         format: "table",
         direction, // "origin"
         group_by: "Core_Element.name",
-        filters: {
-          "OtherStakeholder.id": [id],
-          "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-          "Flow.year": [
-            ["gt_eq", Settings.startYear],
-            ["lt_eq", Settings.endYear],
-          ],
-        },
+        filters,
       }),
     };
     if (staticStakeholders === undefined)
@@ -50,7 +57,7 @@ const TopTable = ({
 
   // when certain selections change, retrieve updated data
   useEffect(() => {
-    updateData();
+    getData();
   }, [id, direction]);
 
   // CONSTANTS // ---------------------------------------------------------- //
@@ -105,14 +112,17 @@ const TopTable = ({
             ),
             prop: otherNodeType,
             type: "text",
-            func: d => JSON.stringify(d[otherNodeType]),
-            render: d =>
-              getNodeLinkList({
+            func: d => {
+              return JSON.stringify(d[otherNodeType]);
+            },
+            render: d => {
+              return getNodeLinkList({
                 urlType: "details",
                 nodeList: JSON.parse(d),
                 entityRole: otherEntityRole,
                 id: id,
-              }),
+              });
+            },
           },
         ].concat(topTableCols)}
         tableData={data ? data.filter(d => d[curFlowType] !== undefined) : []}

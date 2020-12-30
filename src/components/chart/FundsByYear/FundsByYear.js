@@ -30,10 +30,16 @@ const FundsByYear = ({
   const updateData = async () => {
     // define filters
     const filters = {
-      "Stakeholder.id": [id],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     };
+
+    const isGhsaPage = id === "ghsa";
+    if (!isGhsaPage) {
+      filters["Stakeholder.id"] = [id];
+    } else {
+      filters["Flow.is_ghsa"] = [true];
+    }
 
     // apply filters to the fund type
     if (fundType === "true") {
