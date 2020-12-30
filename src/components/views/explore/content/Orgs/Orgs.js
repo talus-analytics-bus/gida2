@@ -402,7 +402,7 @@ const Orgs = ({
               "data-for": "orgTooltip",
               onMouseOver: () =>
                 updateTooltipData({
-                  d: data.stakeholders[d.shID][0],
+                  d: data.stakeholders[d.shID],
                   nodeType: roleSlug,
                   dataKey,
                   mapData: [d],
