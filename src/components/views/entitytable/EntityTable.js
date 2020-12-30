@@ -274,14 +274,10 @@ const EntityTable = ({
               defaultContent: "n/a",
             },
           ]}
-          tableData={
-            data.flowBundlesByNeighborOther
-              ? data.flowBundlesByNeighborOther.flow_bundles.filter(
-                  f =>
-                    f.flow_types.committed_funds || f.flow_types.disbursed_funds
-                )
-              : []
-          }
+          tableData={data.fundsBySame.filter(
+            f =>
+              f.committed_funds !== undefined || f.disbursed_funds !== undefined
+          )}
         />
       ),
     },
@@ -639,11 +635,17 @@ const getComponentData = async ({
     "assistance_type",
     "inkind",
   ]);
+  const isGhsaPage = id === "ghsa";
 
   const nodeSumsFilters = {
     "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
   };
   const flowFilters = {};
+
+  if (isGhsaPage) {
+    flowFilters["Project_Constants.is_ghsa"] = [true];
+    nodeSumsFilters["Flow.is_ghsa"] = [true];
+  }
 
   // add assistance type filter
   if (ghsaOnly === "true") {
@@ -660,6 +662,20 @@ const getComponentData = async ({
   // Define queries for typical entityTable page.
   const direction = entityRole === "funder" ? "origin" : "target";
   const otherDirection = entityRole === "funder" ? "target" : "origin";
+
+  // if GHSA page, then alter filters accordingly
+  const nodeSumsFiltersDirection = {
+    [direction]: { ...nodeSumsFilters },
+    [otherDirection]: { ...nodeSumsFilters },
+  };
+  if (!isGhsaPage) {
+    nodeSumsFiltersDirection[direction]["Stakeholder.id"] = [id];
+    nodeSumsFiltersDirection[otherDirection]["OtherStakeholder.id"] = [id];
+  } else {
+    nodeSumsFiltersDirection[direction]["Flow.is_ghsa"] = [true];
+    nodeSumsFiltersDirection[otherDirection]["Flow.is_ghsa"] = [true];
+  }
+
   const queries = {
     // Information about the entity
     nodeData: Stakeholder({ id }),
@@ -668,27 +684,36 @@ const getComponentData = async ({
     fundsByOther: NodeSums({
       format: "table",
       direction: otherDirection,
-      filters: { ...nodeSumsFilters, "OtherStakeholder.id": [id] },
+      filters: nodeSumsFiltersDirection[otherDirection],
     }),
     fundsByCC: NodeSums({
       format: "table_by_grouped_attr",
       group_by: "Core_Capacity.name",
       direction,
-      filters: { ...nodeSumsFilters, "Stakeholder.id": [id] },
+      filters: nodeSumsFiltersDirection[direction],
     }),
     fundsByCE: NodeSums({
       format: "table_by_grouped_attr",
       group_by: "Core_Element.name",
       direction,
-      filters: { ...nodeSumsFilters, "Stakeholder.id": [id] },
+      filters: nodeSumsFiltersDirection[direction],
     }),
   };
+
+  if (isGhsaPage) {
+    queries.fundsBySame = NodeSums({
+      format: "table",
+      direction,
+      filters: nodeSumsFiltersDirection[direction],
+    });
+  }
+
   const getTableDataFuncs = {
     flowsFinancial: (page, pagesize) => {
       return Flow({
         page,
         pagesize,
-        [nodeType + "Ids"]: [id],
+        [nodeType + "Ids"]: !isGhsaPage ? [id] : undefined,
         format: ["stakeholder_details"],
         filters: {
           ...flowFilters,
@@ -700,7 +725,7 @@ const getComponentData = async ({
       return Flow({
         page,
         pagesize,
-        [nodeType + "Ids"]: [id],
+        [nodeType + "Ids"]: !isGhsaPage ? [id] : undefined,
         format: ["stakeholder_details"],
         filters: {
           ...flowFilters,

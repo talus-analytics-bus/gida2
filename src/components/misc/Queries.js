@@ -188,6 +188,12 @@ export const Stakeholder = async function({
       params.append(k, v);
     }
   });
+  if (params.get("id") === "ghsa" && params.get("by") === null) {
+    return {
+      id: "ghsa",
+      name: "GHSA",
+    };
+  }
   const gotAll = params.toString() === "";
   if (gotAll && allStakeholders[by] !== undefined) {
     return allStakeholders[by];
