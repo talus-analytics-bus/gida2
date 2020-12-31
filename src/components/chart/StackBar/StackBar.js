@@ -6,7 +6,7 @@ import tooltipStyles from "../../common/tooltip.module.scss";
 import * as d3 from "d3/dist/d3.min";
 import D3StackBar from "./D3StackBar.js";
 import RadioToggle from "../../misc/RadioToggle.js";
-import { execute, Stakeholder } from "../../misc/Queries";
+import { execute, Stakeholder, Assessment } from "../../misc/Queries";
 import Legend from "../../map/Legend.js";
 import { getMapColorScale } from "../../map/MapUtil.js";
 
@@ -20,7 +20,6 @@ const StackBar = ({
   flowTypeName,
   otherNodeType,
   nodeType,
-  jeeScores,
   ghsaOnly,
   id,
   render,
@@ -28,6 +27,7 @@ const StackBar = ({
   staticStakeholders,
   ...props
 }) => {
+  const [jeeScores, setJeeScores] = useState(null);
   const [processedData, setProcessedData] = useState(false);
   const [stackBar, setStackBar] = useState(null);
   const [stakeholders, setStakeholders] = useState(
@@ -35,20 +35,29 @@ const StackBar = ({
   );
   const [sort, setSort] = useState("amount"); // or jee
   const [tooltipData, setTooltipData] = useState(undefined);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const jeeColorScale = getMapColorScale({
     supportType: "jee",
   });
 
-  const updateData = async () => {
+  const getData = async () => {
     // top funder / recipient table
-    const queries = {};
+    const queries = {
+      jeeScores: Assessment({
+        scoreType: "JEE v1",
+      }),
+    };
     if (staticStakeholders === undefined)
       queries.stakeholders = Stakeholder({ by: "id" });
     const results = await execute({ queries });
     if (staticStakeholders === undefined) {
       setStakeholders(results.stakeholders);
     }
+
+    // TODO only request scores needed
+    setJeeScores(results.jeeScores[id]);
+    setDataLoaded(true);
   };
 
   const chartData = data.filter(
@@ -92,25 +101,14 @@ const StackBar = ({
     placeType,
   };
   useEffect(() => {
-    if (render && stakeholders !== null) {
-      // apply stakeholder names
-      // if (!processedData)
-      //   chartData.forEach(d => {
-      //     setProcessedData(true);
-      //     const names = d[otherNodeType]
-      //       .map(dd => {
-      //         return stakeholders[dd].name;
-      //       })
-      //       .join("; ");
-      //     d[otherNodeType] = names;
-      //   });
+    if (render && stakeholders !== null && dataLoaded) {
       const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
         ...stackBarParams,
         data: chartData,
       });
       setStackBar(stackBarNew);
     }
-  }, [id, nodeType, ghsaOnly, render, stakeholders]);
+  }, [id, nodeType, ghsaOnly, render, dataLoaded, stakeholders]);
 
   useEffect(() => {
     if (stackBar !== null) {
@@ -130,7 +128,7 @@ const StackBar = ({
 
   useEffect(() => {
     // on initial load, check for stakeholders data
-    if (stakeholders === null) updateData();
+    if (stakeholders === null) getData();
   }, []);
 
   // useEffect(() => {

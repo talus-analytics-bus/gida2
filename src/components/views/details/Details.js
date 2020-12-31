@@ -356,7 +356,6 @@ const Details = ({
                   attributeType={"core_capacities"}
                   nodeType={nodeType}
                   otherNodeType={otherNodeType}
-                  jeeScores={data.jeeScores[data.nodeData.id]}
                   placeType={data.nodeData.type}
                   id={id}
                   ghsaOnly={ghsaOnly}
@@ -876,10 +875,6 @@ const getComponentData = async ({
     // Information about the entity
     nodesData: Stakeholder({ by: "id" }),
     outbreaks: Outbreak({}),
-
-    jeeScores: Assessment({
-      scoreType: "JEE v1",
-    }),
 
     pvs: Assessment({
       id,
