@@ -1,4 +1,16 @@
 .placeholder {
+  margin: 0 auto;
+  .imgContainer {
+    width: 50px; /* width of container */
+    height: 50px; /* height of container */
+    overflow: hidden;
+    // border: 1px solid black;
+    img {
+      width: 100px; /* width of container */
+      height: 100px; /* height of container */
+      margin: -25px 0 0 -25px;
+    }
+  }
 }
 .content {
   opacity: 0;

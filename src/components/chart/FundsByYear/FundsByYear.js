@@ -9,6 +9,7 @@ import AreaLine from "../AreaLine/AreaLine.js";
 import { Settings } from "../../../App.js";
 import tableIcon from "../../../assets/images/table-funds.svg";
 import Button from "../../common/Button/Button.js";
+import Loading from "../../common/Loading/Loading";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import { execute, NodeSums } from "../../misc/Queries";
 
@@ -93,54 +94,56 @@ const FundsByYear = ({
   }, [id, entityRole, fundType]);
 
   return (
-    <div className={styles.fundsByYear}>
-      {data !== null && !unknownDataOnly && !noFinancialData && (
-        <div className={styles.content}>
-          <div className={styles.totals}>
-            <GhsaToggle
-              {...{
-                label: "Show funding type",
-                setGhsaOnly: setFundType,
-                ghsaOnly: fundType,
-                selectpicker: true,
-              }}
-            />
-            <TotalByFlowType flowType="disbursed_funds" data={data.totals} />
-            <TotalByFlowType flowType="committed_funds" data={data.totals} />
-            {linkToEntityTable}
-          </div>
-          <div className={styles.areaLine}>
-            <AreaLine
-              entityRole={entityRole}
-              flowTypeInfo={flowTypeInfo}
-              data={data.points.map(d => {
-                const newD = {};
-                flowTypeInfo.forEach(ft => {
-                  if (d[ft.name] !== "n/a") {
-                    newD[ft.name] = d[ft.name] >= 0 ? d[ft.name] : 0;
-                  }
-                });
-                return { ...d, ...newD };
-              })}
-              id={id}
-              ghsaOnly={props.ghsaOnly}
-              setLoadingSpinnerOn={setLoadingSpinnerOn}
-            />
-          </div>
-        </div>
-      )}
-      {(unknownDataOnly || noFinancialData) && (
-        <div className={styles.content}>
-          <div className={classNames(styles.totals, styles.unknownOnly)}>
-            <div>
-              No funding with specific amounts to show. Click "View table of
-              funds" to view all available data.
+    <Loading loaded={data !== null}>
+      <div className={styles.fundsByYear}>
+        {data !== null && !unknownDataOnly && !noFinancialData && (
+          <div className={styles.content}>
+            <div className={styles.totals}>
+              <GhsaToggle
+                {...{
+                  label: "Show funding type",
+                  setGhsaOnly: setFundType,
+                  ghsaOnly: fundType,
+                  selectpicker: true,
+                }}
+              />
+              <TotalByFlowType flowType="disbursed_funds" data={data.totals} />
+              <TotalByFlowType flowType="committed_funds" data={data.totals} />
+              {linkToEntityTable}
             </div>
-            {linkToEntityTable}
+            <div className={styles.areaLine}>
+              <AreaLine
+                entityRole={entityRole}
+                flowTypeInfo={flowTypeInfo}
+                data={data.points.map(d => {
+                  const newD = {};
+                  flowTypeInfo.forEach(ft => {
+                    if (d[ft.name] !== "n/a") {
+                      newD[ft.name] = d[ft.name] >= 0 ? d[ft.name] : 0;
+                    }
+                  });
+                  return { ...d, ...newD };
+                })}
+                id={id}
+                ghsaOnly={props.ghsaOnly}
+                setLoadingSpinnerOn={setLoadingSpinnerOn}
+              />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+        {(unknownDataOnly || noFinancialData) && (
+          <div className={styles.content}>
+            <div className={classNames(styles.totals, styles.unknownOnly)}>
+              <div>
+                No funding with specific amounts to show. Click "View table of
+                funds" to view all available data.
+              </div>
+              {linkToEntityTable}
+            </div>
+          </div>
+        )}
+      </div>
+    </Loading>
   );
 };
 

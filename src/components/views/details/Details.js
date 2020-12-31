@@ -32,6 +32,7 @@ import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
+import Loading from "../../common/Loading/Loading";
 import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
 import ReactTooltip from "react-tooltip";
