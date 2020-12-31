@@ -149,8 +149,12 @@ const StackBar = ({
 
   useEffect(() => {
     // on initial load, check for stakeholders data
-    if (stakeholders === null) getData();
-  }, []);
+    if (!dataLoaded) getData();
+  }, [dataLoaded]);
+
+  useEffect(() => {
+    if (dataLoaded) setDataLoaded(false);
+  }, [id, otherDirection]);
 
   const jeeWhite = nodeType === "origin" || placeType !== "country";
 
