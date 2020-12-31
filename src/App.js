@@ -13,10 +13,10 @@ import { execute, FlowType, Stakeholder } from "./components/misc/Queries";
 // views
 import Home from "./components/views/home/Home.js";
 import { renderExplore } from "./components/views/explore/Explore.js";
-import { renderDetails } from "./components/views/details/Details.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
 import { renderExport } from "./components/views/export/Export.js";
 import { renderAnalysisData } from "./components/views/analysis/AnalysisData.js";
+import Details from "./components/views/details/Details";
 import Background from "./components/views/about/Background.js";
 import DataSources from "./components/views/about/DataSources.js";
 import Citations from "./components/views/about/Citations.js";
@@ -288,19 +288,20 @@ const App = () => {
                 exact
                 path="/details/:id/:entityRole"
                 render={d => {
-                  setPage(undefined);
-                  return renderDetails({
-                    ...d.match.params,
-                    id: parseInt(d.match.params.id),
-                    detailsComponent: detailsComponent,
-                    setDetailsComponent: setDetailsComponent,
-                    loading: loading,
-                    setLoading: setLoading,
-                    flowTypeInfo: flowTypeInfo,
-                    ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly,
-                    setLoadingSpinnerOn,
-                  });
+                  return (
+                    <Details
+                      {...{
+                        ...d.match.params,
+                        id: parseInt(d.match.params.id),
+                        loading: loading,
+                        setLoading: setLoading,
+                        flowTypeInfo: flowTypeInfo,
+                        ghsaOnly: ghsaOnly,
+                        setGhsaOnly: setGhsaOnly,
+                        setLoadingSpinnerOn,
+                      }}
+                    />
+                  );
                 }}
               />
               <Route
@@ -379,15 +380,28 @@ const App = () => {
                 render={d => {
                   if (d.match.params.id === "ghsa") {
                     setPage("ghsa");
-                    return renderDetails({
-                      ...d.match.params,
-                      detailsComponent: detailsComponent,
-                      setDetailsComponent: setDetailsComponent,
-                      loading: loading,
-                      setLoading: setLoading,
-                      flowTypeInfo: flowTypeInfo,
-                      setLoadingSpinnerOn,
-                    });
+                    return (
+                      <Details
+                        {...{
+                          ...d.match.params,
+                          detailsComponent: detailsComponent,
+                          setDetailsComponent: setDetailsComponent,
+                          loading: loading,
+                          setLoading: setLoading,
+                          flowTypeInfo: flowTypeInfo,
+                          setLoadingSpinnerOn,
+                        }}
+                      />
+                    );
+                    // return renderDetails({
+                    //   ...d.match.params,
+                    //   detailsComponent: detailsComponent,
+                    //   setDetailsComponent: setDetailsComponent,
+                    //   loading: loading,
+                    //   setLoading: setLoading,
+                    //   flowTypeInfo: flowTypeInfo,
+                    //   setLoadingSpinnerOn,
+                    // });
                   } else setPage(undefined);
                   return (
                     <Redirect to={`/details/${d.match.params.id}/funder`} />

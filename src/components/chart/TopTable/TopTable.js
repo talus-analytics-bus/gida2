@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import Util, { isEmpty } from "../../misc/Util";
 import { getNodeLinkList, parseIdsAsNames } from "../../misc/Data";
+import Loading from "../../common/Loading/Loading";
 import { execute, NodeSums, Stakeholder } from "../../misc/Queries";
 import TableInstance from "../table/TableInstance";
 import { Settings } from "../../../App.js";
@@ -55,9 +56,13 @@ const TopTable = ({
     }
   };
 
+  useEffect(() => {
+    if (data === null) getData();
+  }, [data]);
+
   // when certain selections change, retrieve updated data
   useEffect(() => {
-    getData();
+    setData(null);
   }, [id, direction]);
 
   // CONSTANTS // ---------------------------------------------------------- //
@@ -93,41 +98,46 @@ const TopTable = ({
     })
   );
 
-  if (data === null || stakeholders === null)
-    return (
-      <div>{[curFlowType, otherEntityRole, otherNodeType].join("; ")}</div>
-    );
-  else
-    return (
-      <TableInstance
-        sortByProp={"_tot"}
-        paging={true}
-        tableColumns={[
-          {
-            title: Util.getInitCap(
-              Util.getRoleTerm({
-                type: "noun",
-                role: otherEntityRole,
-              })
-            ),
-            prop: otherNodeType,
-            type: "text",
-            func: d => {
-              return JSON.stringify(d[otherNodeType]);
+  console.log("otherNodeType");
+  console.log(otherNodeType);
+  console.log("direction");
+  console.log(direction);
+  console.log("data");
+  console.log(data);
+  return (
+    <Loading loaded={data !== null}>
+      {data !== null && (
+        <TableInstance
+          sortByProp={"_tot"}
+          paging={true}
+          tableColumns={[
+            {
+              title: Util.getInitCap(
+                Util.getRoleTerm({
+                  type: "noun",
+                  role: otherEntityRole,
+                })
+              ),
+              prop: otherNodeType,
+              type: "text",
+              func: d => {
+                return JSON.stringify(d[otherNodeType]);
+              },
+              render: d => {
+                return getNodeLinkList({
+                  urlType: "details",
+                  nodeList: JSON.parse(d),
+                  entityRole: otherEntityRole,
+                  id: id,
+                });
+              },
             },
-            render: d => {
-              return getNodeLinkList({
-                urlType: "details",
-                nodeList: JSON.parse(d),
-                entityRole: otherEntityRole,
-                id: id,
-              });
-            },
-          },
-        ].concat(topTableCols)}
-        tableData={data ? data.filter(d => d[curFlowType] !== undefined) : []}
-      />
-    );
+          ].concat(topTableCols)}
+          tableData={data ? data.filter(d => d[curFlowType] !== undefined) : []}
+        />
+      )}
+    </Loading>
+  );
 };
 
 export default TopTable;

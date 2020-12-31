@@ -28,7 +28,7 @@ const FundsByYear = ({
   // STATE //
   const [data, setData] = useState(null);
   const direction = entityRole === "funder" ? "origin" : "target";
-  const updateData = async () => {
+  const getData = async () => {
     // define filters
     const filters = {
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
@@ -82,16 +82,21 @@ const FundsByYear = ({
   const [fundType, setFundType] = useState("false"); // all
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
-    if (!initialized) {
-      updateData();
-      return;
-    } else if (!unknownDataOnly && !noFinancialData) {
-      setLoadingSpinnerOn(true, false, "AreaLine");
-      updateData();
-    } else {
-      setLoadingSpinnerOn(false);
+    if (!unknownDataOnly && !noFinancialData) {
+      // setLoadingSpinnerOn(true, false, "AreaLine");
+      getData();
+    } else setData([]);
+    // else {
+    //   setLoadingSpinnerOn(false);
+    // }
+  }, [fundType]);
+
+  useEffect(() => {
+    if (data !== null) {
+      setData(null);
+      getData();
     }
-  }, [id, entityRole, fundType]);
+  }, [id, entityRole]);
 
   return (
     <Loading loaded={data !== null}>

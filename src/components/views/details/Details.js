@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./details.module.scss";
 import classNames from "classnames";
@@ -76,21 +76,59 @@ const Details = ({
   const otherNodeType = entityRole === "funder" ? "target" : "origin";
 
   // Track whether viewing committed or disbursed/provided assistance
-  const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
-  const [pvsTooltipData, setPvsTooltipData] = React.useState(undefined);
+  const [curFlowType, setCurFlowType] = useState("disbursed_funds");
+  const [pvsTooltipData, setPvsTooltipData] = useState(undefined);
+
+  const [nodeData, setNodeData] = useState({});
+  const [nodesData, setNodesData] = useState({});
+  const [pvs, setPvs] = useState({ eds: [], scores: [] });
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  const getData = async () => {
+    // define directions for queries
+    const direction = entityRole === "funder" ? "origin" : "target";
+    const otherDirection = direction === "origin" ? "target" : "origin";
+
+    // define common filters for most queries
+    const commonFilters = {};
+
+    // if GHSA page, filter by `is_ghsa === true`
+    const isGhsaPage = id === "ghsa";
+    if (isGhsaPage) {
+      commonFilters["Flow.is_ghsa"] = [true];
+    }
+
+    const queries = {
+      // Information about the entity
+      nodesData: Stakeholder({ by: "id" }),
+
+      pvs: Assessment({
+        id,
+        scoreType: "PVS",
+      }),
+    };
+
+    // Get query results.
+    // setLoadingSpinnerOn(true);
+    const results = await execute({ queries });
+
+    // use first and only node result
+    if (!isGhsaPage) results.nodeData = results.nodesData[id];
+    else results.nodeData = { id: -9999, name: "GHSA" };
+
+    setNodeData(results.nodeData);
+    setNodesData(results.nodesData);
+    setPvs(results.pvs);
+  };
 
   // TODO handle response data
-  const noResponseData = data.flows.paging.n_records === 0;
-  const [curTab, setCurTab] = React.useState("ihr");
-  const [showFlag, setShowFlag] = React.useState(
-    data.nodeData.cat === "country"
-  );
+  // const noResponseData = data.flows.paging.n_records === 0;
+  const [curTab, setCurTab] = useState("ihr");
+  const [showFlag, setShowFlag] = useState(nodeData.cat === "country");
 
-  const [curPvsEdition, setCurPvsEdition] = React.useState(
-    data.pvs.eds[0] || {}
-  );
+  const [curPvsEdition, setCurPvsEdition] = useState(pvs.eds[0] || {});
 
-  if (noResponseData && curTab === "event") setCurTab("ihr");
+  // if (noResponseData && curTab === "event") setCurTab("ihr");
 
   // Get display name for current flow type
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
@@ -101,9 +139,9 @@ const Details = ({
   const noData = false;
   const noFinancialData = noData ? true : false;
 
-  // stop loading spinner if no data
-  if (noData || noFinancialData)
-    setLoadingSpinnerOn(false, false, undefined, true);
+  // // stop loading spinner if no data
+  // if (noData || noFinancialData)
+  //   setLoadingSpinnerOn(false, false, undefined, true);
 
   // True if the only available data to show are for "unknown" values (specific
   // value no reported).
@@ -137,18 +175,19 @@ const Details = ({
   const showTabs = !noData && !unknownDataOnly && !noFinancialData;
 
   // For event response funding: get totals.
+  // TODO move into EventTable
   const eventResponseTotals = (
     <div className={styles.totals}>
       <TotalByFlowType
         inline={true}
         flowType="disbursed_funds"
-        data={data.flows.data}
+        data={[]}
         label={"event response funding"}
       />
       <TotalByFlowType
         inline={true}
         flowType="committed_funds"
-        data={data.flows.data}
+        data={[]}
         label={"event response funding"}
       />
     </div>
@@ -174,7 +213,7 @@ const Details = ({
   );
 
   const updatePvsTooltipData = d => {
-    const allEdVals = data.pvs.scores.filter(
+    const allEdVals = pvs.scores.filter(
       dd => dd.ind.toLowerCase() === d.indName.toLowerCase()
     );
 
@@ -218,12 +257,10 @@ const Details = ({
               <form>
                 <select
                   onChange={v =>
-                    setCurPvsEdition(
-                      data.pvs.eds.find(d => d.ed === v.target.value)
-                    )
+                    setCurPvsEdition(pvs.eds.find(d => d.ed === v.target.value))
                   }
                 >
-                  {[...new Set(data.pvs.eds.map(d => d.ed))].map(d => (
+                  {[...new Set(pvs.eds.map(d => d.ed))].map(d => (
                     <option value={d}>{d}</option>
                   ))}
                 </select>
@@ -299,7 +336,7 @@ const Details = ({
                 ),
               },
             ]}
-            tableData={data.pvs.scores.filter(d => d.ed === curPvsEdition.ed)}
+            tableData={pvs.scores.filter(d => d.ed === curPvsEdition.ed)}
             sortOrder={"ascending"}
             hide={r => r.amount === -9999}
           />
@@ -316,27 +353,6 @@ const Details = ({
           slug: "ihr",
           header: "IHR funding",
           content: [
-            // {
-            //   header: <h2>Funding by core element</h2>,
-            //   text: (
-            //     <p>
-            //       Percentages shown for each core element based on total
-            //       funding.
-            //     </p>
-            //   ),
-            //   content: (
-            //     <Donuts
-            //       data={data.focusSummary.master_summary}
-            //       flowType={curFlowType}
-            //       ghsaOnly={ghsaOnly}
-            //       attributeType={"core_elements"}
-            //       nodeType={nodeType}
-            //       id={id}
-            //     />
-            //   ),
-            //   toggleFlowType: true,
-            //   hide: noData || unknownDataOnly || noFinancialData
-            // },
             {
               header: <h2>Funding by core capacity</h2>,
               text: (
@@ -350,7 +366,6 @@ const Details = ({
                   over a bar to see additional funding details.
                 </p>
               ),
-              // TODO fix StackBar
               content: (
                 <StackBar
                   staticStakeholders={props.nodesData}
@@ -359,7 +374,7 @@ const Details = ({
                   attributeType={"core_capacities"}
                   nodeType={nodeType}
                   otherNodeType={otherNodeType}
-                  placeType={data.nodeData.type}
+                  placeType={nodeData.type}
                   id={id}
                   ghsaOnly={ghsaOnly}
                   render={curTab === "ihr"}
@@ -393,9 +408,9 @@ const Details = ({
                     id,
                     curFlowType,
                     otherEntityRole,
-                    otherNodeType: direction,
-                    direction,
-                    staticStakeholders: data.nodesData,
+                    otherNodeType: otherDirection,
+                    direction: otherDirection,
+                    staticStakeholders: nodesData,
                   }}
                 />
               ),
@@ -412,7 +427,7 @@ const Details = ({
                     otherEntityRole: entityRole,
                     otherNodeType: otherDirection,
                     direction: otherDirection,
-                    staticStakeholders: data.nodesData,
+                    staticStakeholders: nodesData,
                   }}
                 />
               ),
@@ -428,9 +443,9 @@ const Details = ({
         {
           slug: "event",
           header: "Event response funding",
-          hide: noResponseData,
+          hide: false, // TODO fix
           content:
-            !noResponseData > 0
+            !false > 0
               ? [
                   {
                     header: (
@@ -466,10 +481,9 @@ const Details = ({
                       <div>
                         <p>
                           This tab shows recent event response funding projects
-                          where {data.nodeData.name} or an associated
-                          region/group was a {entityRole}. Note that all values
-                          listed here may not apply specifically to{" "}
-                          {data.nodeData.name}.
+                          where {nodeData.name} or an associated region/group
+                          was a {entityRole}. Note that all values listed here
+                          may not apply specifically to {nodeData.name}.
                         </p>
                         {eventResponseTotals}
                       </div>
@@ -511,12 +525,12 @@ const Details = ({
           slug: "pvs",
           header: "PVS scores",
           content: pvsTabContent,
-          hide: data.pvs.scores.length === 0 || entityRole === "funder",
+          hide: pvs.scores.length === 0 || entityRole === "funder",
         },
       ]
     : [];
 
-  const flagId = data.nodeData.slug ? data.nodeData.slug : "unspecified";
+  const flagId = nodeData.slug ? nodeData.slug : "unspecified";
 
   const ghsa = pageType === "ghsa";
 
@@ -525,14 +539,15 @@ const Details = ({
     : `https://flags.talusanalytics.com/1000px/${flagId}.png`;
   // : `https://www.countryflags.io/${flagId}/flat/64.png`;
   const flag =
-    data.nodeData.cat === "country" || ghsa ? (
+    nodeData.cat === "country" || ghsa ? (
       <img
+        key={flagId}
         onError={e => addDefaultSrc(e)}
         className={classNames({ [styles.small]: ghsa })}
         src={flagSrc}
       />
     ) : null;
-  // const flag = `/flags/${data.nodeData.iso2 || data.nodeData.id}.png`;
+  // const flag = `/flags/${nodeData.iso2 || nodeData.id}.png`;
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
@@ -543,15 +558,21 @@ const Details = ({
 
   React.useEffect(() => {
     setShowFlag(true);
-    setCurPvsEdition(data.pvs.eds[0] || {});
-    window.scrollTo(0, 0);
+    setCurPvsEdition(pvs.eds[0] || {});
+    window.scrollTo(0, 0); // TODO check
+    setDataLoaded(false);
   }, [id]);
   React.useEffect(() => {
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
   React.useEffect(() => {
     setCurTab("ihr");
+    setDataLoaded(false);
   }, [entityRole]);
+
+  useLayoutEffect(() => {
+    if (!dataLoaded) getData();
+  }, [id, dataLoaded]);
 
   // Return JSX
   return (
@@ -572,7 +593,7 @@ const Details = ({
           <div className={styles.bannerRow}>
             <div className={styles.countryName}>
               {showFlag && flag && flag}
-              <h1>{data.nodeData.name}</h1>
+              <h1>{nodeData.name}</h1>
             </div>
             {!ghsa && (
               <EntityRoleToggle
@@ -657,7 +678,7 @@ const Details = ({
       {noData && (
         <span>
           No {ghsaOnly === "true" ? "GHSA-specific " : ""}funding data are
-          currently available where {data.nodeData.name} is a {entityRoleNoun}.
+          currently available where {nodeData.name} is a {entityRoleNoun}.
         </span>
       )}
       {
@@ -704,128 +725,6 @@ const Details = ({
         />
       }
     </div>
-  );
-};
-
-export const renderDetails = ({
-  detailsComponent,
-  setDetailsComponent,
-  loading,
-  id,
-  entityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setLoadingSpinnerOn,
-  setGhsaOnly,
-}) => {
-  if (loading) {
-    return <div className={"placeholder"} />;
-  } else if (
-    detailsComponent === null ||
-    (detailsComponent &&
-      (detailsComponent.props.id !== id ||
-        detailsComponent.props.entityRole !== entityRole ||
-        detailsComponent.props.ghsaOnly !== ghsaOnly))
-  ) {
-    getComponentData({
-      setDetailsComponent: setDetailsComponent,
-      id: id,
-      entityRole: entityRole,
-      flowTypeInfo: flowTypeInfo,
-      ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly,
-      setLoadingSpinnerOn,
-    });
-
-    return detailsComponent ? (
-      detailsComponent
-    ) : (
-      <div className={"placeholder"} />
-    );
-  } else {
-    return detailsComponent;
-  }
-};
-
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for response funding page
- * @method getComponentData
- * @param  {[type]}       setDetailsComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setDetailsComponent,
-  id,
-  entityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
-  setLoadingSpinnerOn,
-}) => {
-  // define directions for queries
-  const direction = entityRole === "funder" ? "origin" : "target";
-  const otherDirection = direction === "origin" ? "target" : "origin";
-
-  // define common filters for most queries
-  const commonFilters = {};
-
-  // if GHSA page, filter by `is_ghsa === true`
-  const isGhsaPage = id === "ghsa";
-  if (isGhsaPage) {
-    commonFilters["Flow.is_ghsa"] = [true];
-  }
-
-  const queries = {
-    // Information about the entity
-    nodesData: Stakeholder({ by: "id" }),
-
-    pvs: Assessment({
-      id,
-      scoreType: "PVS",
-    }),
-  };
-
-  // If GHSA page, add additional query to show both top funders and top
-  // recipients.
-  if (isGhsaPage) {
-    // get flows for GHSA
-    queries.flows = Flow({
-      filters: {
-        "Project_Constants.response_or_capacity": ["response"],
-        "Project_Constants.is_ghsa": [true],
-      },
-    });
-  } else {
-    // get flows for defined target/origin
-    queries.flows = Flow({
-      filters: { "Project_Constants.response_or_capacity": ["response"] },
-      [direction + "Ids"]: [id],
-      [otherDirection + "Ids"]: [],
-    });
-  }
-
-  // Get query results.
-  setLoadingSpinnerOn(true);
-  const results = await execute({ queries });
-
-  // use first and only node result
-  if (!isGhsaPage) results.nodeData = results.nodesData[id];
-  else results.nodeData = { id: -9999, name: "GHSA" };
-
-  // Feed results and other data to the details component and mount it.
-  setDetailsComponent(
-    <Details
-      id={id}
-      entityRole={entityRole}
-      data={results}
-      flowTypeInfo={flowTypeInfo}
-      ghsaOnly={ghsaOnly}
-      setGhsaOnly={setGhsaOnly}
-      setComponent={setDetailsComponent}
-      setLoadingSpinnerOn={setLoadingSpinnerOn}
-    />
   );
 };
 
