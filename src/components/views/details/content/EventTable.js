@@ -70,6 +70,11 @@ const EventTable = ({
     }
   }, [dataLoaded]);
 
+  useLayoutEffect(() => {
+    setFlows({ data: [] });
+    setDataLoaded(false);
+  }, [id, direction]);
+
   return (
     <Loading loaded={dataLoaded}>
       <TableInstance

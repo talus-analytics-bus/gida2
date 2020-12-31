@@ -40,7 +40,7 @@ const StackBar = ({
   const [tooltipData, setTooltipData] = useState(undefined);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  const isGhsaPage = ghsaOnly === "true";
+  const isGhsaPage = id === "ghsa";
 
   const jeeColorScale = getMapColorScale({
     supportType: "jee",
@@ -153,7 +153,11 @@ const StackBar = ({
   }, [dataLoaded]);
 
   useEffect(() => {
-    if (dataLoaded) setDataLoaded(false);
+    if (dataLoaded) {
+      setDataLoaded(false);
+      setData([]);
+      setJeeScores(null);
+    }
   }, [id, otherDirection]);
 
   const jeeWhite = nodeType === "origin" || placeType !== "country";
