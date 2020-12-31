@@ -353,7 +353,6 @@ const Details = ({
               // TODO fix StackBar
               content: (
                 <StackBar
-                  data={data.stackBar.points}
                   staticStakeholders={props.nodesData}
                   flowType={curFlowType}
                   flowTypeName={curFlowTypeName}
@@ -364,6 +363,7 @@ const Details = ({
                   id={id}
                   ghsaOnly={ghsaOnly}
                   render={curTab === "ihr"}
+                  otherDirection={otherDirection}
                 />
               ),
               toggleFlowType: true,
@@ -787,13 +787,6 @@ const getComponentData = async ({
     }),
   };
 
-  // core capacity bar chart filters
-  const stackBarFilters = {
-    "Core_Capacity.name": [["neq", "Unspecified"]],
-    "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-    "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
-  };
-
   // If GHSA page, add additional query to show both top funders and top
   // recipients.
   if (isGhsaPage) {
@@ -805,8 +798,6 @@ const getComponentData = async ({
       },
     });
   } else {
-    stackBarFilters["OtherStakeholder.id"] = [id];
-
     // get flows for defined target/origin
     queries.flows = Flow({
       filters: { "Project_Constants.response_or_capacity": ["response"] },
@@ -814,14 +805,6 @@ const getComponentData = async ({
       [otherDirection + "Ids"]: [],
     });
   }
-  // TODO move to StackBar component
-  queries.stackBar = NodeSums({
-    format: "stack_bar_chart",
-    direction: otherDirection, // "origin"
-    group_by: "Core_Capacity.name",
-    preserve_stakeholder_groupings: false,
-    filters: stackBarFilters,
-  });
 
   // Get query results.
   setLoadingSpinnerOn(true);

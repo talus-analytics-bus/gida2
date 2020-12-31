@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import styles from "./stackbar.module.scss";
 import ReactTooltip from "react-tooltip";
+import Loading from "../../common/Loading/Loading";
 import tooltipStyles from "../../common/tooltip.module.scss";
 import * as d3 from "d3/dist/d3.min";
 import D3StackBar from "./D3StackBar.js";
 import RadioToggle from "../../misc/RadioToggle.js";
-import { execute, Stakeholder, Assessment } from "../../misc/Queries";
+import { execute, Stakeholder, Assessment, NodeSums } from "../../misc/Queries";
 import Legend from "../../map/Legend.js";
 import { getMapColorScale } from "../../map/MapUtil.js";
 
@@ -15,7 +17,6 @@ import SimpleTable from "../table/SimpleTable.js";
 
 // FC
 const StackBar = ({
-  data,
   flowType,
   flowTypeName,
   otherNodeType,
@@ -25,8 +26,10 @@ const StackBar = ({
   render,
   placeType,
   staticStakeholders,
+  otherDirection,
   ...props
 }) => {
+  const [data, setData] = useState([]);
   const [jeeScores, setJeeScores] = useState(null);
   const [processedData, setProcessedData] = useState(false);
   const [stackBar, setStackBar] = useState(null);
@@ -37,13 +40,30 @@ const StackBar = ({
   const [tooltipData, setTooltipData] = useState(undefined);
   const [dataLoaded, setDataLoaded] = useState(false);
 
+  const isGhsaPage = ghsaOnly === "true";
+
   const jeeColorScale = getMapColorScale({
     supportType: "jee",
   });
 
   const getData = async () => {
+    // core capacity bar chart filters
+    const stackBarFilters = {
+      "Core_Capacity.name": [["neq", "Unspecified"]],
+      "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+    };
+    if (!isGhsaPage) stackBarFilters["OtherStakeholder.id"] = [id];
+
     // top funder / recipient table
     const queries = {
+      stackBar: NodeSums({
+        format: "stack_bar_chart",
+        direction: otherDirection, // "origin"
+        group_by: "Core_Capacity.name",
+        preserve_stakeholder_groupings: false,
+        filters: stackBarFilters,
+      }),
       jeeScores: Assessment({
         scoreType: "JEE v1",
       }),
@@ -57,6 +77,7 @@ const StackBar = ({
 
     // TODO only request scores needed
     setJeeScores(results.jeeScores[id]);
+    setData(results.stackBar.points);
     setDataLoaded(true);
   };
 
@@ -131,81 +152,64 @@ const StackBar = ({
     if (stakeholders === null) getData();
   }, []);
 
-  // useEffect(() => {
-  //   if (
-  //     chartData !== null &&
-  //     stakeholders !== null &&
-  //     chartData.processed !== true
-  //   ) {
-  //     chartData.processed = true;
-  //     chartData.forEach(d => {
-  //       console.log(d);
-  //       const names = d[otherNodeType]
-  //         .map(dd => {
-  //           return stakeholders[dd].name;
-  //         })
-  //         .join("; ");
-  //       d[otherNodeType] = names;
-  //     });
-  //   }
-  // }, [chartData, stakeholders]);
-
   const jeeWhite = nodeType === "origin" || placeType !== "country";
 
   return (
-    <div className={styles.stackbar}>
-      {display && id !== "ghsa" && !jeeWhite && (
-        <RadioToggle
-          label={"Sort by"}
-          callback={setSort}
-          curVal={sort}
-          choices={[
-            {
-              name: "Amount",
-              value: "amount",
-            },
-            {
-              name: "JEE score",
-              value: "jee",
-            },
-          ]}
+    <Loading loaded={dataLoaded}>
+      <div className={styles.stackbar}>
+        {display && id !== "ghsa" && !jeeWhite && (
+          <RadioToggle
+            label={"Sort by"}
+            callback={setSort}
+            curVal={sort}
+            choices={[
+              {
+                name: "Amount",
+                value: "amount",
+              },
+              {
+                name: "JEE score",
+                value: "jee",
+              },
+            ]}
+          />
+        )}
+        <div
+          style={{
+            visibility: display ? "visible" : "hidden",
+            height: display ? "auto" : 0,
+          }}
+          className={styles.stackBarChart}
         />
-      )}
-      <div
-        style={{
-          visibility: display ? "visible" : "hidden",
-          height: display ? "auto" : 0,
-        }}
-        className={styles.stackBarChart}
-      />
-      {!jeeWhite && legend}
-      {!display && (
-        <div>
-          <i>No data to show</i>
-        </div>
-      )}
-      {
-        // Tooltip for info tooltip icons.
-        <ReactTooltip
-          id={"chartTooltip"}
-          type="light"
-          className={tooltipStyles.tooltip}
-          place="top"
-          effect="float"
-          getContent={() =>
-            tooltipData && (
-              <table>
-                {tooltipData.map(d => (
-                  <tr>
-                    <td>{d.field}:</td>&nbsp;<td>{d.value}</td>
-                  </tr>
-                ))}
-              </table>
-            )
-          }
-        />
-      }
-    </div>
+        {!jeeWhite && legend}
+        {!display && (
+          <div>
+            <i>No data to show</i>
+          </div>
+        )}
+        {
+          // Tooltip for info tooltip icons.
+          <ReactTooltip
+            id={"chartTooltip"}
+            type="light"
+            className={tooltipStyles.tooltip}
+            place="top"
+            effect="float"
+            getContent={() =>
+              tooltipData && (
+                <table>
+                  {tooltipData.map(d => (
+                    <tr>
+                      <td>{d.field}:</td>&nbsp;<td>{d.value}</td>
+                    </tr>
+                  ))}
+                </table>
+              )
+            }
+          />
+        }
+      </div>
+    </Loading>
   );
 };
 
