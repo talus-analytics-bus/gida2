@@ -38,6 +38,9 @@ import ReactTooltip from "react-tooltip";
 import tooltipStyles from "../../common/tooltip.module.scss";
 import TopTable from "../../chart/TopTable/TopTable";
 
+// local components
+import EventTable from "./content/EventTable";
+
 // FC for Details.
 const Details = ({
   id,
@@ -472,115 +475,17 @@ const Details = ({
                     ),
                     content: (
                       <div>
-                        <TableInstance
-                          paging={true}
-                          sortByProp={"years"}
-                          tableColumns={[
-                            {
-                              title: "Event response",
-                              prop: "event",
-                              type: "text",
-                              func: d => {
-                                return data.outbreaks
-                                  .filter(dd => d.events.includes(dd.id))
-                                  .map(dd => dd.name)
-                                  .join("· ");
-                              },
-                              render: d => d,
-                            },
-                            {
-                              title: "Project name",
-                              prop: "project_name",
-                              type: "text",
-                              func: d => d.name,
-                              render: d => d,
-                            },
-                            {
-                              title: Util.getInitCap(
-                                Util.getRoleTerm({
-                                  type: "noun",
-                                  role: "funder",
-                                })
-                              ),
-                              prop: "origins",
-                              type: "text",
-                              func: d =>
-                                parseIdsAsNames({
-                                  d,
-                                  stakeholders: data.nodesData,
-                                  field: "origins",
-                                }),
-                              render: d =>
-                                getNodeLinkList({
-                                  urlType: "details",
-                                  nodeList: JSON.parse(d),
-                                  entityRole,
-                                  id: id,
-                                }),
-                            },
-                            {
-                              title: Util.getInitCap(
-                                Util.getRoleTerm({
-                                  type: "noun",
-                                  role: "recipient",
-                                })
-                              ),
-                              prop: "targets",
-                              type: "text",
-                              func: d =>
-                                parseIdsAsNames({
-                                  d,
-                                  stakeholders: data.nodesData,
-                                  field: "targets",
-                                }),
-                              render: d =>
-                                getNodeLinkList({
-                                  urlType: "details",
-                                  nodeList: JSON.parse(d),
-                                  entityRole: otherEntityRole,
-                                  id: id,
-                                }),
-                            },
-                            {
-                              title: "Funding year(s)",
-                              prop: "year_range_proj",
-                              type: "text",
-                              func: d => d.years,
-                              render: d => d,
-                            },
-                            {
-                              title:
-                                curFlowTypeName + ' (or "In-kind support")',
-                              prop: "amount",
-                              type: "num",
-                              className: d => (d > 0 ? "num" : "num-with-text"),
-                              func: d => {
-                                // Check whether the monetary amount is available
-                                const ft = d[curFlowType];
-                                const financial = !d.is_inkind;
-                                if (financial) return ft;
-                                else {
-                                  // If no financial, check for inkind
-                                  const inkindField =
-                                    curFlowType === "disbursed_funds"
-                                      ? "provided_inkind"
-                                      : "committed_inkind";
-                                  const inkind = d[inkindField] !== null;
-                                  if (inkind) return -7777;
-                                  else return -9999;
-                                }
-                              },
-                              render: d =>
-                                d === -7777
-                                  ? Util.formatValue(
-                                      "In-kind support",
-                                      "inkind"
-                                    )
-                                  : Util.formatValue(d, curFlowType),
-                            },
-                          ]}
-                          tableData={data.flows.data}
-                          hide={r => r.amount === -9999}
+                        <EventTable
+                          {...{
+                            id,
+                            direction,
+                            otherDirection,
+                            entityRole,
+                            otherEntityRole,
+                            curFlowType,
+                            curFlowTypeName,
+                            isGhsaPage: id === "ghsa",
+                          }}
                         />
                       </div>
                     ),
@@ -874,7 +779,6 @@ const getComponentData = async ({
   const queries = {
     // Information about the entity
     nodesData: Stakeholder({ by: "id" }),
-    outbreaks: Outbreak({}),
 
     pvs: Assessment({
       id,

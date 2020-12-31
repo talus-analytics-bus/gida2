@@ -1,0 +1,9 @@
+.placeholder {
+}
+.content {
+  opacity: 0;
+  transition: opacity 1s ease;
+  &.shown {
+    opacity: 1;
+  }
+}
