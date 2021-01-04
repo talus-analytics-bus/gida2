@@ -97,8 +97,8 @@ class D3StackBar extends Chart {
     const xAxisG = chart
       .append("g")
       .attr("class", "x axis")
-      .style("stroke-width", 1)
-      .call(xAxis);
+      .style("stroke-width", 1);
+    // .call(xAxis);
 
     const yAxisG = chart
       .append("g")
@@ -221,9 +221,6 @@ class D3StackBar extends Chart {
 
       // set new axes and transition
       const maxVal = d3.max(barGroupData, d => d.value);
-      // const maxChild = d3.max(data, d =>
-      //   d3.max(d.children, c => c[newFlowType])
-      // );
       const xMax = 1.1 * maxVal;
       x.domain([0, xMax]);
       y.domain(coreCapacitiesInData2.map(d => d.value)).range([0, newHeight]);
@@ -335,10 +332,9 @@ class D3StackBar extends Chart {
       chart.select(".y-label-text").attr("x", -newHeight / 2);
 
       xAxis.scale(x);
-      xAxisG
-        .transition()
-        .duration(durationHorizontal)
-        .call(xAxis.tickValues(this.getTickValues(xMax, 7)));
+      xAxisG.transition().duration(durationHorizontal);
+      if (!isNaN(xMax))
+        xAxisG.call(xAxis.tickValues(this.getTickValues(xMax, 7)));
 
       yAxis.scale(y);
       yAxisG
