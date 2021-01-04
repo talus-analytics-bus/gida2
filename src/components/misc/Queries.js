@@ -141,10 +141,14 @@ export const Assessment = async function({ ...props }) {
   // Define URL parameters //
   const params = new URLSearchParams();
 
-  if (props.id) params.append("stakeholder_id", props.id);
-  if (props.scoreType) params.append("type", props.scoreType);
+  if (props.id !== undefined) params.append("stakeholder_id", props.id);
+  if (props.scoreType) params.append("assessment_type", props.scoreType);
   if (props.format) params.append("format", props.format);
-
+  if (props.fields)
+    props.fields.forEach(f => {
+      params.append("fields", f);
+    });
+  console.log(params.toString());
   // Define URL params
   const config = {
     params,

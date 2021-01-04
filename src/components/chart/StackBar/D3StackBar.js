@@ -8,7 +8,7 @@ import {
   getMapColorScale,
   jeeColors,
   purples,
-  greens
+  greens,
 } from "../../map/MapUtil.js";
 import ReactTooltip from "react-tooltip";
 
@@ -159,15 +159,13 @@ class D3StackBar extends Chart {
     ) => {
       // Get JEE scolor scale.
       const jeeColorScale = getMapColorScale({
-        supportType: "jee"
+        supportType: "jee",
       });
 
       // determine whether this is a country with jee scores available
       const jeesWhite =
-        params.nodeType === "source" || params.placeType !== "country";
-      const showJee =
-        params.jeeScores !== undefined && params.nodeType !== "source";
-      const scores = params.jeeScores; // undefined if not available
+        params.nodeType === "origin" || params.placeType !== "country";
+      const showJee = params.jeeScores !== null && params.nodeType !== "origin";
       let data = rawData;
 
       const sort = params.sort;
@@ -176,10 +174,10 @@ class D3StackBar extends Chart {
       coreCapacitiesInData.forEach(cc => {
         coreCapacitiesInData2.push({
           info: core_capacities.find(dd => dd.value === cc || dd.label === cc),
-          avgScore: params.jeeScores ? params.jeeScores[cc] : 0,
-          avgScore: params.jeeScores ? Math.round(params.jeeScores[cc]) : 0,
+          avgScore:
+            params.jeeScores !== null ? Math.round(params.jeeScores[cc]) : 0,
           tickTextWidth: undefined,
-          value: cc
+          value: cc,
         });
       });
 
@@ -211,7 +209,7 @@ class D3StackBar extends Chart {
           name: attribute.value,
           id: attribute.value + "-" + newFlowType,
           data: attribute,
-          children: data.filter(d => d.attribute === attribute.value)
+          children: data.filter(d => d.attribute === attribute.value),
         };
         barGroupDatum.value = d3.sum(
           barGroupDatum.children,
@@ -279,7 +277,7 @@ class D3StackBar extends Chart {
           d.children.map(c => ({
             cc: d.name,
             ccFull: d.data.info.label,
-            country: c
+            country: c,
           }))
         )
         .enter()
@@ -290,21 +288,21 @@ class D3StackBar extends Chart {
           const tooltipData = [
             {
               field: "Core capacity",
-              value: d.ccFull
+              value: d.ccFull,
             },
             {
               field: params.nodeType === "target" ? "Funder" : "Recipient",
-              value: d.country[params.otherNodeType]
+              value: d.country[params.otherNodeType],
             },
             {
               field: `Total ${params.flowTypeName.toLowerCase()}`,
-              value: Util.money(d.country[params.flowType])
-            }
+              value: Util.money(d.country[params.flowType]),
+            },
           ];
           if (d.country[params.nodeType] !== undefined) {
             tooltipData.splice(1, 0, {
               field: params.nodeType === "target" ? "Recipient" : "Funder",
-              value: d.country[params.nodeType]
+              value: d.country[params.nodeType],
             });
           }
 
@@ -384,7 +382,7 @@ class D3StackBar extends Chart {
             height: badgeHeight,
             x: -badgeWidth,
             y: -(badgeHeight / 2),
-            rx: 2.5
+            rx: 2.5,
           };
           badgeGroup
             .classed(styles.showNoScore, jeesWhite)
@@ -431,19 +429,19 @@ class D3StackBar extends Chart {
           params.setTooltipData([
             {
               field: "Core capacity",
-              value: match.data.info.label
+              value: match.data.info.label,
             },
             {
               field: `Total ${params.flowTypeName.toLowerCase()}`,
-              value: Util.money(match.value)
-            }
+              value: Util.money(match.value),
+            },
           ]);
         });
 
       ReactTooltip.rebuild();
     };
     this.updateStackBar(params.data, params.flowType, {
-      ...params
+      ...params,
     });
   }
 

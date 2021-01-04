@@ -65,7 +65,10 @@ const StackBar = ({
         filters: stackBarFilters,
       }),
       jeeScores: Assessment({
+        format: "stack_bar_chart",
         scoreType: "JEE v1",
+        id,
+        fields: ["name", "value"],
       }),
     };
     if (staticStakeholders === undefined)
@@ -76,7 +79,7 @@ const StackBar = ({
     }
 
     // TODO only request scores needed
-    setJeeScores(results.jeeScores[id]);
+    setJeeScores(results.jeeScores);
     setData(results.stackBar.points);
     setDataLoaded(true);
   };

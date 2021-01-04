@@ -374,7 +374,7 @@ const Details = ({
                   attributeType={"core_capacities"}
                   nodeType={nodeType}
                   otherNodeType={otherNodeType}
-                  placeType={nodeData.type}
+                  placeType={nodeData.cat}
                   id={id}
                   ghsaOnly={ghsaOnly}
                   render={curTab === "ihr"}
@@ -555,7 +555,6 @@ const Details = ({
     // ev.target.classList.add(styles.unspec);
     setShowFlag(false);
   };
-
   React.useEffect(() => {
     setShowFlag(true);
     setCurPvsEdition(pvs.eds[0] || {});
