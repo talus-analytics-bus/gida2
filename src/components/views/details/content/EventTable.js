@@ -28,6 +28,7 @@ const EventTable = ({
   curFlowType,
   curFlowTypeName,
   isGhsaPage = false,
+  setEventTotalsData,
   ...props
 }) => {
   // STATE //
@@ -61,6 +62,7 @@ const EventTable = ({
     const results = await execute({ queries });
     setFlows(results.flows);
     setOutbreaks(results.outbreaks);
+    setEventTotalsData(results.flows.data);
     setDataLoaded(true);
   };
 

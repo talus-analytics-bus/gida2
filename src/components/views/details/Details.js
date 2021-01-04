@@ -79,6 +79,9 @@ const Details = ({
   const [curFlowType, setCurFlowType] = useState("disbursed_funds");
   const [pvsTooltipData, setPvsTooltipData] = useState(undefined);
 
+  // track flows used to calc. total event funding
+  const [eventTotalsData, setEventTotalsData] = useState(null);
+
   const [nodeData, setNodeData] = useState({});
   const [nodesData, setNodesData] = useState({});
   const [pvs, setPvs] = useState({ eds: [], scores: [] });
@@ -179,15 +182,17 @@ const Details = ({
   const eventResponseTotals = (
     <div className={styles.totals}>
       <TotalByFlowType
+        key={"d"}
         inline={true}
         flowType="disbursed_funds"
-        data={[]}
+        data={eventTotalsData}
         label={"event response funding"}
       />
       <TotalByFlowType
+        key={"c"}
         inline={true}
         flowType="committed_funds"
-        data={[]}
+        data={eventTotalsData}
         label={"event response funding"}
       />
     </div>
@@ -499,6 +504,7 @@ const Details = ({
                             otherEntityRole,
                             curFlowType,
                             curFlowTypeName,
+                            setEventTotalsData, // set flows to var. for totals
                             isGhsaPage: id === "ghsa",
                           }}
                         />
@@ -560,13 +566,20 @@ const Details = ({
     setCurPvsEdition(pvs.eds[0] || {});
     window.scrollTo(0, 0); // TODO check
     setDataLoaded(false);
+
+    // reset data when ID changes
+    setEventTotalsData(null);
   }, [id]);
+
   React.useEffect(() => {
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
+
   React.useEffect(() => {
     setCurTab("ihr");
     setDataLoaded(false);
+    // reset data when role changes
+    setEventTotalsData(null);
   }, [entityRole]);
 
   useLayoutEffect(() => {

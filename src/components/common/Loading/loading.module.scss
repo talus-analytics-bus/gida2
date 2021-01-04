@@ -14,8 +14,10 @@
 }
 .content {
   opacity: 0;
-  transition: opacity 1s ease;
+  height: 0;
   &.shown {
     opacity: 1;
+    transition: opacity 1s ease;
+    height: unset;
   }
 }

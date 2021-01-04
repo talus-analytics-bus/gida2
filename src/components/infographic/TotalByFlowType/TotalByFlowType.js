@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import Util from "../../misc/Util.js";
+import Loading from "../../common/Loading/Loading";
 import styles from "./totalbyflowtype.module.scss";
 
 // FC for Details.
@@ -17,7 +18,9 @@ const TotalByFlowType = ({ flowType, data, ...props }) => {
           [styles.unknown]: amount === "unknown",
         })}
       >
-        {Util.formatValue(amount, flowType)}
+        <Loading loaded={data !== null}>
+          {Util.formatValue(amount, flowType)}
+        </Loading>
       </div>
       <div className={styles.label}>
         {Util.formatLabel(flowType)}
@@ -28,7 +31,7 @@ const TotalByFlowType = ({ flowType, data, ...props }) => {
 };
 
 const getAmountByFlowType = (flowType, data) => {
-  if (data === undefined) return 0;
+  if (data === undefined || data === null) return 0;
   else {
     if (data.length !== undefined) {
       // Add them up
