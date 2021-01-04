@@ -98,15 +98,11 @@ const TopTable = ({
     })
   );
 
-  console.log("otherNodeType");
-  console.log(otherNodeType);
-  console.log("direction");
-  console.log(direction);
-  console.log("data");
-  console.log(data);
+  const loaded =
+    data !== null && (data.length === 0 || data[0][direction] !== undefined);
   return (
-    <Loading loaded={data !== null}>
-      {data !== null && (
+    <Loading loaded={loaded}>
+      {loaded && (
         <TableInstance
           sortByProp={"_tot"}
           paging={true}
