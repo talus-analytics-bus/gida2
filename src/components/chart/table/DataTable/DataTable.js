@@ -4,12 +4,14 @@ import React from "react";
 // import styles from "./entitytable.module.scss";
 import TableInstance from "../../../chart/table/TableInstance.js";
 import Pagination from "../../../common/Pagination/Pagination.js";
+import Util from "../../../misc/Util";
 
 // FC for DataTable.
 const DataTable = ({
   getTableData,
   pageSize,
   setLoadingSpinnerOn,
+  setRowCount,
   ...props
 }) => {
   const [curPage, setCurPage] = React.useState(1);
@@ -28,8 +30,11 @@ const DataTable = ({
           }}
         />
       );
-      if (nPages === undefined) setNPages(d.paging.n_pages);
-      else if (nPages !== d.paging.n_pages) {
+      if (nPages === undefined) {
+        setNPages(d.paging.n_pages);
+        if (setRowCount !== undefined)
+          setRowCount(<> ({Util.comma(d.paging.n_records)})</>);
+      } else if (nPages !== d.paging.n_pages) {
         setCurPage(1);
         setNPages(d.paging.n_pages);
       }

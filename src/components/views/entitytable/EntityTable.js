@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./entitytable.module.scss";
@@ -116,14 +116,16 @@ const EntityTable = ({
       }),
   };
 
-  const [updateData, setUpdateData] = React.useState(true);
+  const [updateData, setUpdateData] = useState(true);
+  const [inkindCount, setInkindCount] = useState(null);
+  const [financialCount, setFinancialCount] = useState(null);
 
   // tableData={data.flows.flows.filter(f =>
   //   f.flow_info.assistance_type.toLowerCase().includes("financial")
   // )}
   const sections = [
     {
-      header: "All funds",
+      header: <>All funds{financialCount}</>,
       slug: "all",
       content: (
         <DataTable
@@ -132,6 +134,7 @@ const EntityTable = ({
           noNativeSorting={true}
           getTableData={getTableDataFuncs.flowsFinancial}
           pageSize={10}
+          setRowCount={setFinancialCount}
           tableColumns={[
             {
               title: "Funder",
@@ -245,7 +248,7 @@ const EntityTable = ({
       header: "Funds by " + entityRole, // TODO other role
       slug: "funds_by_same",
       show: id === "ghsa",
-      content: (
+      content: id === "ghsa" && (
         <TableInstance
           paging={true}
           sortByProp={"disbursed_funds"}
@@ -314,7 +317,7 @@ const EntityTable = ({
       ),
     },
     {
-      header: "In-kind contributions",
+      header: <>In-kind contributions{inkindCount}</>,
       slug: "in-kind",
       content: (
         <DataTable
@@ -385,13 +388,14 @@ const EntityTable = ({
               defaultContent: "n/a",
             },
           ]}
+          setRowCount={setInkindCount}
         />
       ),
     },
   ];
 
   // Track currently visible tab
-  const [curTab, setCurTab] = React.useState(sections[0].slug);
+  const [curTab, setCurTab] = useState(sections[0].slug);
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.entityTable)}>
