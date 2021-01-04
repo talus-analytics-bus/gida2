@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./details.module.scss";
 import classNames from "classnames";
@@ -81,6 +81,10 @@ const Details = ({
 
   // track flows used to calc. total event funding
   const [eventTotalsData, setEventTotalsData] = useState(null);
+
+  // is there any event funding?
+  const noEventFunding =
+    eventTotalsData === null || eventTotalsData.length === 0;
 
   const [nodeData, setNodeData] = useState({});
   const [nodesData, setNodesData] = useState({});
@@ -448,84 +452,71 @@ const Details = ({
         {
           slug: "event",
           header: "Event response funding",
-          hide: false, // TODO fix
-          content:
-            !false > 0
-              ? [
-                  {
-                    header: (
-                      <div>
-                        <h2>
-                          Recent event response funding projects <br />
-                          {
-                            // Time frame
-                            // <span>in past 12 months</span>
-                          }
-                          {
-                            // // Date range
-                            // <span className={styles.timeFrame}>
-                            //   {props.responseStart.toLocaleString("en-us", {
-                            //     // month: "short",
-                            //     // day: "numeric",
-                            //     year: "numeric",
-                            //     timeZone: "UTC",
-                            //   })}{" "}
-                            //   -{" "}
-                            //   {props.responseEnd.toLocaleString("en-us", {
-                            //     // month: "short",
-                            //     // day: "numeric",
-                            //     year: "numeric",
-                            //     timeZone: "UTC",
-                            //   })}
-                            // </span>
-                          }
-                        </h2>
-                      </div>
-                    ),
-                    text: (
-                      <div>
-                        <p>
-                          This tab shows recent event response funding projects
-                          where {nodeData.name} or an associated region/group
-                          was a {entityRole}. Note that all values listed here
-                          may not apply specifically to {nodeData.name}.
-                        </p>
-                        {eventResponseTotals}
-                      </div>
-                    ),
-                    content: (
-                      <div>
-                        <EventTable
-                          {...{
-                            id,
-                            direction,
-                            otherDirection,
-                            entityRole,
-                            otherEntityRole,
-                            curFlowType,
-                            curFlowTypeName,
-                            setEventTotalsData, // set flows to var. for totals
-                            isGhsaPage: id === "ghsa",
-                          }}
-                        />
-                      </div>
-                    ),
-                    toggleFlowType: true,
-                    hide: noData || unknownDataOnly || noFinancialData,
-                  },
-                ]
-              : [
-                  {
-                    header: <h2>Event response funding</h2>,
-                    content: (
-                      <div>
-                        <i>No data to show</i>
-                      </div>
-                    ),
-                    toggleFlowType: false,
-                    hide: noData || unknownDataOnly || noFinancialData,
-                  },
-                ],
+          hide: eventTotalsData !== null && eventTotalsData.length === 0,
+          invis: eventTotalsData === null, // not yet loaded
+          content: [
+            {
+              header: (
+                <div>
+                  <h2>
+                    Recent event response funding projects <br />
+                    {
+                      // Time frame
+                      // <span>in past 12 months</span>
+                    }
+                    {
+                      // // Date range
+                      // <span className={styles.timeFrame}>
+                      //   {props.responseStart.toLocaleString("en-us", {
+                      //     // month: "short",
+                      //     // day: "numeric",
+                      //     year: "numeric",
+                      //     timeZone: "UTC",
+                      //   })}{" "}
+                      //   -{" "}
+                      //   {props.responseEnd.toLocaleString("en-us", {
+                      //     // month: "short",
+                      //     // day: "numeric",
+                      //     year: "numeric",
+                      //     timeZone: "UTC",
+                      //   })}
+                      // </span>
+                    }
+                  </h2>
+                </div>
+              ),
+              text: (
+                <div>
+                  <p>
+                    This tab shows recent event response funding projects where{" "}
+                    {nodeData.name} or an associated region/group was a{" "}
+                    {entityRole}. Note that all values listed here may not apply
+                    specifically to {nodeData.name}.
+                  </p>
+                  {eventResponseTotals}
+                </div>
+              ),
+              content: (
+                <div>
+                  <EventTable
+                    {...{
+                      id,
+                      direction,
+                      otherDirection,
+                      entityRole,
+                      otherEntityRole,
+                      curFlowType,
+                      curFlowTypeName,
+                      setEventTotalsData, // set flows to var. for totals
+                      isGhsaPage: id === "ghsa",
+                    }}
+                  />
+                </div>
+              ),
+              toggleFlowType: true,
+              hide: noData || unknownDataOnly || noFinancialData,
+            },
+          ],
         },
         {
           slug: "pvs",
@@ -561,7 +552,7 @@ const Details = ({
     // ev.target.classList.add(styles.unspec);
     setShowFlag(false);
   };
-  React.useEffect(() => {
+  useEffect(() => {
     setShowFlag(true);
     setCurPvsEdition(pvs.eds[0] || {});
     window.scrollTo(0, 0); // TODO check
@@ -571,16 +562,22 @@ const Details = ({
     setEventTotalsData(null);
   }, [id]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCurTab("ihr");
     setDataLoaded(false);
     // reset data when role changes
     setEventTotalsData(null);
   }, [entityRole]);
+
+  // if no event response data then set current tab to IHR
+  useEffect(() => {
+    if (eventTotalsData !== null && eventTotalsData.length === 0)
+      setCurTab("ihr");
+  }, [eventTotalsData]);
 
   useLayoutEffect(() => {
     if (!dataLoaded) getData();

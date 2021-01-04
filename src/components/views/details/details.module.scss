@@ -91,6 +91,10 @@
       border-color: #ccc;
       border-width: 1px;
 
+      &.invis {
+        display: none;
+      }
+
       &:not(.selected) {
         background-color: transparent;
         border: none;
