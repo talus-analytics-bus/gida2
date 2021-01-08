@@ -165,9 +165,12 @@ const StackBar = ({
 
   const jeeWhite = nodeType === "origin" || placeType !== "country";
 
+  // const hasCorrectFlowType =
+  //   data.length === 0 ? true : data[0][otherDirection] !== undefined;
+
   return (
     <Loading loaded={dataLoaded}>
-      <div className={styles.stackbar}>
+      <div key={id + "-" + otherDirection} className={styles.stackbar}>
         {display && id !== "ghsa" && !jeeWhite && (
           <RadioToggle
             label={"Sort by"}

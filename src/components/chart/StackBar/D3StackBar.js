@@ -391,9 +391,7 @@ class D3StackBar extends Chart {
             .attr("y", badgeDim.y);
 
           const badgeLabelText =
-            scoreData.name === "General IHR Implementation"
-              ? "GEN"
-              : scoreData.name;
+            scoreData.name === "General IHR" ? "GEN" : scoreData.name;
           badgeGroup
             .append("text")
             .attr("text-anchor", "middle")
@@ -460,7 +458,7 @@ class D3StackBar extends Chart {
   }
 
   getShortName(s) {
-    if (s === "General IHR Implementation") return s;
+    if (s === "General IHR") return s;
     const maxLen = 20;
     if (s.length > maxLen) {
       const shortened = s
