@@ -750,6 +750,8 @@ const getComponentData = async ({
   // setLoadingSpinnerOn(true);
   const results = await execute({ queries });
 
+  results.nodeData = results.nodeData.length > 0 ? results.nodeData[0] : {};
+
   // Set the component
   setComponent(
     <EntityTable
