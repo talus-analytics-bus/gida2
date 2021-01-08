@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import classNames from "classnames";
 import styles from "./export.module.scss";
 import { Settings } from "../../../App.js";
@@ -15,20 +15,24 @@ import Button from "../../common/Button/Button.js";
 import axios from "axios";
 
 // Content components
-import { renderExportTable, getFlowQuery } from "./ExportTable.js";
+import ExportTable, { getFlowQuery } from "./ExportTable.js";
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
-  const [coreCapacities, setCoreCapacities] = React.useState([]);
-  const [supportType, setSupportType] = React.useState([]);
-  const [funders, setFunders] = React.useState([]);
-  const [recipients, setRecipients] = React.useState([]);
-  const [outbreaks, setOutbreaks] = React.useState([]);
-  const [exportTable, setExportTable] = React.useState(null);
-  const [nRecords, setNRecords] = React.useState(0);
-  const [curPage, setCurPage] = React.useState(1);
-  const [exportAction, setExportAction] = React.useState(undefined);
-  const [exportBody, setExportBody] = React.useState(undefined);
+  const [coreCapacities, setCoreCapacities] = useState([]);
+  const [supportType, setSupportType] = useState([]);
+  const [funders, setFunders] = useState([]);
+  const [recipients, setRecipients] = useState([]);
+  const [outbreaks, setOutbreaks] = useState([]);
+  const [exportTable, setExportTable] = useState(null);
+  const [nRecords, setNRecords] = useState(0);
+  const [curPage, setCurPage] = useState(1);
+  const [exportAction, setExportAction] = useState(undefined);
+  const [exportBody, setExportBody] = useState(undefined);
+
+  // if page is changed, show pagination loading
+  const [pageLoading, setPageLoading] = useState(false);
+
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
@@ -55,7 +59,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     ],
   ];
 
-  const [exportCols, setExportCols] = React.useState(cols.map(d => d[0]));
+  const [exportCols, setExportCols] = useState(cols.map(d => d[0]));
   const remove = (arr, aTmp) => {
     const a = aTmp;
     let what,
@@ -82,23 +86,26 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     }
   };
 
-  const dataTable = renderExportTable({
-    ...{
-      outbreaks,
-      coreCapacities,
-      supportType,
-      funders,
-      recipients,
-      exportCols,
-      setNRecords,
-      component: exportTable,
-      setComponent: setExportTable,
-      setLoadingSpinnerOn,
-      curPage,
-      setCurPage,
-      stakeholders: data.stakeholders,
-    },
-  });
+  const dataTable = (
+    <ExportTable
+      {...{
+        outbreaks,
+        coreCapacities,
+        supportType,
+        funders,
+        recipients,
+        exportCols,
+        setNRecords,
+        component: exportTable,
+        setComponent: setExportTable,
+        curPage,
+        setCurPage,
+        stakeholders: data.stakeholders,
+        pageLoading,
+        setPageLoading,
+      }}
+    />
+  );
 
   const filterTest = (
     <FilterDropdown
@@ -182,11 +189,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     if (exportAction !== undefined && exportBody !== undefined) {
       const el = document.getElementById("download");
       if (el) {
-        setLoadingSpinnerOn(true);
         el.click();
         const downloadCompletedCheck = setInterval(() => {
           if (Util.readCookie("download_completed") === "yes") {
-            setLoadingSpinnerOn(false);
             clearInterval(downloadCompletedCheck);
           }
         }, 500);
@@ -304,13 +309,22 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                               "glyphicon glyphicon-download-alt"
                             )}
                           />
-                          {!showClear
-                            ? `Download all available data (${Util.comma(
-                                nRecords
-                              )} ${nRecords !== 1 ? "records" : "record"})`
-                            : `Download selected data (${Util.comma(
-                                nRecords
-                              )} ${nRecords !== 1 ? "records" : "record"})`}
+                          {!showClear ? (
+                            <>
+                              Download all available data
+                              {nRecords !== undefined && nRecords !== null && (
+                                <>
+                                  {" "}
+                                  ({Util.comma(nRecords)}{" "}
+                                  {nRecords !== 1 ? "records" : "record"})
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            `Download selected data (${Util.comma(nRecords)} ${
+                              nRecords !== 1 ? "records" : "record"
+                            })`
+                          )}
                         </span>
                       }
                       type={"primary"}
@@ -382,7 +396,6 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
   };
 
   // Get results in parallel
-  setLoadingSpinnerOn(true);
   const results = await execute({ queries });
 
   // Set the component

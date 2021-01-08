@@ -97,11 +97,14 @@ const Pagination = ({
           {next}
           {end}
         </div>
-        {true && (
+        {
           <div className={styles.pageNum}>
-            Page {Util.comma(curPage)} of {Util.comma(nPages)}
+            Page {Util.comma(curPage)}{" "}
+            {nPages !== null && nPages !== undefined && (
+              <>of {Util.comma(nPages)}</>
+            )}
           </div>
-        )}
+        }
       </div>
     );
 };

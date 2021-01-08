@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import styles from "./exporttable.module.scss";
 import { Settings } from "../../../App.js";
@@ -6,6 +6,7 @@ import { execute, Flow } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
 import Chevron from "../../common/Chevron/Chevron.js";
+import Loading from "../../common/Loading/Loading.js";
 import Pagination from "../../common/Pagination/Pagination.js";
 
 // Content components
@@ -13,20 +14,28 @@ import TableInstance from "../../chart/table/TableInstance.js";
 
 // FC for ExportTable.
 const ExportTable = ({
-  data,
   exportCols,
   curPage,
   setCurPage,
   stakeholders,
+  pageLoading,
+  setPageLoading,
   ...props
 }) => {
+  // Currently unused, will be used for dynamic page size selection.
+  const [curPageSize, setCurPageSize] = useState(5);
+
+  // define data
+  const [data, setData] = useState({
+    flows: { data: [], paging: { n_records: null } },
+  });
   // Set n records
   props.setNRecords(data.flows.paging.n_records);
 
-  // Currently unused, will be used for dynamic page size selection.
-  const [curPageSize, setCurPageSize] = React.useState(5);
+  // track where data initially loaded
+  const [initLoaded, setInitLoaded] = useState(false);
 
-  React.useEffect(() => setCurPage(1), [
+  useEffect(() => setCurPage(1), [
     props.coreCapacities,
     props.funders,
     props.recipients,
@@ -126,6 +135,28 @@ const ExportTable = ({
       tableData={data.flows.data}
     />
   );
+
+  const getData = async () => {
+    const flowQuery = getFlowQuery({ props, curPage });
+
+    const queries = {
+      // Information about the entity
+      flows: flowQuery,
+    };
+
+    // Get results in parallel
+    const results = await execute({ queries });
+    setData(results);
+    setPageLoading(false);
+    if (!initLoaded) setInitLoaded(true);
+  };
+
+  // TODO call when filters change
+  useEffect(() => {
+    setPageLoading(true);
+    getData();
+  }, [curPage, curPageSize]);
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.exportTable)}>
@@ -137,63 +168,17 @@ const ExportTable = ({
                 curPage,
                 setCurPage,
                 setCurPageSize,
+                loaded: !pageLoading,
+                initLoaded,
                 nPages: data.flows.paging.n_pages,
               }}
             />
           }
         </div>
       }
-      {dataTable}
+      <Loading loaded={initLoaded}>{dataTable}</Loading>
     </div>
   );
-};
-
-const remountComponent = ({ component, ...props }) => {
-  const remount =
-    component === null ||
-    component.props.coreCapacities.toString() !==
-      props.coreCapacities.toString() ||
-    component.props.funders.toString() !== props.funders.toString() ||
-    component.props.curPage.toString() !== props.curPage.toString() ||
-    component.props.outbreaks.toString() !== props.outbreaks.toString() ||
-    component.props.supportType.toString() !== props.supportType.toString() ||
-    component.props.recipients.toString() !== props.recipients.toString();
-
-  return remount;
-};
-
-export const renderExportTable = ({
-  component,
-  setComponent,
-  loading,
-  setLoadingSpinnerOn,
-  curPage,
-  setCurPage,
-  ...props
-}) => {
-  // Get data
-  if (loading) {
-    return <div className={"placeholder"} />;
-  } else if (remountComponent({ component, curPage, ...props })) {
-    getComponentData({
-      setComponent: setComponent,
-      setLoadingSpinnerOn,
-      curPage,
-      setCurPage,
-      ...props,
-    });
-
-    return component ? component : <div className={"placeholder"} />;
-  } else if (
-    component.props.exportCols.toString() !== props.exportCols.toString()
-  ) {
-    setComponent(
-      <ExportTable {...{ ...component.props, exportCols: props.exportCols }} />
-    );
-  } else {
-    setLoadingSpinnerOn(false);
-    return component;
-  }
 };
 
 export const getFlowQuery = ({ props, curPage, forExport = false }) => {
@@ -237,46 +222,6 @@ export const getFlowQuery = ({ props, curPage, forExport = false }) => {
       ...standardProps,
       forExport: true,
     });
-};
-
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for special detail pages like GHSA and response
- * @method getComponentData
- * @param  {[type]}       setDetailsComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setComponent,
-  setLoadingSpinnerOn,
-  curPage,
-  setCurPage,
-  ...props
-}) => {
-  const flowQuery = getFlowQuery({ props, curPage });
-
-  const queries = {
-    // Information about the entity
-    flows: flowQuery,
-  };
-
-  // Get results in parallel
-  setLoadingSpinnerOn(true);
-  const results = await Util.getQueryResults(queries);
-
-  // Set the component
-  setComponent(
-    <ExportTable
-      {...{
-        data: results,
-        curPage,
-        setCurPage,
-        exportCols: props.exportCols,
-        ...props,
-      }}
-    />
-  );
 };
 
 export default ExportTable;
