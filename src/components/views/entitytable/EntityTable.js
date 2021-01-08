@@ -116,7 +116,6 @@ const EntityTable = ({
       }),
   };
 
-  const [updateData, setUpdateData] = useState(true);
   const [inkindCount, setInkindCount] = useState(null);
   const [financialCount, setFinancialCount] = useState(null);
 
@@ -319,6 +318,7 @@ const EntityTable = ({
     {
       header: <>In-kind contributions{inkindCount}</>,
       slug: "in-kind",
+      show: inkindCount === null || inkindCount.props["data-count"] !== 0,
       content: (
         <DataTable
           noNativePaging={true}
@@ -747,7 +747,7 @@ const getComponentData = async ({
   // TODO implement GHSA version of page
 
   // Get results in parallel
-  setLoadingSpinnerOn(true);
+  // setLoadingSpinnerOn(true);
   const results = await execute({ queries });
 
   // Set the component

@@ -8,12 +8,15 @@ const Loading = ({
   loaded,
   placeholderText = "Loading...",
   children,
+  small = false,
   ...props
 }) => {
   return (
     <>
       {!loaded && (
-        <div className={styles.placeholder}>
+        <div
+          className={classNames(styles.placeholder, { [styles.small]: small })}
+        >
           <div className={styles.imgContainer}>
             <img src={spinnerImg} />
           </div>

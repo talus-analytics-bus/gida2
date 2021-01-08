@@ -2,6 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import styles from "./pagination.module.scss";
 import Util from "../../misc/Util.js";
+import Loading from "../../common/Loading/Loading";
 
 /**
  * @method Pagination
@@ -12,6 +13,8 @@ const Pagination = ({
   setCurPageSize,
   nPages,
   showPageNum = false,
+  loaded = true,
+  initLoaded = true,
   ...props
 }) => {
   const prev = (
@@ -65,6 +68,7 @@ const Pagination = ({
   else
     return (
       <div className={styles.pagination}>
+        <Loading small={true} loaded={loaded || !initLoaded} />
         {
           // <div className={styles.pageSizeControls}>
           //   <select
