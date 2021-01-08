@@ -40,13 +40,19 @@ const ExportTable = ({
   // track where data initially loaded
   const [initLoaded, setInitLoaded] = useState(false);
 
-  useEffect(() => setCurPage(1), [
-    props.coreCapacities,
-    props.funders,
-    props.recipients,
-    props.outbreaks,
-    props.supportType,
-  ]);
+  useEffect(() => {
+    if (curPage !== 1) setCurPage(1);
+    else {
+      setInitLoaded(false);
+      getData();
+    }
+  }, [coreCapacities, funders, recipients, outbreaks, supportType]);
+
+  // TODO call when filters change
+  useEffect(() => {
+    if (initLoaded) setPageLoading(true);
+    getData();
+  }, [curPage, curPageSize]);
 
   const cols = [
     {
@@ -156,22 +162,8 @@ const ExportTable = ({
     const results = await execute({ queries });
     setData(results);
     setPageLoading(false);
-    if (!initLoaded) setInitLoaded(true);
+    setInitLoaded(true);
   };
-
-  // TODO call when filters change
-  useEffect(() => {
-    setPageLoading(true);
-    getData();
-  }, [
-    curPage,
-    curPageSize,
-    outbreaks,
-    coreCapacities,
-    supportType,
-    funders,
-    recipients,
-  ]);
 
   // Return JSX
   return (
