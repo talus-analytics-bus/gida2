@@ -64,13 +64,14 @@ const StackBar = ({
         preserve_stakeholder_groupings: false,
         filters: stackBarFilters,
       }),
-      jeeScores: Assessment({
+    };
+    if (!isGhsaPage)
+      queries.jeeScores = Assessment({
         format: "stack_bar_chart",
         scoreType: "JEE v1",
         id,
         fields: ["name", "value"],
-      }),
-    };
+      });
     if (staticStakeholders === undefined)
       queries.stakeholders = Stakeholder({ by: "id" });
     const results = await execute({ queries });
@@ -79,7 +80,7 @@ const StackBar = ({
     }
 
     // TODO only request scores needed
-    setJeeScores(results.jeeScores);
+    if (!isGhsaPage) setJeeScores(results.jeeScores);
     setData(results.stackBar.points);
     setDataLoaded(true);
   };

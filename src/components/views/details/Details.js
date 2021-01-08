@@ -108,12 +108,13 @@ const Details = ({
     const queries = {
       // Information about the entity
       nodesData: Stakeholder({ by: "id" }),
+    };
 
-      pvs: Assessment({
+    if (!isGhsaPage)
+      queries.pvs = Assessment({
         id,
         scoreType: "PVS",
-      }),
-    };
+      });
 
     // Get query results.
     // setLoadingSpinnerOn(true);
@@ -125,7 +126,7 @@ const Details = ({
 
     setNodeData(results.nodeData);
     setNodesData(results.nodesData);
-    setPvs(results.pvs);
+    if (!isGhsaPage) setPvs(results.pvs);
   };
 
   // TODO handle response data

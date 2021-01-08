@@ -40,7 +40,6 @@ const EventTable = ({
     const queries = {
       outbreaks: Outbreak({}),
     };
-
     if (isGhsaPage) {
       // get flows for GHSA
       queries.flows = Flow({
