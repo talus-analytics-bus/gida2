@@ -20,6 +20,11 @@ const ExportTable = ({
   stakeholders,
   pageLoading,
   setPageLoading,
+  outbreaks,
+  coreCapacities,
+  supportType,
+  funders,
+  recipients,
   ...props
 }) => {
   // Currently unused, will be used for dynamic page size selection.
@@ -137,7 +142,10 @@ const ExportTable = ({
   );
 
   const getData = async () => {
-    const flowQuery = getFlowQuery({ props, curPage });
+    const flowQuery = getFlowQuery({
+      props: { outbreaks, coreCapacities, supportType, funders, recipients },
+      curPage,
+    });
 
     const queries = {
       // Information about the entity
@@ -155,7 +163,15 @@ const ExportTable = ({
   useEffect(() => {
     setPageLoading(true);
     getData();
-  }, [curPage, curPageSize]);
+  }, [
+    curPage,
+    curPageSize,
+    outbreaks,
+    coreCapacities,
+    supportType,
+    funders,
+    recipients,
+  ]);
 
   // Return JSX
   return (
