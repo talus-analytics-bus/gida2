@@ -88,7 +88,7 @@ const Details = ({
 
   const [nodeData, setNodeData] = useState({});
   const [nodesData, setNodesData] = useState({});
-  const [pvs, setPvs] = useState({ eds: [], scores: [] });
+  const [pvs, setPvs] = useState({ eds: [], data: [] });
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const getData = async () => {
@@ -135,7 +135,6 @@ const Details = ({
   const [showFlag, setShowFlag] = useState(nodeData.cat === "country");
 
   const [curPvsEdition, setCurPvsEdition] = useState(pvs.eds[0] || {});
-
   // if (noResponseData && curTab === "event") setCurTab("ihr");
 
   // Get display name for current flow type
@@ -223,7 +222,7 @@ const Details = ({
   );
 
   const updatePvsTooltipData = d => {
-    const allEdVals = pvs.scores.filter(
+    const allEdVals = pvs.data.filter(
       dd => dd.ind.toLowerCase() === d.indName.toLowerCase()
     );
 
@@ -276,9 +275,13 @@ const Details = ({
                 </select>
               </form>
             </div>
-            <p className={styles.subText}>
-              Evaluation conducted in {curPvsEdition.date}
-            </p>
+            {curPvsEdition.date !== undefined &&
+              curPvsEdition.date !== null &&
+              curPvsEdition.date !== "NaN" && (
+                <p className={styles.subText}>
+                  Evaluation conducted in {curPvsEdition.date}
+                </p>
+              )}
           </div>
           {pvsLegend}
         </div>
@@ -346,7 +349,7 @@ const Details = ({
                 ),
               },
             ]}
-            tableData={pvs.scores.filter(d => d.ed === curPvsEdition.ed)}
+            tableData={pvs.data.filter(d => d.ed === curPvsEdition.ed)}
             sortOrder={"ascending"}
             hide={r => r.amount === -9999}
           />
@@ -523,7 +526,7 @@ const Details = ({
           slug: "pvs",
           header: "PVS scores",
           content: pvsTabContent,
-          hide: pvs.scores.length === 0 || entityRole === "funder",
+          hide: pvs.data.length === 0 || entityRole === "funder",
         },
       ]
     : [];
@@ -562,6 +565,11 @@ const Details = ({
     // reset data when ID changes
     setEventTotalsData(null);
   }, [id]);
+
+  // update pvs edition
+  useEffect(() => {
+    setCurPvsEdition(pvs.eds[0] || {});
+  }, [pvs]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
