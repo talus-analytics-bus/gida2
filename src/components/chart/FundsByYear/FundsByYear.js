@@ -51,6 +51,8 @@ const FundsByYear = ({
     }
 
     // apply filters to the fund type
+    console.log("fundType");
+    console.log(fundType);
     if (fundType === "true") {
       filters["Flow.is_ghsa"] = [true];
     } else if (fundType === "event") {
@@ -72,8 +74,8 @@ const FundsByYear = ({
     };
     const results = await execute({ queries });
     setData(results.byYear);
-    setNoData(results.byYear.no_data === true);
-    setInkindOnly(results.byYear.inkind_only === true);
+    setNoData(results.byYear.no_data === true && fundType === false);
+    setInkindOnly(results.byYear.inkind_only === true && fundType === false);
     if (!initialized) setInitialized(true);
   };
 
@@ -109,13 +111,13 @@ const FundsByYear = ({
   }, [id, entityRole]);
 
   const getViewType = () => {
-    if (data.no_data === true) {
+    if (data.no_data === true && fundType === false) {
       return "no_data";
-    } else if (data.inkind_only === true) {
+    } else if (data.inkind_only === true && fundType === false) {
       return "inkind_only";
-    } else if (data.all_unknown === true) {
+    } else if (data.all_unknown === true && fundType === false) {
       return "all_unknown";
-    } else return "error";
+    } else return "n/a";
   };
   const viewType = data !== null ? getViewType() : null;
   const showInkind = viewType === "inkind_only";
