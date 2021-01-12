@@ -9,12 +9,14 @@ const Loading = ({
   placeholderText = "Loading...",
   children,
   small = false,
+  margin,
   ...props
 }) => {
   return (
     <>
       {!loaded && (
         <div
+          style={{ margin }}
           className={classNames(styles.placeholder, { [styles.small]: small })}
         >
           <div className={styles.imgContainer}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./entitytable.module.scss";
@@ -397,6 +397,25 @@ const EntityTable = ({
 
   // Track currently visible tab
   const [curTab, setCurTab] = useState(sections[0].slug);
+
+  // clear counts when id or type changes
+  useEffect(() => {
+    setInkindCount(null);
+    setFinancialCount(null);
+  }, [id, ghsaOnly]);
+
+  // update tab when stakeholder changes if needed
+  useEffect(() => {
+    if (inkindCount !== null && financialCount !== null) {
+      const newInitTabIdx =
+        inkindCount.props["data-count"] === 0 ||
+        financialCount.props["data-count"] !== 0
+          ? 0
+          : sections.length - 1;
+      setCurTab(sections[newInitTabIdx].slug);
+    }
+  }, [inkindCount, financialCount]);
+
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.entityTable)}>
@@ -531,7 +550,7 @@ export const renderEntityTable = ({
         }}
       />
     ) : (
-      <Loading>
+      <Loading margin={20}>
         <div className={"placeholder"} />
       </Loading>
     );
