@@ -18,9 +18,12 @@ import { execute, NodeSums } from "../../misc/Queries";
 const FundsByYear = ({
   id,
   entityRole,
+  otherEntityRole,
   flowTypeInfo,
+  setNoData,
+  setInkindOnly,
   unknownDataOnly,
-  noFinancialData,
+  header = null,
   params,
   setLoadingSpinnerOn,
   ...props
@@ -31,7 +34,12 @@ const FundsByYear = ({
   const getData = async () => {
     // define filters
     const filters = {
-      "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Flow.flow_type": [
+        "disbursed_funds",
+        "committed_funds",
+        "provided_inkind",
+        "committed_inkind",
+      ],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     };
 
@@ -64,6 +72,8 @@ const FundsByYear = ({
     };
     const results = await execute({ queries });
     setData(results.byYear);
+    setNoData(results.byYear.no_data === true);
+    setInkindOnly(results.byYear.inkind_only === true);
     if (!initialized) setInitialized(true);
   };
 
@@ -82,7 +92,7 @@ const FundsByYear = ({
   const [fundType, setFundType] = useState("false"); // all
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
-    if (!unknownDataOnly && !noFinancialData) {
+    if (!unknownDataOnly) {
       // setLoadingSpinnerOn(true, false, "AreaLine");
       getData();
     } else setData([]);
@@ -98,57 +108,109 @@ const FundsByYear = ({
     }
   }, [id, entityRole]);
 
+  const getViewType = () => {
+    if (data.no_data === true) {
+      return "no_data";
+    } else if (data.inkind_only === true) {
+      return "inkind_only";
+    } else if (data.all_unknown === true) {
+      return "all_unknown";
+    } else return "error";
+  };
+  const viewType = data !== null ? getViewType() : null;
+  const showInkind = viewType === "inkind_only";
+  const showAllUnknown = viewType === "all_unknown";
+  const showNoData = viewType === "no_data";
+  const showFinancial = !showInkind && !showAllUnknown && !showNoData;
+
   return (
-    <Loading loaded={data !== null}>
-      <div className={styles.fundsByYear}>
-        {data !== null && !unknownDataOnly && !noFinancialData && (
-          <div className={styles.content}>
-            <div className={styles.totals}>
-              <GhsaToggle
-                {...{
-                  label: "Show funding type",
-                  setGhsaOnly: setFundType,
-                  ghsaOnly: fundType,
-                  selectpicker: true,
-                }}
-              />
-              <TotalByFlowType flowType="disbursed_funds" data={data.totals} />
-              <TotalByFlowType flowType="committed_funds" data={data.totals} />
-              {linkToEntityTable}
-            </div>
-            <div className={styles.areaLine}>
-              <AreaLine
-                entityRole={entityRole}
-                flowTypeInfo={flowTypeInfo}
-                data={data.points.map(d => {
-                  const newD = {};
-                  flowTypeInfo.forEach(ft => {
-                    if (d[ft.name] !== "n/a") {
-                      newD[ft.name] = d[ft.name] >= 0 ? d[ft.name] : 0;
-                    }
-                  });
-                  return { ...d, ...newD };
-                })}
-                id={id}
-                ghsaOnly={props.ghsaOnly}
-                setLoadingSpinnerOn={setLoadingSpinnerOn}
-              />
-            </div>
-          </div>
-        )}
-        {(unknownDataOnly || noFinancialData) && (
-          <div className={styles.content}>
-            <div className={classNames(styles.totals, styles.unknownOnly)}>
-              <div>
-                No funding with specific amounts to show. Click "View table of
-                funds" to view all available data.
+    <>
+      {header}
+      <Loading loaded={viewType !== null}>
+        {viewType !== null && (
+          <div className={styles.fundsByYear}>
+            {showFinancial && (
+              <div className={styles.content}>
+                <div className={styles.totals}>
+                  <GhsaToggle
+                    {...{
+                      label: "Show funding type",
+                      setGhsaOnly: setFundType,
+                      ghsaOnly: fundType,
+                      selectpicker: true,
+                    }}
+                  />
+                  <TotalByFlowType
+                    flowType="disbursed_funds"
+                    data={data.totals}
+                  />
+                  <TotalByFlowType
+                    flowType="committed_funds"
+                    data={data.totals}
+                  />
+                  {linkToEntityTable}
+                </div>
+                <div className={styles.areaLine}>
+                  <AreaLine
+                    entityRole={entityRole}
+                    flowTypeInfo={flowTypeInfo}
+                    data={data.points.map(d => {
+                      const newD = {};
+                      flowTypeInfo.forEach(ft => {
+                        if (d[ft.name] !== "n/a") {
+                          newD[ft.name] = d[ft.name] >= 0 ? d[ft.name] : 0;
+                        }
+                      });
+                      return { ...d, ...newD };
+                    })}
+                    id={id}
+                    ghsaOnly={props.ghsaOnly}
+                    setLoadingSpinnerOn={setLoadingSpinnerOn}
+                  />
+                </div>
               </div>
-              {linkToEntityTable}
-            </div>
+            )}
+            {showInkind && (
+              <div className={styles.content}>
+                <div className={classNames(styles.totals, styles.unknownOnly)}>
+                  <div>
+                    Only inkind assistance (no specific monetary values) has
+                    been captured. Click "View table of funds" to view all
+                    available data.
+                  </div>
+                  {linkToEntityTable}
+                </div>
+              </div>
+            )}
+            {showAllUnknown && (
+              <div className={styles.content}>
+                <div className={classNames(styles.totals, styles.unknownOnly)}>
+                  <div>
+                    No funding with specific amounts to show. Click "View table
+                    of funds" to view all available data.
+                  </div>
+                  {linkToEntityTable}
+                </div>
+              </div>
+            )}
+            {showNoData && (
+              <div className={styles.content}>
+                <div className={classNames(styles.totals, styles.unknownOnly)}>
+                  <div>
+                    There are no funding data where this stakeholder is a{" "}
+                    {entityRole}.{" "}
+                    <Link to={`/details/${id}/${otherEntityRole}`}>
+                      Go to {otherEntityRole} page
+                    </Link>
+                    .
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
-      </div>
-    </Loading>
+      </Loading>
+    </>
   );
 };
 

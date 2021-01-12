@@ -8,25 +8,27 @@ import styles from "./totalbyflowtype.module.scss";
 const TotalByFlowType = ({ flowType, data, ...props }) => {
   const amount = getAmountByFlowType(flowType, data);
   return (
-    <div
-      className={classNames(styles.totalByFlowType, {
-        [styles.inline]: props.inline,
-      })}
-    >
+    amount !== null && (
       <div
-        className={classNames(styles.value, {
-          [styles.unknown]: amount === "unknown",
+        className={classNames(styles.totalByFlowType, {
+          [styles.inline]: props.inline,
         })}
       >
-        <Loading loaded={data !== null}>
-          {Util.formatValue(amount, flowType)}
-        </Loading>
+        <div
+          className={classNames(styles.value, {
+            [styles.unknown]: amount === "unknown",
+          })}
+        >
+          <Loading loaded={data !== null}>
+            {Util.formatValue(amount, flowType)}
+          </Loading>
+        </div>
+        <div className={styles.label}>
+          {Util.formatLabel(flowType)}
+          {props.label && <span>&nbsp;{props.label}</span>}
+        </div>
       </div>
-      <div className={styles.label}>
-        {Util.formatLabel(flowType)}
-        {props.label && <span>&nbsp;{props.label}</span>}
-      </div>
-    </div>
+    )
   );
 };
 

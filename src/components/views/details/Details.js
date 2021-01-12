@@ -32,7 +32,6 @@ import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
-import Loading from "../../common/Loading/Loading";
 import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
 import ReactTooltip from "react-tooltip";
@@ -79,6 +78,10 @@ const Details = ({
   const [curFlowType, setCurFlowType] = useState("disbursed_funds");
   const [pvsTooltipData, setPvsTooltipData] = useState(undefined);
 
+  // is there any data to show? Inkind only?
+  const [noData, setNoData] = useState(false);
+  const [inkindOnly, setInkindOnly] = useState(false);
+
   // track flows used to calc. total event funding
   const [eventTotalsData, setEventTotalsData] = useState(null);
 
@@ -88,7 +91,8 @@ const Details = ({
 
   const [nodeData, setNodeData] = useState({});
   const [nodesData, setNodesData] = useState({});
-  const [pvs, setPvs] = useState({ eds: [], data: [] });
+  const defaultPvs = { eds: [], data: [] };
+  const [pvs, setPvs] = useState(defaultPvs);
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const getData = async () => {
@@ -131,6 +135,10 @@ const Details = ({
 
   // TODO handle response data
   // const noResponseData = data.flows.paging.n_records === 0;
+  // const getDefaultTab = () => {
+  //   if (data.no_data || data.inkind_only) return "event";
+  //   else return "ihr";
+  // };
   const [curTab, setCurTab] = useState("ihr");
   const [showFlag, setShowFlag] = useState(nodeData.cat === "country");
 
@@ -143,8 +151,7 @@ const Details = ({
 
   // True if there are no data to show for the entire page, false otherwise.
   // TODO make work with new API
-  const noData = false;
-  const noFinancialData = noData ? true : false;
+  const noFinancialData = false;
 
   // // stop loading spinner if no data
   // if (noData || noFinancialData)
@@ -157,29 +164,35 @@ const Details = ({
 
   // Define header charts
   const pageHeaderContent = {
-    header: (
-      <h2>
-        Total funds {Util.getRoleTerm({ type: "adjective", role: entityRole })}{" "}
-        from {Settings.startYear} to {Settings.endYear}
-      </h2>
-    ),
+    header: null,
     content: (
       <FundsByYear
         id={id}
         entityRole={entityRole}
+        otherEntityRole={otherEntityRole}
         unknownDataOnly={unknownDataOnly}
         noFinancialData={noFinancialData}
         flowTypeInfo={flowTypeInfo}
         ghsaOnly={ghsaOnly}
         setLoadingSpinnerOn={setLoadingSpinnerOn}
+        setNoData={setNoData}
+        setInkindOnly={setInkindOnly}
+        header={
+          <h2>
+            Total funds{" "}
+            {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
+            {Settings.startYear} to {Settings.endYear}
+          </h2>
+        }
       />
     ),
     toggleFlowType: false,
-    hide: noData,
+    // hide: noData,
   };
 
   // Define details content sections.
-  const showTabs = !noData && !unknownDataOnly && !noFinancialData;
+  const showTabs = true;
+  // const showTabs = !noData && !unknownDataOnly && !noFinancialData;
 
   // For event response funding: get totals.
   // TODO move into EventTable
@@ -356,7 +369,7 @@ const Details = ({
         </div>
       ),
       toggleFlowType: false,
-      hide: noData || unknownDataOnly || noFinancialData,
+      // hide: noData || unknownDataOnly || noFinancialData,
     },
   ];
 
@@ -365,6 +378,8 @@ const Details = ({
         {
           slug: "ihr",
           header: "IHR funding",
+          hide: noData || inkindOnly,
+          noData: noData || inkindOnly,
           content: [
             {
               header: <h2>Funding by core capacity</h2>,
@@ -428,7 +443,7 @@ const Details = ({
                 />
               ),
               toggleFlowType: true,
-              hide: noData || unknownDataOnly || noFinancialData,
+              hide: noData || noFinancialData,
             },
             {
               header: <h2>Top {entityRole}s</h2>,
@@ -445,18 +460,16 @@ const Details = ({
                 />
               ),
               toggleFlowType: true,
-              hide:
-                noData ||
-                pageType !== "ghsa" ||
-                unknownDataOnly ||
-                noFinancialData,
+              hide: noData || pageType !== "ghsa" || noFinancialData,
             },
           ],
         },
         {
           slug: "event",
           header: "Event response funding",
-          hide: eventTotalsData !== null && eventTotalsData.length === 0,
+          hide:
+            noData ||
+            (eventTotalsData !== null && eventTotalsData.length === 0),
           invis: eventTotalsData === null, // not yet loaded
           content: [
             {
@@ -518,7 +531,7 @@ const Details = ({
                 </div>
               ),
               toggleFlowType: true,
-              hide: noData || unknownDataOnly || noFinancialData,
+              hide: noData || noFinancialData,
             },
           ],
         },
@@ -527,6 +540,7 @@ const Details = ({
           header: "PVS scores",
           content: pvsTabContent,
           hide: pvs.data.length === 0 || entityRole === "funder",
+          noData: pvs.data.length === 0 || entityRole === "funder",
         },
       ]
     : [];
@@ -558,7 +572,10 @@ const Details = ({
   };
   useEffect(() => {
     setShowFlag(true);
+    setPvs(defaultPvs);
+    setEventTotalsData(null);
     setCurPvsEdition(pvs.eds[0] || {});
+
     window.scrollTo(0, 0); // TODO check
     setDataLoaded(false);
 
@@ -575,8 +592,26 @@ const Details = ({
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
 
+  // constants
+  const havePvs = pvs.data.length !== 0 && entityRole !== "funder";
+  const haveAssistance = noData !== null ? !noData && !inkindOnly : true;
+  const haveEvent =
+    eventTotalsData !== null ? eventTotalsData.length !== 0 : false;
+  const haveAny = havePvs || haveAssistance || haveEvent;
+
+  // update initial tab if IHR data not avail.
   useEffect(() => {
-    setCurTab("ihr");
+    if (noData !== null && eventTotalsData !== null) {
+      if (!haveAssistance) {
+        if (haveEvent) setCurTab("event");
+        else if (havePvs) setCurTab("pvs");
+        else setCurTab(null);
+      } else setCurTab("ihr");
+    }
+  }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id]);
+
+  useEffect(() => {
+    // setCurTab("ihr");
     setDataLoaded(false);
     // reset data when role changes
     setEventTotalsData(null);
@@ -655,29 +690,32 @@ const Details = ({
             ))}
         </div>
       )}
-      {showTabs && (
+      {showTabs && haveAny && (
         <div className={styles.tabContent}>
           {tabSections
             .filter(s => s.hide !== true)
-            .map(s => (
-              <Tab
-                selected={curTab === s.slug}
-                content={s.content.map(
-                  s =>
-                    !s.hide && (
-                      <DetailsSection
-                        header={s.header}
-                        text={s.text}
-                        content={s.content}
-                        curFlowType={curFlowType}
-                        setCurFlowType={setCurFlowType}
-                        flowTypeInfo={flowTypeInfo}
-                        toggleFlowType={s.toggleFlowType}
-                      />
-                    )
-                )}
-              />
-            ))}
+            .map(
+              s =>
+                !s.noData && (
+                  <Tab
+                    selected={curTab === s.slug}
+                    content={s.content.map(
+                      s =>
+                        !s.hide && (
+                          <DetailsSection
+                            header={s.header}
+                            text={s.text}
+                            content={s.content}
+                            curFlowType={curFlowType}
+                            setCurFlowType={setCurFlowType}
+                            flowTypeInfo={flowTypeInfo}
+                            toggleFlowType={s.toggleFlowType}
+                          />
+                        )
+                    )}
+                  />
+                )
+            )}
         </div>
       )}
       {[].map(
@@ -693,12 +731,7 @@ const Details = ({
             />
           )
       )}
-      {noData && (
-        <span>
-          No {ghsaOnly === "true" ? "GHSA-specific " : ""}funding data are
-          currently available where {nodeData.name} is a {entityRoleNoun}.
-        </span>
-      )}
+
       {
         // Tooltip for info tooltip icons.
         <ReactTooltip
