@@ -132,6 +132,7 @@ const Details = ({
     setNodeData(results.nodeData);
     setNodesData(results.nodesData);
     if (!isGhsaPage) setPvs(results.pvs);
+    else setPvs({ ...defaultPvs, loading: false });
   };
 
   // TODO handle response data
