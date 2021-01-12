@@ -31,6 +31,7 @@ import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
+import Loading from "../../common/Loading/Loading.js";
 import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
 import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
@@ -91,7 +92,7 @@ const Details = ({
 
   const [nodeData, setNodeData] = useState({});
   const [nodesData, setNodesData] = useState({});
-  const defaultPvs = { eds: [], data: [] };
+  const defaultPvs = { eds: [], data: [], loading: true };
   const [pvs, setPvs] = useState(defaultPvs);
   const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -373,6 +374,13 @@ const Details = ({
     },
   ];
 
+  // constants
+  const havePvs = pvs.data.length !== 0 && entityRole !== "funder";
+  const haveAssistance = noData !== null ? !noData && !inkindOnly : true;
+  const haveEvent =
+    eventTotalsData !== null ? eventTotalsData.length !== 0 : false;
+  const haveAny = havePvs || haveAssistance || haveEvent;
+
   const tabSections = showTabs
     ? [
         {
@@ -541,6 +549,7 @@ const Details = ({
           content: pvsTabContent,
           hide: pvs.data.length === 0 || entityRole === "funder",
           noData: pvs.data.length === 0 || entityRole === "funder",
+          invis: pvs.loading, // not yet loaded
         },
       ]
     : [];
@@ -592,12 +601,14 @@ const Details = ({
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
 
-  // constants
-  const havePvs = pvs.data.length !== 0 && entityRole !== "funder";
-  const haveAssistance = noData !== null ? !noData && !inkindOnly : true;
-  const haveEvent =
-    eventTotalsData !== null ? eventTotalsData.length !== 0 : false;
-  const haveAny = havePvs || haveAssistance || haveEvent;
+  // console.log("\nhaveAny");
+  // console.log(haveAny);
+  // console.log("haveAssistance");
+  // console.log(haveAssistance);
+  // console.log("haveEvent");
+  // console.log(haveEvent);
+  // console.log("havePvs");
+  // console.log(havePvs);
 
   // update initial tab if IHR data not avail.
   useEffect(() => {
@@ -607,7 +618,7 @@ const Details = ({
         else if (havePvs) setCurTab("pvs");
         else setCurTab(null);
       } else setCurTab("ihr");
-    }
+    } else setCurTab("ihr");
   }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id]);
 
   useEffect(() => {
@@ -682,12 +693,21 @@ const Details = ({
               <button
                 className={classNames(styles.tabToggle, {
                   [styles.selected]: s.slug === curTab,
+                  [styles.invis]: s.invis,
                 })}
                 onClick={() => setCurTab(s.slug)}
               >
                 {s.header}
               </button>
             ))}
+          {
+            <Loading
+              small={true}
+              loaded={!haveAny || !tabSections.some(s => s.invis === true)}
+              margin={"0 0 0 20px"}
+              top={5}
+            />
+          }
         </div>
       )}
       {showTabs && haveAny && (

@@ -11,6 +11,7 @@
 }
 
 .placeholder {
+  position: relative;
   .imgContainer {
     margin: 0 auto;
     @include placeholder(50px);
