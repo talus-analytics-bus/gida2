@@ -140,13 +140,18 @@ export const getMapColorScale = ({
   entityRole,
 }) => {
   const colorScaleMaker = ({ domain, range, type }) => {
+    const removeUnknowns = true; // TODO with param
+    const domainForScale = removeUnknowns
+      ? domain.filter(d => d != -8888)
+      : domain;
     const baseScale = d3[type || "scaleThreshold"]()
-      .domain(domain)
+      .domain(domainForScale)
       .range(range);
     // if (type === "scaleQuantile") baseScale.clamp(true);
 
     const colorScale = v => {
-      if (type === "scaleLinear" && v === null) return baseScale(domain[1]);
+      if (type === "scaleLinear" && v === null)
+        return baseScale(domainForScale[1]);
       const noData = v === "zzz" || v === -9999;
       const unknownVal = v === "yyy" || v === -8888;
       if (noData) return "#cccccc";

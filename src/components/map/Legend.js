@@ -96,7 +96,7 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
           Needs
           <br />
           met
-        </span>
+        </span>,
       ]
     : colorScale.values.filter(d => d !== undefined);
 
@@ -180,7 +180,7 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
     return (
       <div
         className={classNames(styles.entry, styles[colorScale.type], {
-          [styles.binary]: needsMetMetric
+          [styles.binary]: needsMetMetric,
         })}
       >
         {initLabel}
@@ -213,7 +213,7 @@ const Legend = ({
   return (
     <div
       className={classNames(styles.legend, className, {
-        [styles.dark]: isDark
+        [styles.dark]: isDark,
       })}
     >
       {toggle !== false && (
@@ -247,7 +247,7 @@ const Legend = ({
                 <div
                   style={{
                     background:
-                      "repeating-linear-gradient(-45deg, rgb(175, 175, 175), rgb(175, 175, 175) 8px, rgba(255, 255, 255, 0) 8px, rgba(255, 255, 255, 0) 10px)"
+                      "repeating-linear-gradient(-45deg, rgb(175, 175, 175), rgb(175, 175, 175) 8px, rgba(255, 255, 255, 0) 8px, rgba(255, 255, 255, 0) 10px)",
                   }}
                   className={styles.rect}
                 />

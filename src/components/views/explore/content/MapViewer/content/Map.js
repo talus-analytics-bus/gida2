@@ -53,6 +53,12 @@ const Map = ({
     coreCapacities,
     entityRole,
   });
+  // console.log("colorScale.values");
+  // console.log(colorScale.values);
+  // console.log("colorScale");
+  // console.log(colorScale);
+  // console.log("colorScale.type");
+  // console.log(colorScale.type);
 
   // Define hatch mark pattern.
   // const defs = (
