@@ -18,6 +18,7 @@ import TableInstance from "../../chart/table/TableInstance.js";
 import Tab from "../../misc/Tab.js";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
+import Loading from "../../common/Loading/Loading.js";
 import SourceText from "../../common/SourceText/SourceText.js";
 import Button from "../../common/Button/Button.js";
 import DataTable from "../../chart/table/DataTable/DataTable.js";
@@ -530,7 +531,9 @@ export const renderEntityTable = ({
         }}
       />
     ) : (
-      <div className={"placeholder"} />
+      <Loading>
+        <div className={"placeholder"} />
+      </Loading>
     );
     // return component ? component : <div className={"placeholder"}/>;
   } else {
