@@ -134,6 +134,7 @@ const EntityTable = ({
           noNativeSorting={true}
           getTableData={getTableDataFuncs.flowsFinancial}
           pageSize={10}
+          rowCount={financialCount}
           setRowCount={setFinancialCount}
           tableColumns={[
             {
@@ -389,6 +390,7 @@ const EntityTable = ({
               defaultContent: "n/a",
             },
           ]}
+          rowCount={inkindCount}
           setRowCount={setInkindCount}
         />
       ),

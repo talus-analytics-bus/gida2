@@ -12,6 +12,7 @@ const DataTable = ({
   getTableData,
   pageSize,
   setLoadingSpinnerOn,
+  rowCount,
   setRowCount,
   ...props
 }) => {
@@ -41,13 +42,16 @@ const DataTable = ({
         setNPages(d.paging.n_pages);
       }
       if (setRowCount !== undefined) {
-        const rowCount = (
+        const newRowCount = (
           <span data-count={d.paging.n_records}>
             {" "}
             ({Util.comma(d.paging.n_records)})
           </span>
         );
-        setRowCount(rowCount);
+        if (rowCount !== null) {
+          if (rowCount.props["data-count"] !== d.paging.n_records)
+            setRowCount(newRowCount);
+        } else setRowCount(newRowCount);
       }
       setLoaded(true);
       if (!initLoaded) setInitLoaded(true);
