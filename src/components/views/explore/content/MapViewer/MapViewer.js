@@ -746,7 +746,6 @@ const getComponentData = async ({
   // Get query results.
   setLoadingSpinnerOn(true);
   const results = await execute({ queries });
-  console.log(results);
 
   // Feed results and other data to the details component and mount it.
   setComponent(

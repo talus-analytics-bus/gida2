@@ -172,8 +172,6 @@ const Explore = ({
     if (fundType === "event" && coreCapacities.length > 0) return;
     if (fundType !== "event" && outbreakResponses.length > 0) return;
     if (activeTab === "map" && mapViewerComponent !== null) {
-      console.log("supportTypeToSwitchTo");
-      console.log(supportTypeToSwitchTo);
       renderMapViewer({
         ...mapProps,
         isDark: mapViewerComponent === null || props.isDark,
