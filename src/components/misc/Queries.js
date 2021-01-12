@@ -148,7 +148,6 @@ export const Assessment = async function({ ...props }) {
     props.fields.forEach(f => {
       params.append("fields", f);
     });
-  console.log(params.toString());
   // Define URL params
   const config = {
     params,
