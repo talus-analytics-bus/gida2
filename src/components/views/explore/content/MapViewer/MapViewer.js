@@ -45,9 +45,10 @@ const MapViewer = ({
   flowTypeInfo,
   isDark,
   supportTypeDefault,
-  setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
   setPageHeaderData,
+  loaded,
+  setLoaded,
   ...props
 }) => {
   // Track transaction type selected for the map
@@ -480,7 +481,8 @@ const MapViewer = ({
           events={events}
           ghsaOnly={fundType}
           isDark={isDark}
-          setLoadingSpinnerOn={setLoadingSpinnerOn}
+          loaded={loaded}
+          setLoaded={setLoaded}
         />
         <div className={styles.menuContainer}>
           <SlideToggle
@@ -568,16 +570,18 @@ export const renderMapViewer = ({
   fundType,
   setFundType,
   supportTypeDefault,
-  setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
   events,
   setEvents,
   setPageHeaderData,
+  loaded,
+  setLoaded,
   ...props
 }) => {
   // Set IDs
   id = parseInt(id);
 
+  // TODO check loading
   if (loading) {
     return <div className={"placeholder"} />;
   } else if (
@@ -603,11 +607,12 @@ export const renderMapViewer = ({
       entityRole: entityRole,
       setEntityRole: setEntityRole,
       supportTypeDefault,
-      setLoadingSpinnerOn,
       setSupportTypeToSwitchTo,
       events,
       setEvents,
       setPageHeaderData,
+      loaded,
+      setLoaded,
       ...props,
     });
 
@@ -637,9 +642,10 @@ const getComponentData = async ({
   flowTypeInfo,
   fundType,
   setFundType,
-  setLoadingSpinnerOn,
   setSupportTypeToSwitchTo,
   setPageHeaderData,
+  loaded,
+  setLoaded,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -744,8 +750,8 @@ const getComponentData = async ({
   };
 
   // Get query results.
-  setLoadingSpinnerOn(true);
   const results = await execute({ queries });
+  setLoaded(true);
 
   // Feed results and other data to the details component and mount it.
   setComponent(
@@ -759,7 +765,6 @@ const getComponentData = async ({
       fundType={fundType}
       setFundType={setFundType}
       setComponent={setComponent}
-      setLoadingSpinnerOn={setLoadingSpinnerOn}
       activeTab={props.activeTab}
       minYear={props.minYear}
       maxYear={props.maxYear}
@@ -772,6 +777,8 @@ const getComponentData = async ({
       supportTypeDefault={props.supportTypeDefault}
       setSupportTypeToSwitchTo={setSupportTypeToSwitchTo}
       setPageHeaderData={setPageHeaderData}
+      loaded={loaded}
+      setLoaded={setLoaded}
     />
   );
 };

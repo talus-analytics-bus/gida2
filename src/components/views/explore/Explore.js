@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./explore.module.scss";
 import classNames from "classnames";
 
 // Content components
 import GhsaToggle from "../../misc/GhsaToggle.js";
+import Loading from "../../common/Loading/Loading";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import { Settings } from "../../../App.js";
 import Tab from "../../misc/Tab.js";
@@ -18,7 +19,6 @@ const Explore = ({
   data,
   flowTypeInfo,
   supportTypeDefault,
-  setLoadingSpinnerOn,
   ...props
 }) => {
   // Returns correct header content given the active tab
@@ -38,38 +38,39 @@ const Explore = ({
   };
 
   // Track tab content components
-  const [mapViewerComponent, setMapViewerComponent] = React.useState(null);
-  const [orgComponent, setOrgComponent] = React.useState(null);
-  const [curComponent, setCurComponent] = React.useState(null);
+  const [mapViewerComponent, setMapViewerComponent] = useState(null);
+  const [orgComponent, setOrgComponent] = useState(null);
+  const [curComponent, setCurComponent] = useState(null);
+
+  // Track whether components are loaded or not
+  const [loaded, setLoaded] = useState(false);
 
   // Track entity role selected for the map
-  const [entityRole, setEntityRole] = React.useState("recipient"); // hi
+  const [entityRole, setEntityRole] = useState("recipient"); // hi
 
   // Track min and max year of data (consistent across tabs)
-  const [minYear, setMinYear] = React.useState(Settings.startYear);
-  const [maxYear, setMaxYear] = React.useState(Settings.endYear);
+  const [minYear, setMinYear] = useState(Settings.startYear);
+  const [maxYear, setMaxYear] = useState(Settings.endYear);
 
   // Set value filters
-  const [coreCapacities, setCoreCapacities] = React.useState([]);
-  const [outbreakResponses, setOutbreakResponses] = React.useState([]);
+  const [coreCapacities, setCoreCapacities] = useState([]);
+  const [outbreakResponses, setOutbreakResponses] = useState([]);
 
   // Track whether user...
-  const [supportTypeToSwitchTo, setSupportTypeToSwitchTo] = React.useState(
-    undefined
-  );
+  const [supportTypeToSwitchTo, setSupportTypeToSwitchTo] = useState(undefined);
   // Track funding type
-  const [fundType, setFundType] = React.useState(
+  const [fundType, setFundType] = useState(
     props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false"
   ); // default "all"
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (fundType === "event" && coreCapacities.length > 0)
       setCoreCapacities([]);
     else if (fundType !== "event" && outbreakResponses.length > 0)
       setOutbreakResponses([]);
   }, [fundType]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Set isDark defaults.
     props.setIsDark(activeTab === "map");
 
@@ -83,6 +84,7 @@ const Explore = ({
     }
 
     // Get rid of fund type default
+    setLoaded(false);
     setCoreCapacities([]);
     setOutbreakResponses([]);
 
@@ -96,6 +98,8 @@ const Explore = ({
         isDark: true,
         fundType:
           props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false",
+        loaded,
+        setLoaded,
       });
     } else {
       // Set page header data
@@ -115,7 +119,7 @@ const Explore = ({
     }
   }, [activeTab]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Set isDark defaults.
     return () => {
       props.setIsDark(false);
@@ -124,7 +128,7 @@ const Explore = ({
 
   // Get header data
   const headerData = getHeaderData(activeTab);
-  const [pageHeaderData, setPageHeaderData] = React.useState({});
+  const [pageHeaderData, setPageHeaderData] = useState({});
 
   const mapProps = {
     component: mapViewerComponent,
@@ -144,8 +148,9 @@ const Explore = ({
     setMaxYear: setMaxYear,
     setPageHeaderData,
     supportTypeDefault,
-    setLoadingSpinnerOn,
     setSupportTypeToSwitchTo,
+    loaded,
+    setLoaded,
   };
 
   const orgProps = {
@@ -165,10 +170,11 @@ const Explore = ({
     maxYear: maxYear,
     setMaxYear: setMaxYear,
     setPageHeaderData,
-    setLoadingSpinnerOn,
+    loaded,
+    setLoaded,
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (fundType === "event" && coreCapacities.length > 0) return;
     if (fundType !== "event" && outbreakResponses.length > 0) return;
     if (activeTab === "map" && mapViewerComponent !== null) {
@@ -179,6 +185,8 @@ const Explore = ({
           supportTypeToSwitchTo !== undefined
             ? supportTypeToSwitchTo
             : supportTypeDefault,
+        loaded,
+        setLoaded,
       });
       if (supportTypeToSwitchTo !== undefined)
         setSupportTypeToSwitchTo(undefined);
@@ -196,10 +204,12 @@ const Explore = ({
     entityRole,
   ]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (activeTab === "map" && mapViewerComponent !== null)
       renderMapViewer({
         isDark: props.isDark,
+        loaded,
+        setLoaded,
         ...mapProps,
       });
   }, [props.isDark]);
@@ -254,13 +264,15 @@ const Explore = ({
             </div>
           </div>
         </div>
-        <div
-          className={classNames(styles.content, {
-            [styles.dark]: props.isDark,
-          })}
-        >
-          {activeTab === "map" ? mapViewerComponent : orgComponent}
-        </div>
+        <Loading loaded={loaded}>
+          <div
+            className={classNames(styles.content, {
+              [styles.dark]: props.isDark,
+            })}
+          >
+            {activeTab === "map" ? mapViewerComponent : orgComponent}
+          </div>
+        </Loading>
       </div>
     );
 };
@@ -274,7 +286,6 @@ export const renderExplore = ({
   flowTypeInfo,
   fundType,
   setFundType,
-  setLoadingSpinnerOn,
   ...props
 }) => {
   if (loading) {
@@ -290,7 +301,6 @@ export const renderExplore = ({
         setIsDark={props.setIsDark}
         isDark={props.isDark}
         supportTypeDefault={props.supportTypeDefault}
-        setLoadingSpinnerOn={setLoadingSpinnerOn}
         fundTypeDefault={props.fundTypeDefault}
       />
     );

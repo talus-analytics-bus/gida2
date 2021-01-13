@@ -38,7 +38,8 @@ const Map = ({
   jeeScores,
   ghsaOnly,
   isDark,
-  setLoadingSpinnerOn,
+  loaded,
+  setLoaded,
   ...props
 }) => {
   // Get node type from entity role
@@ -381,7 +382,7 @@ const Map = ({
           d3MapDataFields,
           ghsaOnly,
           setNodeData,
-          setLoadingSpinnerOn,
+          setLoaded,
           isDark,
         }}
       />

@@ -12,6 +12,7 @@ import TableInstance from "../../../../chart/table/TableInstance.js";
 import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js";
 import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
 import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
+import Loading from "../../../../common/Loading/Loading";
 import Chevron from "../../../../common/Chevron/Chevron.js";
 import Drawer from "../../../../common/Drawer/Drawer.js";
 import {
@@ -51,6 +52,8 @@ const Orgs = ({
   flowTypeInfo,
   events,
   setEvents,
+  loaded,
+  setLoaded,
   ...props
 }) => {
   // Track transaction type selected for the map
@@ -587,7 +590,6 @@ export const renderOrgs = ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
-  setLoadingSpinnerOn,
   events,
   setEvents,
   ...props
@@ -619,7 +621,6 @@ export const renderOrgs = ({
       setGhsaOnly: setGhsaOnly,
       entityRole: entityRole,
       setEntityRole: setEntityRole,
-      setLoadingSpinnerOn,
       setEvents,
       events,
       ...props,
@@ -627,7 +628,6 @@ export const renderOrgs = ({
 
     return component ? component : <div className={"placeholder"} />;
   } else {
-    setLoadingSpinnerOn(false);
     return component;
   }
 };
@@ -648,8 +648,9 @@ const getComponentData = async ({
   flowTypeInfo,
   ghsaOnly,
   setGhsaOnly,
-  setLoadingSpinnerOn,
   setEvents,
+  loaded,
+  setLoaded,
   ...props
 }) => {
   // Define typical base query parameters used in FlowQuery,
@@ -777,9 +778,8 @@ const getComponentData = async ({
   };
 
   // Get query results.
-  setLoadingSpinnerOn(true);
   const results = await execute({ queries });
-  setLoadingSpinnerOn(false);
+  setLoaded(true);
 
   // Feed results and other data to the details component and mount it.
   setComponent(
