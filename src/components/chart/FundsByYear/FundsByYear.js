@@ -74,8 +74,8 @@ const FundsByYear = ({
     };
     const results = await execute({ queries });
     setData(results.byYear);
-    setNoData(results.byYear.no_data === true && fundType === false);
-    setInkindOnly(results.byYear.inkind_only === true && fundType === false);
+    setNoData(results.byYear.no_data === true && fundType === "false");
+    setInkindOnly(results.byYear.inkind_only === true && fundType === "false");
     if (!initialized) setInitialized(true);
   };
 
@@ -111,11 +111,12 @@ const FundsByYear = ({
   }, [id, entityRole]);
 
   const getViewType = () => {
-    if (data.no_data === true && fundType === false) {
+    console.log(typeof fundType);
+    if (data.no_data === true && fundType === "false") {
       return "no_data";
-    } else if (data.inkind_only === true && fundType === false) {
+    } else if (data.inkind_only === true && fundType === "false") {
       return "inkind_only";
-    } else if (data.all_unknown === true && fundType === false) {
+    } else if (data.all_unknown === true && fundType === "false") {
       return "all_unknown";
     } else return "n/a";
   };
