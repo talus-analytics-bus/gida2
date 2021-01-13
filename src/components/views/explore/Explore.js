@@ -238,17 +238,21 @@ const Explore = ({
       >
         <div className={styles.header}>
           <div className={styles.titles}>
-            <div className={styles.title}>{pageHeaderData.main}</div>
-            <span>{pageHeaderData.subtitle}</span>
-            <span>
-              <i>{pageHeaderData.instructions}</i>
-            </span>
-          </div>
-          <div className={styles.controls}>
-            <div className={styles.buttons}>
+            <div className={styles.left}>
+              <div className={styles.title}>{pageHeaderData.main}</div>
+              <span>{pageHeaderData.subtitle}</span>
+            </div>
+            <div className={styles.right}>
               <Loading
                 {...{ small: true, loaded: loaded || !tabInitialized }}
               />
+            </div>
+          </div>
+          <div className={styles.controls}>
+            <span>
+              <i>{pageHeaderData.instructions}</i>
+            </span>
+            <div className={styles.buttons}>
               {pageHeaderData.entityRoleToggle}
               {activeTab === "map" && (
                 <div
@@ -278,6 +282,9 @@ const Explore = ({
             </div>
           </div>
         </div>
+        {
+          // primary loading spinner for page initialization
+        }
         <Loading loaded={loaded || tabInitialized}>
           <div
             className={classNames(styles.content, {

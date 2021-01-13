@@ -9,19 +9,26 @@
   }
   .header {
     @include header;
-    flex-flow: row !important;
     justify-content: space-between;
     align-items: flex-end;
     .titles {
-      .title {
-        @include title;
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      width: 100%;
+      .left {
+        .title {
+          @include title;
+        }
+        span {
+          font-size: 16px !important;
+        }
+        div:last-child {
+          margin-top: 20px;
+          font-size: 14px;
+        }
       }
-      span {
-        font-size: 16px !important;
-      }
-      div:last-child {
-        margin-top: 20px;
-        font-size: 14px;
+      .right {
       }
     }
   }
@@ -63,6 +70,9 @@
     .controls {
       display: flex;
       flex-flow: row;
+      justify-content: space-between;
+      width: 100%;
+      align-items: flex-end;
       // float: right;
       // margin-left: auto;
       .tabs {
