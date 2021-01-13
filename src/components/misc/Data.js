@@ -45,8 +45,6 @@ const getFlowValues = ({
 
   // If the datum is undefined, return "zeros" for the flow values.
   if (datum === undefined) {
-    console.log("datum - getFlowValues");
-    console.log(datum);
     return flows.map(f => {
       return {
         value: Util.formatValue(0, f),
@@ -276,20 +274,20 @@ const debugNeedsMet = false;
 export const calculateNeedsMet = ({ datum, avgCapScores }) => {
   // Get the disbursed funds received for this datum.
   const disbursedFundsReceived = datum["disbursed_funds"];
-
   if (
     (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&
     avgCapScores < 3
   )
-    return 0;
+    return 0; // 0 - needs most unmet (CONFIRM)
   if (
     (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&
     avgCapScores >= 3
   )
-    return null;
-  if (disbursedFundsReceived === undefined) return -9999;
-  if (disbursedFundsReceived === "unknown") return -8888;
+    return null; // doing better than 3 and got nothing? no data. ???
+  if (disbursedFundsReceived === undefined) return -9999; // no fund info? unknown
+  if (disbursedFundsReceived === "unknown") return -8888; // hatch? hatch
   if (avgCapScores === undefined) return -9999;
+  // no score? unknown
   else {
     // Finally, perform the needs met calculation if needed data are avail.
     // The numerator.

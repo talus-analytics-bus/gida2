@@ -44,15 +44,88 @@ const Map = ({
   // Get node type from entity role
   const nodeType = entityRole === "funder" ? "origin" : "target";
 
-  // Get map color scale to use.
+  const addNeedsMetDatum = ({
+    d,
+    dataNeedsMet,
+    iso3WithJeeAdded,
+    coreCapacities,
+    iso3,
+    jeeScores,
+  }) => {
+    const hasJee = jeeScores[iso3] !== undefined;
+    const hasDisbursementOrZero =
+      d.disbursed_funds === undefined || d.disbursed_funds >= 0;
+    if (hasJee) {
+      iso3WithJeeAdded.push(iso3);
+      let needs_met = -9999;
+      let avgJeeScore;
+      if (hasDisbursementOrZero) {
+        const scores = getJeeScores({
+          scores: jeeScores,
+          iso3,
+          coreCapacities,
+        });
+        avgJeeScore = d3.mean(scores, d => d.score);
+
+        needs_met = calculateNeedsMet({
+          datum: d,
+          avgCapScores: avgJeeScore,
+        });
+      }
+      dataNeedsMet.push({
+        ...d,
+        needs_met,
+        avgJeeScore,
+      });
+    }
+  };
+
+  const dataNeedsMet = [];
+  if (supportType === "needs_met") {
+    const iso3WithJeeAdded = [];
+    data.forEach(d => {
+      const iso3 = d.target !== undefined ? d.target.iso3 : d.origin.iso3;
+      addNeedsMetDatum({
+        d,
+        dataNeedsMet,
+        iso3WithJeeAdded,
+        coreCapacities,
+        iso3,
+        jeeScores,
+      });
+    });
+
+    // Add data for countries with JEE scores but no funds
+    for (const iso3 in jeeScores) {
+      if (!iso3WithJeeAdded.includes(iso3)) {
+        addNeedsMetDatum({
+          d: { target: { iso3 }, disbursed_funds: 0 },
+          dataNeedsMet,
+          iso3WithJeeAdded,
+          coreCapacities,
+          iso3,
+          jeeScores,
+        });
+      }
+    }
+
+    // make null values equal to highest val
+    const maxVal = d3.max(dataNeedsMet, d => d.needs_met);
+    dataNeedsMet.forEach(d => {
+      if (d.needs_met === null) d.needs_met = maxVal;
+    });
+  }
+
   const colorScale = getMapColorScale({
     supportType: supportType,
     data: data,
+    dataNeedsMet,
     flowType: flowType,
     jeeScores,
     coreCapacities,
     entityRole,
   });
+
   // console.log("colorScale.values");
   // console.log(colorScale.values);
   // console.log("colorScale");
@@ -231,42 +304,9 @@ const Map = ({
   let mapData;
   if (supportType !== "jee") {
     // add missing countries as zeros
-    const dataArr = Object.values(data);
+    const dataArr =
+      supportType === "needs_met" ? dataNeedsMet : Object.values(data);
     mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data: dataArr });
-
-    if (supportType === "needs_met") {
-      for (let iso3 in jeeScores) {
-        const match = mapData.find(d => d.id === parseInt(iso3));
-        if (match === undefined) {
-          // Get score avg.
-          const scores = getJeeScores({
-            scores: jeeScores,
-            iso3,
-            coreCapacities,
-          });
-          const avgJeeScore = d3.mean(scores, d => d.score);
-
-          const datum = {
-            disbursed_funds: 0,
-          };
-          const value = calculateNeedsMet({ datum, avgCapScores: avgJeeScore });
-          mapData.push({
-            iso3,
-            value: 0,
-            value_raw: value,
-            tooltip_label: 0,
-            color: value,
-            target: JSON.stringify([
-              {
-                iso3: "TBD",
-                name: "TBD",
-                type: "country",
-              },
-            ]),
-          });
-        }
-      }
-    }
   } else {
     const jeeScoreData = [];
     for (let iso3 in jeeScores) {

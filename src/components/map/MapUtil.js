@@ -101,24 +101,25 @@ export const getMapMetricValue = ({
     if (forTooltip) {
       return d["disbursed_funds"];
     } else {
-      // Get JEE score values.
-      const node = d.target ? d.target : d.origin;
-      if (node === undefined) return -9999;
-      else {
-        const iso3 = node.iso3;
-        const jeeScores = getJeeScores({
-          scores,
-          iso3,
-          coreCapacities,
-        });
-
-        const avgJeeScore = d3.mean(jeeScores, d => d.score);
-
-        return calculateNeedsMet({
-          datum: d,
-          avgCapScores: avgJeeScore,
-        });
-      }
+      return d.needs_met;
+      // // Get JEE score values.
+      // const node = d.target ? d.target : d.origin;
+      // if (node === undefined) return -9999;
+      // else {
+      //   const iso3 = node.iso3;
+      //   const jeeScores = getJeeScores({
+      //     scores,
+      //     iso3,
+      //     coreCapacities,
+      //   });
+      //
+      //   const avgJeeScore = d3.mean(jeeScores, d => d.score);
+      //
+      //   return calculateNeedsMet({
+      //     datum: d,
+      //     avgCapScores: avgJeeScore,
+      //   });
+      // }
     }
   }
   return -9999;
@@ -134,6 +135,7 @@ export const getMapMetricValue = ({
 export const getMapColorScale = ({
   supportType,
   data,
+  dataNeedsMet,
   flowType,
   jeeScores,
   coreCapacities,
@@ -147,7 +149,6 @@ export const getMapColorScale = ({
     const baseScale = d3[type || "scaleThreshold"]()
       .domain(domainForScale)
       .range(range);
-    // if (type === "scaleQuantile") baseScale.clamp(true);
 
     const colorScale = v => {
       if (type === "scaleLinear" && v === null)
@@ -195,58 +196,17 @@ export const getMapColorScale = ({
       type: "scaleQuantile",
     });
   } else if (supportType === "needs_met") {
-    // Get values for use in calculating quantile scales.
-    const fakeData = [];
-    for (let iso3 in jeeScores.scores) {
-      const match = data.find(d => d.target.iso3 === iso3);
-      if (match === undefined) {
-        // Get score avg.
-        const scores = getJeeScores({
-          scores: jeeScores,
-          iso3,
-          coreCapacities,
-        });
-        const avgJeeScore = d3.mean(scores, d => d.score);
-        fakeData.push({
-          disbursed_funds: 0,
-          target: [
-            {
-              iso3: "TBD",
-              name: "TBD",
-              type: "country",
-            },
-          ],
-        });
-      }
-    }
-    const values = data
-      .concat(fakeData)
+    const valueData = supportType === "needs_met" ? dataNeedsMet : data;
+    const values = valueData
       .map(d => {
-        // Get JEE score values.
-        const node = d.target ? d.target : d.origin;
-        const iso3 = node.iso3;
-        const allScores = getJeeScores({
-          scores: jeeScores,
-          iso3,
-          coreCapacities,
-        });
-
-        const avgJeeScore = d3.mean(allScores, d => d.score);
-
-        return calculateNeedsMet({
-          datum: d,
-          avgCapScores: avgJeeScore, // TODO
-        });
+        return d.needs_met;
       })
-      .filter(d => d !== null && d !== "unknown" && d >= 0);
+      .filter(d => d >= 0);
 
     return colorScaleMaker({
       domain: [d3.min(values), d3.max(values)],
-      // domain: values,
       range: [blues[0], blues[blues.length - 1]],
-      // range: blues,
       type: "scaleLinear",
-      // type: "scaleQuantile"
     });
   } else if (supportType === "jee") {
     return colorScaleMaker({
