@@ -764,20 +764,10 @@ const getComponentData = async ({
     flowTypeInfo: FlowType({}),
     outbreaks: Outbreak({}),
     stakeholders: Stakeholder({ by: "id" }),
-
-    // // Information about the entity
-    // flowBundlesFocusSources: FlowBundleFocusQuery({
-    //   ...baseQueryParams,
-    //   focus_node_type: "origin",
-    // }),
-    // flowBundlesFocusTargets: FlowBundleFocusQuery({
-    //   ...baseQueryParams,
-    //   focus_node_type: "target",
-    // }),
-    // outbreaks: OutbreakQuery({}),
   };
 
   // Get query results.
+  setLoaded(false);
   const results = await execute({ queries });
   setLoaded(true);
 
