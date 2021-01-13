@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import classNames from "classnames";
 import styles from "./orgs.module.scss";
@@ -57,18 +57,28 @@ const Orgs = ({
   ...props
 }) => {
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = React.useState("disbursed");
+  const [transactionType, setTransactionType] = useState("disbursed");
 
   // Track support type selected for the map
-  const [supportType, setSupportType] = React.useState("funds");
+  const [supportType, setSupportType] = useState("funds");
 
   // Track main map title
-  const [mapTitle, setMapTitle] = React.useState("funds");
+  const [mapTitle, setMapTitle] = useState("funds");
 
-  const [tooltipData, setTooltipData] = React.useState(undefined);
-  const [revealed, setRevealed] = React.useState(false);
-  const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
-  const [hoveredEntity, setHoveredEntity] = React.useState(undefined);
+  const [tooltipData, setTooltipData] = useState(undefined);
+  const [revealed, setRevealed] = useState(false);
+  const [tooltipNodeData, setTooltipNodeData] = useState(undefined);
+  const [hoveredEntity, setHoveredEntity] = useState(undefined);
+  // if (revealed) {
+  //   console.log("\ntooltipData");
+  //   console.log(tooltipData);
+  //   console.log("tooltipNodeData");
+  //   console.log(tooltipNodeData);
+  //   console.log("revealed");
+  //   console.log(revealed);
+  //   console.log("hoveredEntity");
+  //   console.log(hoveredEntity);
+  // }
 
   // Define filter content
   const outbreakOptions = data.outbreaks.map(d => {
@@ -369,11 +379,11 @@ const Orgs = ({
 
       // Get tooltip data on hover
       const tooltipData =
-        tooltipNodeData !== undefined
+        d !== undefined
           ? getInfoBoxData({
               nodeDataToCheck: d,
               mapData,
-              datum: datum,
+              datum,
               supportType,
               jeeScores: [],
               coreCapacities: [],
@@ -394,55 +404,59 @@ const Orgs = ({
       setTooltipNodeData(d);
       setTooltipData(tooltipData);
     };
+    const tableColumns = [
+      {
+        title: role,
+        prop: roleSlug,
+        type: "text",
+        func: d => d[roleSlug],
+        render: d => d,
+      },
+      {
+        title: flowTypeDisplayName,
+        prop: "value",
+        type: "num",
+        className: d => (d > 0 ? "num" : "num-with-text"),
+        func: d => d.value_raw,
+        render: d => Util.formatValue(d, flowType),
+      },
+      {
+        title: "Stakeholder slug (for data binding)",
+        prop: "shID",
+        type: "text",
+        hide: true,
+      },
+      {
+        title: "Stakeholder name (for searching)",
+        prop: "stakeholderName",
+        type: "text",
+        hide: true,
+      },
+    ];
     tableInstances.push(
       <div>
         <h2>{subtitleJsx}</h2>
         <TableInstance
+          updateVar={[data, supportType, transactionType]}
           key={roleSlug}
           tooltipFunc={function(d) {
             return {
               "data-tip": "",
               "data-for": "orgTooltip",
-              onMouseOver: () =>
+              onMouseEnter: () => {
                 updateTooltipData({
                   d: data.stakeholders[d.shID],
                   nodeType: roleSlug,
                   dataKey,
                   mapData: [d],
-                }),
+                });
+                ReactTooltip.rebuild();
+              },
             };
           }}
           paging={true}
           noNativeSorting={true}
-          tableColumns={[
-            {
-              title: role,
-              prop: roleSlug,
-              type: "text",
-              func: d => d[roleSlug],
-              render: d => d,
-            },
-            {
-              title: flowTypeDisplayName,
-              prop: "value",
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              func: d => d.value_raw,
-              render: d => Util.formatValue(d, flowType),
-            },
-            {
-              title: "Stakeholder slug (for data binding)",
-              prop: "shID",
-              type: "text",
-              hide: true,
-            },
-            {
-              title: "Stakeholder name (for searching)",
-              prop: "stakeholderName",
-              type: "text",
-              hide: true,
-            },
-          ]}
+          tableColumns={tableColumns}
           tableData={orgTableData}
           sortByProp={"value"}
         />
@@ -450,7 +464,7 @@ const Orgs = ({
     );
   });
 
-  ReactTooltip.rebuild();
+  useEffect(ReactTooltip.rebuild, []);
 
   return (
     <div className={styles.orgs}>

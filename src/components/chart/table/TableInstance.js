@@ -1,5 +1,6 @@
 import * as d3 from "d3/dist/d3.min";
 import React, { useState, useEffect } from "react";
+import ReactTooltip from "react-tooltip";
 import classNames from "classnames";
 import { DataTable } from "react-data-components";
 import { getTableRowData } from "../../misc/Data.js";
@@ -15,6 +16,7 @@ const TableInstance = ({
   tableData,
   sortByProp,
   useRowDataAsIs,
+  updateVar = [tableData, tableColumns],
   filterFcn = d => true,
   ...props
 }) => {
@@ -86,7 +88,7 @@ const TableInstance = ({
   useEffect(() => {
     setUpdateCount(updateCount + 1);
     setComponent(buildTable(tableData));
-  }, [tableData, tableColumns]);
+  }, [...updateVar]);
   return component;
 };
 
