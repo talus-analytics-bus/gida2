@@ -44,6 +44,7 @@ const Explore = ({
 
   // Track whether components are loaded or not
   const [loaded, setLoaded] = useState(false);
+  const [tabInitialized, setTabInitialized] = useState(false);
 
   // Track entity role selected for the map
   const [entityRole, setEntityRole] = useState("recipient"); // hi
@@ -85,6 +86,7 @@ const Explore = ({
 
     // Get rid of fund type default
     setLoaded(false);
+    setTabInitialized(false);
     setCoreCapacities([]);
     setOutbreakResponses([]);
 
@@ -118,6 +120,11 @@ const Explore = ({
       });
     }
   }, [activeTab]);
+
+  // when data loaded, set tab to initialized if not already
+  useEffect(() => {
+    if (loaded && !tabInitialized) setTabInitialized(true);
+  }, [loaded]);
 
   useEffect(() => {
     // Set isDark defaults.
@@ -239,9 +246,16 @@ const Explore = ({
           </div>
           <div className={styles.controls}>
             <div className={styles.buttons}>
+              <Loading
+                {...{ small: true, loaded: loaded || !tabInitialized }}
+              />
               {pageHeaderData.entityRoleToggle}
               {activeTab === "map" && (
-                <div className={styles.darkToggle}>
+                <div
+                  className={classNames(styles.darkToggle, {
+                    [styles.shown]: tabInitialized,
+                  })}
+                >
                   <Toggle
                     checked={props.isDark}
                     knobColor="#ccc"
@@ -264,7 +278,7 @@ const Explore = ({
             </div>
           </div>
         </div>
-        <Loading loaded={loaded}>
+        <Loading loaded={loaded || tabInitialized}>
           <div
             className={classNames(styles.content, {
               [styles.dark]: props.isDark,

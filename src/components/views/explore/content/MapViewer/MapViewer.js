@@ -750,6 +750,7 @@ const getComponentData = async ({
   };
 
   // Get query results.
+  setLoaded(false);
   const results = await execute({ queries });
   setLoaded(true);
 

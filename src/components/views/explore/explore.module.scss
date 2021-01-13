@@ -31,6 +31,10 @@
     flex-flow: row;
     position: relative;
     justify-content: center;
+    opacity: 0;
+    &.shown {
+      opacity: 1;
+    }
     > span {
       margin-right: 0;
     }
