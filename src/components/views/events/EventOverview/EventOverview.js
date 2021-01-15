@@ -7,7 +7,34 @@ import styles from "./eventoverview.module.scss";
 import SourceText from "../../../common/SourceText/SourceText";
 import { DurationTimeline, EventNumberTotals } from "..";
 
-const EventOverview = ({ name, desc, start, start_desc, end, end_desc }) => {
+const EventOverview = ({
+  name,
+  desc,
+  start,
+  start_desc,
+  end,
+  end_desc,
+  was_pheic,
+  pheic_start,
+  pheic_end,
+}) => {
+  // FUNCTIONS //
+  const getTimelinePoints = () => {
+    const pheicPoints = [];
+    if (was_pheic) {
+      pheicPoints.push({ date: pheic_start, desc: "WHO declared PHEIC" });
+      pheicPoints.push({ date: pheic_end, desc: "WHO lifted PHEIC" });
+    }
+    return [
+      { date: start, desc: start_desc },
+      { date: end, desc: end_desc },
+    ].concat(pheicPoints);
+  };
+
+  // CONSTANTS //
+  const points = getTimelinePoints();
+
+  // JSX //
   return (
     <div className={styles.eventOverview}>
       <div className={styles.name}>{name}</div>
@@ -17,10 +44,7 @@ const EventOverview = ({ name, desc, start, start_desc, end, end_desc }) => {
       </p>
       <DurationTimeline
         {...{
-          points: [
-            { date: start, desc: start_desc },
-            { date: end, desc: end_desc },
-          ],
+          points,
         }}
       />
       <EventNumberTotals {...{ type: "funding" }} />

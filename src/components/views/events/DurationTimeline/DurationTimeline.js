@@ -14,13 +14,7 @@ import { getIntArray, floatToPctString } from "../../../misc/Util";
 // local components
 import Dot from "./Dot/Dot";
 
-const DurationTimeline = ({
-  points = [
-    { date: "2012-01-05", desc: "Test point 1" },
-    { date: "2012-05-15", desc: "Test point 2" },
-    { date: "2012-08-02", desc: "Test point 3" },
-  ],
-}) => {
+const DurationTimeline = ({ points }) => {
   // FUNCTIONS //
   // get timeline data from points
   const getTimelineDataFromPoints = ps => {
@@ -124,8 +118,9 @@ const DurationTimeline = ({
   // EFFECTS //
   // rebuild tooltips on load
   useEffect(ReactTooltip.rebuild, []);
+  ReactTooltip.rebuild();
 
-  // TODO
+  // JSX //
   return (
     <>
       <div className={styles.durationTimeline}>
@@ -142,7 +137,7 @@ const DurationTimeline = ({
           />
           <div className={styles.dots}>
             {dots.map(d => (
-              <Dot {...{ ...d }} />
+              <Dot {...{ ...d, key: d.date }} />
             ))}
           </div>
         </div>
