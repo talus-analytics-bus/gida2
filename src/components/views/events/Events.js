@@ -61,7 +61,11 @@ const Events = ({ id }) => {
               </div>
               <div className={classNames(styles.col, styles.right)}>
                 <EventSidebar
-                  {...{ countryImpacts, pathogen: data.pathogen }}
+                  {...{
+                    countryImpacts,
+                    pathogen: data.pathogen,
+                    mcms_during_event: data.mcms_during_event,
+                  }}
                 />
               </div>
             </div>

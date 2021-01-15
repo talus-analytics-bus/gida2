@@ -41,24 +41,32 @@ const PathogenBox = ({
     },
     {
       icon: syringeSvg,
-      title: "Medical countermeasures available during event",
+      title: "Medical countermeasures available at onset of event",
       data: mcms_during_event,
       fmt: v => v,
     },
   ];
   // FUNCTIONS //
   const getFacts = () => {
-    return factDefs
-      .filter(d => !NONE_VALS.includes(d.data))
-      .map(d => (
-        <div className={styles.fact}>
-          <img src={d.icon} className={styles.icon} />
-          <div className={styles.titleAndValue}>
-            <div className={styles.title}>{d.title}</div>
-            <div className={styles.value}>{d.fmt(d.data)}</div>
+    // filter out null and empty values
+    return (
+      factDefs
+        .filter(d => {
+          const notNone = !NONE_VALS.includes(d.data);
+          if (notNone) return typeof d.data !== "object" || d.data.length > 0;
+          else return false;
+        })
+        // create JSX components
+        .map(d => (
+          <div className={styles.fact}>
+            <img src={d.icon} className={styles.icon} />
+            <div className={styles.titleAndValue}>
+              <div className={styles.title}>{d.title}</div>
+              <div className={styles.value}>{d.fmt(d.data)}</div>
+            </div>
           </div>
-        </div>
-      ));
+        ))
+    );
   };
 
   // FUNCTION CALLS //
