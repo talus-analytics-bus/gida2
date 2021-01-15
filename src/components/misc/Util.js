@@ -841,10 +841,11 @@ Util.formatIncidence = inc => {
 Util.decimalizeOne = d3.format(".1f");
 
 // Comma-ize numbers
-Util.comma = function(num) {
+export const comma = function(num) {
   const resultTmp = d3.format(",.0f")(num);
   return resultTmp;
 };
+Util.comma = comma;
 
 Util.formatLabel = ft => {
   switch (ft) {

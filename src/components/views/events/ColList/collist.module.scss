@@ -10,13 +10,38 @@
     list-style-type: none;
     margin: 0;
     padding: 0;
-    li {
-      font-family: "open_sanssemibold", sans-serif;
+  }
+  .items li,
+  .globalCount {
+    font-family: "open_sanssemibold", sans-serif;
+    font-weight: 600;
+    color: #125088;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    font-size: 1.6rem;
+  }
+  .globalCount {
+    color: gray;
+    .global {
       font-weight: 600;
-      color: #125088;
-      line-height: 1.2;
-      margin-bottom: 10px;
-      font-size: 1.6rem;
+    }
+    .count {
+      font-weight: normal;
+      font-family: "Rawline", serif;
+    }
+  }
+  .toggle {
+    grid-column: 2;
+    width: max-content;
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+    color: #125088;
+    margin-bottom: 10px;
+    &:hover {
+      text-decoration: underline;
     }
   }
 }
