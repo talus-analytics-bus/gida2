@@ -36,7 +36,13 @@
       .cols {
         display: grid;
         grid-template-columns: 3fr 2fr;
-        @include spaceChildrenHoriz($spacing * 5);
+        $col-spacing: $spacing * 3;
+        .col:first-child {
+          margin-right: $col-spacing;
+        }
+        .col:last-child {
+          margin-left: $col-spacing;
+        }
         .col {
           @include spaceChildrenVert($spacing * 2);
         }
