@@ -41,6 +41,11 @@
     height: 6px;
     background-color: #125088;
   }
+  .arrow {
+    position: absolute;
+    height: 15px;
+    transform: translate(-1px);
+  }
   .years {
     width: 100%;
     display: flex;

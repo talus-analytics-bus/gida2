@@ -7,6 +7,7 @@ import * as d3 from "d3/dist/d3.min";
 // styles and assets
 import styles from "./durationtimeline.module.scss";
 import tooltipStyles from "../../../common/tooltip.module.scss";
+import arrowSvg from "./svg/arrow.svg";
 
 // utility
 import { getIntArray, floatToPctString } from "../../../misc/Util";
@@ -117,23 +118,16 @@ const DurationTimeline = ({ points, isOngoing }) => {
     if (ps.length == 0) return [0, 0];
     else {
       const [s, e] = [ps[0].x, ps[ps.length - 1].x];
-      console.log("s");
-      console.log(s);
-      console.log("e");
-      console.log(e);
-      console.log("r");
-      console.log(r);
-
       const l = !isOngoing ? e - s : r - s;
       const w = floatToPctString(l);
-      return [floatToPctString(s), w];
+      const arrowStart = floatToPctString(l + s);
+      return [floatToPctString(s), w, arrowStart];
     }
   };
-  const [thickStart, thickWidth] = getThickStartEndFromPoints(
+  const [thickStart, thickWidth, arrowStart] = getThickStartEndFromPoints(
     dots,
     getRelPos({ m: moment() }, left)
   );
-  console.log([thickStart, thickWidth]);
 
   // CONSTANTS //
   const ongoingText = isOngoing ? <> (ongoing)</> : null;
@@ -157,6 +151,13 @@ const DurationTimeline = ({ points, isOngoing }) => {
             style={{ left: thickStart, width: thickWidth }}
             className={styles.thickTrack}
           />
+          {isOngoing && (
+            <img
+              style={{ left: arrowStart }}
+              src={arrowSvg}
+              className={styles.arrow}
+            />
+          )}
           <div className={styles.dots}>
             {dots.map(d => (
               <Dot {...{ ...d, key: d.date }} />
