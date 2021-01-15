@@ -5,13 +5,14 @@ import Loading from "../../common/Loading/Loading";
 import styles from "./totalbyflowtype.module.scss";
 
 // FC for Details.
-const TotalByFlowType = ({ flowType, data, ...props }) => {
+const TotalByFlowType = ({ flowType, data, format, ...props }) => {
   const amount = getAmountByFlowType(flowType, data);
   return (
     amount !== null && (
       <div
         className={classNames(styles.totalByFlowType, {
           [styles.inline]: props.inline,
+          [styles.event]: format === "event",
         })}
       >
         <div
@@ -23,10 +24,12 @@ const TotalByFlowType = ({ flowType, data, ...props }) => {
             {Util.formatValue(amount, flowType)}
           </Loading>
         </div>
-        <div className={styles.label}>
-          {Util.formatLabel(flowType)}
-          {props.label && <span>&nbsp;{props.label}</span>}
-        </div>
+        {format !== "event" && (
+          <div className={styles.label}>
+            {Util.formatLabel(flowType)}
+            {props.label && <span>&nbsp;{props.label}</span>}
+          </div>
+        )}
       </div>
     )
   );

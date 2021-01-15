@@ -16,6 +16,7 @@ import { renderExplore } from "./components/views/explore/Explore.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
 import { renderExport } from "./components/views/export/Export.js";
 import { renderAnalysisData } from "./components/views/analysis/AnalysisData.js";
+import Events from "./components/views/events/Events";
 import Details from "./components/views/details/Details";
 import Background from "./components/views/about/Background.js";
 import DataSources from "./components/views/about/DataSources.js";
@@ -299,6 +300,19 @@ const App = () => {
                         ghsaOnly: ghsaOnly,
                         setGhsaOnly: setGhsaOnly,
                         setLoadingSpinnerOn,
+                      }}
+                    />
+                  );
+                }}
+              />
+              <Route
+                exact
+                path="/events/:id"
+                render={d => {
+                  return (
+                    <Events
+                      {...{
+                        ...d.match.params, // id
                       }}
                     />
                   );

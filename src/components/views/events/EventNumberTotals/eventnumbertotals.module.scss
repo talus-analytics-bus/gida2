@@ -1,0 +1,27 @@
+@import "../../../../assets/styles/colors.scss";
+.eventFundingTotals {
+  .content {
+    display: flex;
+    flex-flow: row;
+    .icon {
+      margin-right: 30px;
+      img {
+        height: 40px;
+      }
+    }
+
+    .rows {
+      display: grid;
+      grid-template-rows: auto auto;
+      width: 100%;
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        .title {
+          @include sectionTitle;
+        }
+      }
+    }
+  }
+}

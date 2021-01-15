@@ -31,4 +31,12 @@
   &:not(:last-child) {
     margin-bottom: 10px;
   }
+
+  // formatting for special modes
+  &.event {
+    padding: 0;
+    .value {
+      font-weight: bold;
+    }
+  }
 }

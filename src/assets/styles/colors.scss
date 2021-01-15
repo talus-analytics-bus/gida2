@@ -124,6 +124,11 @@ $phone-width-narrow: 375px;
   }
 }
 
+@mixin sectionTitle {
+  text-transform: uppercase;
+  font-size: 1.6rem;
+}
+
 @mixin header {
   display: flex;
   flex-flow: row;
@@ -139,5 +144,10 @@ $phone-width-narrow: 375px;
 @mixin spaceChildrenHoriz($size) {
   > *:not(:last-child) {
     margin-right: $size;
+  }
+}
+@mixin spaceChildrenVert($size) {
+  > :not(:last-child) {
+    margin-bottom: $size;
   }
 }

@@ -6,12 +6,17 @@ import styles from "./sourcetext.module.scss";
 const SourceText = ({
   label = "Data sources",
   linkTo = "/about/data",
+  children,
   ...props
 }) => {
-  return (
-    <Link className={classNames(styles.sourceText)} to={linkTo}>
-      {label}
-    </Link>
-  );
+  const component =
+    children === undefined ? (
+      <Link className={classNames(styles.sourceText)} to={linkTo}>
+        {label}
+      </Link>
+    ) : (
+      <div className={styles.custom}>{children}</div>
+    );
+  return component;
 };
 export default SourceText;

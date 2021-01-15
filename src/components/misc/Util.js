@@ -467,7 +467,7 @@ Util.getColorScaleForMetric = (metric, domain) => {
   }
 };
 
-Util.getIntArray = (min, max) => {
+export const getIntArray = (min, max) => {
   const list = [];
   for (let i = min; i <= max; i++) {
     list.push(i);
@@ -974,7 +974,7 @@ Util.formatDatetime = input => {
     day: "numeric",
   });
 };
-Util.formatDate = input => {
+export const formatDate = input => {
   return input.toLocaleString("en-us", {
     month: "short",
     year: "numeric",
@@ -1065,6 +1065,15 @@ Util.getAttrFormatter = name => {
 export const isEmpty = d => {
   if (d === undefined || Object.keys(d).length === 0) return true;
   else return false;
+};
+
+// convert float to pct string with limited precision
+export const floatToPctString = f => {
+  const s = f.toString();
+  if (s.includes(".")) {
+    const sArr = s.split(".");
+    return `${sArr[0]}.${sArr[1].slice(0, 3)}%`;
+  } else return s.slice(0, 3);
 };
 
 export default Util;
