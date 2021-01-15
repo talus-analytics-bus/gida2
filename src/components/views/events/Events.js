@@ -21,11 +21,25 @@ const Events = ({ id }) => {
   // STATE //
   const [loaded, setLoaded] = useState(true);
   const [data, setData] = useState(defaultData);
+  const [countryImpacts, setCountryImpacts] = useState([]);
 
   // FUNCTIONS //
   const getData = async () => {
-    const results = await execute({ queries: { outbreak: Outbreak({ id }) } });
+    const results = await execute({
+      queries: { outbreak: Outbreak({ id, format: "event_page" }) },
+    });
     setData(results.outbreak);
+
+    const countryImpacts = results.outbreak.country_impacts.map(d => {
+      return {
+        label: d.name,
+        url:
+          d.name !== "Global"
+            ? `/details/${d.id}/${d.primary_role}`
+            : undefined,
+      };
+    });
+    setCountryImpacts(countryImpacts);
   };
 
   // EFFECT HOOKS //
@@ -46,7 +60,7 @@ const Events = ({ id }) => {
                 <EventOverview {...{ ...data }} />
               </div>
               <div className={classNames(styles.col, styles.right)}>
-                <EventSidebar />
+                <EventSidebar {...{ countryImpacts }} />
               </div>
             </div>
           </div>

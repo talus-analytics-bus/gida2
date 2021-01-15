@@ -217,12 +217,12 @@ export const Stakeholder = async function({
  * Get outbreak data from API.
  */
 
-export const Outbreak = async function({ id, ...props }) {
+export const Outbreak = async function({ id, format, ...props }) {
   // Define URL parameters //
   const params = new URLSearchParams();
   bindParams({
     params,
-    toCheck: [["id", id]],
+    toCheck: [["id", id], ["format", format]],
   });
 
   // Define URL params

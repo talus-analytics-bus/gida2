@@ -7,11 +7,11 @@ import styles from "./eventsidebar.module.scss";
 // local components
 import { MiniMap, ColList, PathogenBox } from "../";
 
-const EventSidebar = ({}) => {
+const EventSidebar = ({ countryImpacts }) => {
   return (
     <div className={styles.eventSidebar}>
       <MiniMap />
-      <ColList />
+      <ColList {...{ items: countryImpacts }} />
       <PathogenBox />
     </div>
   );
