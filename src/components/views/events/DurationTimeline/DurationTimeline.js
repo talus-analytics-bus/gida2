@@ -14,27 +14,34 @@ import { getIntArray, floatToPctString } from "../../../misc/Util";
 // local components
 import Dot from "./Dot/Dot";
 
-const DurationTimeline = ({ points }) => {
+const DurationTimeline = ({ points, isOngoing }) => {
   // FUNCTIONS //
+  const getRightLimit = (isOngoing, max) => {
+    if (!isOngoing) {
+      return moment(max).endOf("year");
+    } else return moment().endOf("year");
+  };
+
+  // convert string dates into moments
+  points.forEach(p => (p.m = moment(p.date)));
+
+  // get min and max
+  const max = d3.max(points, p => p.m);
+  const min = d3.min(points, p => p.m);
+
+  // define timeline bounds
+  const left = moment(min).startOf("year");
+  const right = getRightLimit(isOngoing, max);
+
+  // define relative positions of dots
+  const den = right - left;
+  const getRelPos = (p, l) => {
+    const num = p.m - left;
+    return 100.0 * (num / den);
+  };
+
   // get timeline data from points
   const getTimelineDataFromPoints = ps => {
-    // convert string dates into moments
-    ps.forEach(p => (p.m = moment(p.date)));
-
-    // get min and max
-    const max = d3.max(ps, p => p.m);
-    const min = d3.min(ps, p => p.m);
-
-    // define timeline bounds
-    const left = moment(min).startOf("year");
-    const right = moment(max).endOf("year");
-
-    // define relative positions of dots
-    const den = right - left;
-    const getRelPos = (p, l) => {
-      const num = p.m - left;
-      return 100.0 * (num / den);
-    };
     ps.forEach(p => {
       const x = getRelPos(p, left);
       p.x = x;
@@ -50,7 +57,9 @@ const DurationTimeline = ({ points }) => {
     };
 
     const getYearsFromPoints = (ps, l) => {
-      const ysTmp = [...new Set(ps.map(p => p.m.year()))].sort();
+      const ysData = ps.map(p => p.m.year());
+      if (isOngoing) ysData.push(moment().year());
+      const ysTmp = [...new Set(ysData)].sort();
       const ys = [];
       // fill in any missing years
       let prvY = ysTmp[0] - 1;
@@ -103,28 +112,41 @@ const DurationTimeline = ({ points }) => {
   // get dot positions
   const [dots, years, ticks] = getTimelineDataFromPoints(points);
 
-  const getThickStartEndFromPoints = ps => {
-    if (ps.length <= 1) return [0, 0];
+  const getThickStartEndFromPoints = (ps, r) => {
+    // has event ended?
+    if (ps.length == 0) return [0, 0];
     else {
       const [s, e] = [ps[0].x, ps[ps.length - 1].x];
-      const l = e - s;
-      // [s, s + l]
+      console.log("s");
+      console.log(s);
+      console.log("e");
+      console.log(e);
+      console.log("r");
+      console.log(r);
+
+      const l = !isOngoing ? e - s : r - s;
       const w = floatToPctString(l);
       return [floatToPctString(s), w];
     }
   };
-  const [thickStart, thickWidth] = getThickStartEndFromPoints(dots);
+  const [thickStart, thickWidth] = getThickStartEndFromPoints(
+    dots,
+    getRelPos({ m: moment() }, left)
+  );
+  console.log([thickStart, thickWidth]);
+
+  // CONSTANTS //
+  const ongoingText = isOngoing ? <> (ongoing)</> : null;
 
   // EFFECTS //
   // rebuild tooltips on load
-  useEffect(ReactTooltip.rebuild, []);
-  ReactTooltip.rebuild();
+  useEffect(ReactTooltip.rebuild, [dots]);
 
   // JSX //
   return (
     <>
       <div className={styles.durationTimeline}>
-        <div className={styles.title}>Duration</div>
+        <div className={styles.title}>Duration{ongoingText}</div>
         <div className={styles.track}>
           <div className={styles.ticks}>
             {ticks.map(t => (

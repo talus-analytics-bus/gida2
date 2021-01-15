@@ -7,6 +7,9 @@ import styles from "./eventoverview.module.scss";
 import SourceText from "../../../common/SourceText/SourceText";
 import { DurationTimeline, EventNumberTotals } from "..";
 
+// constants
+const NONE_VALS = [undefined, null, ""];
+
 const EventOverview = ({
   name,
   desc,
@@ -22,29 +25,49 @@ const EventOverview = ({
   const getTimelinePoints = () => {
     const pheicPoints = [];
     if (was_pheic) {
-      pheicPoints.push({ date: pheic_start, desc: "WHO declared PHEIC" });
-      pheicPoints.push({ date: pheic_end, desc: "WHO lifted PHEIC" });
+      pheicPoints.push({
+        date: pheic_start,
+        desc: "WHO declared PHEIC",
+        type: "pheic_start",
+      });
+      pheicPoints.push({
+        date: pheic_end,
+        desc: "WHO lifted PHEIC",
+        type: "pheic_end",
+      });
     }
-    return [
-      { date: start, desc: start_desc },
-      { date: end, desc: end_desc },
-    ].concat(pheicPoints);
+    const validPoints = [
+      { date: start, desc: start_desc, type: "start" },
+      { date: end, desc: end_desc, type: "end" },
+    ]
+      .concat(pheicPoints)
+      .filter(d => !NONE_VALS.includes(d.date));
+    return validPoints;
+  };
+
+  const getIsOngoing = ps => {
+    return !ps.some(d => d.type === "end");
   };
 
   // CONSTANTS //
   const points = getTimelinePoints();
+  const isOngoing = getIsOngoing(points);
+  const showDesc = !NONE_VALS.includes(desc);
 
   // JSX //
   return (
     <div className={styles.eventOverview}>
       <div className={styles.name}>{name}</div>
-      <p className={styles.desc}>
-        {desc}
-        <SourceText>Source: Placeholder</SourceText>
-      </p>
+      {showDesc && (
+        <p className={styles.desc}>
+          {desc}
+          <SourceText>Source: Placeholder</SourceText>
+        </p>
+      )}
       <DurationTimeline
         {...{
           points,
+          isOngoing,
         }}
       />
       <EventNumberTotals {...{ type: "funding" }} />
