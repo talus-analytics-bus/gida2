@@ -4,6 +4,9 @@ import EventSidebar from "./EventSidebar/EventSidebar";
 import EventBars from "./EventBars/EventBars";
 import Sankey from "./Sankey/Sankey";
 import EventNumberTotals from "./EventNumberTotals/EventNumberTotals";
+import MiniMap from "./MiniMap/MiniMap";
+import ColList from "./ColList/ColList";
+import PathogenBox from "./PathogenBox/PathogenBox";
 export {
   EventOverview,
   DurationTimeline,
@@ -11,4 +14,7 @@ export {
   EventBars,
   Sankey,
   EventNumberTotals,
+  MiniMap,
+  ColList,
+  PathogenBox,
 };

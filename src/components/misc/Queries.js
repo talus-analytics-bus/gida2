@@ -215,16 +215,19 @@ export const Stakeholder = async function({
 
 /**
  * Get outbreak data from API.
- * @method FlowType
  */
 
-export const Outbreak = async function({ ...props }) {
+export const Outbreak = async function({ id, ...props }) {
   // Define URL parameters //
-  const params = {};
+  const params = new URLSearchParams();
+  bindParams({
+    params,
+    toCheck: [["id", id]],
+  });
 
   // Define URL params
   const config = {
-    params: params,
+    params,
   };
 
   // Send request

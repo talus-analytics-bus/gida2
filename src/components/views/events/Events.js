@@ -7,7 +7,7 @@ import classNames from "classnames";
 import { purples } from "../../map/MapUtil.js";
 
 // local components
-import { EventOverview } from ".";
+import { EventOverview, EventSidebar } from ".";
 import { Outbreak, execute } from "../../misc/Queries";
 
 // import { EventOverview, EventSidebar, EventBars, Sankey } from ".";
@@ -25,7 +25,7 @@ const Events = ({ id }) => {
   // FUNCTIONS //
   const getData = async () => {
     const results = await execute({ queries: { outbreak: Outbreak({ id }) } });
-    setData(results.outbreak.find(d => +d.id === +id)); // TODO get one outbreak only
+    setData(results.outbreak);
   };
 
   // EFFECT HOOKS //
@@ -45,7 +45,9 @@ const Events = ({ id }) => {
               <div className={classNames(styles.col, styles.left)}>
                 <EventOverview {...{ ...data }} />
               </div>
-              <div className={classNames(styles.col, styles.right)} />
+              <div className={classNames(styles.col, styles.right)}>
+                <EventSidebar />
+              </div>
             </div>
           </div>
 
