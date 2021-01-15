@@ -907,7 +907,7 @@ Util.formatValue = (val, cn, units = true, round = false) => {
         else return val || 0;
       default:
         if (val === -9999 || val === "zzz") return undefined;
-        else return val;
+        else return comma(val);
     }
   }
 };

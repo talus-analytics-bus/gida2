@@ -47,9 +47,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:dev": "export REACT_APP_API_URL=http://localhost:8000 && react-scripts start",
+    "start:dev": "export REACT_APP_METRICS_API_URL=http://localhost:5002 && export REACT_APP_API_URL=http://localhost:8000 && react-scripts start",
     "build": "react-scripts build",
-    "build:dev": "REACT_APP_API_URL=https://gida-tracking-api-test.ghscosting.org && react-scripts build",
+    "build:dev": "REACT_APP_METRICS_API_URL=https://gida-tracking-metrics-api-test.ghscosting.org && REACT_APP_API_URL=https://gida-tracking-api-test.ghscosting.org && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tslint": "./node_modules/.bin/tslint",

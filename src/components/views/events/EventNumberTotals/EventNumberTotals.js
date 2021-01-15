@@ -42,7 +42,9 @@ const EventFundingTotals = ({ type }) => {
             {totalInfo.map(([displayLabel, flowType]) => (
               <div className={styles.col}>
                 <div className={styles.title}>{displayLabel}</div>
-                <TotalByFlowType {...{ flowType, data: [], format: "event" }} />
+                <TotalByFlowType
+                  {...{ flowType, data: null, format: "event" }}
+                />
               </div>
             ))}
           </div>

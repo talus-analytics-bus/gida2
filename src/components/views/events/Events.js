@@ -44,7 +44,8 @@ const Events = ({ id }) => {
 
   // EFFECT HOOKS //
   useLayoutEffect(() => {
-    getData();
+    // getData();
+    setChartData([]);
   }, []);
 
   return (
