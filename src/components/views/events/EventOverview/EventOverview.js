@@ -7,8 +7,8 @@ import styles from "./eventoverview.module.scss";
 import SourceText from "../../../common/SourceText/SourceText";
 import { DurationTimeline, EventNumberTotals } from "..";
 
-// constants
-const NONE_VALS = [undefined, null, ""];
+// utility
+import { NONE_VALS } from "../../../misc/Util";
 
 const EventOverview = ({
   name,

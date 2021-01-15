@@ -1,0 +1,40 @@
+@import "../../../../assets/styles/colors.scss";
+.pathogenBox {
+  background-color: #d9e8f5;
+  border-radius: $border-radius * 2;
+  padding: 20px;
+  .title {
+    @include sectionTitle;
+  }
+  .name {
+    @include title;
+    font-size: 2.4rem; // 24px
+    color: black;
+    text-transform: none;
+    margin-bottom: 20px;
+  }
+  .facts {
+    display: flex;
+    flex-flow: column;
+    font-size: 1.6rem;
+    @include spaceChildrenVert(20px);
+    .fact {
+      display: flex;
+      flex-flow: row;
+      align-items: flex-start;
+      .icon {
+        width: 17px;
+        margin: 3px 15px 0 0;
+      }
+      .titleAndValue {
+        display: flex;
+        flex-flow: column;
+        .title {
+          color: #125088;
+        }
+        .value {
+        }
+      }
+    }
+  }
+}

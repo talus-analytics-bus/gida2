@@ -60,7 +60,9 @@ const Events = ({ id }) => {
                 <EventOverview {...{ ...data }} />
               </div>
               <div className={classNames(styles.col, styles.right)}>
-                <EventSidebar {...{ countryImpacts }} />
+                <EventSidebar
+                  {...{ countryImpacts, pathogen: data.pathogen }}
+                />
               </div>
             </div>
           </div>

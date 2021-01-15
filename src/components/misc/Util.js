@@ -90,9 +90,10 @@ Util.isLightColor = color => {
 };
 
 // Return init cap version of input string
-Util.getInitCap = str => {
+export const getInitCap = str => {
   return str.charAt(0).toUpperCase() + str.slice(1, str.length);
 };
+Util.getInitCap = getInitCap;
 
 // Returns correct noun form of entity given their role
 Util.getRoleTerm = ({ type, role }) => {
@@ -1075,5 +1076,8 @@ export const floatToPctString = f => {
     return `${sArr[0]}.${sArr[1].slice(0, 3)}%`;
   } else return s.slice(0, 3);
 };
+
+// none values
+export const NONE_VALS = [undefined, null, ""];
 
 export default Util;
