@@ -14,6 +14,7 @@ const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
     : flowType;
 
   // STATE //
+  // const amount = "Unavailable";
   const amount = getAmountByFlowType(key, data);
 
   // FUNCTIONS //
@@ -78,6 +79,7 @@ const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
 
 const getAmountByFlowType = (flowType, data) => {
   if (data === undefined || data === null) return 0;
+  else if (data === "Unavailable") return "Unavailable";
   else {
     if (data.length !== undefined) {
       // Add them up

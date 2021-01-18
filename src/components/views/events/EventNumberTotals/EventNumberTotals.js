@@ -12,10 +12,6 @@ import TotalByFlowType from "../../../infographic/TotalByFlowType/TotalByFlowTyp
 import { execute, CumulativeCasesOrDeaths } from "../../../misc/Queries";
 
 const EventNumberTotals = ({ type, eventData }) => {
-  if (type === "impacts") {
-    console.log("eventData");
-    console.log(eventData);
-  }
   // STATE //
   // data arrays from which totals are calculated.
   // arrays should contain one el. per country with cumu. totals
@@ -74,6 +70,8 @@ const EventNumberTotals = ({ type, eventData }) => {
 
   // CONSTANTS //
   const totalInfo = getTotalInfo(type);
+  const hasEventData =
+    eventData === undefined || Object.values(eventData).some(d => d !== null);
 
   return (
     <div className={styles.eventFundingTotals}>
@@ -98,7 +96,7 @@ const EventNumberTotals = ({ type, eventData }) => {
               </div>
             ))}
           </div>
-          <SourceText>Source: Placeholder</SourceText>
+          {hasEventData && <SourceText>Source: Placeholder</SourceText>}
         </div>
       </div>
     </div>

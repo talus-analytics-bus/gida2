@@ -75,7 +75,6 @@ const EventOverview = ({
       <EventNumberTotals
         {...{
           type: "funding",
-          eventData: { case_data_id: 75, death_data_id: 95 },
         }}
       />
       <EventNumberTotals

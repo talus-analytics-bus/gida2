@@ -252,14 +252,17 @@ export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
     casesOrDeaths === "cases"
       ? eventData.case_data_id
       : eventData.death_data_id;
-  const res = await ObservationQuery({
-    metric_id,
-    temporal_resolution: "daily",
-    start_date: "2021-01-17",
-    end_date: "2021-01-17",
-    spatial_resolution: "country",
-  });
-  return res;
+  if (metric_id === null) return "Unavailable";
+  else {
+    const res = await ObservationQuery({
+      metric_id,
+      temporal_resolution: "daily",
+      start_date: "2021-01-17",
+      end_date: "2021-01-17",
+      spatial_resolution: "country",
+    });
+    return res;
+  }
 };
 
 /**
