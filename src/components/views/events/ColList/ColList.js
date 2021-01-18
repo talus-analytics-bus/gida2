@@ -8,6 +8,9 @@ import styles from "./collist.module.scss";
 // utility
 import { comma } from "../../../misc/Util";
 
+// local components
+import Loading from "../../../common/Loading/Loading";
+
 const ColList = ({ items = [], max = 10 }) => {
   // STATE //
   const [viewAll, setViewAll] = useState(false);
@@ -55,8 +58,10 @@ const ColList = ({ items = [], max = 10 }) => {
   return (
     <div className={styles.colList}>
       <div className={styles.title}>Affected countries</div>
-      {globalCount}
-      {list}
+      <Loading loaded={items.length > 0}>
+        {globalCount}
+        {list}
+      </Loading>
     </div>
   );
 };

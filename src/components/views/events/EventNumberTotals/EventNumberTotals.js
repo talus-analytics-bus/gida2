@@ -11,7 +11,7 @@ import SourceText from "../../../common/SourceText/SourceText";
 import TotalByFlowType from "../../../infographic/TotalByFlowType/TotalByFlowType";
 import { execute, CumulativeCasesOrDeaths } from "../../../misc/Queries";
 
-const EventNumberTotals = ({ type, eventData }) => {
+const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
   // STATE //
   // data arrays from which totals are calculated.
   // arrays should contain one el. per country with cumu. totals
@@ -38,6 +38,13 @@ const EventNumberTotals = ({ type, eventData }) => {
           casesOrDeaths: "cases",
           eventData,
         });
+        if (afterCaseData !== undefined) {
+          afterCaseData(
+            data.map(d => {
+              return { iso3: d.place_iso3 };
+            })
+          );
+        }
         setCaseData(data);
       };
     } else if (type === "total_deaths") {

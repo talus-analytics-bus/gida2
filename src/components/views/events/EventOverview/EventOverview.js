@@ -22,6 +22,7 @@ const EventOverview = ({
   pheic_end,
   case_data_id,
   death_data_id,
+  afterCaseData,
 }) => {
   // FUNCTIONS //
   const getTimelinePoints = () => {
@@ -78,7 +79,11 @@ const EventOverview = ({
         }}
       />
       <EventNumberTotals
-        {...{ type: "impacts", eventData: { case_data_id, death_data_id } }}
+        {...{
+          type: "impacts",
+          eventData: { case_data_id, death_data_id },
+          afterCaseData,
+        }}
       />
     </div>
   );

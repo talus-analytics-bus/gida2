@@ -51,8 +51,6 @@ const FundsByYear = ({
     }
 
     // apply filters to the fund type
-    console.log("fundType");
-    console.log(fundType);
     if (fundType === "true") {
       filters["Flow.is_ghsa"] = [true];
     } else if (fundType === "event") {
@@ -111,7 +109,6 @@ const FundsByYear = ({
   }, [id, entityRole]);
 
   const getViewType = () => {
-    console.log(typeof fundType);
     if (data.no_data === true && fundType === "false") {
       return "no_data";
     } else if (data.inkind_only === true && fundType === "false") {

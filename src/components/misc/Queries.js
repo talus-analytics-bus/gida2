@@ -245,6 +245,13 @@ export const Outbreak = async function({ id, format, ...props }) {
   return res.data;
 };
 
+// sort metric responses by value amount
+const sortByValAmount = (a, b) => {
+  if (a.value > b.value) return -1;
+  else if (a.value < b.value) return 1;
+  else return 0;
+};
+
 export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
   // return cumulative cases by country for all countries that have
   // observations with `metric_id`
@@ -257,11 +264,9 @@ export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
     const res = await ObservationQuery({
       metric_id,
       temporal_resolution: "daily",
-      start_date: "2021-01-17",
-      end_date: "2021-01-17",
       spatial_resolution: "country",
     });
-    return res;
+    return res.sort(sortByValAmount);
   }
 };
 
