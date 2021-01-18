@@ -1,4 +1,8 @@
+// 3rd party libs
 import axios from "axios";
+
+// local libs
+import ObservationQuery from "./ObservationQuery";
 
 // constants
 const NONE_VALS = [null, undefined];
@@ -239,6 +243,20 @@ export const Outbreak = async function({ id, format, ...props }) {
 
   // Return response data
   return res.data;
+};
+
+export const CumulativeCases = async () => {
+  // return cumulative cases by country for all countries that have
+  // observations with `metric_id`
+  const metric_id = 75;
+  const res = await ObservationQuery({
+    metric_id,
+    temporal_resolution: "daily",
+    start_date: "2021-01-17",
+    end_date: "2021-01-17",
+    spatial_resolution: "country",
+  });
+  return res;
 };
 
 /**

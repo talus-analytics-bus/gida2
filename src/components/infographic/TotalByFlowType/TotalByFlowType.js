@@ -5,7 +5,6 @@ import Loading from "../../common/Loading/Loading";
 import styles from "./totalbyflowtype.module.scss";
 
 // local components
-import { execute } from "../../misc/Queries";
 import ObservationQuery from "../../misc/ObservationQuery";
 
 // FC for Details.
@@ -15,31 +14,35 @@ const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
     : flowType;
 
   // STATE //
-  const [chartData, setChartData] = useState(data || null);
-  const amount = getAmountByFlowType(key, chartData);
+  const amount = getAmountByFlowType(key, data);
 
   // FUNCTIONS //
-  // get data
   const getData = async () => {
-    // TODO replace with `dataFunc`
-    const metric_id = 75;
-    const queries = {
-      chartData: ObservationQuery({
-        metric_id,
-        temporal_resolution: "daily",
-        start_date: "2020-07-12",
-        end_date: "2020-07-12",
-        spatial_resolution: "country",
-        place_name: "Italy",
-      }),
-    };
-    const results = await execute({ queries });
-    setChartData(results.chartData);
+    if (dataFunc !== undefined) await dataFunc();
   };
+
+  // // FUNCTIONS //
+  // // get data
+  // const getData = async () => {
+  //   // TODO replace with `dataFunc`
+  //   const metric_id = 75;
+  //   const queries = {
+  //     chartData: ObservationQuery({
+  //       metric_id,
+  //       temporal_resolution: "daily",
+  //       start_date: "2020-07-12",
+  //       end_date: "2020-07-12",
+  //       spatial_resolution: "country",
+  //       place_name: "Italy",
+  //     }),
+  //   };
+  //   const results = await execute({ queries });
+  //   setChartData(results.chartData);
+  // };
 
   // EFFECT HOOKS //
   useEffect(() => {
-    if (chartData === null) {
+    if (data === null) {
       getData();
     }
   }, [data]);
@@ -58,7 +61,7 @@ const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
             [styles.unknown]: amount === "unknown",
           })}
         >
-          <Loading loaded={chartData !== null}>
+          <Loading loaded={data !== null}>
             {Util.formatValue(amount, flowType)}
           </Loading>
         </div>
