@@ -1,5 +1,6 @@
 // 3rd party libs
 import axios from "axios";
+import * as d3 from "d3/dist/d3.min";
 
 // local libs
 import ObservationQuery from "./ObservationQuery";
@@ -259,8 +260,16 @@ export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
     casesOrDeaths === "cases"
       ? eventData.case_data_id
       : eventData.death_data_id;
-  if (metric_id === null) return "Unavailable";
-  else {
+  if (metric_id === null) {
+    if (eventData.cases_and_deaths_json === undefined) {
+      return "Unavailable";
+    } else {
+      return eventData.cases_and_deaths_json.map(d => {
+        return { value: d[casesOrDeaths] };
+      });
+      // return d3.sum(eventData.cases_and_deaths_json, d => d[casesOrDeaths]);
+    }
+  } else {
     const res = await ObservationQuery({
       metric_id,
       temporal_resolution: "daily",

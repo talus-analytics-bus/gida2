@@ -11,6 +11,7 @@ import { DurationTimeline, EventNumberTotals } from "..";
 import { NONE_VALS } from "../../../misc/Util";
 
 const EventOverview = ({
+  // event attributes from database
   name,
   desc,
   start,
@@ -22,6 +23,9 @@ const EventOverview = ({
   pheic_end,
   case_data_id,
   death_data_id,
+  cases_and_deaths_json,
+
+  // additional params.
   afterCaseData,
 }) => {
   // FUNCTIONS //
@@ -81,7 +85,7 @@ const EventOverview = ({
       <EventNumberTotals
         {...{
           type: "impacts",
-          eventData: { case_data_id, death_data_id },
+          eventData: { case_data_id, death_data_id, cases_and_deaths_json },
           afterCaseData,
         }}
       />
