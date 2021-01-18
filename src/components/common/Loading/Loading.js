@@ -5,30 +5,34 @@ import styles from "./loading.module.scss";
 import spinnerImg from "../../../assets/images/spinner.svg";
 
 const Loading = ({
-  loaded,
-  placeholderText = "Loading...",
-  children,
+  loaded = true,
   small = false,
+  slideUp = false,
+  children,
   margin,
   top,
+  minHeight,
   ...props
 }) => {
   return (
     <>
       {!loaded && (
         <div
-          style={{ margin, top }}
+          style={{ margin, top, minHeight }}
           className={classNames(styles.placeholder, { [styles.small]: small })}
         >
           <div className={styles.imgContainer}>
             <img src={spinnerImg} />
           </div>
-          {
-            // <span>{placeholderText}</span>
-          }
         </div>
       )}
-      <div className={classNames(styles.content, { [styles.shown]: loaded })}>
+      <div
+        className={classNames(styles.content, {
+          [styles.shown]: loaded,
+          [styles.up]: loaded && slideUp,
+          [styles.down]: !loaded && slideUp,
+        })}
+      >
         {children}
       </div>
     </>

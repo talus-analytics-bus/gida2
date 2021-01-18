@@ -19,7 +19,7 @@ const Events = ({ id }) => {
   };
 
   // STATE //
-  const [loaded, setLoaded] = useState(true);
+  const [loaded, setLoaded] = useState(false);
   const [data, setData] = useState(defaultData);
   const [countryImpacts, setCountryImpacts] = useState([]);
 
@@ -40,6 +40,7 @@ const Events = ({ id }) => {
       };
     });
     setCountryImpacts(countryImpacts);
+    setLoaded(true);
   };
 
   // EFFECT HOOKS //
@@ -48,16 +49,15 @@ const Events = ({ id }) => {
   }, []);
 
   return (
-    <Loading {...{ loaded }}>
-      {/* page header, color band, name */}
-      <div className={classNames(styles.events)}>
-        <div className={classNames("pageContainer", styles.content)}>
-          <div className={styles.title}>Outbreak event</div>
+    <div className={classNames(styles.events)}>
+      <div className={classNames("pageContainer", styles.content)}>
+        <div className={styles.title}>Outbreak event</div>
 
+        <Loading {...{ loaded, slideUp: true, minHeight: "75vh" }}>
           <div className={styles.card}>
             <div className={styles.cols}>
               <div className={classNames(styles.col, styles.left)}>
-                <EventOverview {...{ ...data }} />
+                {loaded && <EventOverview {...{ ...data }} />}
               </div>
               <div className={classNames(styles.col, styles.right)}>
                 <EventSidebar
@@ -70,12 +70,12 @@ const Events = ({ id }) => {
               </div>
             </div>
           </div>
+        </Loading>
 
-          <div className={styles.subsections} />
-        </div>
-        <div className={styles.band} />
+        <div className={styles.subsections} />
       </div>
-    </Loading>
+      <div className={styles.band} />
+    </div>
   );
 };
 

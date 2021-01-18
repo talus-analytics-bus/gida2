@@ -245,10 +245,13 @@ export const Outbreak = async function({ id, format, ...props }) {
   return res.data;
 };
 
-export const CumulativeCases = async () => {
+export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
   // return cumulative cases by country for all countries that have
   // observations with `metric_id`
-  const metric_id = 75;
+  const metric_id =
+    casesOrDeaths === "cases"
+      ? eventData.case_data_id
+      : eventData.death_data_id;
   const res = await ObservationQuery({
     metric_id,
     temporal_resolution: "daily",

@@ -20,6 +20,8 @@ const EventOverview = ({
   was_pheic,
   pheic_start,
   pheic_end,
+  case_data_id,
+  death_data_id,
 }) => {
   // FUNCTIONS //
   const getTimelinePoints = () => {
@@ -70,8 +72,15 @@ const EventOverview = ({
           isOngoing,
         }}
       />
-      <EventNumberTotals {...{ type: "funding" }} />
-      <EventNumberTotals {...{ type: "impacts" }} />
+      <EventNumberTotals
+        {...{
+          type: "funding",
+          eventData: { case_data_id: 75, death_data_id: 95 },
+        }}
+      />
+      <EventNumberTotals
+        {...{ type: "impacts", eventData: { case_data_id, death_data_id } }}
+      />
     </div>
   );
 };

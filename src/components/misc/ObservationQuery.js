@@ -42,7 +42,9 @@ const ObservationQuery = async function({
 
   // CONSTANTS //
   end_date = typeof end_date !== "undefined" ? end_date : start_date;
-  const last_datum_date = await getLastDatumDate(metric_id === 75);
+  const last_datum_date = await getLastDatumDate(
+    metric_id === 75 || metric_id === 95
+  );
   if (last_datum_date !== null) {
     end_date = last_datum_date;
     start_date = last_datum_date;
@@ -68,7 +70,7 @@ const ObservationQuery = async function({
   }
 
   const url =
-    metric_id === 75
+    metric_id === 75 || metric_id === 95
       ? `${AMP_METRIC_API_URL}/observations`
       : `${API_URL}/observations`;
 

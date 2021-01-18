@@ -4,7 +4,8 @@
   position: relative;
   $spacing: 20px;
   $band-height: 138px;
-  min-height: $band-height;
+  min-height: 75vh;
+  // min-height: $band-height;
 
   p {
     font-size: 1.6rem;

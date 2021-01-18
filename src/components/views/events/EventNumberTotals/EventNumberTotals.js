@@ -9,9 +9,13 @@ import personSvg from "./svg/person.svg";
 // local components
 import SourceText from "../../../common/SourceText/SourceText";
 import TotalByFlowType from "../../../infographic/TotalByFlowType/TotalByFlowType";
-import { execute, CumulativeCases } from "../../../misc/Queries";
+import { execute, CumulativeCasesOrDeaths } from "../../../misc/Queries";
 
-const EventFundingTotals = ({ type }) => {
+const EventNumberTotals = ({ type, eventData }) => {
+  if (type === "impacts") {
+    console.log("eventData");
+    console.log(eventData);
+  }
   // STATE //
   // data arrays from which totals are calculated.
   // arrays should contain one el. per country with cumu. totals
@@ -34,12 +38,19 @@ const EventFundingTotals = ({ type }) => {
       };
     } else if (type === "total_cases") {
       return async () => {
-        const data = await CumulativeCases();
+        const data = await CumulativeCasesOrDeaths({
+          casesOrDeaths: "cases",
+          eventData,
+        });
         setCaseData(data);
       };
     } else if (type === "total_deaths") {
       return async () => {
-        setDeathData([{ value: 8888 }]);
+        const data = await CumulativeCasesOrDeaths({
+          casesOrDeaths: "deaths",
+          eventData,
+        });
+        setDeathData(data);
       };
     } else {
       console.error(`Unrecognized data type: ${type}`);
@@ -93,4 +104,4 @@ const EventFundingTotals = ({ type }) => {
     </div>
   );
 };
-export default EventFundingTotals;
+export default EventNumberTotals;
