@@ -12,6 +12,7 @@ import { NONE_VALS } from "../../../misc/Util";
 
 const EventOverview = ({
   // event attributes from database
+  id,
   name,
   desc,
   start,
@@ -80,6 +81,7 @@ const EventOverview = ({
       <EventNumberTotals
         {...{
           type: "funding",
+          eventData: { id },
         }}
       />
       <EventNumberTotals

@@ -85,7 +85,7 @@ const getAmountByFlowType = (flowType, data) => {
       // Add them up
       let total;
       data.forEach(d => {
-        if (d[flowType] === undefined) return;
+        if (d[flowType] === undefined || d[flowType] === null) return;
         else {
           const curVal = d[flowType];
           if (total === undefined) total = curVal;

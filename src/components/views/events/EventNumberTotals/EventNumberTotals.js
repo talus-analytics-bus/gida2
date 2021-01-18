@@ -9,7 +9,7 @@ import personSvg from "./svg/person.svg";
 // local components
 import SourceText from "../../../common/SourceText/SourceText";
 import TotalByFlowType from "../../../infographic/TotalByFlowType/TotalByFlowType";
-import { execute, CumulativeCasesOrDeaths } from "../../../misc/Queries";
+import { execute, CumulativeCasesOrDeaths, Flow } from "../../../misc/Queries";
 
 const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
   // STATE //
@@ -30,7 +30,14 @@ const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
   const getDataFunc = type => {
     if (type.endsWith("_funds")) {
       return async () => {
-        setFundData([{ disbursed_funds: 9999 }]);
+        const newFundData = await Flow({
+          filters: {
+            "Project_Constants.events": [["has", [eventData.id]]],
+          },
+        });
+
+        setFundData(newFundData.data);
+        // setFundData([{ disbursed_funds: 9999 }]);
       };
     } else if (type === "total_cases") {
       return async () => {
