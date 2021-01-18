@@ -62,7 +62,14 @@ const Events = ({ id }) => {
       <div className={classNames("pageContainer", styles.content)}>
         <div className={styles.title}>Outbreak event</div>
 
-        <Loading {...{ loaded, slideUp: true, minHeight: "75vh" }}>
+        <Loading
+          {...{
+            loaded,
+            slideUp: true,
+            minHeight: "75vh",
+            top: "-20px",
+          }}
+        >
           <div className={styles.card}>
             <div className={styles.cols}>
               <div className={classNames(styles.col, styles.left)}>

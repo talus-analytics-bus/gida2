@@ -17,13 +17,14 @@ const ColList = ({ items = [], max = 10 }) => {
 
   // FUNCTIONS //
   const getListItemJsx = d => {
+    if (d.label === undefined) return null;
     if (d.url !== undefined) {
       return (
-        <li>
+        <span>
           <Link to={d.url}>{d.label}</Link>
-        </li>
+        </span>
       );
-    } else return <li>{d.label}</li>;
+    } else return <span>{d.label}</span>;
   };
 
   // CONSTANTS //
@@ -32,36 +33,32 @@ const ColList = ({ items = [], max = 10 }) => {
       View {viewAll ? "fewer" : "all"}
     </button>
   );
-  const globalCount =
-    items.length > max ? (
-      <div className={styles.globalCount}>
-        <span className={styles.global}>Global</span>
-        <span className={styles.count}> ({comma(items.length)} countries)</span>
-      </div>
-    ) : null;
   const itemsDefault = items.slice(0, max);
   const itemsMore = items.slice(max, items.length);
+
+  const nItems = viewAll ? items.length : max;
+  const list1 = items.slice(0, Math.ceil(nItems / 2)).map(d => {
+    return getListItemJsx(d);
+  });
+  const list2 = items.slice(Math.ceil(nItems / 2), nItems + 1).map(d => {
+    return getListItemJsx(d);
+  });
+
   const list = (
-    <ul className={styles.items}>
-      {itemsDefault.map(d => {
-        return getListItemJsx(d);
-      })}
-      {viewAll &&
-        itemsMore.map(d => {
-          return getListItemJsx(d);
-        })}
+    <div className={styles.items}>
+      <div className={styles.itemCol}>{list1}</div>
+      <div className={styles.itemCol}>{list2}</div>
       {items.length > max && toggle}
-    </ul>
+    </div>
   );
 
   // JSX //
   return (
     <div className={styles.colList}>
-      <div className={styles.title}>Affected countries</div>
-      <Loading loaded={items.length > 0}>
-        {globalCount}
-        {list}
-      </Loading>
+      <div className={styles.title}>
+        Affected countries {items.length > 0 && <>({comma(items.length)})</>}
+      </div>
+      <Loading loaded={items.length > 0}>{list}</Loading>
     </div>
   );
 };
