@@ -1,5 +1,17 @@
 .miniMap {
-  img {
+  img,
+  svg {
     width: 100%;
+    height: 100%;
+    transition: all 2s ease;
+    path:not(.highlighted) {
+      fill: #f2f2f2;
+      transition: all 1s ease;
+    }
+    &.global > path,
+    path.highlighted {
+      fill: #662d91;
+      transition: all 1s ease;
+    }
   }
 }

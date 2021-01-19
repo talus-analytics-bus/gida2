@@ -46,6 +46,7 @@ const Events = ({ slug }) => {
           return {
             url: `/details/${d.id}/${d.primary_role}`,
             label: results.stakeholders[d.iso3].name,
+            ...d,
           };
         })
       );
@@ -56,6 +57,11 @@ const Events = ({ slug }) => {
   // CONSTANTS //
   const isGlobal =
     countryImpacts.length === 1 && countryImpacts[0].label === "Global";
+  const highlighted = countryImpacts
+    .filter(d => d.iso3 !== undefined)
+    .map(d => {
+      return stakeholders[d.iso3].iso2;
+    });
 
   // EFFECT HOOKS //
   useLayoutEffect(() => {
@@ -93,6 +99,7 @@ const Events = ({ slug }) => {
                                   return {
                                     label: sh.name,
                                     url: `/details/${sh.id}/${sh.primary_role}`,
+                                    ...sh,
                                   };
                               });
                               setCountryImpacts(formattedCountryImpacts);
@@ -107,6 +114,7 @@ const Events = ({ slug }) => {
                   {...{
                     countryImpacts,
                     isGlobal,
+                    highlighted,
                     pathogen: data.pathogen,
                     mcms_during_event: data.mcms_during_event,
                   }}

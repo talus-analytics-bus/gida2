@@ -13,10 +13,11 @@ const EventSidebar = ({
   pathogen,
   mcms_during_event,
   stakeholders,
+  highlighted,
 }) => {
   return (
     <div className={styles.eventSidebar}>
-      <MiniMap />
+      <MiniMap {...{ highlighted, isGlobal }} />
       <ColList {...{ items: countryImpacts, isGlobal }} />
       <PathogenBox {...{ ...pathogen, mcms_during_event }} />
     </div>
