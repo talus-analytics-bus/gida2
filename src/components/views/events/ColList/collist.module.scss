@@ -3,6 +3,9 @@
   .title {
     @include sectionTitle;
     margin-bottom: 10px;
+    .topTenLabel {
+      text-transform: none;
+    }
   }
   .items {
     margin: 0;

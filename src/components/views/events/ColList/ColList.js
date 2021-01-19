@@ -13,7 +13,9 @@ import Loading from "../../../common/Loading/Loading";
 
 const ColList = ({ items = [], max = 10 }) => {
   // STATE //
-  const [viewAll, setViewAll] = useState(false);
+  const [viewAll, setViewAll] = useState(
+    items.length !== 0 && items.length <= max
+  );
 
   // FUNCTIONS //
   const getListItemJsx = d => {
@@ -27,10 +29,19 @@ const ColList = ({ items = [], max = 10 }) => {
     } else return <span>{d.label}</span>;
   };
 
+  const getCountryCount = () => {
+    if (items.length === 0) return null;
+    else if (viewAll) {
+      return comma(items.length);
+    } else if (items.length > max) {
+      return <span className={styles.topTenLabel}>top 10 by total cases</span>;
+    } else return comma(items.length);
+  };
+
   // CONSTANTS //
   const toggle = (
     <button className={styles.toggle} onClick={() => setViewAll(!viewAll)}>
-      View {viewAll ? "fewer" : "all"}
+      View {viewAll ? "fewer" : "all " + comma(items.length)}
     </button>
   );
   const itemsDefault = items.slice(0, max);
@@ -52,12 +63,12 @@ const ColList = ({ items = [], max = 10 }) => {
     </div>
   );
 
+  const countryCount = items.length > 0 && <>({getCountryCount()})</>;
+
   // JSX //
   return (
     <div className={styles.colList}>
-      <div className={styles.title}>
-        Affected countries {items.length > 0 && <>({comma(items.length)})</>}
-      </div>
+      <div className={styles.title}>Affected countries {countryCount}</div>
       <Loading loaded={items.length > 0}>{list}</Loading>
     </div>
   );
