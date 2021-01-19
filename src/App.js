@@ -307,7 +307,7 @@ const App = () => {
               />
               <Route
                 exact
-                path="/events/:id"
+                path="/events/:slug"
                 render={d => {
                   return (
                     <Events

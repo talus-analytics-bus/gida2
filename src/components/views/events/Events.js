@@ -13,7 +13,7 @@ import { Outbreak, Stakeholder, execute } from "../../misc/Queries";
 // import { EventOverview, EventSidebar, EventBars, Sankey } from ".";
 import Loading from "../../common/Loading/Loading";
 
-const Events = ({ id }) => {
+const Events = ({ slug }) => {
   const defaultData = {
     title: "2014-2016 Ebola in West Africa",
   };
@@ -28,7 +28,8 @@ const Events = ({ id }) => {
   const getData = async () => {
     const results = await execute({
       queries: {
-        outbreak: Outbreak({ id, format: "event_page" }),
+        outbreak: Outbreak({ slug, format: "event_page" }),
+        // outbreak: Outbreak({ id, format: "event_page" }),
         stakeholders: Stakeholder({
           by: "iso3",
           filters: { "Stakeholder.cat": ["country"] },
