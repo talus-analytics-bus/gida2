@@ -261,7 +261,7 @@ export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
       ? eventData.case_data_id
       : eventData.death_data_id;
   if (metric_id === null) {
-    if (eventData.cases_and_deaths_json === undefined) {
+    if (NONE_VALS.includes(eventData.cases_and_deaths_json)) {
       return "Unavailable";
     } else {
       return eventData.cases_and_deaths_json.map(d => {

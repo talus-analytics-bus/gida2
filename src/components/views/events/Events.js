@@ -32,7 +32,7 @@ const Events = ({ slug }) => {
         // outbreak: Outbreak({ id, format: "event_page" }),
         stakeholders: Stakeholder({
           by: "iso3",
-          filters: { "Stakeholder.cat": ["country"] },
+          filters: { "Stakeholder.cat": ["country", "world"] },
         }),
       },
     });
