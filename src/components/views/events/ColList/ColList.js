@@ -11,7 +11,7 @@ import { comma } from "../../../misc/Util";
 // local components
 import Loading from "../../../common/Loading/Loading";
 
-const ColList = ({ items = [], max = 10 }) => {
+const ColList = ({ items = [], max = 10, isGlobal = false }) => {
   // STATE //
   const [viewAll, setViewAll] = useState(
     items.length !== 0 && items.length <= max
@@ -20,7 +20,7 @@ const ColList = ({ items = [], max = 10 }) => {
   // FUNCTIONS //
   const getListItemJsx = d => {
     if (d.label === undefined) return null;
-    if (d.url !== undefined) {
+    if (d.url !== undefined && !isGlobal) {
       return (
         <span>
           <Link to={d.url}>{d.label}</Link>
@@ -30,7 +30,8 @@ const ColList = ({ items = [], max = 10 }) => {
   };
 
   const getCountryCount = () => {
-    if (items.length === 0) return null;
+    if (isGlobal) return null;
+    else if (items.length === 0) return null;
     else if (viewAll) {
       return comma(items.length);
     } else if (items.length > max) {
@@ -63,7 +64,9 @@ const ColList = ({ items = [], max = 10 }) => {
     </div>
   );
 
-  const countryCount = items.length > 0 && <>({getCountryCount()})</>;
+  const countryCount = !isGlobal && items.length > 0 && (
+    <>({getCountryCount()})</>
+  );
 
   // JSX //
   return (

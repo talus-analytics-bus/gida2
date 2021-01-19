@@ -53,6 +53,10 @@ const Events = ({ slug }) => {
     setLoaded(true);
   };
 
+  // CONSTANTS //
+  const isGlobal =
+    countryImpacts.length === 1 && countryImpacts[0].label === "Global";
+
   // EFFECT HOOKS //
   useLayoutEffect(() => {
     getData();
@@ -102,6 +106,7 @@ const Events = ({ slug }) => {
                 <EventSidebar
                   {...{
                     countryImpacts,
+                    isGlobal,
                     pathogen: data.pathogen,
                     mcms_during_event: data.mcms_during_event,
                   }}

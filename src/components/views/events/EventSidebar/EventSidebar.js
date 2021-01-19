@@ -9,6 +9,7 @@ import { MiniMap, ColList, PathogenBox } from "../";
 
 const EventSidebar = ({
   countryImpacts,
+  isGlobal,
   pathogen,
   mcms_during_event,
   stakeholders,
@@ -16,7 +17,7 @@ const EventSidebar = ({
   return (
     <div className={styles.eventSidebar}>
       <MiniMap />
-      <ColList {...{ items: countryImpacts }} />
+      <ColList {...{ items: countryImpacts, isGlobal }} />
       <PathogenBox {...{ ...pathogen, mcms_during_event }} />
     </div>
   );
