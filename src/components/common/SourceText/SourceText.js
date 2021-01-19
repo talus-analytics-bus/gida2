@@ -26,18 +26,24 @@ export const Website = ({
   name,
   date_published,
   publication,
+  notes,
   ...props
 }) => {
+  // CONSTANTS //
+  const notesJsx = notes !== "" ? <> {notes}.</> : null;
+  const dateJsx =
+    date_published !== null ? (
+      <> {moment(date_published).format("MMM D, YYYY")}. </>
+    ) : null;
   return (
     <span>
-      "<i>{name}</i>." {publication}.{" "}
-      {moment(date_published).format("MMM D, YYYY")}.{" "}
+      "<i>{name}</i>." {publication}. {dateJsx}
       {
         <a href={url} target={"_blank"}>
           {url}
         </a>
       }
-      .
+      .{notesJsx}
     </span>
   );
 };
