@@ -1,5 +1,6 @@
 // 3rd party libs
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 // styles and assets
 import styles from "./eventnumbertotals.module.scss";
@@ -84,8 +85,12 @@ const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
 
   // CONSTANTS //
   const totalInfo = getTotalInfo(type);
-  const hasEventData =
-    eventData === undefined || Object.values(eventData).some(d => d !== null);
+  const isImpacts = type === "impacts";
+  const hasImpactData =
+    isImpacts &&
+    (eventData.case_data_id !== null ||
+      eventData.death_data_id !== null ||
+      eventData.cases_and_deaths_json !== null);
 
   return (
     <div className={styles.eventFundingTotals}>
@@ -110,7 +115,12 @@ const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
               </div>
             ))}
           </div>
-          {hasEventData && <SourceText>Source: Placeholder</SourceText>}
+          {hasImpactData && <SourceText>Source: Placeholder</SourceText>}
+          {!isImpacts && (
+            <SourceText>
+              Source: <Link to={"/about/data"}>View sources</Link>
+            </SourceText>
+          )}
         </div>
       </div>
     </div>
