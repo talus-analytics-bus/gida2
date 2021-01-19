@@ -905,6 +905,10 @@ Util.formatValue = (val, cn, units = true, round = false) => {
         if (val === "unknown") return "Specific amount not reported";
         else if (val === -9999 || val === "zzz") return undefined;
         else return val || 0;
+      case "total_cases":
+        return Util.formatSIInteger(val) + " cases";
+      case "total_deaths":
+        return Util.formatSIInteger(val) + " deaths";
       default:
         if (val === -9999 || val === "zzz") return undefined;
         else return comma(val);
