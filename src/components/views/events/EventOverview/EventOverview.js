@@ -25,6 +25,7 @@ const EventOverview = ({
   case_data_id,
   death_data_id,
   cases_and_deaths_json,
+  cases_and_deaths_refs,
 
   // additional params.
   afterCaseData,
@@ -87,7 +88,12 @@ const EventOverview = ({
       <EventNumberTotals
         {...{
           type: "impacts",
-          eventData: { case_data_id, death_data_id, cases_and_deaths_json },
+          eventData: {
+            case_data_id,
+            death_data_id,
+            cases_and_deaths_json,
+            cases_and_deaths_refs,
+          },
           afterCaseData,
         }}
       />

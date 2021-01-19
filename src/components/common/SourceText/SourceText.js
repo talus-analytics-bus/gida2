@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
+import moment from "moment";
 import styles from "./sourcetext.module.scss";
 
 const SourceText = ({
@@ -19,4 +20,26 @@ const SourceText = ({
     );
   return component;
 };
+
+export const Website = ({
+  url,
+  name,
+  date_published,
+  publication,
+  ...props
+}) => {
+  return (
+    <span>
+      "<i>{name}</i>." {publication}.{" "}
+      {moment(date_published).format("MMM D, YYYY")}.{" "}
+      {
+        <a href={url} target={"_blank"}>
+          {url}
+        </a>
+      }
+      .
+    </span>
+  );
+};
+
 export default SourceText;

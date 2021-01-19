@@ -8,9 +8,10 @@ import dollarSvg from "./svg/dollar.svg";
 import personSvg from "./svg/person.svg";
 
 // local components
-import SourceText from "../../../common/SourceText/SourceText";
+import SourceText, { Website } from "../../../common/SourceText/SourceText";
 import TotalByFlowType from "../../../infographic/TotalByFlowType/TotalByFlowType";
 import { execute, CumulativeCasesOrDeaths, Flow } from "../../../misc/Queries";
+import { NONE_VALS } from "../../../misc/Util";
 
 const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
   // STATE //
@@ -86,12 +87,13 @@ const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
   // CONSTANTS //
   const totalInfo = getTotalInfo(type);
   const isImpacts = type === "impacts";
-  const hasImpactData =
-    isImpacts &&
-    (eventData.case_data_id !== null ||
-      eventData.death_data_id !== null ||
-      eventData.cases_and_deaths_json !== null);
+  const hasImpactDataSources =
+    isImpacts && eventData.cases_and_deaths_refs.length > 0;
 
+  const impactDataSourcesNoun =
+    hasImpactDataSources && eventData.cases_and_deaths_refs.length === 1
+      ? "Source"
+      : "Sources";
   return (
     <div className={styles.eventFundingTotals}>
       <div className={styles.content}>
@@ -115,7 +117,14 @@ const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
               </div>
             ))}
           </div>
-          {hasImpactData && <SourceText>Source: Placeholder</SourceText>}
+          {hasImpactDataSources && (
+            <SourceText>
+              {impactDataSourcesNoun}:{" "}
+              {eventData.cases_and_deaths_refs.map(d => (
+                <Website {...{ ...d }} />
+              ))}
+            </SourceText>
+          )}
           {!isImpacts && (
             <SourceText>
               Source: <Link to={"/about/data"}>View sources</Link>
