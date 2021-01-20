@@ -12,7 +12,7 @@ const SourceText = ({
 }) => {
   const component =
     children === undefined ? (
-      <Link className={classNames(styles.sourceText)} to={linkTo}>
+      <Link className={styles.sourceText} to={linkTo}>
         {label}
       </Link>
     ) : (
@@ -46,6 +46,16 @@ export const Website = ({
       .{notesJsx}
     </span>
   );
+};
+
+export const WebsiteList = ({ websites }) => {
+  return websites.map(d => (
+    <ul className={styles.sourceTextList}>
+      <li>
+        <Website {...{ ...d }} />
+      </li>
+    </ul>
+  ));
 };
 
 export default SourceText;
