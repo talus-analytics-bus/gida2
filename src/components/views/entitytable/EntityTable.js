@@ -668,7 +668,9 @@ const getComponentData = async ({
   const nodeSumsFilters = {
     "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
   };
-  const flowFilters = {};
+  const flowFilters = {
+    "Project_Constants.min_year": [["gt_eq", Settings.startYear]],
+  };
 
   if (isGhsaPage) {
     flowFilters["Project_Constants.is_ghsa"] = [true];
