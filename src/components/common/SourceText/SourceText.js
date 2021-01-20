@@ -27,6 +27,7 @@ export const Website = ({
   date_published,
   publication,
   notes,
+  linksOnly = true,
   ...props
 }) => {
   // CONSTANTS //
@@ -35,27 +36,46 @@ export const Website = ({
     date_published !== null ? (
       <> {moment(date_published).format("MMM D, YYYY")}. </>
     ) : null;
-  return (
-    <span>
-      "<i>{name}</i>." {publication}. {dateJsx}
-      {
-        <a href={url} target={"_blank"}>
-          {url}
-        </a>
-      }
-      .{notesJsx}
-    </span>
-  );
+  if (linksOnly) {
+    return (
+      <a href={url} target={"_blank"}>
+        {publication}
+      </a>
+    );
+  } else
+    return (
+      <span>
+        "<i>{name}</i>." {publication}. {dateJsx}
+        {
+          <a href={url} target={"_blank"}>
+            {url}
+          </a>
+        }
+        .{notesJsx}
+      </span>
+    );
 };
 
-export const WebsiteList = ({ websites }) => {
-  return websites.map(d => (
-    <ul className={styles.sourceTextList}>
-      <li>
-        <Website {...{ ...d }} />
-      </li>
-    </ul>
-  ));
+export const WebsiteList = ({ websites, linksOnly }) => {
+  if (linksOnly) {
+    return websites.map((d, i) => {
+      const comma = i !== websites.length - 1 ? ", " : null;
+      return (
+        <>
+          <Website {...{ ...d, linksOnly }} />
+          {comma}
+        </>
+      );
+    });
+  } else {
+    return websites.map(d => (
+      <ul className={styles.sourceTextList}>
+        <li>
+          <Website {...{ ...d, linksOnly }} />
+        </li>
+      </ul>
+    ));
+  }
 };
 
 export default SourceText;

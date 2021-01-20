@@ -78,7 +78,7 @@ const EventOverview = ({
           {hasDescDataSources && (
             <SourceText>
               {descDataSourcesNoun}:{" "}
-              <WebsiteList {...{ websites: desc_refs }} />
+              <WebsiteList {...{ websites: desc_refs, linksOnly: true }} />
             </SourceText>
           )}
         </p>
