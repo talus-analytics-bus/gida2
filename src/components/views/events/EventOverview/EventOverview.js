@@ -4,8 +4,8 @@ import styles from "./eventoverview.module.scss";
 
 // local components
 // common components
-import SourceText from "../../../common/SourceText/SourceText";
 import { DurationTimeline, EventNumberTotals } from "..";
+import SourceText, { Website } from "../../../common/SourceText/SourceText";
 
 // utility
 import { NONE_VALS } from "../../../misc/Util";
@@ -15,6 +15,7 @@ const EventOverview = ({
   id,
   name,
   desc,
+  desc_refs,
   start,
   start_desc,
   end,
@@ -62,6 +63,8 @@ const EventOverview = ({
   const points = getTimelinePoints();
   const isOngoing = getIsOngoing(points);
   const showDesc = !NONE_VALS.includes(desc);
+  const hasDescDataSources = desc_refs.length > 0;
+  const descDataSourcesNoun = desc_refs.length === 1 ? "Source:" : "Sources:";
 
   // JSX //
   return (
@@ -70,7 +73,14 @@ const EventOverview = ({
       {showDesc && (
         <p className={styles.desc}>
           {desc}
-          <SourceText>Source: Placeholder</SourceText>
+          {hasDescDataSources && (
+            <SourceText>
+              {descDataSourcesNoun}:{" "}
+              {desc_refs.map(d => (
+                <Website {...{ ...d }} />
+              ))}
+            </SourceText>
+          )}
         </p>
       )}
       <DurationTimeline
