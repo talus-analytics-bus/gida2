@@ -68,7 +68,7 @@ const Events = ({ slug, flowTypeInfo }) => {
       return stakeholders[d.iso3].iso2;
     });
 
-  const eventBars = {
+  const eventBars = data !== null && {
     header: <h2>Total funding and impact comparison</h2>,
     text: (
       <span>
@@ -78,7 +78,7 @@ const Events = ({ slug, flowTypeInfo }) => {
         profile.
       </span>
     ),
-    content: <EventBars {...{ curFlowType }} />,
+    content: <EventBars {...{ eventId: data.id, curFlowType }} />,
   };
   const sankey = {
     header: <h2>Flow of funding</h2>,
