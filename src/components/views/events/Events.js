@@ -78,7 +78,7 @@ const Events = ({ slug, flowTypeInfo }) => {
         profile.
       </span>
     ),
-    content: <EventBars />,
+    content: <EventBars {...{ curFlowType }} />,
   };
   const sankey = {
     header: <h2>Flow of funding</h2>,

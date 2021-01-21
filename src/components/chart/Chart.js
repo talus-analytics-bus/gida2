@@ -5,6 +5,8 @@ class Chart {
     this.DEV = false;
 
     this.selector = selector;
+    console.log("selector");
+    console.log(selector);
     document.querySelector(selector).innerHTML = "";
     this.svg = d3.select(selector).append("svg");
 
@@ -38,7 +40,7 @@ class Chart {
             chartType: this.constructor.name,
             ratio: `Height/Width => ${this.containerheight /
               this.containerwidth}`,
-            chart: this
+            chart: this,
           });
           logged = true;
         }
@@ -99,7 +101,7 @@ class Chart {
      */
     const pattern = {
       _duration: 600,
-      _subPatterns: []
+      _subPatterns: [],
     };
     pattern.name = (name, parent = undefined) => {
       pattern._name = name;
@@ -330,7 +332,7 @@ class Chart {
         x: 0,
         y: 0,
         width: 10,
-        height: 10
+        height: 10,
       };
     }
     if (this.svg.node() === undefined || this.svg.node() === null) {
@@ -339,7 +341,7 @@ class Chart {
         x: 0,
         y: 0,
         width: 0,
-        height: 0
+        height: 0,
       };
     }
     const svgBox = this.svg.node().getBoundingClientRect();
@@ -349,7 +351,7 @@ class Chart {
       x: bbox.x - svgBox.x,
       y: bbox.y - svgBox.y,
       width: Math.max(bbox.width, 1),
-      height: Math.max(bbox.height, 1)
+      height: Math.max(bbox.height, 1),
     };
   }
 
@@ -430,7 +432,7 @@ class Chart {
         data = [
           tickFormat(
             y.domain()[0] // largest y-value
-          )
+          ),
         ];
       }
     }
