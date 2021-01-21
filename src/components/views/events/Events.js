@@ -25,7 +25,8 @@ const Events = ({ slug, flowTypeInfo }) => {
   const [data, setData] = useState(null);
   const [stakeholders, setStakeholders] = useState({});
   const [countryImpacts, setCountryImpacts] = useState([]);
-  const [curFlowType, setCurFlowType] = useState("disbursed_funds");
+  const [curFlowType, setCurFlowType] = useState("committed_funds");
+  // const [curFlowType, setCurFlowType] = useState("disbursed_funds");
 
   // FUNCTIONS //
   const getData = async () => {

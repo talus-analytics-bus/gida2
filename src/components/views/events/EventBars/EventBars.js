@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
 import tooltipStyles from "../../../common/tooltip.module.scss";
+import { Settings } from "../../../../App";
 
 // styles
 import styles from "./eventbars.module.scss";
@@ -22,20 +23,18 @@ const EventBars = ({ eventId, curFlowType }) => {
     const queries = {};
     queries.nodeSums = NodeSums({
       format: "bar_chart",
-      direction: "origin",
+      direction: "target",
       filters: {
         "Event.id": [eventId],
         "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+        "Flow.year": [
+          ["gt_eq", Settings.startYear],
+          ["lt_eq", Settings.endYear],
+        ],
       },
     });
     const results = await execute({ queries });
-    console.log("results");
-    console.log(results);
     setData(results.nodeSums);
-    // setData([
-    //   { id: 0, value: 1000, name: "United States", iso3: "USA" },
-    //   { id: 1, value: 2000, name: "Canada", iso3: "CAN" },
-    // ]);
     setLoaded(true);
   };
 

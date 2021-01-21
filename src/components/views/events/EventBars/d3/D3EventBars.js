@@ -149,8 +149,6 @@ class D3EventBars extends Chart {
       const maxVal = d3.max(data, d => d.value);
       const xMax = 1.1 * maxVal;
       x.domain([0, xMax]);
-      console.log("data");
-      console.log(data);
       y.domain(data.map(d => d.id)).range([0, newHeight]); // TODO check
       colorScale.domain([0, maxVal]);
       const bandwidth = y.bandwidth();
