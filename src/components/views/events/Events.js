@@ -7,7 +7,13 @@ import classNames from "classnames";
 import { purples } from "../../map/MapUtil.js";
 
 // local components
-import { EventOverview, EventSidebar, EventBars, Sankey } from ".";
+import {
+  EventOverview,
+  EventSidebar,
+  EventBars,
+  Sankey,
+  Crossreferences,
+} from ".";
 import { Outbreak, Stakeholder, execute } from "../../misc/Queries";
 import Loading from "../../common/Loading/Loading";
 import EventTable from "../details/content/EventTable";
@@ -106,8 +112,15 @@ const Events = ({ slug, flowTypeInfo }) => {
     ),
   };
 
+  const crossreferences = data !== null && {
+    header: <h2>Case studies and DONS data</h2>,
+    text: null,
+    content: <Crossreferences />,
+    showSource: false,
+  };
+
   // collate subsections
-  const subsections = [eventBars, sankey, eventTable];
+  const subsections = [eventBars, sankey, eventTable, crossreferences];
 
   // EFFECT HOOKS //
   useLayoutEffect(() => {
@@ -172,9 +185,15 @@ const Events = ({ slug, flowTypeInfo }) => {
               </div>
             </div>
             <div className={styles.subsections}>
-              {subsections.map(({ header, text, content }) => (
+              {subsections.map(({ header, text, content, ...props }) => (
                 <DetailsSection
-                  {...{ classes: [styles.subsection], header, text, content }}
+                  {...{
+                    classes: [styles.subsection],
+                    header,
+                    text,
+                    content,
+                    ...props,
+                  }}
                 />
               ))}
             </div>

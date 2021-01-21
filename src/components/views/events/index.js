@@ -7,6 +7,7 @@ import EventNumberTotals from "./EventNumberTotals/EventNumberTotals";
 import MiniMap from "./MiniMap/MiniMap";
 import ColList from "./ColList/ColList";
 import PathogenBox from "./PathogenBox/PathogenBox";
+import Crossreferences from "./Crossreferences/Crossreferences";
 export {
   EventOverview,
   DurationTimeline,
@@ -17,4 +18,5 @@ export {
   MiniMap,
   ColList,
   PathogenBox,
+  Crossreferences,
 };
