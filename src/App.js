@@ -273,7 +273,7 @@ const App = () => {
                     setComponent: setExploreComponent,
                     loading: loading,
                     setLoading: setLoading,
-                    flowTypeInfo: flowTypeInfo,
+                    flowTypeInfo,
                     ghsaOnly: ghsaOnly,
                     setGhsaOnly: setGhsaOnly,
                     isDark: isDark,
@@ -313,6 +313,7 @@ const App = () => {
                     <Events
                       {...{
                         ...d.match.params, // id
+                        flowTypeInfo,
                       }}
                     />
                   );

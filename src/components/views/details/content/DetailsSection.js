@@ -1,17 +1,22 @@
+// 3rd party libs
 import React from "react";
-import styles from "./detailssection.module.scss";
 import SourceText from "../../../common/SourceText/SourceText.js";
+import classNames from "classnames";
+
+// styles
+import styles from "./detailssection.module.scss";
 
 // FC for DetailsSection.
 const DetailsSection = ({
-  header,
-  content,
-  text,
+  header = <h2>Details section</h2>,
+  content = <p>Details section content</p>,
+  text = <span>Introduction text</span>,
   curFlowType,
   setCurFlowType,
   flowTypeInfo,
   toggleFlowType,
   noFinancialData,
+  classes = [],
   ...props
 }) => {
   /**
@@ -32,7 +37,7 @@ const DetailsSection = ({
     return "";
   };
   return (
-    <div className={styles.detailsSection}>
+    <div className={classNames(styles.detailsSection, ...classes)}>
       {header}
       {text && <div className={styles.text}>{text}</div>}
       {toggleFlowType && !noFinancialData && (

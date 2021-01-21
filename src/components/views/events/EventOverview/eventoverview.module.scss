@@ -3,10 +3,7 @@
   $spacing: 50px;
   @include spaceChildrenVert(40px);
   .name {
-    @include title;
-    font-size: 3.4rem; // 34px
-    color: black;
-    text-transform: none;
+    @include eventTitle;
     margin-bottom: $spacing;
   }
   .desc {

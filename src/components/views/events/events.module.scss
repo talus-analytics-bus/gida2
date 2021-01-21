@@ -51,6 +51,12 @@
     }
     .subsections {
       .subsection {
+        margin: 50px 0;
+        h2 {
+          @include eventTitle;
+          font-size: 3rem;
+        }
+
         .header {
           .title {
           }

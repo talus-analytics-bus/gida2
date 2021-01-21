@@ -21,6 +21,10 @@ import { execute, Outbreak, Flow } from "../../../misc/Queries";
 // FC for EventTable.
 const EventTable = ({
   id,
+  eventId,
+
+  // hide col. that shows name of event if true
+  hideName = false,
   direction,
   otherDirection,
   entityRole,
@@ -40,24 +44,34 @@ const EventTable = ({
     const queries = {
       outbreaks: Outbreak({}),
     };
+
+    // define filters
+    const flowFilters = {
+      "Project_Constants.response_or_capacity": ["response"],
+    };
+    // Add event ID filter if defined
+    if (eventId !== undefined)
+      flowFilters["Project_Constants.events"] = [["has", [eventId]]];
+
     if (isGhsaPage) {
+      // add GHSA filter
+      flowFilters["Project_Constants.is_ghsa"] = [true];
+
       // get flows for GHSA
       queries.flows = Flow({
         format: ["stakeholder_details"],
-        filters: {
-          "Project_Constants.response_or_capacity": ["response"],
-          "Project_Constants.is_ghsa": [true],
-        },
+        filters: flowFilters,
       });
     } else {
       // get flows for defined target/origin
       queries.flows = Flow({
         format: ["stakeholder_details"],
-        filters: { "Project_Constants.response_or_capacity": ["response"] },
+        filters: flowFilters,
         [direction + "Ids"]: [id],
         [otherDirection + "Ids"]: [],
       });
     }
+
     const results = await execute({ queries });
     setFlows(results.flows);
     setOutbreaks(results.outbreaks);
@@ -93,6 +107,7 @@ const EventTable = ({
                 .join("· ");
             },
             render: d => d,
+            hide: hideName,
           },
           {
             title: "Project name",

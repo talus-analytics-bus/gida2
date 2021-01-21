@@ -108,6 +108,15 @@ $phone-width-narrow: 375px;
   color: #11315d;
   font-family: "rawline", sans-serif;
 }
+
+@mixin eventTitle {
+  font-size: 3.4rem; // 34px
+  font-weight: 600;
+  color: black;
+  text-transform: none;
+  font-family: "rawline", sans-serif;
+}
+
 @mixin subtitle {
   margin-top: 20px;
   margin-bottom: 10px;

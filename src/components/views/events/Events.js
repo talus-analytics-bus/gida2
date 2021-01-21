@@ -7,29 +7,25 @@ import classNames from "classnames";
 import { purples } from "../../map/MapUtil.js";
 
 // local components
-import { EventOverview, EventSidebar } from ".";
+import { EventOverview, EventSidebar, EventBars, Sankey } from ".";
 import { Outbreak, Stakeholder, execute } from "../../misc/Queries";
-
-// import { EventOverview, EventSidebar, EventBars, Sankey } from ".";
 import Loading from "../../common/Loading/Loading";
+import EventTable from "../details/content/EventTable";
+import DetailsSection from "../details/content/DetailsSection";
 
-const Events = ({ slug }) => {
-  const defaultData = {
-    title: "2014-2016 Ebola in West Africa",
-  };
-
+const Events = ({ slug, flowTypeInfo }) => {
   // STATE //
   const [loaded, setLoaded] = useState(false);
-  const [data, setData] = useState(defaultData);
+  const [data, setData] = useState(null);
   const [stakeholders, setStakeholders] = useState({});
   const [countryImpacts, setCountryImpacts] = useState([]);
+  const [flowType, setFlowType] = useState("disbursed_funds");
 
   // FUNCTIONS //
   const getData = async () => {
     const results = await execute({
       queries: {
         outbreak: Outbreak({ slug, format: "event_page" }),
-        // outbreak: Outbreak({ id, format: "event_page" }),
         stakeholders: Stakeholder({
           by: "iso3",
           filters: { "Stakeholder.cat": ["country", "world"] },
@@ -55,6 +51,9 @@ const Events = ({ slug }) => {
   };
 
   // CONSTANTS //
+  // Get display name for current flow type
+  const curFlowTypeName = flowTypeInfo.find(d => d.name === flowType)
+    .display_name;
   const isGlobal =
     countryImpacts.length === 1 && countryImpacts[0].label === "Global";
   const highlighted = countryImpacts
@@ -62,6 +61,53 @@ const Events = ({ slug }) => {
     .map(d => {
       return stakeholders[d.iso3].iso2;
     });
+
+  const eventBars = {
+    header: <h2>Total funding and impact comparison</h2>,
+    text: (
+      <span>
+        The chart below shows total funding by recipient and by funder.
+        Recipient funding is compared to event impact, by either cases or
+        deaths. Click on the name of a funder or recipient to view their
+        profile.
+      </span>
+    ),
+    content: <EventBars />,
+  };
+  const sankey = {
+    header: <h2>Flow of funding</h2>,
+    text: (
+      <span>
+        The chart below shows who funded whom. Click on a funder or recipient to
+        view their profile.
+      </span>
+    ),
+    content: <Sankey />,
+  };
+
+  const eventTable = data !== null && {
+    header: <h2>Top funders for {data.name}</h2>,
+    text: (
+      <span>
+        The table below displays funders in order of amount of funds provided.
+        Click on a funder or recipient to view their profile.
+      </span>
+    ),
+    content: (
+      <EventTable
+        {...{
+          hideName: true,
+          eventId: data.id,
+          curFlowType: flowType,
+          curFlowTypeName,
+          setEventTotalsData: () => "",
+        }}
+      />
+    ),
+  };
+
+  // collate subsections
+  const subsections = [eventBars, sankey, eventTable];
 
   // EFFECT HOOKS //
   useLayoutEffect(() => {
@@ -73,58 +119,67 @@ const Events = ({ slug }) => {
       <div className={classNames("pageContainer", styles.content)}>
         <div className={styles.title}>Outbreak event</div>
 
-        <Loading
-          {...{
-            loaded,
-            slideUp: true,
-            minHeight: "75vh",
-            top: "-20px",
-          }}
-        >
-          <div className={styles.card}>
-            <div className={styles.cols}>
-              <div className={classNames(styles.col, styles.left)}>
-                {loaded && (
-                  <EventOverview
+        {data !== null && (
+          <Loading
+            {...{
+              loaded,
+              slideUp: true,
+              minHeight: "75vh",
+              top: "-20px",
+            }}
+          >
+            <div className={styles.card}>
+              <div className={styles.cols}>
+                <div className={classNames(styles.col, styles.left)}>
+                  {loaded && (
+                    <EventOverview
+                      {...{
+                        ...data,
+                        // assign affected countries from cases data
+                        afterCaseData:
+                          data.case_data_id !== null
+                            ? d => {
+                                const formattedCountryImpacts = d.map(dd => {
+                                  const sh = stakeholders[dd.iso3];
+                                  if (sh === undefined) return {};
+                                  else
+                                    return {
+                                      label: sh.name,
+                                      url: `/details/${sh.id}/${
+                                        sh.primary_role
+                                      }`,
+                                      ...sh,
+                                    };
+                                });
+                                setCountryImpacts(formattedCountryImpacts);
+                              }
+                            : undefined,
+                      }}
+                    />
+                  )}
+                </div>
+                <div className={classNames(styles.col, styles.right)}>
+                  <EventSidebar
                     {...{
-                      ...data,
-                      // assign affected countries from cases data
-                      afterCaseData:
-                        data.case_data_id !== null
-                          ? d => {
-                              const formattedCountryImpacts = d.map(dd => {
-                                const sh = stakeholders[dd.iso3];
-                                if (sh === undefined) return {};
-                                else
-                                  return {
-                                    label: sh.name,
-                                    url: `/details/${sh.id}/${sh.primary_role}`,
-                                    ...sh,
-                                  };
-                              });
-                              setCountryImpacts(formattedCountryImpacts);
-                            }
-                          : undefined,
+                      countryImpacts,
+                      isGlobal,
+                      highlighted,
+                      pathogen: data.pathogen,
+                      mcms_during_event: data.mcms_during_event,
                     }}
                   />
-                )}
-              </div>
-              <div className={classNames(styles.col, styles.right)}>
-                <EventSidebar
-                  {...{
-                    countryImpacts,
-                    isGlobal,
-                    highlighted,
-                    pathogen: data.pathogen,
-                    mcms_during_event: data.mcms_during_event,
-                  }}
-                />
+                </div>
               </div>
             </div>
-          </div>
-        </Loading>
-
-        <div className={styles.subsections} />
+            <div className={styles.subsections}>
+              {subsections.map(({ header, text, content }) => (
+                <DetailsSection
+                  {...{ classes: [styles.subsection], header, text, content }}
+                />
+              ))}
+            </div>
+          </Loading>
+        )}
       </div>
       <div className={styles.band} />
     </div>
