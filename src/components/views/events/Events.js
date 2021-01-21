@@ -25,7 +25,7 @@ const Events = ({ slug, flowTypeInfo }) => {
   const [data, setData] = useState(null);
   const [stakeholders, setStakeholders] = useState({});
   const [countryImpacts, setCountryImpacts] = useState([]);
-  const [flowType, setFlowType] = useState("disbursed_funds");
+  const [curFlowType, setCurFlowType] = useState("disbursed_funds");
 
   // FUNCTIONS //
   const getData = async () => {
@@ -58,7 +58,7 @@ const Events = ({ slug, flowTypeInfo }) => {
 
   // CONSTANTS //
   // Get display name for current flow type
-  const curFlowTypeName = flowTypeInfo.find(d => d.name === flowType)
+  const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
   const isGlobal =
     countryImpacts.length === 1 && countryImpacts[0].label === "Global";
@@ -104,7 +104,7 @@ const Events = ({ slug, flowTypeInfo }) => {
         {...{
           hideName: true,
           eventId: data.id,
-          curFlowType: flowType,
+          curFlowType,
           curFlowTypeName,
           setEventTotalsData: () => "",
         }}
@@ -117,10 +117,28 @@ const Events = ({ slug, flowTypeInfo }) => {
     text: null,
     content: <Crossreferences />,
     showSource: false,
+    toggleFlowType: false,
   };
 
   // collate subsections
   const subsections = [eventBars, sankey, eventTable, crossreferences];
+  const subsectionsJsx = subsections.map(
+    ({ header, text, content, toggleFlowType = true, ...props }) => (
+      <DetailsSection
+        {...{
+          classes: [styles.subsection],
+          header,
+          text,
+          content,
+          toggleFlowType,
+          flowTypeInfo,
+          curFlowType,
+          setCurFlowType,
+          ...props,
+        }}
+      />
+    )
+  );
 
   // EFFECT HOOKS //
   useLayoutEffect(() => {
@@ -184,19 +202,7 @@ const Events = ({ slug, flowTypeInfo }) => {
                 </div>
               </div>
             </div>
-            <div className={styles.subsections}>
-              {subsections.map(({ header, text, content, ...props }) => (
-                <DetailsSection
-                  {...{
-                    classes: [styles.subsection],
-                    header,
-                    text,
-                    content,
-                    ...props,
-                  }}
-                />
-              ))}
-            </div>
+            <div className={styles.subsections}>{subsectionsJsx}</div>
           </Loading>
         )}
       </div>
