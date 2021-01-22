@@ -1,5 +1,9 @@
 .eventBars {
   .bars {
     height: auto;
+    g[class^="tick"] > text {
+      font-size: 14px;
+      font-family: "Open Sans", sans-serif;
+    }
   }
 }

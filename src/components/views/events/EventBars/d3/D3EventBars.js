@@ -44,8 +44,8 @@ class D3EventBars extends Chart {
     const x = d3.scaleLinear().range([0, width]);
     const y = d3.scaleBand().padding(0.25);
 
-    // Define color scale
-    const colorScale = d3.scaleLinear().range(["blue", "blue"]);
+    // // Define color scale
+    // const colorScale = d3.scaleLinear().range(["blue", "blue"]);
 
     // x-axis
     const xAxis = d3
@@ -149,8 +149,7 @@ class D3EventBars extends Chart {
       const maxVal = d3.max(data, d => d.value);
       const xMax = 1.1 * maxVal;
       x.domain([0, xMax]);
-      y.domain(data.map(d => d.id)).range([0, newHeight]); // TODO check
-      colorScale.domain([0, maxVal]);
+      y.domain(data.map(d => d.name)).range([0, newHeight]);
       const bandwidth = y.bandwidth();
 
       // // Sort
@@ -168,15 +167,15 @@ class D3EventBars extends Chart {
       // y.domain(barGroupData.map(d => d.name));
 
       // remove first
-      let bars = allBars.selectAll(".bar").data(data, d => d.id); // TODO check
+      let bars = allBars.selectAll("." + styles.bar).data(data, d => [d]); // TODO check
       bars.exit().remove();
 
       const newGroups = bars
         .enter()
         .append("g")
-        .attr("class", "bar")
+        .attr("class", styles.bar)
         .attr("id", d => {
-          return d ? d.name + " - " + newFlowType : this.id;
+          return d.name + " - " + newFlowType;
         });
 
       bars = newGroups.merge(bars);
@@ -207,11 +206,11 @@ class D3EventBars extends Chart {
           params.setTooltipData(tooltipData);
         })
         .attr("height", bandwidth)
-        .style("fill", d => colorScale(d.value))
+        // .style("fill", d => colorScale(d.value))
         .transition()
         .duration(durationHorizontal)
         .attr("x", d => x(0))
-        .attr("y", d => y(d.id))
+        // .attr("y", d => y(d.name))
         .attr("width", d => x(d.value)); // TODO check
       // set axes labels
       let xLabelPreText = "Disbursed";
@@ -246,8 +245,7 @@ class D3EventBars extends Chart {
       newGroups
         .append("text")
         .attr("class", "bar-label")
-        .attr("y", d => y(d.id))
-        // .attr("y", y.bandwidth() / 2)
+        // .attr("y", d => y(d.name))
         .attr("dy", "1em")
         .text(d => {
           if (d.value !== 0) {
