@@ -370,7 +370,7 @@ class D3EventBars extends Chart {
       if (/[^a-z]$/.test(shortened.toLowerCase())) {
         return `${shortened.slice(0, shortened.length - 1)}...`;
       }
-      return `${shortened}...`;
+      return shortened === s ? s : `${shortened}...`;
     } else {
       return s;
     }
