@@ -252,7 +252,7 @@ class D3EventBars extends Chart {
       newGroups
         .append("text")
         .attr("class", "bar-label")
-        .attr("dy", "1em")
+        .attr("dy", "1.2em")
         .text(d => {
           if (d.value !== 0) {
             return Util.money(d.value);
@@ -304,6 +304,59 @@ class D3EventBars extends Chart {
         .attr("data-tip", true)
         .attr("data-for", "chartTooltip")
         .on("mouseover", updateTooltip);
+
+      // get flag URLs by name
+      const flagUrlByName = {};
+      data.forEach(d => {
+        flagUrlByName[d.name] = d.flag_url;
+      });
+
+      // flag icons
+      chart.selectAll(".y.axis .tick:not(.iconned)").each(function addIcons(d) {
+        const g = d3.select(this).classed("iconned", true);
+        const xOffset = -1 * (d.tickTextWidth + 7) - 5 - 5;
+        const axisGap = -7;
+        const iconGroup = g
+          .append("g")
+          .attr("class", "icon")
+          .attr("transform", `translate(${axisGap}, 0)`);
+
+        const badgeHeight = 30;
+        const badgeWidth = badgeHeight * 2;
+        const badgeDim = {
+          width: badgeWidth,
+          height: badgeHeight,
+          x: -badgeWidth + 12,
+          y: -(badgeHeight / 2),
+        };
+        iconGroup
+          // .classed(styles.showNoScore, jeesWhite)
+          .append("image")
+          .attr("href", flagUrlByName[d])
+          .attr("width", badgeDim.width)
+          .attr("height", badgeDim.height)
+          .attr("x", badgeDim.x)
+          .attr("y", badgeDim.y)
+          .on("load", function onError(d) {
+            d3.select(this).style("display", "block");
+          })
+          .on("error", function onError(d) {
+            d3.select(this).attr(
+              "href",
+              "https://flags.talusanalytics.com/64px/org.png"
+            );
+          });
+
+        // const badgeLabelText =
+        //   scoreData.name === "General IHR" ? "GEN" : scoreData.name;
+        // badgeGroup
+        //   .append("text")
+        //   .attr("text-anchor", "middle")
+        //   .attr("x", -(badgeDim.width / 2))
+        //   .attr("dy", ".35em")
+        //   .style("fill", "white")
+        //   .text(badgeLabelText);
+      });
 
       ReactTooltip.rebuild();
     };

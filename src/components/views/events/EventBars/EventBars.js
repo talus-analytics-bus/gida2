@@ -26,6 +26,19 @@ const EventBars = ({ eventId, curFlowType }) => {
       direction: "target",
       filters: {
         "Event.id": [eventId],
+        "Stakeholder.cat": [
+          "academia",
+          "country",
+          "foundation",
+          "government",
+          "international_organization",
+          "international_organization_",
+          "ngo",
+          "ngo_",
+          // "other",
+          "private_sector",
+          "world",
+        ],
         "Flow.flow_type": ["disbursed_funds", "committed_funds"],
         "Flow.year": [
           ["gt_eq", Settings.startYear],
