@@ -87,6 +87,7 @@ const Events = ({ slug, flowTypeInfo }) => {
           curFlowType,
           caseData,
           deathData,
+          stakeholders,
         }}
       />
     ),

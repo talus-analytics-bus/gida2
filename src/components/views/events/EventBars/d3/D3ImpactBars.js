@@ -244,7 +244,7 @@ class D3ImpactBars extends Chart {
         .data(d => [d])
         .enter()
         .append("circle")
-        .style("display", d => (d.value !== 0 ? "block" : "none"))
+        .style("display", d => (d.value !== null ? "block" : "none"))
         .attr("data-tip", true)
         .attr("data-for", "chartTooltip")
         .on("mouseover", updateTooltip)
