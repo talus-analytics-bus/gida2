@@ -64,12 +64,10 @@ class D3EventBars extends Chart {
       .tickSize(0)
       .tickSizeOuter(5)
       // TODO format country name / flag
-      // .tickFormat(v => {
-      //   if (v === undefined) return "";
-      //   return this.getShortName(
-      //     core_capacities.find(cc => cc.value === v || cc.label === v).label
-      //   );
-      // })
+      .tickFormat(v => {
+        if (v === undefined) return "";
+        return this.getShortName(v);
+      })
       .tickPadding(50);
 
     const allBars = chart.append("g");
@@ -116,17 +114,29 @@ class D3EventBars extends Chart {
       return -(maxLabelWidth + margin) || -this.margin.left + 10;
     };
 
-    const yLabel = chart
-      .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 0)
-      .attr("x", -height / 2)
-      .style("font-weight", 600)
-      .style("text-anchor", "middle")
-      .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
-      .text("y-axis label");
+    // add y-axis label
+    // const yLabel = chart
+    //   .append("text")
+    //   .attr("transform", "rotate(-90)")
+    //   .attr("y", 0)
+    //   .attr("x", -height / 2)
+    //   .style("font-weight", 600)
+    //   .style("text-anchor", "middle")
+    //   .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
+    //   .text("y-axis label");
+
     this.update = (data, newFlowType = params.curFlowType) => {
       const sort = params.sort;
+
+      function updateTooltip(d) {
+        const tooltipData = [
+          {
+            field: "Name",
+            value: "Value",
+          },
+        ];
+        params.setTooltipData(tooltipData);
+      }
 
       // Sort
       data.sort((a, b) => {
@@ -201,15 +211,7 @@ class D3EventBars extends Chart {
         .append("rect")
         .attr("data-tip", true)
         .attr("data-for", "chartTooltip")
-        .on("mouseover", function updateTooltip(d) {
-          const tooltipData = [
-            {
-              field: "Name",
-              value: "Value",
-            },
-          ];
-          params.setTooltipData(tooltipData);
-        })
+        .on("mouseover", updateTooltip)
         .attr("height", bandwidth)
         // .style("fill", d => colorScale(d.value))
         .transition()
@@ -244,13 +246,12 @@ class D3EventBars extends Chart {
       yAxis.scale(y);
       yAxisG
         .transition()
-        .duration(1000)
+        .duration(0)
         .call(yAxis);
 
       newGroups
         .append("text")
         .attr("class", "bar-label")
-        // .attr("y", d => y(d.name))
         .attr("dy", "1em")
         .text(d => {
           if (d.value !== 0) {
@@ -263,61 +264,10 @@ class D3EventBars extends Chart {
 
       chart.selectAll(".tick").classed(styles.tick, true);
 
-      // // add badges
-      // chart
-      //   .selectAll(".y.axis .tick:not(.badged)")
-      //   .each(function addJeeIcons(d) {
-      //     const scoreData = barGroupData.find(dd => dd.name === d);
-      //     const score = scoreData.data.avgScore;
-      //     const g = d3.select(this).classed("badged", true);
-      //     const xOffset = -1 * (scoreData.data.tickTextWidth + 7) - 5 - 5;
-      //     const axisGap = -7;
-      //     const badgeGroup = g
-      //       .append("g")
-      //       .attr("class", "score-badge")
-      //       .attr("transform", `translate(${axisGap}, 0)`);
-      //     // .classed(styles.unscored, !showJee);
-      //
-      //     const badgeHeight = 16 * 1.25;
-      //     const badgeWidth = 30 * 1.25;
-      //     const badgeDim = {
-      //       width: badgeWidth,
-      //       height: badgeHeight,
-      //       x: -badgeWidth,
-      //       y: -(badgeHeight / 2),
-      //       rx: 2.5,
-      //     };
-      //     badgeGroup
-      //       .classed(styles.showNoScore, jeesWhite)
-      //       .append("rect")
-      //       .style("fill", score ? jeeColorScale(score) : "#ccc")
-      //       .attr("width", badgeDim.width)
-      //       .attr("height", badgeDim.height)
-      //       .attr("rx", badgeDim.rx)
-      //       .attr("x", badgeDim.x)
-      //       .attr("y", badgeDim.y);
-      //
-      //     const badgeLabelText =
-      //       scoreData.name === "General IHR" ? "GEN" : scoreData.name;
-      //     badgeGroup
-      //       .append("text")
-      //       .attr("text-anchor", "middle")
-      //       .attr("x", -(badgeDim.width / 2))
-      //       .attr("dy", ".35em")
-      //       .style("fill", "white")
-      //       .text(badgeLabelText);
-      //   });
-
-      // attach tooltips to y-axis labels
-      // TODO
-
-      // if no data, hide chart and show message
-      // TODO
-
-      yLabel
-        .transition()
-        .duration(1000)
-        .attr("y", getYLabelPos(data)); // TODO check
+      // yLabel
+      //   .transition()
+      //   .duration(1000)
+      //   .attr("y", getYLabelPos(data)); // TODO check
 
       // // Update y-axis label tooltips
       // chart
@@ -338,6 +288,22 @@ class D3EventBars extends Chart {
       //       },
       //     ]);
       //   });
+
+      // WIP -- Wrap y-axis labels (too many lines in some cases)
+      // yAxisG.selectAll("text").each(function wrapLabels() {
+      //   if (this.innerHTML === "") return;
+      //   console.log(this);
+      //   console.log("this.innerHTML");
+      //   console.log(this.innerHTML);
+      //   console.log(Util.getWrappedText(this.innerHTML));
+      // });
+
+      // y-axis tick tooltips
+      chart
+        .selectAll(".y.axis .tick")
+        .attr("data-tip", true)
+        .attr("data-for", "chartTooltip")
+        .on("mouseover", updateTooltip);
 
       ReactTooltip.rebuild();
     };
@@ -362,6 +328,22 @@ class D3EventBars extends Chart {
   precisionRound(number, precision) {
     const factor = Math.pow(10, precision);
     return Math.round(number * factor) / factor;
+  }
+  getShortName(s) {
+    if (s === "General IHR") return s;
+    const maxLen = 20;
+    if (s.length > maxLen) {
+      const shortened = s
+        .split(" ")
+        .slice(0, 4)
+        .join(" ");
+      if (/[^a-z]$/.test(shortened.toLowerCase())) {
+        return `${shortened.slice(0, shortened.length - 1)}...`;
+      }
+      return `${shortened}...`;
+    } else {
+      return s;
+    }
   }
 }
 export default D3EventBars;
