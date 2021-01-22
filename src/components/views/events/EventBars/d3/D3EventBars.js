@@ -64,10 +64,10 @@ class D3EventBars extends Chart {
       .tickSize(0)
       .tickSizeOuter(5)
       // TODO format country name / flag
-      .tickFormat(v => {
-        if (v === undefined) return "";
-        return this.getShortName(v);
-      })
+      // .tickFormat(v => {
+      //   if (v === undefined) return "";
+      //   return this.getShortName(v);
+      // })
       .tickPadding(50);
 
     const allBars = chart.append("g");
@@ -128,11 +128,16 @@ class D3EventBars extends Chart {
     this.update = (data, newFlowType = params.curFlowType) => {
       const sort = params.sort;
 
-      function updateTooltip(d) {
+      function updateTooltip(dTmp) {
+        const d = typeof dTmp === "object" ? dTmp.name : dTmp;
         const tooltipData = [
           {
             field: "Name",
-            value: "Value",
+            value: dataByName[d].name,
+          },
+          {
+            field: xLabel.text().replace(" (USD)", ""),
+            value: Util.money(dataByName[d].value),
           },
         ];
         params.setTooltipData(tooltipData);
@@ -213,11 +218,9 @@ class D3EventBars extends Chart {
         .attr("data-for", "chartTooltip")
         .on("mouseover", updateTooltip)
         .attr("height", bandwidth)
-        // .style("fill", d => colorScale(d.value))
         .transition()
         .duration(durationHorizontal)
         .attr("x", d => x(0))
-        // .attr("y", d => y(d.name))
         .attr("width", d => x(d.value)); // TODO check
       // set axes labels
       let xLabelPreText = "Disbursed";
@@ -244,10 +247,24 @@ class D3EventBars extends Chart {
         xAxisG.call(xAxis.tickValues(this.getTickValues(xMax, 7)));
 
       yAxis.scale(y);
+
+      // get flag URLs by name
+      const dataByName = {};
+      data.forEach(d => {
+        dataByName[d.name] = d;
+      });
+
+      const getShortName = this.getShortName;
       yAxisG
-        .transition()
-        .duration(0)
-        .call(yAxis);
+        .call(yAxis)
+        .selectAll("text")
+        .each(function(d) {
+          d3.select(this).html(
+            `<a href="/details/${dataByName[d].id}/recipient">${getShortName(
+              d
+            )}</a>`
+          );
+        });
 
       newGroups
         .append("text")
@@ -264,52 +281,12 @@ class D3EventBars extends Chart {
 
       chart.selectAll(".tick").classed(styles.tick, true);
 
-      // yLabel
-      //   .transition()
-      //   .duration(1000)
-      //   .attr("y", getYLabelPos(data)); // TODO check
-
-      // // Update y-axis label tooltips
-      // chart
-      //   .selectAll(".y.axis .tick")
-      //   .attr("data-tip", true)
-      //   .attr("data-for", "chartTooltip")
-      //   .on("mouseover", function updateTooltip(d) {
-      //     const match = barGroupData.find(dd => dd.name === d);
-      //     if (match === undefined) return;
-      //     params.setTooltipData([
-      //       {
-      //         field: "Core capacity",
-      //         value: match.data.info.label,
-      //       },
-      //       {
-      //         field: `Total ${params.flowTypeName.toLowerCase()}`,
-      //         value: Util.money(match.value),
-      //       },
-      //     ]);
-      //   });
-
-      // WIP -- Wrap y-axis labels (too many lines in some cases)
-      // yAxisG.selectAll("text").each(function wrapLabels() {
-      //   if (this.innerHTML === "") return;
-      //   console.log(this);
-      //   console.log("this.innerHTML");
-      //   console.log(this.innerHTML);
-      //   console.log(Util.getWrappedText(this.innerHTML));
-      // });
-
       // y-axis tick tooltips
       chart
         .selectAll(".y.axis .tick")
         .attr("data-tip", true)
         .attr("data-for", "chartTooltip")
         .on("mouseover", updateTooltip);
-
-      // get flag URLs by name
-      const flagUrlByName = {};
-      data.forEach(d => {
-        flagUrlByName[d.name] = d.flag_url;
-      });
 
       // flag icons
       chart.selectAll(".y.axis .tick:not(.iconned)").each(function addIcons(d) {
@@ -332,7 +309,7 @@ class D3EventBars extends Chart {
         iconGroup
           // .classed(styles.showNoScore, jeesWhite)
           .append("image")
-          .attr("href", flagUrlByName[d])
+          .attr("href", dataByName[d].flag_url)
           .attr("width", badgeDim.width)
           .attr("height", badgeDim.height)
           .attr("x", badgeDim.x)
