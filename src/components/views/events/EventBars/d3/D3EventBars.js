@@ -128,6 +128,11 @@ class D3EventBars extends Chart {
     this.update = (data, newFlowType = params.curFlowType) => {
       const sort = params.sort;
 
+      // Sort
+      data.sort((a, b) => {
+        return d3.descending(a.value, b.value);
+      });
+
       const fakeText = chart
         .selectAll(".fake-text")
         .data(data) // TODO structure data
