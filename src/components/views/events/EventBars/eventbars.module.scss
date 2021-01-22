@@ -1,13 +1,22 @@
 @import "../../../../assets/styles/colors.scss";
 .eventBars {
-  .bars {
+  display: grid;
+  // grid-template-columns: 1fr 1fr;
+  grid-template-columns: 3fr 1fr;
+  .bars,
+  .impacts {
     height: auto;
     g[class^="tick"] > text {
       font-size: 14px;
-      font-family: "open_sanssemibold", sans-serif;
+      font-family: "Open Sans", sans-serif;
       a {
+        font-family: "open_sanssemibold", sans-serif;
         fill: $outbreak-blue-2;
       }
+    }
+    circle {
+      fill: $outbreak-blue-2;
+      z-index: 100;
     }
     image {
       display: none;

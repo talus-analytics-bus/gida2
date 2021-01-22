@@ -26,7 +26,8 @@ const Events = ({ slug, flowTypeInfo }) => {
   const [stakeholders, setStakeholders] = useState({});
   const [countryImpacts, setCountryImpacts] = useState([]);
   const [curFlowType, setCurFlowType] = useState("committed_funds");
-  // const [curFlowType, setCurFlowType] = useState("disbursed_funds");
+  const [caseData, setCaseData] = useState(null);
+  const [deathData, setDeathData] = useState(null);
 
   // FUNCTIONS //
   const getData = async () => {
@@ -79,7 +80,16 @@ const Events = ({ slug, flowTypeInfo }) => {
         profile.
       </span>
     ),
-    content: <EventBars {...{ eventId: data.id, curFlowType }} />,
+    content: (
+      <EventBars
+        {...{
+          eventId: data.id,
+          curFlowType,
+          caseData,
+          deathData,
+        }}
+      />
+    ),
   };
   const sankey = {
     header: <h2>Flow of funding</h2>,
@@ -186,6 +196,10 @@ const Events = ({ slug, flowTypeInfo }) => {
                                 setCountryImpacts(formattedCountryImpacts);
                               }
                             : undefined,
+                        caseData,
+                        setCaseData,
+                        deathData,
+                        setDeathData,
                       }}
                     />
                   )}

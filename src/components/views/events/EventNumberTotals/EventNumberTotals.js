@@ -13,14 +13,19 @@ import TotalByFlowType from "../../../infographic/TotalByFlowType/TotalByFlowTyp
 import { execute, CumulativeCasesOrDeaths, Flow } from "../../../misc/Queries";
 import { NONE_VALS } from "../../../misc/Util";
 
-const EventNumberTotals = ({ type, eventData, afterCaseData }) => {
+const EventNumberTotals = ({
+  type,
+  eventData,
+  afterCaseData,
+  caseData,
+  setCaseData,
+  deathData,
+  setDeathData,
+}) => {
   // STATE //
   // data arrays from which totals are calculated.
   // arrays should contain one el. per country with cumu. totals
   const [fundData, setFundData] = useState(null);
-  const [caseData, setCaseData] = useState(null);
-  const [deathData, setDeathData] = useState(null);
-
   // FUNCTIONS //
   // get icon to show
   const getIcon = type => {

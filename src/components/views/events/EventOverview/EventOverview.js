@@ -33,6 +33,10 @@ const EventOverview = ({
 
   // additional params.
   afterCaseData,
+  caseData,
+  setCaseData,
+  deathData,
+  setDeathData,
 }) => {
   // FUNCTIONS //
   const getTimelinePoints = () => {
@@ -105,6 +109,10 @@ const EventOverview = ({
             cases_and_deaths_refs,
           },
           afterCaseData,
+          caseData,
+          setCaseData,
+          deathData,
+          setDeathData,
         }}
       />
     </div>
