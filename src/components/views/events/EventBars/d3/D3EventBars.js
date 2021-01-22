@@ -172,7 +172,7 @@ class D3EventBars extends Chart {
       // y.domain(barGroupData.map(d => d.name));
 
       // remove first
-      let bars = allBars.selectAll("." + styles.bar).data(data, d => [d]); // TODO check
+      let bars = allBars.selectAll("." + styles.bar).data(data, d => d.bar_id); // TODO check
       bars.exit().remove();
 
       const newGroups = bars
@@ -180,7 +180,7 @@ class D3EventBars extends Chart {
         .append("g")
         .attr("class", styles.bar)
         .attr("id", d => {
-          return d.name + " - " + newFlowType;
+          return d.bar_id;
         });
 
       bars = newGroups.merge(bars);
