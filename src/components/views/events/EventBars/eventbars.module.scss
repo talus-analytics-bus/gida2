@@ -2,7 +2,12 @@
 .eventBars {
   // loading
   display: grid;
-  grid-template-columns: 3fr 1fr;
+  &.two {
+    grid-template-columns: 3fr 1fr;
+  }
+  &.one {
+    grid-template-columns: 1fr;
+  }
   &.shown {
     opacity: 1;
     transition: 0.5s all;
@@ -13,9 +18,12 @@
   }
   > div {
     height: auto;
+    width: 100%;
+
     .bars,
     .impacts {
       height: auto;
+      width: 100%;
       g[class^="tick"] > text {
         font-size: 14px;
         font-family: "Open Sans", sans-serif;

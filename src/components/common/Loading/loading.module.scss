@@ -28,7 +28,6 @@
   opacity: 0;
   height: 0;
   position: relative;
-  transition: opacity 0.5s ease;
   &.shown {
     opacity: 1;
     height: unset;

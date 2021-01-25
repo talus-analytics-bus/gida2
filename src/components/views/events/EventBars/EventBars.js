@@ -15,6 +15,18 @@ import { execute, NodeSums } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
 import Loading from "../../../common/Loading/Loading";
 
+const COUNTRY_CATS = ["country", "world"];
+const ORG_CATS = [
+  "academia",
+  "foundation",
+  "government",
+  "international_organization",
+  "international_organization_",
+  "ngo",
+  "ngo_",
+  "private_sector",
+];
+
 const EventBars = ({
   eventId,
   curFlowType,
@@ -30,29 +42,57 @@ const EventBars = ({
   const [caseDeathDataForChart, setCaseDeathDataForChart] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [tooltipData, setTooltipData] = useState(false);
+
+  // "Event impact by"
   const [impact, setImpact] = useState("cases");
+
+  // "Funds by"
+  const [funds, setFunds] = useState("recipient_country");
+
+  // CONSTANTS //
+  // chart parameters
+  const params = { setTooltipData, curFlowType, impact };
+
+  // add countries with zero funding to main bar chart if they had cases?
+  const addUnfundedCountriesWithCases =
+    funds === "recipient_country" || funds === "recipient_region";
+
+  // cases or deaths plotted?
+  const impactData = impact === "cases" ? caseData : deathData;
+
+  // show impacts dot chart?
+  const showImpacts = ["recipient_country", "recipient_region"].includes(funds);
+
+  // charts ready to be shown?
+  const drawn = chart !== null && (!showImpacts || secChart !== null) && loaded;
+
+  // was main chart initialized?
+  const initialized = chart !== null;
+
+  // direction of funding flow
+  const direction = funds.startsWith("recipient") ? "target" : "origin";
+
   // FUNCTIONS //
+  // return stakeholder categories that should be requested based on `funds`
+  // (fund type to show)
+  const getStakeholderCats = () => {
+    if (funds === "recipient_country" || funds === "recipient_region")
+      return COUNTRY_CATS;
+    else if (funds === "recipient_org") return ORG_CATS;
+    else if (funds === "funder") return COUNTRY_CATS.concat(ORG_CATS);
+    else {
+      console.error("Unknown `funds` value: " + funds);
+    }
+  };
   // get data
   const getData = async () => {
     const queries = {};
     queries.nodeSums = NodeSums({
       format: "bar_chart",
-      direction: "target",
+      direction,
       filters: {
         "Event.id": [eventId],
-        "Stakeholder.cat": [
-          "academia",
-          "country",
-          "foundation",
-          "government",
-          "international_organization",
-          "international_organization_",
-          "ngo",
-          "ngo_",
-          // "other",
-          "private_sector",
-          "world",
-        ],
+        "Stakeholder.cat": getStakeholderCats(),
         "Flow.flow_type": ["disbursed_funds", "committed_funds"],
         "Flow.year": [
           ["gt_eq", Settings.startYear],
@@ -66,13 +106,6 @@ const EventBars = ({
     setData(results.nodeSums);
   };
 
-  // CONSTANTS //
-  // chart parameters
-  const params = { setTooltipData, curFlowType, impact };
-
-  // cases or deaths plotted?
-  const impactData = impact === "cases" ? caseData : deathData;
-
   // EFFECT HOOKS //
   // initialize charts when data are `loaded`
   useEffect(() => {
@@ -81,14 +114,17 @@ const EventBars = ({
         ...params,
         data: dataForChart[curFlowType],
       });
-      const newSecChart = new D3ImpactBars("." + styles.impacts, {
-        ...params,
-        data: caseDeathDataForChart,
-      });
+
+      const newSecChart = showImpacts
+        ? new D3ImpactBars("." + styles.impacts, {
+            ...params,
+            data: caseDeathDataForChart,
+          })
+        : null;
       setChart(newChart);
       setSecChart(newSecChart);
     }
-  }, [loaded]);
+  }, [loaded, dataForChart, caseDeathDataForChart]);
 
   // if both sets of required data are not null, mark as `loaded`
   useEffect(() => {
@@ -97,6 +133,7 @@ const EventBars = ({
     }
   }, [data, caseDeathDataForChart]);
 
+  // Format data.
   // if both sets of required raw data are not null, process them into data
   // that can be used in the charts
   useEffect(() => {
@@ -131,24 +168,26 @@ const EventBars = ({
         committed_funds: data.committed_funds,
         disbursed_funds: data.disbursed_funds,
       };
-      for (const flowType of Object.keys(newDataForChart)) {
-        impactData.forEach(d => {
-          // if the case/death data place doesn't appear in the stakeholders
-          // dataset, skip it, otherwise if it doesn't appear in the funding
-          // dataset, add it with zero value
-          if (dataByIso2[d.place_iso.toLowerCase()] === undefined) {
-            if (stakeholders[d.place_iso3] === undefined) return;
-            const iso2 = d.place_iso.toLowerCase();
-            newDataForChart[flowType].push({
-              value: 0,
-              iso2,
-              flag_url: `https://flags.talusanalytics.com/64px/${iso2}.png`,
-              bar_id: iso2 + "-" + flowType,
-              id: stakeholders[d.place_iso3].id,
-              name: d.place_name,
-            });
-          }
-        });
+      if (addUnfundedCountriesWithCases) {
+        for (const flowType of Object.keys(newDataForChart)) {
+          impactData.forEach(d => {
+            // if the case/death data place doesn't appear in the stakeholders
+            // dataset, skip it, otherwise if it doesn't appear in the funding
+            // dataset, add it with zero value
+            if (dataByIso2[d.place_iso.toLowerCase()] === undefined) {
+              if (stakeholders[d.place_iso3] === undefined) return;
+              const iso2 = d.place_iso.toLowerCase();
+              newDataForChart[flowType].push({
+                value: 0,
+                iso2,
+                flag_url: `https://flags.talusanalytics.com/64px/${iso2}.png`,
+                bar_id: iso2 + "-" + flowType,
+                id: stakeholders[d.place_iso3].id,
+                name: d.place_name,
+              });
+            }
+          });
+        }
       }
       setDataForChart(newDataForChart);
 
@@ -189,6 +228,14 @@ const EventBars = ({
     }
   }, [caseDeathDataForChart]);
 
+  // update charts if fund type is changed
+  useEffect(() => {
+    if (initialized) {
+      setLoaded(false);
+      getData();
+    }
+  }, [funds]);
+
   // update second bar chart when impact is changed
   useEffect(() => {
     if (secChart !== null) {
@@ -199,14 +246,30 @@ const EventBars = ({
     }
   }, [impact]);
 
-  const drawn = chart !== null && secChart !== null;
-
   return (
     <>
       <Loading {...{ loaded: drawn }} />
-      <div className={classNames(styles.eventBars, { [styles.shown]: drawn })}>
+      <div
+        className={classNames(styles.eventBars, {
+          [styles.shown]: drawn,
+          [styles.one]: !showImpacts,
+          [styles.two]: showImpacts,
+        })}
+      >
         <div className={styles.chart}>
-          <Selectpicker />
+          <Selectpicker
+            {...{
+              label: "Funds by",
+              curSelection: funds,
+              setOption: setFunds,
+              optionList: [
+                { value: "recipient_country", label: "Recipient (country)" },
+                { value: "recipient_region", label: "Recipient (region)" },
+                { value: "funder", label: "Funder" },
+                { value: "recipient_org", label: "Recipient (organization)" },
+              ],
+            }}
+          />
           <div className={styles.bars} />
         </div>
         <div className={styles.chart}>
@@ -221,7 +284,7 @@ const EventBars = ({
               ],
             }}
           />
-          <div className={styles.impacts} />
+          {showImpacts && <div className={styles.impacts} />}
         </div>
       </div>
       {
