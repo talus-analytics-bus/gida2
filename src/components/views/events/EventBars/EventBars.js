@@ -75,6 +75,15 @@ const EventBars = ({
   // direction of funding flow
   const direction = funds.startsWith("recipient") ? "target" : "origin";
 
+  // recipient or funder?
+  const roleNoun = direction === "target" ? "recipient" : "funder";
+
+  // countries?
+  const showRegionFilter =
+    funds === "recipient_country" ||
+    funds === "recipient_region" ||
+    funds === "funder_country";
+
   // FUNCTIONS //
 
   // return stakeholder dictionary keeping only those that match region filter
@@ -93,10 +102,9 @@ const EventBars = ({
   // return stakeholder categories that should be requested based on `funds`
   // (fund type to show)
   const getStakeholderCats = () => {
-    if (funds === "recipient_country" || funds === "recipient_region")
-      return COUNTRY_CATS;
-    else if (funds === "recipient_org") return ORG_CATS;
-    else if (funds === "funder") return COUNTRY_CATS.concat(ORG_CATS);
+    if (showRegionFilter) return COUNTRY_CATS;
+    else if (funds === "recipient_org" || funds === "funder_org")
+      return ORG_CATS;
     else {
       console.error("Unknown `funds` value: " + funds);
     }
@@ -112,7 +120,8 @@ const EventBars = ({
     };
 
     // add region filter
-    if (region !== "") filters["Stakeholder.region_who"] = [region];
+    if (showRegionFilter && region !== "")
+      filters["Stakeholder.region_who"] = [region];
 
     // define queries
     const queries = {};
@@ -290,22 +299,33 @@ const EventBars = ({
                 optionList: [
                   { value: "recipient_country", label: "Recipient (country)" },
                   { value: "recipient_region", label: "Recipient (region)" },
-                  { value: "funder", label: "Funder" },
+                  { value: "funder_country", label: "Funder (country)" },
+                  { value: "funder_org", label: "Funder (organization)" },
                   { value: "recipient_org", label: "Recipient (organization)" },
                 ],
               }}
             />
-            <Selectpicker
-              {...{
-                label: "Filter [noun]",
-                curSelection: region,
-                setOption: setRegion,
-                optionList: [
-                  { value: "", label: "All regions" },
-                  { value: "paho", label: "Region of the Americas (PAHO)" },
-                ],
-              }}
-            />
+            {showRegionFilter && (
+              <Selectpicker
+                {...{
+                  label: `Filter ${roleNoun}s`,
+                  curSelection: region,
+                  setOption: setRegion,
+                  optionList: [
+                    { value: "", label: "All regions" },
+                    { value: "afro", label: "African Region (AFRO)" },
+                    { value: "paho", label: "Region of the Americas (PAHO)" },
+                    { value: "searo", label: "South-East Asia Region (SEARO)" },
+                    { value: "euro", label: "European Region (EURO)" },
+                    {
+                      value: "emro",
+                      label: "Eastern Mediterranean Region (EMRO)",
+                    },
+                    { value: "wpro", label: "Western Pacific Region (WPRO)" },
+                  ],
+                }}
+              />
+            )}
           </div>
           <div className={styles.bars} />
         </div>
