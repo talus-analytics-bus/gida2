@@ -94,7 +94,8 @@ const EventBars = ({
   const max = top10Only ? 10 : 1e6;
 
   // no data? shows a message to that effect
-  const noData = data !== null && data[curFlowType].length === 0;
+  const noData =
+    dataForChart !== null && dataForChart[curFlowType].length === 0;
 
   // countries?
   const showRegionFilter =
@@ -206,6 +207,7 @@ const EventBars = ({
           const curShInfo = filteredStakeholders[iso3];
           d.iso2 = curShInfo.iso2;
           d.region_who = curShInfo.region_who;
+          d.name = curShInfo.name;
         }
         const name = d.place_name || d.name;
         const iso2 = (d.iso2 || d.place_iso).toLowerCase();
@@ -230,17 +232,20 @@ const EventBars = ({
             // if the case/death data place doesn't appear in the stakeholders
             // dataset, skip it, otherwise if it doesn't appear in the funding
             // dataset, add it with zero value
-            if (dataByIso2[d.place_iso.toLowerCase()] === undefined) {
-              if (filteredStakeholders[d.place_iso3] === undefined) return;
-              const iso2 = d.place_iso.toLowerCase();
-              const shInfo = filteredStakeholders[d.place_iso3];
+            let iso2 = (d.place_iso || d.iso2 || "none").toLowerCase();
+            if (dataByIso2[iso2] === undefined) {
+              const iso3 = d.place_iso3 || d.iso3;
+              if (filteredStakeholders[iso3] === undefined) return;
+              const shInfo = filteredStakeholders[iso3];
+              let iso2 = (shInfo.iso2 || "none").toLowerCase();
+              const name = shInfo.name || d.place_name || d.name;
               newDataForChart[flowType].push({
                 value: 0,
                 iso2,
                 flag_url: `https://flags.talusanalytics.com/64px/${iso2}.png`,
                 bar_id: iso2 + "-" + flowType,
                 id: shInfo.id,
-                name: d.place_name,
+                name,
                 region_who: shInfo.region_who,
               });
             }

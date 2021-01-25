@@ -203,7 +203,7 @@ class D3ImpactBars extends Chart {
 
       // set new axes and transition
       const maxVal = d3.max(data, d => d.value);
-      const xMax = 1.1 * maxVal;
+      const xMax = 1.1 * maxVal || 100;
       x.domain([0, xMax]);
       y.domain(data.map(d => d.name)).range([0, newHeight]);
       const bandwidth = y.bandwidth();
