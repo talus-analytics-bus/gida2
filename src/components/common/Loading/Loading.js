@@ -9,8 +9,11 @@ const Loading = ({
   small = false,
   slideUp = false,
   children,
+
+  // custom styles
   margin,
   top,
+  position,
   minHeight,
   ...props
 }) => {
@@ -18,7 +21,7 @@ const Loading = ({
     <>
       {!loaded && (
         <div
-          style={{ margin, top, minHeight }}
+          style={{ margin, top, minHeight, position }}
           className={classNames(styles.placeholder, { [styles.small]: small })}
         >
           <div className={styles.imgContainer}>
