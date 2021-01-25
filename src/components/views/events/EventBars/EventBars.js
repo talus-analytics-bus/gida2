@@ -94,6 +94,9 @@ const EventBars = ({
   // max number of bar chart bars to show
   const max = top10Only ? 10 : 1e6;
 
+  // no data? shows a message to that effect
+  const noData = data !== null && data[curFlowType].length === 0;
+
   // countries?
   const showRegionFilter =
     funds === "recipient_country" || funds === "funder_country";
@@ -103,7 +106,7 @@ const EventBars = ({
   // return stakeholder dictionary keeping only those that match region filter
   // if applicable
   const getFilteredStakeholders = () => {
-    if (region === "") return stakeholders;
+    if (!showRegionFilter || region === "") return stakeholders;
     else {
       const filteredStakeholders = {};
       for (const [k, v] of Object.entries(stakeholders)) {
@@ -134,8 +137,9 @@ const EventBars = ({
     };
 
     // add region filter
-    if (showRegionFilter && region !== "")
+    if (showRegionFilter && region !== "") {
       filters["Stakeholder.region_who"] = [region];
+    }
 
     // define queries
     const queries = {};
@@ -196,14 +200,13 @@ const EventBars = ({
       // for each datum of case or death data, put it in chart data format
       // indexed by iso2 code
       impactData.forEach(({ value, ...d }) => {
-        if (d.iso2 === undefined && d.place_iso === undefined) {
-          const stakeholderInfo = filteredStakeholders[d.iso3];
-          if (stakeholderInfo === undefined) return;
-          else {
-            const curShInfo = filteredStakeholders[d.iso3];
-            d.iso2 = curShInfo.iso2;
-            d.region_who = curShInfo.region_who;
-          }
+        const iso3 = d.place_iso3 || d.iso3;
+        const stakeholderInfo = filteredStakeholders[iso3];
+        if (stakeholderInfo === undefined) return;
+        else {
+          const curShInfo = filteredStakeholders[iso3];
+          d.iso2 = curShInfo.iso2;
+          d.region_who = curShInfo.region_who;
         }
         const name = d.place_name || d.name;
         const iso2 = (d.iso2 || d.place_iso).toLowerCase();
@@ -212,7 +215,7 @@ const EventBars = ({
           iso2,
           name,
           bar_id: `${iso2}-${curFlowType}-${impact}`,
-          region_who: "placeholder",
+          region_who: d.region_who,
         };
       });
 
@@ -309,91 +312,118 @@ const EventBars = ({
   return (
     <>
       <Loading {...{ loaded: drawn, position: "absolute" }} />
-      <div
-        className={classNames(styles.eventBars, {
-          [styles.shown]: drawn,
-          [styles.one]: !showImpacts,
-          [styles.two]: showImpacts,
-        })}
-      >
-        <div className={styles.chart}>
-          <div className={styles.dropdowns}>
-            <Selectpicker
-              {...{
-                label: "Funds by",
-                curSelection: funds,
-                setOption: setFunds,
-                optionGroups: {
-                  Recipient: [
-                    {
-                      value: "recipient_country",
-                      label: "Recipient (country)",
-                    },
-                    { value: "recipient_region", label: "Recipient (region)" },
-                    {
-                      value: "recipient_org",
-                      label: "Recipient (organization)",
-                    },
-                  ],
-                  Funder: [
-                    { value: "funder_country", label: "Funder (country)" },
-                    { value: "funder_org", label: "Funder (organization)" },
-                  ],
-                },
-              }}
-            />
-            {showRegionFilter && (
-              <Selectpicker
-                {...{
-                  label: `Filter ${roleNoun}s`,
-                  curSelection: region,
-                  setOption: setRegion,
-                  optionList: [
-                    { value: "", label: "All regions" },
-                    { value: "afro", label: "African Region (AFRO)" },
-                    { value: "paho", label: "Region of the Americas (PAHO)" },
-                    { value: "searo", label: "South-East Asia Region (SEARO)" },
-                    { value: "euro", label: "European Region (EURO)" },
-                    {
-                      value: "emro",
-                      label: "Eastern Mediterranean Region (EMRO)",
-                    },
-                    { value: "wpro", label: "Western Pacific Region (WPRO)" },
-                  ],
-                }}
-              />
-            )}
-            <Checkbox
-              {...{
-                label: "Top 10 only",
-                value: "top10only",
-                curChecked: top10Only,
-                callback: () => setTop10Only(!top10Only),
-              }}
-            />
-          </div>
-          <div className={styles.bars} />
-        </div>
-        <div className={styles.chart}>
-          {showImpacts && (
-            <>
+      <div className={classNames(styles.eventBars, {})}>
+        {
+          <div
+            className={classNames(styles.charts, {
+              [styles.shown]: drawn,
+              [styles.one]: !showImpacts,
+              [styles.two]: showImpacts,
+            })}
+          >
+            <div className={styles.chart}>
               <div className={styles.dropdowns}>
                 <Selectpicker
                   {...{
-                    label: "Event impact by",
-                    curSelection: impact,
-                    setOption: setImpact,
-                    optionList: [
-                      { value: "cases", label: "Cases" },
-                      { value: "deaths", label: "Deaths" },
-                    ],
+                    label: "Funds by",
+                    curSelection: funds,
+                    setOption: setFunds,
+                    optionGroups: {
+                      Recipient: [
+                        {
+                          value: "recipient_country",
+                          label: "Recipient (country)",
+                        },
+                        {
+                          value: "recipient_region",
+                          label: "Recipient (region)",
+                        },
+                        {
+                          value: "recipient_org",
+                          label: "Recipient (organization)",
+                        },
+                      ],
+                      Funder: [
+                        { value: "funder_country", label: "Funder (country)" },
+                        { value: "funder_org", label: "Funder (organization)" },
+                      ],
+                    },
+                  }}
+                />
+                {showRegionFilter && (
+                  <Selectpicker
+                    {...{
+                      label: `Filter ${roleNoun}s`,
+                      curSelection: region,
+                      setOption: setRegion,
+                      optionList: [
+                        { value: "", label: "All regions" },
+                        { value: "afro", label: "African Region (AFRO)" },
+                        {
+                          value: "paho",
+                          label: "Region of the Americas (PAHO)",
+                        },
+                        {
+                          value: "searo",
+                          label: "South-East Asia Region (SEARO)",
+                        },
+                        { value: "euro", label: "European Region (EURO)" },
+                        {
+                          value: "emro",
+                          label: "Eastern Mediterranean Region (EMRO)",
+                        },
+                        {
+                          value: "wpro",
+                          label: "Western Pacific Region (WPRO)",
+                        },
+                      ],
+                    }}
+                  />
+                )}
+                <Checkbox
+                  {...{
+                    label: "Top 10 only",
+                    value: "top10only",
+                    curChecked: top10Only,
+                    callback: () => setTop10Only(!top10Only),
                   }}
                 />
               </div>
-              <div className={styles.impacts} />
-            </>
-          )}
-        </div>
+              <div
+                className={classNames(styles.bars, { [styles.hidden]: noData })}
+              />
+            </div>
+            <div className={styles.chart}>
+              {showImpacts && (
+                <>
+                  <div className={styles.dropdowns}>
+                    <Selectpicker
+                      {...{
+                        label: "Event impact by",
+                        curSelection: impact,
+                        setOption: setImpact,
+                        optionList: [
+                          { value: "cases", label: "Cases" },
+                          { value: "deaths", label: "Deaths" },
+                        ],
+                      }}
+                    />
+                  </div>
+                  <div
+                    className={classNames(styles.impacts, {
+                      [styles.hidden]: noData,
+                    })}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+        }
+        {noData && (
+          <div className={styles.noData}>
+            No data match the selected filters
+          </div>
+        )}
       </div>
       {
         // Tooltip for info tooltip icons.

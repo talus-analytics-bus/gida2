@@ -1,7 +1,7 @@
 import React from "react";
 import * as d3 from "d3/dist/d3.min";
 import Chart from "../../../../chart/Chart.js";
-import Util, { getInitCap } from "../../../../misc/Util.js";
+import Util, { getInitCap, formatRegion } from "../../../../misc/Util.js";
 import styles from "./d3impactbars.module.scss";
 import ReactTooltip from "react-tooltip";
 
@@ -123,6 +123,42 @@ class D3ImpactBars extends Chart {
     this.update = (data, newFlowType = params.curFlowType, params) => {
       const sort = params.sort;
 
+      // format stack bar data
+      let stackXMax, stackData;
+      // const noRegion = [];
+      if (params.stack) {
+        stackData = [];
+        const dataByRegion = {};
+        data.forEach(d => {
+          const region = d.region_who || "None";
+          // if (region === "None") {
+          //   noRegion.push(d);
+          // }
+          if (dataByRegion[region] === undefined) {
+            dataByRegion[region] = [d];
+          } else if (
+            d.value !== 0 &&
+            d.value !== undefined &&
+            d.value !== null
+          ) {
+            dataByRegion[region].push(d);
+          }
+        });
+        for (const [region, children] of Object.entries(dataByRegion)) {
+          stackData.push({
+            name: region,
+            children: children.sort((a, b) => {
+              return d3.descending(a.sort, b.sort);
+            }),
+            value: d3.sum(children, d => d.value),
+            sort: d3.sum(children, d => d.sort),
+            bar_id: `${region}-${newFlowType}`,
+          });
+        }
+        stackXMax = d3.max(stackData, d => d.value);
+        data = stackData;
+      }
+
       // Sort
       data.sort((a, b) => {
         return d3.descending(a.sort, b.sort);
@@ -136,7 +172,9 @@ class D3ImpactBars extends Chart {
         const tooltipData = [
           {
             field: "Name",
-            value: dataByName[d].name,
+            value: params.stack
+              ? formatRegion(dataByName[d].name)
+              : dataByName[d].name,
           },
           {
             field: xLabel.text(),
@@ -207,7 +245,11 @@ class D3ImpactBars extends Chart {
       }
 
       // set axes labels
-      xLabel.text(getInitCap(params.impact) + " by country");
+      xLabel.text(
+        getInitCap(params.impact) +
+          " by " +
+          (params.stack ? "region" : "country")
+      );
 
       chart.select(".y-label-text").attr("x", -newHeight / 2);
 

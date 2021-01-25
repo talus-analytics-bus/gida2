@@ -1,57 +1,65 @@
 @import "../../../../assets/styles/colors.scss";
 .eventBars {
   // loading
-  display: grid;
-  &.two {
-    grid-template-columns: 3fr 1fr;
-  }
-  &.one {
-    grid-template-columns: 1fr;
-  }
-  &.shown {
-    opacity: 1;
-    transition: 0.5s all;
-  }
-  &:not(.shown) {
-    opacity: 0;
-    transition: 0.5s all;
-  }
-  > .chart {
-    height: auto;
+  display: flex;
+  flex-flow: column;
+  .charts {
+    display: grid;
     width: 100%;
-
-    .dropdowns {
-      display: flex;
-      align-items: flex-end;
-      margin-bottom: 30px;
-      > div,
-      form label {
-        margin: 0;
-      }
-      @include spaceChildrenHoriz(10px);
+    &.two {
+      grid-template-columns: 3fr 1fr;
     }
-
-    .bars,
-    .impacts {
+    &.one {
+      grid-template-columns: 1fr;
+    }
+    &.shown {
+      opacity: 1;
+      transition: 0.5s all;
+    }
+    &:not(.shown) {
+      opacity: 0;
+      transition: 0.5s all;
+    }
+    .chart {
       height: auto;
       width: 100%;
-      g[class^="tick"] > text {
-        font-size: 14px;
-        font-family: "Open Sans", sans-serif;
-        a,
-        tspan {
-          font-family: "open_sanssemibold", sans-serif;
+
+      .dropdowns {
+        display: flex;
+        align-items: flex-end;
+        margin-bottom: 30px;
+        > div,
+        form label {
+          margin: 0;
         }
-        a {
+        @include spaceChildrenHoriz(10px);
+      }
+
+      .bars,
+      .impacts {
+        height: auto;
+        width: 100%;
+        &.hidden {
+          display: none;
+        }
+        g[class^="tick"] > text {
+          font-size: 14px;
+          font-family: "Open Sans", sans-serif;
+          a,
+          tspan {
+            font-family: "open_sanssemibold", sans-serif;
+          }
+          a {
+            fill: $outbreak-blue-2;
+          }
+        }
+        circle {
           fill: $outbreak-blue-2;
+          z-index: 100;
         }
-      }
-      circle {
-        fill: $outbreak-blue-2;
-        z-index: 100;
-      }
-      image {
-        display: none;
+        image {
+          display: none;
+        }
       }
     }
   }

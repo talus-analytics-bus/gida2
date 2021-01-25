@@ -294,10 +294,6 @@ class D3EventBars extends Chart {
           d.tickTextWidth = this.getBBox().width;
         });
       fakeText.remove();
-      console.log("newData");
-      console.log(newData);
-      console.log("getLeftMargin(newData, fmt)");
-      console.log(getLeftMargin(newData, formatRegion));
 
       const newHeight = 30 * newData.length; // TODO confirm
       this.svg.attr("height", newHeight + margin.top + margin.bottom);

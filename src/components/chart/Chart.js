@@ -53,8 +53,6 @@ class Chart {
   updateWidth(newMargin) {
     const chart = this;
     chart.margin = newMargin;
-    console.log("chart.margin");
-    console.log(chart.margin);
 
     // set the contents to be the dimensions minus the margin
     chart.width = chart.containerwidth - chart.margin.left - chart.margin.right;
@@ -238,7 +236,6 @@ class Chart {
       };
     }
     if (this.svg.node() === undefined || this.svg.node() === null) {
-      console.log("Not part of an svg");
       return {
         x: 0,
         y: 0,
@@ -412,8 +409,6 @@ class Chart {
         .nice()
         .range([0, chart.height]);
       if (chart.yTickFormat) {
-        console.log("chart.yTickFormat - mvm found");
-        console.log(chart.yTickFormat);
         chart[axisType].tickFormat(chart.yTickFormat);
       }
     }
@@ -453,8 +448,6 @@ function onResize(chart) {
   }
 
   // set the contents to be the dimensions minus the margin
-  // console.log('chart - Chart.js')
-  // console.log(chart)
   chart.width = chart.containerwidth - chart.margin.left - chart.margin.right;
   chart.height = chart.containerheight - chart.margin.top - chart.margin.bottom;
 
