@@ -49,6 +49,9 @@ const EventBars = ({
   // "Funds by"
   const [funds, setFunds] = useState("recipient_country");
 
+  // "Filter recipients/funders"
+  const [region, setRegion] = useState("");
+
   // CONSTANTS //
   // chart parameters
   const params = { setTooltipData, curFlowType, impact };
@@ -73,6 +76,20 @@ const EventBars = ({
   const direction = funds.startsWith("recipient") ? "target" : "origin";
 
   // FUNCTIONS //
+
+  // return stakeholder dictionary keeping only those that match region filter
+  // if applicable
+  const getFilteredStakeholders = () => {
+    if (region === "") return stakeholders;
+    else {
+      const filteredStakeholders = {};
+      for (const [k, v] of Object.entries(stakeholders)) {
+        if (v.region_who === region) filteredStakeholders[k] = v;
+      }
+      return filteredStakeholders;
+    }
+  };
+
   // return stakeholder categories that should be requested based on `funds`
   // (fund type to show)
   const getStakeholderCats = () => {
@@ -86,19 +103,23 @@ const EventBars = ({
   };
   // get data
   const getData = async () => {
+    // define query filters
+    const filters = {
+      "Event.id": [eventId],
+      "Stakeholder.cat": getStakeholderCats(),
+      "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+    };
+
+    // add region filter
+    if (region !== "") filters["Stakeholder.region_who"] = [region];
+
+    // define queries
     const queries = {};
     queries.nodeSums = NodeSums({
       format: "bar_chart",
       direction,
-      filters: {
-        "Event.id": [eventId],
-        "Stakeholder.cat": getStakeholderCats(),
-        "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-        "Flow.year": [
-          ["gt_eq", Settings.startYear],
-          ["lt_eq", Settings.endYear],
-        ],
-      },
+      filters,
     });
     const results = await execute({ queries });
 
@@ -144,13 +165,16 @@ const EventBars = ({
       });
       const newCaseDeathDataForChartTmpByIso2 = {};
 
+      // Get region-filtered stakeholders
+      const filteredStakeholders = getFilteredStakeholders();
+
       // for each datum of case or death data, put it in chart data format
       // indexed by iso2 code
       impactData.forEach(({ value, ...d }) => {
         if (d.iso2 === undefined && d.place_iso === undefined) {
-          const stakeholderInfo = stakeholders[d.iso3];
+          const stakeholderInfo = filteredStakeholders[d.iso3];
           if (stakeholderInfo === undefined) return;
-          else d.iso2 = stakeholders[d.iso3].iso2;
+          else d.iso2 = filteredStakeholders[d.iso3].iso2;
         }
         const name = d.place_name || d.name;
         const iso2 = (d.iso2 || d.place_iso).toLowerCase();
@@ -165,8 +189,8 @@ const EventBars = ({
       // reciprocally: add zeroes for funding for countries that had cases
       // but no funding listed
       const newDataForChart = {
-        committed_funds: data.committed_funds,
-        disbursed_funds: data.disbursed_funds,
+        committed_funds: JSON.parse(JSON.stringify(data.committed_funds)),
+        disbursed_funds: JSON.parse(JSON.stringify(data.disbursed_funds)),
       };
       if (addUnfundedCountriesWithCases) {
         for (const flowType of Object.keys(newDataForChart)) {
@@ -175,14 +199,14 @@ const EventBars = ({
             // dataset, skip it, otherwise if it doesn't appear in the funding
             // dataset, add it with zero value
             if (dataByIso2[d.place_iso.toLowerCase()] === undefined) {
-              if (stakeholders[d.place_iso3] === undefined) return;
+              if (filteredStakeholders[d.place_iso3] === undefined) return;
               const iso2 = d.place_iso.toLowerCase();
               newDataForChart[flowType].push({
                 value: 0,
                 iso2,
                 flag_url: `https://flags.talusanalytics.com/64px/${iso2}.png`,
                 bar_id: iso2 + "-" + flowType,
-                id: stakeholders[d.place_iso3].id,
+                id: filteredStakeholders[d.place_iso3].id,
                 name: d.place_name,
               });
             }
@@ -234,7 +258,7 @@ const EventBars = ({
       setLoaded(false);
       getData();
     }
-  }, [funds]);
+  }, [funds, region]);
 
   // update second bar chart when impact is changed
   useEffect(() => {
@@ -257,34 +281,53 @@ const EventBars = ({
         })}
       >
         <div className={styles.chart}>
-          <Selectpicker
-            {...{
-              label: "Funds by",
-              curSelection: funds,
-              setOption: setFunds,
-              optionList: [
-                { value: "recipient_country", label: "Recipient (country)" },
-                { value: "recipient_region", label: "Recipient (region)" },
-                { value: "funder", label: "Funder" },
-                { value: "recipient_org", label: "Recipient (organization)" },
-              ],
-            }}
-          />
+          <div className={styles.dropdowns}>
+            <Selectpicker
+              {...{
+                label: "Funds by",
+                curSelection: funds,
+                setOption: setFunds,
+                optionList: [
+                  { value: "recipient_country", label: "Recipient (country)" },
+                  { value: "recipient_region", label: "Recipient (region)" },
+                  { value: "funder", label: "Funder" },
+                  { value: "recipient_org", label: "Recipient (organization)" },
+                ],
+              }}
+            />
+            <Selectpicker
+              {...{
+                label: "Filter [noun]",
+                curSelection: region,
+                setOption: setRegion,
+                optionList: [
+                  { value: "", label: "All regions" },
+                  { value: "paho", label: "Region of the Americas (PAHO)" },
+                ],
+              }}
+            />
+          </div>
           <div className={styles.bars} />
         </div>
         <div className={styles.chart}>
-          <Selectpicker
-            {...{
-              label: "Event impact by",
-              curSelection: impact,
-              setOption: setImpact,
-              optionList: [
-                { value: "cases", label: "Cases" },
-                { value: "deaths", label: "Deaths" },
-              ],
-            }}
-          />
-          {showImpacts && <div className={styles.impacts} />}
+          {showImpacts && (
+            <>
+              <div className={styles.dropdowns}>
+                <Selectpicker
+                  {...{
+                    label: "Event impact by",
+                    curSelection: impact,
+                    setOption: setImpact,
+                    optionList: [
+                      { value: "cases", label: "Cases" },
+                      { value: "deaths", label: "Deaths" },
+                    ],
+                  }}
+                />
+              </div>
+              <div className={styles.impacts} />
+            </>
+          )}
         </div>
       </div>
       {

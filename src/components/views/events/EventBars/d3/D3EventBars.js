@@ -125,8 +125,14 @@ class D3EventBars extends Chart {
     //   .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
     //   .text("y-axis label");
 
-    this.update = (data, newFlowType = params.curFlowType) => {
+    this.update = (newData, newFlowType = params.curFlowType) => {
       const sort = params.sort;
+
+      // get flag URLs and other data by name of stakeholder
+      const dataByName = {};
+      newData.forEach(d => {
+        dataByName[d.name] = d;
+      });
 
       function updateTooltip(dTmp) {
         const d = typeof dTmp === "object" ? dTmp.name : dTmp;
@@ -144,13 +150,13 @@ class D3EventBars extends Chart {
       }
 
       // Sort
-      data.sort((a, b) => {
+      newData.sort((a, b) => {
         return d3.descending(a.value, b.value);
       });
 
       const fakeText = chart
         .selectAll(".fake-text")
-        .data(data) // TODO structure data
+        .data(newData) // TODO structure data
         .enter()
         .append("text")
         .text(d => {
@@ -162,14 +168,14 @@ class D3EventBars extends Chart {
         });
       fakeText.remove();
 
-      const newHeight = 30 * data.length; // TODO confirm
+      const newHeight = 30 * newData.length; // TODO confirm
       this.svg.attr("height", newHeight + margin.top + margin.bottom);
 
       // set new axes and transition
-      const maxVal = d3.max(data, d => d.value);
-      const xMax = 1.1 * maxVal;
+      const maxVal = d3.max(newData, d => d.value);
+      const xMax = 1.1 * maxVal || 1000;
       x.domain([0, xMax]);
-      y.domain(data.map(d => d.name)).range([0, newHeight]);
+      y.domain(newData.map(d => d.name)).range([0, newHeight]);
       const bandwidth = y.bandwidth();
 
       // // Sort
@@ -187,7 +193,9 @@ class D3EventBars extends Chart {
       // y.domain(barGroupData.map(d => d.name));
 
       // remove first
-      let bars = allBars.selectAll("." + styles.bar).data(data, d => d.bar_id); // TODO check
+      let bars = allBars
+        .selectAll("." + styles.bar)
+        .data(newData, d => d.bar_id); // TODO check
       bars.exit().remove();
 
       const newGroups = bars
@@ -247,12 +255,6 @@ class D3EventBars extends Chart {
         xAxisG.call(xAxis.tickValues(this.getTickValues(xMax, 7)));
 
       yAxis.scale(y);
-
-      // get flag URLs by name
-      const dataByName = {};
-      data.forEach(d => {
-        dataByName[d.name] = d;
-      });
 
       const getShortName = this.getShortName;
       yAxisG

@@ -16,9 +16,13 @@
     opacity: 0;
     transition: 0.5s all;
   }
-  > div {
+  > .chart {
     height: auto;
     width: 100%;
+
+    .dropdowns {
+      display: flex;
+    }
 
     .bars,
     .impacts {
