@@ -186,6 +186,9 @@ class D3EventBars extends Chart {
           }
         });
         for (const [region, children] of Object.entries(newDataByRegion)) {
+          children.forEach(d => {
+            d.region = region;
+          });
           stackData.push({
             name: region,
             children: children.sort((a, b) => {
@@ -358,7 +361,7 @@ class D3EventBars extends Chart {
             .attr("data-tip", true)
             .attr("data-for", "chartTooltip")
             .on("mouseover", d => {
-              updateTooltip(d, stackBar.name);
+              updateTooltip(d, d.region);
             })
             .attr("height", bandwidth)
             .transition()
