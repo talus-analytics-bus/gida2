@@ -6,12 +6,14 @@ import { Settings } from "../../../../App";
 
 // styles
 import styles from "./eventbars.module.scss";
+import classNames from "classnames";
 
 // local libs
 import D3EventBars from "./d3/D3EventBars";
 import D3ImpactBars from "./d3/D3ImpactBars";
 import { execute, NodeSums } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
+import Loading from "../../../common/Loading/Loading";
 
 const EventBars = ({
   eventId,
@@ -28,7 +30,7 @@ const EventBars = ({
   const [caseDeathDataForChart, setCaseDeathDataForChart] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [tooltipData, setTooltipData] = useState(false);
-
+  const [impact, setImpact] = useState("cases");
   // FUNCTIONS //
   // get data
   const getData = async () => {
@@ -66,7 +68,10 @@ const EventBars = ({
 
   // CONSTANTS //
   // chart parameters
-  const params = { setTooltipData, curFlowType };
+  const params = { setTooltipData, curFlowType, impact };
+
+  // cases or deaths plotted?
+  const impactData = impact === "cases" ? caseData : deathData;
 
   // EFFECT HOOKS //
   // initialize charts when data are `loaded`
@@ -95,7 +100,7 @@ const EventBars = ({
   // if both sets of required raw data are not null, process them into data
   // that can be used in the charts
   useEffect(() => {
-    if (data !== null && caseData !== null) {
+    if (data !== null && impactData !== null) {
       const dataByIso2 = {};
       data[curFlowType].forEach(d => {
         dataByIso2[d.iso2] = d;
@@ -104,7 +109,7 @@ const EventBars = ({
 
       // for each datum of case or death data, put it in chart data format
       // indexed by iso2 code
-      caseData.forEach(({ value, ...d }) => {
+      impactData.forEach(({ value, ...d }) => {
         if (d.iso2 === undefined && d.place_iso === undefined) {
           const stakeholderInfo = stakeholders[d.iso3];
           if (stakeholderInfo === undefined) return;
@@ -116,7 +121,7 @@ const EventBars = ({
           value,
           iso2,
           name,
-          bar_id: iso2 + "-" + curFlowType,
+          bar_id: `${iso2}-${curFlowType}-${impact}`,
         };
       });
 
@@ -127,7 +132,7 @@ const EventBars = ({
         disbursed_funds: data.disbursed_funds,
       };
       for (const flowType of Object.keys(newDataForChart)) {
-        caseData.forEach(d => {
+        impactData.forEach(d => {
           // if the case/death data place doesn't appear in the stakeholders
           // dataset, skip it, otherwise if it doesn't appear in the funding
           // dataset, add it with zero value
@@ -157,7 +162,7 @@ const EventBars = ({
             value: null,
             sort: value,
             name,
-            bar_id: iso2 + "-" + curFlowType,
+            bar_id: `${iso2}-${curFlowType}-${impact}`,
           });
         } else {
           newCaseDeathDataForChart.push({
@@ -168,7 +173,7 @@ const EventBars = ({
       });
       setCaseDeathDataForChart(newCaseDeathDataForChart);
     }
-  }, [data, caseData, curFlowType]);
+  }, [data, impactData, curFlowType]);
 
   // update bar chart when flow type is changed
   useEffect(() => {
@@ -184,15 +189,38 @@ const EventBars = ({
     }
   }, [caseDeathDataForChart]);
 
+  // update second bar chart when impact is changed
+  useEffect(() => {
+    if (secChart !== null) {
+      secChart.update(caseDeathDataForChart, curFlowType, {
+        ...params,
+        impact,
+      });
+    }
+  }, [impact]);
+
+  const drawn = chart !== null && secChart !== null;
+
   return (
     <>
-      <div className={styles.eventBars}>
+      <Loading {...{ loaded: drawn }} />
+      <div className={classNames(styles.eventBars, { [styles.shown]: drawn })}>
         <div className={styles.chart}>
           <Selectpicker />
           <div className={styles.bars} />
         </div>
         <div className={styles.chart}>
-          <Selectpicker />
+          <Selectpicker
+            {...{
+              label: "Event impact by",
+              curSelection: impact,
+              setOption: setImpact,
+              optionList: [
+                { value: "cases", label: "Cases" },
+                { value: "deaths", label: "Deaths" },
+              ],
+            }}
+          />
           <div className={styles.impacts} />
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import * as d3 from "d3/dist/d3.min";
 import Chart from "../../../../chart/Chart.js";
-import Util from "../../../../misc/Util.js";
+import Util, { getInitCap } from "../../../../misc/Util.js";
 import styles from "./d3impactbars.module.scss";
 import ReactTooltip from "react-tooltip";
 
@@ -120,7 +120,7 @@ class D3ImpactBars extends Chart {
     //   .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
     //   .text("y-axis label");
 
-    this.update = (data, newFlowType = params.curFlowType) => {
+    this.update = (data, newFlowType = params.curFlowType, params) => {
       const sort = params.sort;
 
       function updateTooltip(dTmp) {
@@ -204,7 +204,7 @@ class D3ImpactBars extends Chart {
       }
 
       // set axes labels
-      xLabel.text("Cases by country");
+      xLabel.text(getInitCap(params.impact) + " by country");
 
       chart.select(".y-label-text").attr("x", -newHeight / 2);
 
@@ -311,9 +311,7 @@ class D3ImpactBars extends Chart {
 
       ReactTooltip.rebuild();
     };
-    this.update(params.data, params.curFlowType, {
-      ...params,
-    });
+    this.update(params.data, params.curFlowType, params);
   }
 
   getTickValues(maxVal, numTicks) {

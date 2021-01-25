@@ -1,25 +1,36 @@
 @import "../../../../assets/styles/colors.scss";
 .eventBars {
+  // loading
   display: grid;
-  // grid-template-columns: 1fr 1fr;
   grid-template-columns: 3fr 1fr;
-  .bars,
-  .impacts {
+  &.shown {
+    opacity: 1;
+    transition: 0.5s all;
+  }
+  &:not(.shown) {
+    opacity: 0;
+    transition: 0.5s all;
+  }
+  > div {
     height: auto;
-    g[class^="tick"] > text {
-      font-size: 14px;
-      font-family: "Open Sans", sans-serif;
-      a {
-        font-family: "open_sanssemibold", sans-serif;
-        fill: $outbreak-blue-2;
+    .bars,
+    .impacts {
+      height: auto;
+      g[class^="tick"] > text {
+        font-size: 14px;
+        font-family: "Open Sans", sans-serif;
+        a {
+          font-family: "open_sanssemibold", sans-serif;
+          fill: $outbreak-blue-2;
+        }
       }
-    }
-    circle {
-      fill: $outbreak-blue-2;
-      z-index: 100;
-    }
-    image {
-      display: none;
+      circle {
+        fill: $outbreak-blue-2;
+        z-index: 100;
+      }
+      image {
+        display: none;
+      }
     }
   }
 }
