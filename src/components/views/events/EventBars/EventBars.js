@@ -82,6 +82,9 @@ const EventBars = ({
   // recipient or funder?
   const roleNoun = direction === "target" ? "recipient" : "funder";
 
+  // max number of bar chart bars to show
+  const max = top10Only ? 10 : 1e6;
+
   // countries?
   const showRegionFilter =
     funds === "recipient_country" ||
@@ -144,16 +147,17 @@ const EventBars = ({
   // initialize charts when data are `loaded`
   useEffect(() => {
     if (loaded) {
-      const max = top10Only ? 10 : 1e6;
       const newChart = new D3EventBars("." + styles.bars, {
         ...params,
-        data: dataForChart[curFlowType].slice(0, max),
+        max,
+        data: dataForChart[curFlowType],
       });
 
       const newSecChart = showImpacts
         ? new D3ImpactBars("." + styles.impacts, {
             ...params,
-            data: caseDeathDataForChart.slice(0, max),
+            max,
+            data: caseDeathDataForChart,
           })
         : null;
       setChart(newChart);
@@ -257,9 +261,11 @@ const EventBars = ({
     if (chart !== null && secChart !== null) {
       chart.update(data[curFlowType], curFlowType, {
         ...params,
+        max,
       });
       secChart.update(caseDeathDataForChart, curFlowType, {
         ...params,
+        max,
       });
     } else if (data === null) {
       getData();
@@ -280,6 +286,7 @@ const EventBars = ({
       secChart.update(caseDeathDataForChart, curFlowType, {
         ...params,
         impact,
+        max,
       });
     }
   }, [impact]);
@@ -301,13 +308,23 @@ const EventBars = ({
                 label: "Funds by",
                 curSelection: funds,
                 setOption: setFunds,
-                optionList: [
-                  { value: "recipient_country", label: "Recipient (country)" },
-                  { value: "recipient_region", label: "Recipient (region)" },
-                  { value: "funder_country", label: "Funder (country)" },
-                  { value: "funder_org", label: "Funder (organization)" },
-                  { value: "recipient_org", label: "Recipient (organization)" },
-                ],
+                optionGroups: {
+                  Recipient: [
+                    {
+                      value: "recipient_country",
+                      label: "Recipient (country)",
+                    },
+                    { value: "recipient_region", label: "Recipient (region)" },
+                    {
+                      value: "recipient_org",
+                      label: "Recipient (organization)",
+                    },
+                  ],
+                  Funder: [
+                    { value: "funder_country", label: "Funder (country)" },
+                    { value: "funder_org", label: "Funder (organization)" },
+                  ],
+                },
               }}
             />
             {showRegionFilter && (

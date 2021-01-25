@@ -123,6 +123,14 @@ class D3ImpactBars extends Chart {
     this.update = (data, newFlowType = params.curFlowType, params) => {
       const sort = params.sort;
 
+      // Sort
+      data.sort((a, b) => {
+        return d3.descending(a.sort, b.sort);
+      });
+
+      // keep only `max` number of data
+      data = data.slice(0, params.max || 1e6);
+
       function updateTooltip(dTmp) {
         const d = typeof dTmp === "object" ? dTmp.name : dTmp;
         const tooltipData = [
@@ -137,11 +145,6 @@ class D3ImpactBars extends Chart {
         ];
         params.setTooltipData(tooltipData);
       }
-
-      // Sort
-      data.sort((a, b) => {
-        return d3.descending(a.sort, b.sort);
-      });
 
       const fakeText = chart
         .selectAll(".fake-text")

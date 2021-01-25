@@ -128,6 +128,14 @@ class D3EventBars extends Chart {
     this.update = (newData, newFlowType = params.curFlowType) => {
       const sort = params.sort;
 
+      // Sort
+      newData.sort((a, b) => {
+        return d3.descending(a.value, b.value);
+      });
+
+      // keep only `max` number of data
+      newData = newData.slice(0, params.max || 1e6);
+
       // get flag URLs and other data by name of stakeholder
       const dataByName = {};
       newData.forEach(d => {
@@ -148,11 +156,6 @@ class D3EventBars extends Chart {
         ];
         params.setTooltipData(tooltipData);
       }
-
-      // Sort
-      newData.sort((a, b) => {
-        return d3.descending(a.value, b.value);
-      });
 
       const fakeText = chart
         .selectAll(".fake-text")
