@@ -19,7 +19,7 @@
   }
   input {
     margin-right: 5px;
-    + span {
+    &[type="radio"] + span {
       top: -3px;
       position: relative;
     }
