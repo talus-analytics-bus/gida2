@@ -19,6 +19,10 @@
   }
   input {
     margin-right: 5px;
+    + span {
+      top: -3px;
+      position: relative;
+    }
   }
   &:first-child {
     h2 {
