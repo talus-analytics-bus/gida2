@@ -391,14 +391,18 @@ const EventBars = ({
                     }}
                   />
                 )}
-                <Checkbox
-                  {...{
-                    label: "Top 10 only",
-                    value: "top10only",
-                    curChecked: top10Only,
-                    callback: () => setTop10Only(!top10Only),
-                  }}
-                />
+                {funds !== "recipient_region" &&
+                  dataForChart !== null &&
+                  dataForChart[curFlowType].length > 10 && (
+                    <Checkbox
+                      {...{
+                        label: "Top 10 only",
+                        value: "top10only",
+                        curChecked: top10Only,
+                        callback: () => setTop10Only(!top10Only),
+                      }}
+                    />
+                  )}
               </div>
               <div
                 className={classNames(styles.bars, { [styles.hidden]: noData })}
