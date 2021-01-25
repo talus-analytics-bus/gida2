@@ -125,10 +125,40 @@ class D3EventBars extends Chart {
     //   .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
     //   .text("y-axis label");
 
-    this.update = (newData, newFlowType = params.curFlowType) => {
+    this.update = (newData, newFlowType = params.curFlowType, params) => {
       const sort = params.sort;
-      console.log("newData");
-      console.log(newData);
+
+      // format stack bar data
+      let stackXMax, stackData;
+      if (params.stack) {
+        // .attr("x", d => x(d.country.value0))
+        // .attr("width", d => x(d.country.value1) - x(d.country.value0));
+        stackData = [];
+        const newDataByRegion = {};
+        newData.forEach(d => {
+          const region = d.region_who || "None";
+          if (newDataByRegion[region] === undefined) {
+            newDataByRegion[region] = [d];
+          } else if (
+            d.value !== 0 &&
+            d.value !== undefined &&
+            d.value !== null
+          ) {
+            newDataByRegion[region].push(d);
+          }
+        });
+        for (const [region, children] of Object.entries(newDataByRegion)) {
+          stackData.push({
+            name: region,
+            children,
+            value: d3.sum(children, d => d.value),
+            bar_id: `${region}-${newFlowType}`,
+          });
+        }
+        stackXMax = d3.max(stackData, d => d.value);
+        newData = stackData;
+      }
+
       // Sort
       newData.sort((a, b) => {
         return d3.descending(a.value, b.value);
@@ -176,8 +206,14 @@ class D3EventBars extends Chart {
       this.svg.attr("height", newHeight + margin.top + margin.bottom);
 
       // set new axes and transition
-      const maxVal = d3.max(newData, d => d.value);
-      const xMax = 1.1 * maxVal || 1000;
+      // if stack: set xMax based on sum of bar segments
+      const defaultXMax = 1000;
+      let xMax;
+      if (params.stack) xMax = 1.1 * stackXMax || defaultXMax;
+      else {
+        const maxVal = d3.max(newData, d => d.value);
+        xMax = 1.1 * maxVal || defaultXMax;
+      }
       x.domain([0, xMax]);
       y.domain(newData.map(d => d.name)).range([0, newHeight]);
       const bandwidth = y.bandwidth();

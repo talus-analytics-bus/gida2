@@ -48,7 +48,8 @@ const EventBars = ({
   const [impact, setImpact] = useState("cases");
 
   // "Funds by"
-  const [funds, setFunds] = useState("recipient_country");
+  const [funds, setFunds] = useState("recipient_region");
+  // const [funds, setFunds] = useState("recipient_country");
 
   // "Filter recipients/funders"
   const [region, setRegion] = useState("");
@@ -58,7 +59,12 @@ const EventBars = ({
 
   // CONSTANTS //
   // chart parameters
-  const params = { setTooltipData, curFlowType, impact };
+  const params = {
+    setTooltipData,
+    curFlowType,
+    impact,
+    stack: funds === "recipient_region",
+  };
 
   // add countries with zero funding to main bar chart if they had cases?
   const addUnfundedCountriesWithCases =
@@ -87,9 +93,7 @@ const EventBars = ({
 
   // countries?
   const showRegionFilter =
-    funds === "recipient_country" ||
-    funds === "recipient_region" ||
-    funds === "funder_country";
+    funds === "recipient_country" || funds === "funder_country";
 
   // FUNCTIONS //
 
