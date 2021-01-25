@@ -192,7 +192,11 @@ const EventBars = ({
         if (d.iso2 === undefined && d.place_iso === undefined) {
           const stakeholderInfo = filteredStakeholders[d.iso3];
           if (stakeholderInfo === undefined) return;
-          else d.iso2 = filteredStakeholders[d.iso3].iso2;
+          else {
+            const curShInfo = filteredStakeholders[d.iso3];
+            d.iso2 = curShInfo.iso2;
+            d.region_who = curShInfo.region_who;
+          }
         }
         const name = d.place_name || d.name;
         const iso2 = (d.iso2 || d.place_iso).toLowerCase();
@@ -201,6 +205,7 @@ const EventBars = ({
           iso2,
           name,
           bar_id: `${iso2}-${curFlowType}-${impact}`,
+          region_who: "placeholder",
         };
       });
 
@@ -219,13 +224,15 @@ const EventBars = ({
             if (dataByIso2[d.place_iso.toLowerCase()] === undefined) {
               if (filteredStakeholders[d.place_iso3] === undefined) return;
               const iso2 = d.place_iso.toLowerCase();
+              const shInfo = filteredStakeholders[d.place_iso3];
               newDataForChart[flowType].push({
                 value: 0,
                 iso2,
                 flag_url: `https://flags.talusanalytics.com/64px/${iso2}.png`,
                 bar_id: iso2 + "-" + flowType,
-                id: filteredStakeholders[d.place_iso3].id,
+                id: shInfo.id,
                 name: d.place_name,
+                region_who: shInfo.region_who,
               });
             }
           });
@@ -236,7 +243,7 @@ const EventBars = ({
       // if case/death data are not available for a place that is in the
       // funding dataset, add it as null
       const newCaseDeathDataForChart = [];
-      newDataForChart[curFlowType].forEach(({ name, iso2, value }) => {
+      newDataForChart[curFlowType].forEach(({ name, iso2, value, region }) => {
         if (newCaseDeathDataForChartTmpByIso2[iso2] === undefined) {
           newCaseDeathDataForChart.push({
             iso2,
@@ -244,6 +251,7 @@ const EventBars = ({
             sort: value,
             name,
             bar_id: `${iso2}-${curFlowType}-${impact}`,
+            region,
           });
         } else {
           newCaseDeathDataForChart.push({

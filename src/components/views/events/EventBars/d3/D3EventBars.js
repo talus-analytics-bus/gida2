@@ -127,7 +127,8 @@ class D3EventBars extends Chart {
 
     this.update = (newData, newFlowType = params.curFlowType) => {
       const sort = params.sort;
-
+      console.log("newData");
+      console.log(newData);
       // Sort
       newData.sort((a, b) => {
         return d3.descending(a.value, b.value);
