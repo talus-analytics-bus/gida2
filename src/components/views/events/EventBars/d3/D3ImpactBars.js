@@ -121,7 +121,8 @@ class D3ImpactBars extends Chart {
     //   .text("y-axis label");
 
     this.update = (data, newFlowType = params.curFlowType, params) => {
-      const sort = params.sort;
+      const allFundsZero = !data.some(d => d.sort !== 0);
+      const sortKey = allFundsZero ? "value" : "sort";
 
       // format stack bar data
       let stackXMax, stackData;
@@ -144,14 +145,18 @@ class D3ImpactBars extends Chart {
             dataByRegion[region].push(d);
           }
         });
+        // const someNoneFund = data.some(d => d.region_who === undefined);
+        // if (someNoneFund) {
+        //   dataByRegion.None = [];
+        // }
         for (const [region, children] of Object.entries(dataByRegion)) {
           stackData.push({
             name: region,
             children: children.sort((a, b) => {
-              return d3.descending(a.sort, b.sort);
+              return d3.descending(a[sortKey], b[sortKey]);
             }),
             value: d3.sum(children, d => d.value),
-            sort: d3.sum(children, d => d.sort),
+            sort: d3.sum(children, d => d.impact),
             bar_id: `${region}-${newFlowType}`,
           });
         }
@@ -161,7 +166,7 @@ class D3ImpactBars extends Chart {
 
       // Sort
       data.sort((a, b) => {
-        return d3.descending(a.sort, b.sort);
+        return d3.descending(a[sortKey], b[sortKey]);
       });
 
       // keep only `max` number of data
@@ -203,24 +208,11 @@ class D3ImpactBars extends Chart {
 
       // set new axes and transition
       const maxVal = d3.max(data, d => d.value);
-      const xMax = 1.1 * maxVal || 100;
+      const xMaxTmp = 1.1 * maxVal || 100;
+      const xMax = xMaxTmp < 25 ? 25 : xMaxTmp;
       x.domain([0, xMax]);
       y.domain(data.map(d => d.name)).range([0, newHeight]);
       const bandwidth = y.bandwidth();
-
-      // // Sort
-      // if (sort === "amount") {
-      //   barGroupData.sort((a, b) => {
-      //     return d3.descending(a.value, b.value);
-      //   });
-      // } else {
-      //   barGroupData.sort((a, b) => {
-      //     return d3.descending(a.data.avgScore, b.data.avgScore);
-      //   });
-      // }
-
-      // // Update y scale to match sorting order.
-      // y.domain(barGroupData.map(d => d.name));
 
       // remove first
       let bars = allBars.selectAll("." + styles.bar).data(data, d => d.bar_id); // TODO check

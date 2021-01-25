@@ -148,7 +148,7 @@ class D3EventBars extends Chart {
     //   .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
     //   .text("y-axis label");
 
-    function getRunningValues(data) {
+    function getRunningValues(data, sortKey) {
       data
         .map(d => {
           let runningValue = 0;
@@ -162,12 +162,12 @@ class D3EventBars extends Chart {
           );
           return d;
         })
-        .sort((a, b) => a.value > b.value);
+        .sort((a, b) => a[sortKey] > b[sortKey]);
       return data;
     }
     this.update = function(newData, newFlowType = params.curFlowType, params) {
-      const sort = params.sort;
-
+      const allFundsZero = !newData.some(d => d.value !== 0);
+      const sortKey = allFundsZero ? "impact" : "value";
       // format stack bar data
       let stackXMax, stackData;
       if (params.stack) {
@@ -178,9 +178,9 @@ class D3EventBars extends Chart {
           if (newDataByRegion[region] === undefined) {
             newDataByRegion[region] = [d];
           } else if (
-            d.value !== 0 &&
-            d.value !== undefined &&
-            d.value !== null
+            d[sortKey] !== 0 &&
+            d[sortKey] !== undefined &&
+            d[sortKey] !== null
           ) {
             newDataByRegion[region].push(d);
           }
@@ -189,20 +189,21 @@ class D3EventBars extends Chart {
           stackData.push({
             name: region,
             children: children.sort((a, b) => {
-              return d3.descending(a.value, b.value);
+              return d3.descending(a[sortKey], b[sortKey]);
             }),
             value: d3.sum(children, d => d.value),
+            impact: d3.sum(children, d => d.impact),
             bar_id: `${region}-${newFlowType}`,
           });
         }
-        getRunningValues(stackData);
+        getRunningValues(stackData, sortKey);
         stackXMax = d3.max(stackData, d => d.value);
         newData = stackData;
       }
 
       // Sort
       newData.sort((a, b) => {
-        return d3.descending(a.value, b.value);
+        return d3.descending(a[sortKey], b[sortKey]);
       });
 
       // keep only `max` number of data

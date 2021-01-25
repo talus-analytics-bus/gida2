@@ -51,7 +51,8 @@ const EventBars = ({
   const [impact, setImpact] = useState("cases");
 
   // "Funds by"
-  const [funds, setFunds] = useState("recipient_country");
+  const [funds, setFunds] = useState("recipient_region");
+  // const [funds, setFunds] = useState("recipient_country");
 
   // "Filter recipients/funders"
   const [region, setRegion] = useState("");
@@ -252,6 +253,13 @@ const EventBars = ({
           });
         }
       }
+
+      // add case / death value to funding data for sorting purposes
+      newDataForChart[curFlowType].forEach(d => {
+        if (newCaseDeathDataForChartTmpByIso2[d.iso2] !== undefined) {
+          d.impact = newCaseDeathDataForChartTmpByIso2[d.iso2].value;
+        } else d.impact = 0;
+      });
       setDataForChart(newDataForChart);
 
       // if case/death data are not available for a place that is in the
