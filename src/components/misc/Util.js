@@ -949,7 +949,7 @@ export const formatRegion = v => {
 
 Util.formatSIInteger = val => {
   if (val === 0) return "0";
-  else if (val <= 999) return val;
+  else if (val <= 999) return comma(val);
   else
     return d3
       .format(".2s")(val)
