@@ -14,6 +14,7 @@ import D3ImpactBars from "./d3/D3ImpactBars";
 import { execute, NodeSums } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
 import Loading from "../../../common/Loading/Loading";
+import Checkbox from "../../../common/Checkbox/Checkbox";
 
 const COUNTRY_CATS = ["country", "world"];
 const ORG_CATS = [
@@ -51,6 +52,9 @@ const EventBars = ({
 
   // "Filter recipients/funders"
   const [region, setRegion] = useState("");
+
+  // show top 10 bars only?
+  const [top10Only, setTop10Only] = useState(true);
 
   // CONSTANTS //
   // chart parameters
@@ -140,21 +144,22 @@ const EventBars = ({
   // initialize charts when data are `loaded`
   useEffect(() => {
     if (loaded) {
+      const max = top10Only ? 10 : 1e6;
       const newChart = new D3EventBars("." + styles.bars, {
         ...params,
-        data: dataForChart[curFlowType],
+        data: dataForChart[curFlowType].slice(0, max),
       });
 
       const newSecChart = showImpacts
         ? new D3ImpactBars("." + styles.impacts, {
             ...params,
-            data: caseDeathDataForChart,
+            data: caseDeathDataForChart.slice(0, max),
           })
         : null;
       setChart(newChart);
       setSecChart(newSecChart);
     }
-  }, [loaded, dataForChart, caseDeathDataForChart]);
+  }, [loaded, dataForChart, caseDeathDataForChart, top10Only]);
 
   // if both sets of required data are not null, mark as `loaded`
   useEffect(() => {
@@ -281,7 +286,7 @@ const EventBars = ({
 
   return (
     <>
-      <Loading {...{ loaded: drawn }} />
+      <Loading {...{ loaded: drawn, position: "absolute" }} />
       <div
         className={classNames(styles.eventBars, {
           [styles.shown]: drawn,
@@ -326,6 +331,14 @@ const EventBars = ({
                 }}
               />
             )}
+            <Checkbox
+              {...{
+                label: "Top 10 only",
+                value: "top10only",
+                curChecked: top10Only,
+                callback: () => setTop10Only(!top10Only),
+              }}
+            />
           </div>
           <div className={styles.bars} />
         </div>

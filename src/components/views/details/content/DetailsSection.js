@@ -8,9 +8,9 @@ import styles from "./detailssection.module.scss";
 
 // FC for DetailsSection.
 const DetailsSection = ({
-  header = <h2>Details section</h2>,
-  content = <p>Details section content</p>,
-  text = <span>Introduction text</span>,
+  header,
+  content,
+  text,
   curFlowType,
   setCurFlowType,
   flowTypeInfo,
