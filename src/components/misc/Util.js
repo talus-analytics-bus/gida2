@@ -925,6 +925,28 @@ Util.money = (val, units = true, round = false) => {
   } else return `${Util.formatSI(val)}${units ? " USD" : ""}`;
 };
 
+export const regions = [
+  { value: "", label: "All regions" },
+  { value: "afro", label: "African Region (AFRO)" },
+  { value: "paho", label: "Region of the Americas (PAHO)" },
+  { value: "searo", label: "South-East Asia Region (SEARO)" },
+  { value: "euro", label: "European Region (EURO)" },
+  {
+    value: "emro",
+    label: "Eastern Mediterranean Region (EMRO)",
+  },
+  { value: "wpro", label: "Western Pacific Region (WPRO)" },
+];
+
+export const regionsByValue = {};
+regions.forEach(d => {
+  if (d.value !== "") regionsByValue[d.value] = d.label;
+});
+
+export const formatRegion = v => {
+  return regionsByValue[v] || v;
+};
+
 Util.formatSIInteger = val => {
   if (val === 0) return "0";
   else if (val <= 999) return val;

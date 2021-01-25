@@ -247,8 +247,6 @@ class D3StackBar extends Chart {
         .selectAll(".bar-group")
         .data(barGroupData, d => d.id);
       barGroups.exit().remove();
-      console.log("barGroupData");
-      console.log(barGroupData);
 
       const newGroups = barGroups
         .enter()

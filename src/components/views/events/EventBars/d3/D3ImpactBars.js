@@ -18,7 +18,7 @@ class D3ImpactBars extends Chart {
     // Set dimensions
     this.width = this.containerwidth;
     this.height = this.containerheight;
-    this.margin = { top: 50, right: 70, bottom: 35, left: 5 };
+    this.margin = { top: 50, right: 20, bottom: 35, left: 50 };
 
     // Initialize chart
     this.init();

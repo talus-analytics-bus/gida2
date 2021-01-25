@@ -1,9 +1,17 @@
 import React from "react";
 import * as d3 from "d3/dist/d3.min";
 import Chart from "../../../../chart/Chart.js";
-import Util from "../../../../misc/Util.js";
+import Util, { formatRegion } from "../../../../misc/Util.js";
 import styles from "./d3eventbars.module.scss";
 import ReactTooltip from "react-tooltip";
+
+// colors
+import {
+  outbreakBlue2,
+  outbreakBlue3,
+  outbreakBlue4,
+  outbreakBlue5,
+} from "../../../../../assets/styles/colors.scss";
 
 class D3EventBars extends Chart {
   constructor(selector, params = {}) {
@@ -18,7 +26,7 @@ class D3EventBars extends Chart {
     // Set dimensions
     this.width = this.containerwidth;
     this.height = this.containerheight;
-    this.margin = { top: 50, right: 70, bottom: 35, left: 350 };
+    this.margin = { top: 50, right: 70, bottom: 35, left: 0 };
 
     // Initialize chart
     this.init();
@@ -68,7 +76,9 @@ class D3EventBars extends Chart {
       //   if (v === undefined) return "";
       //   return this.getShortName(v);
       // })
-      .tickPadding(50);
+      .tickPadding(params.stack ? 10 : 50);
+
+    if (params.stack) yAxis.tickFormat(formatRegion);
 
     const allBars = chart.append("g");
 
@@ -106,12 +116,25 @@ class D3EventBars extends Chart {
         .data(data)
         .enter()
         .append("text")
-        .text(d => d.tickText)
+        .text(d => d.name)
         .attr("class", [styles.tick, styles.fakeText].join(" "));
       const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
       fakeText.remove();
       const margin = 65;
       return -(maxLabelWidth + margin) || -this.margin.left + 10;
+    };
+
+    const getLeftMargin = (data, fmt, padding = 0) => {
+      const fakeText = chart
+        .selectAll(".fake-text")
+        .data(data)
+        .enter()
+        .append("text")
+        .text(d => fmt(d.name))
+        .attr("class", [styles.tick, styles.fakeText].join(" "));
+      const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
+      fakeText.remove();
+      return maxLabelWidth + padding;
     };
 
     // add y-axis label
@@ -125,14 +148,29 @@ class D3EventBars extends Chart {
     //   .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
     //   .text("y-axis label");
 
-    this.update = (newData, newFlowType = params.curFlowType, params) => {
+    function getRunningValues(data) {
+      data
+        .map(d => {
+          let runningValue = 0;
+          d.children = d3.shuffle(
+            d.children.map(c => {
+              c.value0 = runningValue;
+              runningValue += c.value;
+              c.value1 = runningValue;
+              return c;
+            })
+          );
+          return d;
+        })
+        .sort((a, b) => a.value > b.value);
+      return data;
+    }
+    this.update = function(newData, newFlowType = params.curFlowType, params) {
       const sort = params.sort;
 
       // format stack bar data
       let stackXMax, stackData;
       if (params.stack) {
-        // .attr("x", d => x(d.country.value0))
-        // .attr("width", d => x(d.country.value1) - x(d.country.value0));
         stackData = [];
         const newDataByRegion = {};
         newData.forEach(d => {
@@ -150,11 +188,14 @@ class D3EventBars extends Chart {
         for (const [region, children] of Object.entries(newDataByRegion)) {
           stackData.push({
             name: region,
-            children,
+            children: children.sort((a, b) => {
+              return d3.descending(a.value, b.value);
+            }),
             value: d3.sum(children, d => d.value),
             bar_id: `${region}-${newFlowType}`,
           });
         }
+        getRunningValues(stackData);
         stackXMax = d3.max(stackData, d => d.value);
         newData = stackData;
       }
@@ -166,26 +207,78 @@ class D3EventBars extends Chart {
 
       // keep only `max` number of data
       newData = newData.slice(0, params.max || 1e6);
+      const getShortName = this.getShortName;
+
+      const tickFormat = params.stack ? formatRegion : getShortName;
+      const padding = params.stack ? 20 : 60;
+      this.updateWidth({
+        ...this.margin,
+        left: getLeftMargin(newData, tickFormat, padding),
+      });
+
+      // update xscale
+      x.range([0, this.width]);
 
       // get flag URLs and other data by name of stakeholder
       const dataByName = {};
       newData.forEach(d => {
-        dataByName[d.name] = d;
+        if (params.stack) {
+          if (dataByName[d.name] === undefined) {
+            dataByName[d.name] = {};
+            d.children.forEach(dd => {
+              dataByName[d.name][dd.name] = dd;
+            });
+          }
+        } else {
+          dataByName[d.name] = d;
+        }
       });
 
-      function updateTooltip(dTmp) {
+      function updateTooltip(dTmp, region) {
         const d = typeof dTmp === "object" ? dTmp.name : dTmp;
-        const tooltipData = [
-          {
-            field: "Name",
-            value: dataByName[d].name,
-          },
-          {
-            field: xLabel.text().replace(" (USD)", ""),
-            value: Util.money(dataByName[d].value),
-          },
-        ];
-        params.setTooltipData(tooltipData);
+        if (params.stack) {
+          const isBarSegment = dataByName[region] !== undefined;
+          const isBarLabel = !isBarSegment;
+          if (isBarSegment) {
+            const tooltipData = [
+              {
+                field: "Name",
+                value: dataByName[region][d].name,
+              },
+              {
+                field: xLabel.text().replace(" (USD)", ""),
+                value: Util.money(dataByName[region][d].value),
+              },
+            ];
+            params.setTooltipData(tooltipData);
+          } else if (isBarLabel) {
+            const tooltipData = [
+              {
+                field: "Name",
+                value: formatRegion(d),
+              },
+              {
+                field: xLabel.text().replace(" (USD)", ""),
+                value: Util.money(
+                  d3.sum(Object.values(dataByName[d]), dd => dd.value)
+                ),
+              },
+            ];
+            params.setTooltipData(tooltipData);
+          }
+        } else {
+          const tooltipData = [
+            {
+              field: "Name",
+              value: dataByName[d].name,
+            },
+            {
+              field: xLabel.text().replace(" (USD)", ""),
+              value: Util.money(dataByName[d].value),
+            },
+          ];
+          params.setTooltipData(tooltipData);
+        }
       }
 
       const fakeText = chart
@@ -201,6 +294,10 @@ class D3EventBars extends Chart {
           d.tickTextWidth = this.getBBox().width;
         });
       fakeText.remove();
+      console.log("newData");
+      console.log(newData);
+      console.log("getLeftMargin(newData, fmt)");
+      console.log(getLeftMargin(newData, formatRegion));
 
       const newHeight = 30 * newData.length; // TODO confirm
       this.svg.attr("height", newHeight + margin.top + margin.bottom);
@@ -217,20 +314,6 @@ class D3EventBars extends Chart {
       x.domain([0, xMax]);
       y.domain(newData.map(d => d.name)).range([0, newHeight]);
       const bandwidth = y.bandwidth();
-
-      // // Sort
-      // if (sort === "amount") {
-      //   barGroupData.sort((a, b) => {
-      //     return d3.descending(a.value, b.value);
-      //   });
-      // } else {
-      //   barGroupData.sort((a, b) => {
-      //     return d3.descending(a.data.avgScore, b.data.avgScore);
-      //   });
-      // }
-
-      // // Update y scale to match sorting order.
-      // y.domain(barGroupData.map(d => d.name));
 
       // remove first
       let bars = allBars
@@ -257,19 +340,51 @@ class D3EventBars extends Chart {
       }
 
       const durationHorizontal = params.sortOnly ? 0 : 1000;
-      bars
-        .selectAll("rect")
-        .data(d => [d])
-        .enter()
-        .append("rect")
-        .attr("data-tip", true)
-        .attr("data-for", "chartTooltip")
-        .on("mouseover", updateTooltip)
-        .attr("height", bandwidth)
-        .transition()
-        .duration(durationHorizontal)
-        .attr("x", d => x(0))
-        .attr("width", d => x(d.value)); // TODO check
+      if (params.stack) {
+        const colors = [
+          outbreakBlue2,
+          outbreakBlue3,
+          outbreakBlue4,
+          outbreakBlue5,
+        ];
+        newData.forEach(stackBar => {
+          const seed = parseInt(Math.random() * colors.length);
+          bars
+            .selectAll("rect")
+            .data(d => d.children)
+            .enter()
+            .append("rect")
+            .style("fill", (d, i) => {
+              const idx = (i + seed) % colors.length;
+              return colors[idx];
+            })
+            .attr("data-tip", true)
+            .attr("data-for", "chartTooltip")
+            .on("mouseover", d => {
+              updateTooltip(d, stackBar.name);
+            })
+            .attr("height", bandwidth)
+            .transition()
+            .duration(durationHorizontal)
+            .attr("x", d => x(d.value0))
+            .attr("width", d => x(d.value1) - x(d.value0));
+        });
+      } else {
+        bars
+          .selectAll("rect")
+          .data(d => [d])
+          .enter()
+          .append("rect")
+          .attr("data-tip", true)
+          .attr("data-for", "chartTooltip")
+          .on("mouseover", updateTooltip)
+          .attr("height", bandwidth)
+          .transition()
+          .duration(durationHorizontal)
+          .attr("x", d => x(0))
+          .attr("width", d => x(d.value));
+      }
+
       // set axes labels
       let xLabelPreText = "Disbursed";
       if (params.nodeType === "recipient") {
@@ -296,16 +411,17 @@ class D3EventBars extends Chart {
 
       yAxis.scale(y);
 
-      const getShortName = this.getShortName;
+      const urlFormat = params.stack
+        ? d => `<tspan>${tickFormat(d)}</tspan>`
+        : d =>
+            `<a href="/details/${dataByName[d].id}/recipient">${tickFormat(
+              d
+            )}</a>`;
       yAxisG
         .call(yAxis)
         .selectAll("text")
         .each(function(d) {
-          d3.select(this).html(
-            `<a href="/details/${dataByName[d].id}/recipient">${getShortName(
-              d
-            )}</a>`
-          );
+          d3.select(this).html(urlFormat(d));
         });
 
       newGroups
@@ -331,57 +447,53 @@ class D3EventBars extends Chart {
         .on("mouseover", updateTooltip);
 
       // flag icons
-      chart.selectAll(".y.axis .tick:not(.iconned)").each(function addIcons(d) {
-        const g = d3.select(this).classed("iconned", true);
-        const xOffset = -1 * (d.tickTextWidth + 7) - 5 - 5;
-        const axisGap = -7;
-        const iconGroup = g
-          .append("g")
-          .attr("class", "icon")
-          .attr("transform", `translate(${axisGap}, 0)`);
+      if (!params.stack) {
+        chart
+          .selectAll(".y.axis .tick:not(.iconned)")
+          .each(function addIcons(d) {
+            const g = d3.select(this).classed("iconned", true);
+            const xOffset = -1 * (d.tickTextWidth + 7) - 5 - 5;
+            const axisGap = -7;
+            const iconGroup = g
+              .append("g")
+              .attr("class", "icon")
+              .attr("transform", `translate(${axisGap}, 0)`);
 
-        const badgeHeight = 30;
-        const badgeWidth = badgeHeight * 2;
-        const badgeDim = {
-          width: badgeWidth,
-          height: badgeHeight,
-          x: -badgeWidth + 12,
-          y: -(badgeHeight / 2),
-        };
-        iconGroup
-          // .classed(styles.showNoScore, jeesWhite)
-          .append("image")
-          .attr("href", dataByName[d].flag_url)
-          .attr("width", badgeDim.width)
-          .attr("height", badgeDim.height)
-          .attr("x", badgeDim.x)
-          .attr("y", badgeDim.y)
-          .on("load", function onError(d) {
-            d3.select(this).style("display", "block");
-          })
-          .on("error", function onError(d) {
-            d3.select(this).attr(
-              "href",
-              "https://flags.talusanalytics.com/64px/org.png"
-            );
+            const badgeHeight = 30;
+            const badgeWidth = badgeHeight * 2;
+            const badgeDim = {
+              width: badgeWidth,
+              height: badgeHeight,
+              x: -badgeWidth + 12,
+              y: -(badgeHeight / 2),
+            };
+            iconGroup
+              .append("image")
+              .attr("href", dataByName[d].flag_url)
+              .attr("width", badgeDim.width)
+              .attr("height", badgeDim.height)
+              .attr("x", badgeDim.x)
+              .attr("y", badgeDim.y)
+              .on("load", function onError(d) {
+                d3.select(this).style("display", "block");
+              })
+              .on("error", function onError(d) {
+                d3.select(this).attr(
+                  "href",
+                  "https://flags.talusanalytics.com/64px/org.png"
+                );
+              });
           });
-
-        // const badgeLabelText =
-        //   scoreData.name === "General IHR" ? "GEN" : scoreData.name;
-        // badgeGroup
-        //   .append("text")
-        //   .attr("text-anchor", "middle")
-        //   .attr("x", -(badgeDim.width / 2))
-        //   .attr("dy", ".35em")
-        //   .style("fill", "white")
-        //   .text(badgeLabelText);
-      });
+      }
 
       ReactTooltip.rebuild();
     };
-    this.update(params.data, params.curFlowType, {
-      ...params,
-    });
+    if (this.initialized !== true) {
+      this.update(params.data, params.curFlowType, {
+        ...params,
+      });
+      this.initialized = true;
+    }
   }
 
   getTickValues(maxVal, numTicks) {

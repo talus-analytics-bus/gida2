@@ -26,6 +26,9 @@ $dark-color: #eeeeee;
 $glowBorder: #3b88fd;
 
 $outbreak-blue-2: #125088;
+$outbreak-blue-3: #457daf;
+$outbreak-blue-4: #2f85d1;
+$outbreak-blue-5: #8fc9fb;
 
 $layout-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
@@ -149,4 +152,12 @@ $phone-width-narrow: 375px;
   > :not(:last-child) {
     margin-bottom: $size;
   }
+}
+
+// make colors available to JS
+:export {
+  outbreakBlue2: $outbreak-blue-2;
+  outbreakBlue3: $outbreak-blue-3;
+  outbreakBlue4: $outbreak-blue-4;
+  outbreakBlue5: $outbreak-blue-5;
 }

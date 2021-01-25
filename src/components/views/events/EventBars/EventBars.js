@@ -8,6 +8,9 @@ import { Settings } from "../../../../App";
 import styles from "./eventbars.module.scss";
 import classNames from "classnames";
 
+// utility
+import { regions } from "../../../misc/Util";
+
 // local libs
 import D3EventBars from "./d3/D3EventBars";
 import D3ImpactBars from "./d3/D3ImpactBars";

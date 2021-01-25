@@ -38,8 +38,11 @@
       g[class^="tick"] > text {
         font-size: 14px;
         font-family: "Open Sans", sans-serif;
-        a {
+        a,
+        tspan {
           font-family: "open_sanssemibold", sans-serif;
+        }
+        a {
           fill: $outbreak-blue-2;
         }
       }
