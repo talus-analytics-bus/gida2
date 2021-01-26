@@ -213,8 +213,8 @@ class D3Sankey extends Chart {
       this.getShortName,
       params.labelShift
     );
-    params.setMarginLeft(left);
-    params.setMarginRight(right);
+    // params.setMarginLeft(left);
+    // params.setMarginRight(right);
 
     this.updateWidth({
       ...this.margin,
