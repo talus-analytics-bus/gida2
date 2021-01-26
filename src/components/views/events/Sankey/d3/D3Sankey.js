@@ -206,14 +206,14 @@ class D3Sankey extends Chart {
 
     // const labeledNodes = graph.nodes;
     const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
-    const maxLenLeft = d3.max(
-      labeledNodes.filter(d => d.role === "origin"),
-      d => d.name.length
-    );
-    const maxLenRight = d3.max(
-      labeledNodes.filter(d => d.role === "target"),
-      d => d.name.length
-    );
+    const maxLenLeft = d3.min([
+      d3.max(labeledNodes.filter(d => d.role === "origin"), d => d.name.length),
+      20,
+    ]);
+    const maxLenRight = d3.min([
+      d3.max(labeledNodes.filter(d => d.role === "target"), d => d.name.length),
+      20,
+    ]);
     const left = getChartMargin(
       labeledNodes.filter(d => d.role === "origin").map(d => d.name),
       v => this.getShortName(v, maxLenLeft),
