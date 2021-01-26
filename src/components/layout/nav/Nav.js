@@ -21,7 +21,10 @@ const Nav = ({ page, ...props }) => {
       className={classNames(
         styles.nav,
         "dark-bg-allowed",
-        { [styles.loading]: props.loadingNav },
+        {
+          [styles.loading]: props.loadingNav,
+          [styles.dark]: props.isDark,
+        },
         styles[page]
       )}
     >

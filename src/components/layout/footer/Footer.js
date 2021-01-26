@@ -6,12 +6,13 @@ import talusDark from "../../../assets/images/logo-talus-dark.png";
 import gu from "../../../assets/images/logo-georgetown.png";
 import guDark from "../../../assets/images/logo-georgetown-dark.png";
 import idea from "../../../assets/images/logo-title.png";
+import ideaDark from "../../../assets/images/logo-idea-dark.png";
 import Util from "../../misc/Util.js";
 
 const Footer = ({ ...props }) => {
   const images = [
     {
-      imgSrc: props.isDark ? idea : idea, // TODO: add idea dark mode version
+      imgSrc: props.isDark ? ideaDark : idea,
       url: "https://ghssidea.org",
       alt: "International Disease and Events Analysis",
     },
