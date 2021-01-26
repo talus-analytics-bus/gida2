@@ -111,6 +111,9 @@ class D3Sankey extends Chart {
 
     const graph = params.data;
 
+    // if no data, return
+    if (graph.nodes.length === 0) return;
+
     const nodeId = function id(d) {
       return d.id;
     };

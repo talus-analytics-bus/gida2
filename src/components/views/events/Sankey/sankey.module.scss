@@ -43,6 +43,9 @@
       }
     }
   }
+  .noDataMessage {
+    position: static;
+  }
   .sortButtons {
     display: flex;
     flex-flow: row;

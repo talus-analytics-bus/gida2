@@ -29,6 +29,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [region, setRegion] = useState("");
   const [max, setMax] = useState(5);
   const [tooltipData, setTooltipData] = useState(false);
+  const [noData, setNoData] = useState(false);
 
   // FUNCTIONS //
   const getData = async () => {
@@ -40,8 +41,10 @@ const Sankey = ({ eventId, curFlowType }) => {
     };
     // add region filter
     if (region !== "") {
-      if (region !== "orgs") filters["Stakeholder.region_who"] = [region];
-      else filters["Stakeholder.cat"] = ORG_CATS;
+      const stakeholderEntity = sortFunder ? "Stakeholder" : "OtherStakeholder";
+      if (region !== "orgs")
+        filters[`${stakeholderEntity}.region_who`] = [region];
+      else filters[`${stakeholderEntity}.cat`] = ORG_CATS;
     }
     const queries = {
       chords: Chords({ format: "chord", filters }),
@@ -78,38 +81,13 @@ const Sankey = ({ eventId, curFlowType }) => {
         links.push(link);
       });
     const nodes = Object.values(nodesById);
-
-    // // LINKS //
-    // // TODO
-    // const nodes = [
-    //   {
-    //     id: "a",
-    //   },
-    //   {
-    //     id: "b",
-    //   },
-    //   {
-    //     id: "c",
-    //   },
-    // ];
-    // const links = [
-    //   {
-    //     source: "a",
-    //     target: "c",
-    //     value: 1,
-    //   },
-    //   {
-    //     source: "b",
-    //     target: "c",
-    //     value: 2,
-    //   },
-    // ];
     const graph = { nodes, links };
-    setChartData(graph); // TODO
+    setChartData(graph);
   };
 
   // CONSTANTS //
   const drawn = chart !== null && loaded;
+  // const noData = chartData !== null && chartData.nodes.length === 0;
 
   // x-axis label
   const xLabel =
@@ -144,14 +122,20 @@ const Sankey = ({ eventId, curFlowType }) => {
   // render chart when data is processed
   useEffect(() => {
     if (chartData !== null) {
-      const newChart = new D3Sankey("." + styles.chart, {
-        ...params,
-        demo: true,
-        data: chartData,
-      });
-      setChart(newChart);
+      const curNoData = chartData.nodes.length === 0;
+      const switchingFromNoDataToData = !curNoData && noData;
+      setNoData(curNoData);
+      // if switching from "no data" to "data" be sure to
+      if (!switchingFromNoDataToData) {
+        setNoData(curNoData);
+        const newChart = new D3Sankey("." + styles.chart, {
+          ...params,
+          data: chartData,
+        });
+        setChart(newChart);
+      }
     }
-  }, [chartData]);
+  }, [chartData, noData]);
 
   // update entire chart when flow type or other params are  changed
   useEffect(() => {
@@ -159,7 +143,7 @@ const Sankey = ({ eventId, curFlowType }) => {
       setChart(null);
       setChartData(null);
     }
-  }, [curFlowType, sortDesc, sortFunder, max]);
+  }, [curFlowType, sortDesc, max]);
 
   // re-request data if filters change
   useEffect(() => {
@@ -167,7 +151,7 @@ const Sankey = ({ eventId, curFlowType }) => {
       setRawData(null);
       setChartData(null);
     }
-  }, [region]);
+  }, [region, sortFunder]);
 
   // JSX //
   return (
@@ -213,7 +197,15 @@ const Sankey = ({ eventId, curFlowType }) => {
           <span className={styles.title}>{xLabel}</span>
           <Sort {...{ label: "Recipient", ...sortParams }} />
         </div>
-        <div className={styles.chart} />
+        <div
+          style={{ height: noData ? 0 : undefined }}
+          className={styles.chart}
+        />
+        {noData && (
+          <div className={styles.noDataMessage}>
+            No {roleNoun.toLowerCase()} data match the selected filters
+          </div>
+        )}
         <div className={styles.dropdowns}>
           <Selectpicker
             {...{
