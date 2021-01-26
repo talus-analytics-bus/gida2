@@ -19,6 +19,7 @@
       // chart title
       .title {
         font-family: "Open Sans", sans-serif;
+        font-size: 1.4rem;
       }
       // nodes and links
       rect,
@@ -61,6 +62,7 @@
       }
       text {
         font-family: "open_sanssemibold", sans-serif;
+        font-size: 1.6rem;
         a {
           fill: $outbreak-blue-2;
         }
@@ -84,10 +86,20 @@
     align-items: flex-end;
     justify-content: space-between;
     .sortButton {
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-family: "Rawline", serif;
+      cursor: pointer;
       img {
         $size: 20px;
         height: $size;
         width: $size;
+      }
+      &.grayed {
+        img {
+          opacity: 0.5;
+        }
+        color: $outbreak-gray-3;
       }
     }
     .title {

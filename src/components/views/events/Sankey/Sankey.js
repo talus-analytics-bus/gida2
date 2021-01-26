@@ -286,8 +286,11 @@ const Sort = ({ sortFunder, setSortFunder, sortDesc, setSortDesc, label }) => {
   };
   // JSX //
   return (
-    <div onClick={onClick} className={styles.sortButton}>
-      {label} <img src={imgSrc} />
+    <div
+      onClick={onClick}
+      className={classNames(styles.sortButton, { [styles.grayed]: !isSorted })}
+    >
+      <span>{label}</span> <img src={imgSrc} />
     </div>
   );
 };

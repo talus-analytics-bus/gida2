@@ -203,7 +203,7 @@ class D3ImpactBars extends Chart {
         });
       fakeText.remove();
 
-      const newHeight = 30 * data.length; // TODO confirm
+      const newHeight = 40 * data.length; // TODO confirm
       this.svg.attr("height", newHeight + margin.top + margin.bottom);
 
       // set new axes and transition

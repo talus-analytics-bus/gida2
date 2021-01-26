@@ -206,15 +206,22 @@ class D3Sankey extends Chart {
 
     // const labeledNodes = graph.nodes;
     const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
-    const maxLen = d3.max(labeledNodes, d => d.name.length);
+    const maxLenLeft = d3.max(
+      labeledNodes.filter(d => d.role === "origin"),
+      d => d.name.length
+    );
+    const maxLenRight = d3.max(
+      labeledNodes.filter(d => d.role === "target"),
+      d => d.name.length
+    );
     const left = getChartMargin(
       labeledNodes.filter(d => d.role === "origin").map(d => d.name),
-      v => this.getShortName(v, maxLen),
+      v => this.getShortName(v, maxLenLeft),
       params.labelShift
     );
     const right = getChartMargin(
       labeledNodes.filter(d => d.role === "target").map(d => d.name),
-      v => this.getShortName(v, maxLen),
+      v => this.getShortName(v, maxLenRight),
       params.labelShift
     );
     // params.setMarginLeft(left);
@@ -394,7 +401,10 @@ class D3Sankey extends Chart {
       .append("text")
       .classed(styles.link, d => getIsLink(d))
       .html(d => {
-        const text = this.getShortName(d.name, maxLen);
+        const text = this.getShortName(
+          d.name,
+          d.role === "origin" ? maxLenLeft : maxLenRight
+        );
         if (!getIsLink(d)) return text;
         else
           return `<a href="/details/${d.id}/${

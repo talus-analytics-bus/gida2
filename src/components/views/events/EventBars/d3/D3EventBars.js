@@ -108,6 +108,7 @@ class D3EventBars extends Chart {
       .style("font-weight", 600)
       .style("text-anchor", "middle")
       .attr("class", styles["axis-label"])
+      .classed("axis-title", true)
       .text("Funds");
 
     const getYLabelPos = data => {
@@ -301,7 +302,7 @@ class D3EventBars extends Chart {
         });
       fakeText.remove();
 
-      const newHeight = 30 * newData.length; // TODO confirm
+      const newHeight = 40 * newData.length; // TODO confirm
       this.svg.attr("height", newHeight + margin.top + margin.bottom);
 
       // set new axes and transition
