@@ -398,7 +398,7 @@ const EventBars = ({
                   dataForChart[curFlowType].length > 10 && (
                     <Checkbox
                       {...{
-                        label: "Top 10 only",
+                        label: "Show top 10 only",
                         value: "top10only",
                         curChecked: top10Only,
                         callback: () => setTop10Only(!top10Only),
