@@ -108,6 +108,8 @@ class D3Sankey extends Chart {
       else return 0;
     };
 
+    const sortedSide = params.sortFunder === true ? "origin" : "target";
+
     // TODO manage left and right margins dynamically based on label sizes
     const generator = sankey
       .sankey()
@@ -123,13 +125,28 @@ class D3Sankey extends Chart {
     // assign node and link properties
     generator();
 
-    const unhighlight = () => {
-      chart.selectAll("rect, path").classed(styles.highlighted, false);
-    };
+    // apply `max` to nodes and regenerate node and link properties -- only
+    // keep the top [`max`] nodes on the sorted side of the diagram, and only
+    // the nodes they are linked to on the unsorted side
     const dir = params.sortFunder ? "source" : "target";
+    const topSortedNodes = graph.nodes.filter(d => d.role === sortedSide);
+    const otherSideNodes = graph.nodes.filter(d => d.role !== sortedSide);
+    topSortedNodes.sort(sortByValue);
+    graph.nodes = topSortedNodes.slice(0, params.max).concat(otherSideNodes);
+    const topSortedNodesIdx = graph.nodes.map(d => d.index);
+    graph.links = graph.links.filter(d =>
+      topSortedNodesIdx.includes(d[dir].index)
+    );
+    generator.nodes(graph.nodes).links(graph.links);
+    generator();
+
+    // define constants used in highlight/unhighlight behavior
     const otherDir = dir === "target" ? "source" : "target";
     const linkKey = dir + "Links";
     const otherLinkKey = otherDir + "Links";
+    const unhighlight = () => {
+      chart.selectAll("rect, path").classed(styles.highlighted, false);
+    };
 
     // render links
     chart

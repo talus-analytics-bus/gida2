@@ -1,5 +1,14 @@
 @import "../../../../assets/styles/colors.scss";
 .sankey {
+  @include spaceChildrenVert(30px);
+  > :empty {
+    margin: 0;
+  }
+  .dropdowns {
+    > div {
+      margin: 0;
+    }
+  }
   .chart {
     width: 100%;
     height: 500px;
@@ -37,11 +46,17 @@
   .sortButtons {
     display: flex;
     flex-flow: row;
+    align-items: flex-end;
     justify-content: space-between;
     .sortButton {
       img {
-        height: 15px;
+        $size: 20px;
+        height: $size;
+        width: $size;
       }
+    }
+    .title {
+      text-align: center;
     }
   }
 }

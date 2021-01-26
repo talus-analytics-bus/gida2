@@ -25,6 +25,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [sortFunder, setSortFunder] = useState(true);
   const [sortDesc, setSortDesc] = useState(true);
   const [region, setRegion] = useState("");
+  const [max, setMax] = useState(5);
 
   // FUNCTIONS //
   const getData = async () => {
@@ -59,7 +60,6 @@ const Sankey = ({ eventId, curFlowType }) => {
           d[curFlowType] !== null &&
           d[curFlowType] !== undefined
       )
-      // .slice(0, 50)
       .forEach(d => {
         const value = d[curFlowType];
         const link = {};
@@ -109,7 +109,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   const drawn = chart !== null && loaded;
 
   // chart params
-  const params = { sortDesc, sortFunder };
+  const params = { sortDesc, sortFunder, max };
 
   // funders or recipients?
   const roleNoun = sortFunder ? "Funder" : "Recipient";
@@ -144,13 +144,13 @@ const Sankey = ({ eventId, curFlowType }) => {
     }
   }, [chartData]);
 
-  // update entire chart when flow type is changed
+  // update entire chart when flow type or other params are  changed
   useEffect(() => {
     if (chart !== null) {
       setChart(null);
       setChartData(null);
     }
-  }, [curFlowType, sortDesc, sortFunder]);
+  }, [curFlowType, sortDesc, sortFunder, max]);
 
   // re-request data if filters change
   useEffect(() => {
@@ -172,7 +172,11 @@ const Sankey = ({ eventId, curFlowType }) => {
               curSelection: region,
               setOption: setRegion,
               optionList: [
-                { value: "", label: "All regions" },
+                { value: "", label: "All stakeholders" },
+                {
+                  value: "orgs",
+                  label: "Organizations only",
+                },
                 { value: "afro", label: "African Region (AFRO)" },
                 {
                   value: "paho",
@@ -191,19 +195,33 @@ const Sankey = ({ eventId, curFlowType }) => {
                   value: "wpro",
                   label: "Western Pacific Region (WPRO)",
                 },
-                {
-                  value: "orgs",
-                  label: "Organizations only",
-                },
               ],
             }}
           />
         </div>
         <div className={styles.sortButtons}>
           <Sort {...{ label: "Funder", ...sortParams }} />
+          <span className={styles.title}>[Title]</span>
           <Sort {...{ label: "Recipient", ...sortParams }} />
         </div>
         <div className={styles.chart} />
+        <div className={styles.dropdowns}>
+          <Selectpicker
+            {...{
+              label: null,
+              curSelection: max,
+              setOption: setMax,
+              optionList: [
+                { value: 5, label: "Show top 5" },
+                { value: 10, label: "Show top 10" },
+                {
+                  value: Infinity,
+                  label: "Show all",
+                },
+              ],
+            }}
+          />
+        </div>
       </div>
     </>
   );
