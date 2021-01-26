@@ -1,5 +1,7 @@
 // 3rd party libs
 import React, { useState, useEffect } from "react";
+import ReactTooltip from "react-tooltip";
+import tooltipStyles from "../../../common/tooltip.module.scss";
 
 // styles and assets
 import styles from "./sankey.module.scss";
@@ -26,6 +28,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [sortDesc, setSortDesc] = useState(true);
   const [region, setRegion] = useState("");
   const [max, setMax] = useState(5);
+  const [tooltipData, setTooltipData] = useState(false);
 
   // FUNCTIONS //
   const getData = async () => {
@@ -108,8 +111,14 @@ const Sankey = ({ eventId, curFlowType }) => {
   // CONSTANTS //
   const drawn = chart !== null && loaded;
 
+  // x-axis label
+  const xLabel =
+    curFlowType === "disbursed_funds"
+      ? "Disbursed funds (USD)"
+      : "Committed funds (USD)";
+
   // chart params
-  const params = { sortDesc, sortFunder, max };
+  const params = { sortDesc, sortFunder, max, setTooltipData, xLabel };
 
   // funders or recipients?
   const roleNoun = sortFunder ? "Funder" : "Recipient";
@@ -201,7 +210,7 @@ const Sankey = ({ eventId, curFlowType }) => {
         </div>
         <div className={styles.sortButtons}>
           <Sort {...{ label: "Funder", ...sortParams }} />
-          <span className={styles.title}>[Title]</span>
+          <span className={styles.title}>{xLabel}</span>
           <Sort {...{ label: "Recipient", ...sortParams }} />
         </div>
         <div className={styles.chart} />
@@ -223,6 +232,27 @@ const Sankey = ({ eventId, curFlowType }) => {
           />
         </div>
       </div>
+      {
+        // Tooltip for info tooltip icons.
+        <ReactTooltip
+          id={"sankeyTooltip"}
+          type="light"
+          className={tooltipStyles.tooltip}
+          place="top"
+          effect="float"
+          getContent={() =>
+            tooltipData && (
+              <table>
+                {tooltipData.map(d => (
+                  <tr>
+                    <td>{d.field}:</td>&nbsp;<td>{d.value}</td>
+                  </tr>
+                ))}
+              </table>
+            )
+          }
+        />
+      }
     </>
   );
 };

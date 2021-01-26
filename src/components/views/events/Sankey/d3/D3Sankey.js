@@ -1,10 +1,10 @@
 import React from "react";
+import ReactTooltip from "react-tooltip";
 import * as d3 from "d3/dist/d3.min";
 import * as sankey from "d3-sankey/dist/d3-sankey.js";
 import Chart from "../../../../chart/Chart.js";
 import Util, { formatRegion } from "../../../../misc/Util.js";
 import styles from "../sankey.module.scss";
-import ReactTooltip from "react-tooltip";
 
 // // colors
 // import {
@@ -72,6 +72,34 @@ class D3Sankey extends Chart {
     // Initialize some constants
     // Params object
     const params = this.params;
+    const roleToNoun = {
+      origin: "Funder",
+      target: "Recipient",
+    };
+    function updateTooltip(d) {
+      const tooltipData = [
+        {
+          field: params.xLabel,
+          value: Util.money(d.value),
+        },
+      ];
+      if (d.role !== undefined) {
+        tooltipData.unshift({
+          field: roleToNoun[d.role],
+          value: d.name,
+        });
+      } else if (d.source !== undefined) {
+        tooltipData.unshift({
+          field: "Recipient",
+          value: d.target.name,
+        });
+        tooltipData.unshift({
+          field: "Funder",
+          value: d.source.name,
+        });
+      }
+      params.setTooltipData(tooltipData);
+    }
 
     // define chart accessor
     const chart = this.chart.classed("sankey-chart", true);
@@ -154,6 +182,7 @@ class D3Sankey extends Chart {
       .selectAll("path")
       .data(graph.links)
       .join("path")
+      .on("mouseover", updateTooltip)
       .on("mouseleave", unhighlight)
       .on("mouseenter", function highlightOnLinkEnter(d) {
         const highlightIndicesLinks = [
@@ -185,9 +214,10 @@ class D3Sankey extends Chart {
           })
           .classed(styles.highlighted, true);
       })
+      .attr("data-tip", true)
+      .attr("data-for", "sankeyTooltip")
       .attr("d", this.sankeyLinkPath)
       .attr("data-index", d => d.index)
-      // .attr("d", sankey.sankeyLinkHorizontal())
       .attr("stroke-width", function(d) {
         return d.width;
       });
@@ -198,6 +228,9 @@ class D3Sankey extends Chart {
       .selectAll("rect")
       .data(graph.nodes)
       .join("rect")
+      .on("mouseover", updateTooltip)
+      .attr("data-tip", true)
+      .attr("data-for", "sankeyTooltip")
       .attr("data-index", d => d.index)
       .on("mouseleave", unhighlight)
       .on("mouseenter", function highlightOnNodeEnter(d) {
@@ -235,6 +268,7 @@ class D3Sankey extends Chart {
       .attr("transform", function(d) {
         return "translate(" + d.x0 + "," + d.y0 + ")";
       });
+    ReactTooltip.rebuild();
   }
 }
 export default D3Sankey;
