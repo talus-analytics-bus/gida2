@@ -106,10 +106,10 @@ const Sankey = ({ eventId, curFlowType }) => {
   useEffect(() => {
     if (rawData === null) {
       getData();
-    } else {
+    } else if (chartData === null) {
       processRawData();
     }
-  }, [rawData]);
+  }, [rawData, chartData]);
 
   // render chart when data is processed
   useEffect(() => {
@@ -119,8 +119,20 @@ const Sankey = ({ eventId, curFlowType }) => {
         demo: true,
         data: chartData,
       });
+      setChart(newChart);
     }
   }, [chartData]);
+
+  // update entire chart when flow type is changed
+  useEffect(() => {
+    console.log("useEffect - [curFlowType]");
+    console.log(chart);
+    if (chart !== null) {
+      console.log("Updating...");
+      setChart(null);
+      setChartData(null);
+    }
+  }, [curFlowType]);
 
   // JSX //
   return (

@@ -91,22 +91,18 @@ class D3Sankey extends Chart {
       return d.id;
     };
 
+    const sortByValue = (a, b) => {
+      if (a.value > b.value) return -1;
+      else if (a.value < b.value) return 1;
+      else return 0;
+    };
+
     // TODO manage left and right margins dynamically based on label sizes
     const generator = sankey
       .sankey()
       .size([width, height])
-      .linkSort(function linksByValue(a, b) {
-        console.log(a);
-        if (a.value > b.value) return -1;
-        else if (a.value < b.value) return 1;
-        else return 0;
-      })
-      .nodeSort(function linksByValue(a, b) {
-        console.log(a);
-        if (a.value > b.value) return -1;
-        else if (a.value < b.value) return 1;
-        else return 0;
-      })
+      .linkSort(sortByValue)
+      .nodeSort(sortByValue)
       .nodeId(nodeId)
       .nodeWidth(10)
       .nodePadding(1)
