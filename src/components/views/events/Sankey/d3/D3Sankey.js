@@ -67,8 +67,42 @@ class D3Sankey extends Chart {
     const pathStr = path.toString();
     return pathStr;
   }
+  getShortName(s) {
+    if (s === "General IHR") return s;
+    const maxLen = 20;
+    if (s.length > maxLen) {
+      const shortened = s
+        .split(" ")
+        .slice(0, 4)
+        .join(" ");
+      if (/[^a-z]$/.test(shortened.toLowerCase())) {
+        return `${shortened.slice(0, shortened.length - 1)}...`;
+      }
+      return shortened === s ? s : `${shortened}...`;
+    } else {
+      return s;
+    }
+  }
 
   draw() {
+    const getChartMargin = (names, fmt = v => v, padding = 0) => {
+      const fakeText = chart
+        .selectAll(".fake-text")
+        .data(names)
+        .enter()
+        .append("text")
+        .text(d => fmt(d))
+        .attr("class", [styles.tick, styles.fakeText].join(" "));
+      const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
+      fakeText.remove();
+      return maxLabelWidth + padding;
+    };
+
+    const getBelowMinNodeHeight = d => {
+      const nodeHeight = d.y1 - d.y0;
+      return nodeHeight < 30;
+    };
+
     // Initialize some constants
     // Params object
     const params = this.params;
@@ -171,6 +205,26 @@ class D3Sankey extends Chart {
     generator.nodes(graph.nodes).links(graph.links);
     generator();
 
+    const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
+    const left = getChartMargin(
+      labeledNodes.filter(d => d.role === "origin").map(d => d.name),
+      this.getShortName,
+      params.labelShift
+    );
+    const right = getChartMargin(
+      labeledNodes.filter(d => d.role === "target").map(d => d.name),
+      this.getShortName,
+      params.labelShift
+    );
+
+    this.updateWidth({
+      ...this.margin,
+      left,
+      right,
+    });
+    generator.size([this.width, this.height]);
+    generator();
+
     // define constants used in highlight/unhighlight behavior
     const otherDir = dir === "target" ? "source" : "target";
     const linkKey = dir + "Links";
@@ -271,6 +325,60 @@ class D3Sankey extends Chart {
       .attr("transform", function(d) {
         return "translate(" + d.x0 + "," + d.y0 + ")";
       });
+
+    // render node labels
+    chart
+      .append("g")
+      .selectAll("g.nodeLabel")
+      .data(graph.nodes)
+      .join("g")
+      .attr("class", d => styles[d.role])
+      .classed("nodeLabel", true)
+      .classed(styles.hidden, getBelowMinNodeHeight)
+      .on("mouseover", updateTooltip)
+      .attr("data-tip", true)
+      .attr("data-for", "sankeyTooltip")
+      .attr("data-index", d => d.index)
+      .on("mouseleave", unhighlight)
+      .on("mouseenter", function highlightOnNodeEnter(d) {
+        const isSortedSide =
+          (d.role === "origin" && params.sortFunder === true) ||
+          (d.role === "target" && params.sortFunder === false);
+
+        const highlightIndicesNodes = [
+          d.index, // TODO other nodes
+        ];
+        const highlightIndicesLinks = [
+          ...d.sourceLinks.map(dd => dd.index),
+          ...d.targetLinks.map(dd => dd.index),
+        ];
+
+        // add nodes on other "side" connected to links
+        d[isSortedSide ? linkKey : otherLinkKey]
+          .map(d => d[isSortedSide ? otherDir : dir].index)
+          .forEach(id => highlightIndicesNodes.push(id));
+        chart
+          .selectAll("rect")
+          .filter(d => {
+            return highlightIndicesNodes.includes(d.index); // TODO check slow?
+          })
+          .classed(styles.highlighted, true);
+        chart
+          .selectAll("path")
+          .filter(d => {
+            return highlightIndicesLinks.includes(d.index); // TODO check slow?
+          })
+          .classed(styles.highlighted, true);
+      })
+      .attr("transform", function(d) {
+        const xShift =
+          params.labelShift * (d.role === "origin" ? -1 : 1) +
+          (d.role === "origin" ? 0 : generator.nodeWidth() - 2);
+        return "translate(" + (d.x0 + xShift) + "," + (d.y1 + d.y0) / 2 + ")";
+      })
+      .append("text")
+      .text(d => this.getShortName(d.name));
+
     ReactTooltip.rebuild();
   }
 }

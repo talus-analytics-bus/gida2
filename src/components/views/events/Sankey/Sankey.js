@@ -30,6 +30,8 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [max, setMax] = useState(5);
   const [tooltipData, setTooltipData] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [marginLeft, setMarginLeft] = useState(0);
+  const [marginRight, setMarginRight] = useState(0);
 
   // FUNCTIONS //
   const getData = async () => {
@@ -96,7 +98,16 @@ const Sankey = ({ eventId, curFlowType }) => {
       : "Committed funds (USD)";
 
   // chart params
-  const params = { sortDesc, sortFunder, max, setTooltipData, xLabel };
+  const params = {
+    sortDesc,
+    sortFunder,
+    max,
+    setTooltipData,
+    xLabel,
+    setMarginLeft,
+    setMarginRight,
+    labelShift: 10,
+  };
 
   // funders or recipients?
   const roleNoun = sortFunder ? "Funder" : "Recipient";
@@ -158,7 +169,7 @@ const Sankey = ({ eventId, curFlowType }) => {
     <>
       <div className={styles.sankey}>
         <Loading {...{ loaded: true, position: "absolute" }} />
-        <div className={styles.dropdowns}>
+        <div style={{ marginLeft, marginRight }} className={styles.dropdowns}>
           <Selectpicker
             {...{
               label: `Filter ${roleNoun.toLowerCase()}s`,

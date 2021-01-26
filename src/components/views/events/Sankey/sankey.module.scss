@@ -41,6 +41,17 @@
           }
         }
       }
+
+      // labels
+      g.origin text {
+        text-anchor: end;
+      }
+      g.origin,
+      g.target {
+        &.hidden {
+          display: none;
+        }
+      }
     }
   }
   .noDataMessage {
