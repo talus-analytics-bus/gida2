@@ -14,6 +14,7 @@ import { execute, Chords } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
 import Checkbox from "../../../common/Checkbox/Checkbox";
 import Loading from "../../../common/Loading/Loading";
+import { ORG_CATS } from "../EventBars/EventBars";
 
 const Sankey = ({ eventId, curFlowType }) => {
   // STATE //
@@ -23,6 +24,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [chartData, setChartData] = useState(null);
   const [sortFunder, setSortFunder] = useState(true);
   const [sortDesc, setSortDesc] = useState(true);
+  const [region, setRegion] = useState("");
 
   // FUNCTIONS //
   const getData = async () => {
@@ -32,6 +34,11 @@ const Sankey = ({ eventId, curFlowType }) => {
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     };
+    // add region filter
+    if (region !== "") {
+      if (region !== "orgs") filters["Stakeholder.region_who"] = [region];
+      else filters["Stakeholder.cat"] = ORG_CATS;
+    }
     const queries = {
       chords: Chords({ format: "chord", filters }),
     };
@@ -104,6 +111,9 @@ const Sankey = ({ eventId, curFlowType }) => {
   // chart params
   const params = { sortDesc, sortFunder };
 
+  // funders or recipients?
+  const roleNoun = sortFunder ? "Funder" : "Recipient";
+
   // sort button standard params
   const sortParams = {
     sortFunder,
@@ -142,11 +152,53 @@ const Sankey = ({ eventId, curFlowType }) => {
     }
   }, [curFlowType, sortDesc, sortFunder]);
 
+  // re-request data if filters change
+  useEffect(() => {
+    if (chart !== null) {
+      setRawData(null);
+      setChartData(null);
+    }
+  }, [region]);
+
   // JSX //
   return (
     <>
       <div className={styles.sankey}>
         <Loading {...{ loaded: true, position: "absolute" }} />
+        <div className={styles.dropdowns}>
+          <Selectpicker
+            {...{
+              label: `Filter ${roleNoun.toLowerCase()}s`,
+              curSelection: region,
+              setOption: setRegion,
+              optionList: [
+                { value: "", label: "All regions" },
+                { value: "afro", label: "African Region (AFRO)" },
+                {
+                  value: "paho",
+                  label: "Region of the Americas (PAHO)",
+                },
+                {
+                  value: "searo",
+                  label: "South-East Asia Region (SEARO)",
+                },
+                { value: "euro", label: "European Region (EURO)" },
+                {
+                  value: "emro",
+                  label: "Eastern Mediterranean Region (EMRO)",
+                },
+                {
+                  value: "wpro",
+                  label: "Western Pacific Region (WPRO)",
+                },
+                {
+                  value: "orgs",
+                  label: "Organizations only",
+                },
+              ],
+            }}
+          />
+        </div>
         <div className={styles.sortButtons}>
           <Sort {...{ label: "Funder", ...sortParams }} />
           <Sort {...{ label: "Recipient", ...sortParams }} />

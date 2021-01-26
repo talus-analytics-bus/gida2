@@ -20,7 +20,7 @@ import Loading from "../../../common/Loading/Loading";
 import Checkbox from "../../../common/Checkbox/Checkbox";
 
 const COUNTRY_CATS = ["country", "world"];
-const ORG_CATS = [
+export const ORG_CATS = [
   "academia",
   "foundation",
   "government",
