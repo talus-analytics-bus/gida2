@@ -2,7 +2,7 @@
 
 .nav {
   border-bottom: 1px $black solid;
-  padding: 15px 5px;
+  padding: 20px 5px;
   position: sticky;
   top: 0;
   background-color: white;
@@ -14,21 +14,20 @@
     flex-flow: row;
     align-items: center;
     justify-content: space-between;
-    height: 70px;
     img.logo {
-      height: 70px;
+      height: 50px;
     }
     .links {
       display: flex;
       flex-flow: row;
-      color: #777;
+      color: $black;
       white-space: nowrap;
       span {
         margin-left: 5px;
       }
       > a,
       > div {
-        margin: 0 20px;
+        margin: 0 15px;
         position: relative;
         &:last-child {
           margin-right: 0;
@@ -36,17 +35,16 @@
       }
       > a,
       > div > a {
-        color: #777;
+        color: $black;
         &:hover:not(.active) {
-          color: #52a8e6;
+          color: $primary-light-blue;
         }
         &:hover,
         &:focus {
           text-decoration: none;
         }
         &.active {
-          font-weight: 600;
-          border-bottom: 2px solid #777;
+          font-family: "OpenSans-Semibold";
         }
       }
       align-items: center;
