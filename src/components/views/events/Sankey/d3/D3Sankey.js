@@ -202,7 +202,8 @@ class D3Sankey extends Chart {
     generator.nodes(graph.nodes).links(graph.links);
     generator();
 
-    const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
+    const labeledNodes = graph.nodes;
+    // const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
     const left = getChartMargin(
       labeledNodes.filter(d => d.role === "origin").map(d => d.name),
       this.getShortName,
@@ -229,7 +230,9 @@ class D3Sankey extends Chart {
     const linkKey = dir + "Links";
     const otherLinkKey = otherDir + "Links";
     const unhighlight = () => {
-      chart.selectAll("rect, path").classed(styles.highlighted, false);
+      chart
+        .selectAll("rect, path, g.nodeLabel")
+        .classed(styles.highlighted, false);
     };
 
     // render links
@@ -258,7 +261,7 @@ class D3Sankey extends Chart {
           .forEach(id => highlightIndicesNodes.push(id));
 
         chart
-          .selectAll("rect")
+          .selectAll("rect, g.nodeLabel")
           .filter(d => {
             return highlightIndicesNodes.includes(d.index); // TODO check slow?
           })
@@ -308,7 +311,7 @@ class D3Sankey extends Chart {
           .map(d => d[isSortedSide ? otherDir : dir].index)
           .forEach(id => highlightIndicesNodes.push(id));
         chart
-          .selectAll("rect")
+          .selectAll("rect, g.nodeLabel")
           .filter(d => {
             return highlightIndicesNodes.includes(d.index); // TODO check slow?
           })

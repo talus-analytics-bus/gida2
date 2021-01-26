@@ -55,7 +55,7 @@
       }
       g.origin,
       g.target {
-        &.hidden {
+        &.hidden:not(.highlighted) {
           display: none;
         }
       }

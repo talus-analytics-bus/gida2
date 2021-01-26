@@ -212,7 +212,10 @@ const Sankey = ({ eventId, curFlowType }) => {
           <Sort {...{ label: "Recipient", ...sortParams }} />
         </div>
         <div
-          style={{ height: noData ? 0 : undefined }}
+          style={{
+            height: noData ? 0 : undefined,
+            marginBottom: noData ? 0 : undefined,
+          }}
           className={styles.chart}
         />
         {noData && (
