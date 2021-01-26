@@ -321,10 +321,11 @@ const EventBars = ({
     }
   }, [impact]);
 
+  // JSX //
   return (
     <>
       <Loading {...{ loaded: drawn, position: "absolute" }} />
-      <div className={classNames(styles.eventBars, {})}>
+      <div className={styles.eventBars}>
         {
           <div
             className={classNames(styles.charts, {

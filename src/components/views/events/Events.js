@@ -59,6 +59,9 @@ const Events = ({ slug, flowTypeInfo }) => {
   };
 
   // CONSTANTS //
+  // data loaded?
+  const dataLoaded = data !== null;
+
   // Get display name for current flow type
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
@@ -70,7 +73,7 @@ const Events = ({ slug, flowTypeInfo }) => {
       return stakeholders[d.iso3].iso2;
     });
 
-  const eventBars = data !== null && {
+  const eventBars = dataLoaded && {
     header: <h2>Total funding and impact comparison</h2>,
     text: (
       <span>
@@ -92,7 +95,7 @@ const Events = ({ slug, flowTypeInfo }) => {
       />
     ),
   };
-  const sankey = {
+  const sankey = dataLoaded && {
     header: <h2>Flow of funding</h2>,
     text: (
       <span>
@@ -100,10 +103,10 @@ const Events = ({ slug, flowTypeInfo }) => {
         view their profile.
       </span>
     ),
-    content: <Sankey />,
+    content: <Sankey {...{ eventId: data.id }} />,
   };
 
-  const eventTable = data !== null && {
+  const eventTable = dataLoaded && {
     header: <h2>Top funders for {data.name}</h2>,
     text: (
       <span>
@@ -124,7 +127,7 @@ const Events = ({ slug, flowTypeInfo }) => {
     ),
   };
 
-  const crossreferences = data !== null && {
+  const crossreferences = dataLoaded && {
     header: <h2>Case studies and DONS data</h2>,
     text: null,
     content: <Crossreferences />,
@@ -162,7 +165,7 @@ const Events = ({ slug, flowTypeInfo }) => {
       <div className={classNames("pageContainer", styles.content)}>
         <div className={styles.title}>Outbreak event</div>
 
-        {data !== null && (
+        {dataLoaded && (
           <Loading
             {...{
               loaded,
