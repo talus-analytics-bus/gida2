@@ -65,10 +65,6 @@ class D3Sankey extends Chart {
     path.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, sx, sy1);
     path.lineTo(sx, sy0);
     const pathStr = path.toString();
-    // if (pathStr.includes("NaN")) {
-    //   console.log("link - NaN inside");
-    //   console.log(link);
-    // }
     return pathStr;
   }
 
@@ -201,13 +197,9 @@ class D3Sankey extends Chart {
         ];
 
         // add nodes on other "side" connected to links
-        console.log("d");
-        console.log(d);
         d[isSortedSide ? linkKey : otherLinkKey]
           .map(d => d[isSortedSide ? otherDir : dir].index)
           .forEach(id => highlightIndicesNodes.push(id));
-        console.log("highlightIndicesNodes");
-        console.log(highlightIndicesNodes);
         chart
           .selectAll("rect")
           .filter(d => {
@@ -226,8 +218,6 @@ class D3Sankey extends Chart {
       .attr("transform", function(d) {
         return "translate(" + d.x0 + "," + d.y0 + ")";
       });
-    console.log("graph");
-    console.log(graph);
   }
 }
 export default D3Sankey;

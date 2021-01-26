@@ -137,7 +137,6 @@ const Sankey = ({ eventId, curFlowType }) => {
   // update entire chart when flow type is changed
   useEffect(() => {
     if (chart !== null) {
-      console.log("Updating...");
       setChart(null);
       setChartData(null);
     }
