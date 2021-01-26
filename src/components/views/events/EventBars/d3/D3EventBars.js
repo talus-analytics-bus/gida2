@@ -220,6 +220,8 @@ class D3EventBars extends Chart {
         left: getLeftMargin(newData, tickFormat, padding),
       });
 
+      xLabel.attr("x", this.width / 2);
+
       // update xscale
       x.range([0, this.width]);
 
@@ -414,7 +416,7 @@ class D3EventBars extends Chart {
       const urlFormat = params.stack
         ? d => `<tspan>${tickFormat(d)}</tspan>`
         : d =>
-            `<a href="/details/${dataByName[d].id}/recipient">${tickFormat(
+            `<a href="/details/${dataByName[d].id}/${params.role}">${tickFormat(
               d
             )}</a>`;
       yAxisG

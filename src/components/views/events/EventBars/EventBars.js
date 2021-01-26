@@ -65,6 +65,7 @@ const EventBars = ({
     setTooltipData,
     curFlowType,
     impact,
+    role: funds.split("_")[0],
     stack: funds === "recipient_region",
   };
 
