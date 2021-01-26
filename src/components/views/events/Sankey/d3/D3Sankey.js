@@ -59,18 +59,20 @@ class D3Sankey extends Chart {
     const pathStr = path.toString();
     return pathStr;
   }
-  getShortName(s) {
+  getShortName(s, maxLen = 20) {
     if (s === "General IHR") return s;
-    const maxLen = 20;
     if (s.length > maxLen) {
-      const shortened = s
-        .split(" ")
-        .slice(0, 4)
-        .join(" ");
-      if (/[^a-z]$/.test(shortened.toLowerCase())) {
-        return `${shortened.slice(0, shortened.length - 1)}...`;
+      const words = s.split(" ");
+      let curShortened = "";
+      let i = 0;
+      while (
+        i < words.length - 1 &&
+        (curShortened + " " + words[i]).length < maxLen
+      ) {
+        curShortened += " " + words[i];
+        i++;
       }
-      return shortened === s ? s : `${shortened}...`;
+      return curShortened === s ? s : `${curShortened}...`;
     } else {
       return s;
     }
@@ -202,16 +204,17 @@ class D3Sankey extends Chart {
     generator.nodes(graph.nodes).links(graph.links);
     generator();
 
-    const labeledNodes = graph.nodes;
-    // const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
+    // const labeledNodes = graph.nodes;
+    const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
+    const maxLen = d3.max(labeledNodes, d => d.name.length);
     const left = getChartMargin(
       labeledNodes.filter(d => d.role === "origin").map(d => d.name),
-      this.getShortName,
+      v => this.getShortName(v, maxLen),
       params.labelShift
     );
     const right = getChartMargin(
       labeledNodes.filter(d => d.role === "target").map(d => d.name),
-      this.getShortName,
+      v => this.getShortName(v, maxLen),
       params.labelShift
     );
     // params.setMarginLeft(left);
@@ -391,7 +394,7 @@ class D3Sankey extends Chart {
       .append("text")
       .classed(styles.link, d => getIsLink(d))
       .html(d => {
-        const text = this.getShortName(d.name);
+        const text = this.getShortName(d.name, maxLen);
         if (!getIsLink(d)) return text;
         else
           return `<a href="/details/${d.id}/${
