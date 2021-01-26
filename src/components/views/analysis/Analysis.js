@@ -456,7 +456,7 @@ const getComponentData = async ({
     filters["Core_Capacity.name"] = coreCapacities;
   }
 
-  // Define queries for typical details page.
+  // Define queries for analysis page.
   const queries = {
     chords: Chords({ format: "chord", filters }),
     nodeSumsOrigin: NodeSums({
