@@ -4,6 +4,7 @@ import Search from "../../common/Search/Search.js";
 import styles from "./home.module.scss";
 import Button from "../../common/Button/Button.js";
 import mapImage from "../../../assets/images/map.png";
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 
 // JSX for about page.
 const Home = () => {
@@ -30,7 +31,7 @@ const Home = () => {
             </p>
           </div>
         </div>
-
+        <GhsaButton {...{ active: false, isDark: false }} />
         <div className={styles.searchContainer}>
           <div className={styles.title}>
             View specific country or organization details
