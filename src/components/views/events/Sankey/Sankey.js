@@ -203,7 +203,8 @@ const Sankey = ({ eventId, curFlowType }) => {
         />
         {noData && (
           <div className={styles.noDataMessage}>
-            No {roleNoun.toLowerCase()} data match the selected filters
+            No {roleNoun.toLowerCase()} data for {curFlowType.replace("_", " ")}{" "}
+            match the selected filters
           </div>
         )}
         <div className={styles.dropdowns}>
