@@ -1,6 +1,6 @@
 {
-  "name": "measles-dash",
-  "version": "0.1.0",
+  "name": "ghs-tracking",
+  "version": "3.0.0",
   "private": true,
   "dependencies": {
     "@types/classnames": "^2.2.8",
@@ -15,9 +15,9 @@
     "classnames": "^2.2.6",
     "d3": "^5.12.0",
     "d3-geo-projection": "^2.8.1",
+    "d3-sankey": "^0.12.3",
     "dotenv": "^8.2.0",
     "fuzzy-search": "^3.0.2",
-    "material-design-icons": "^3.0.1",
     "rc-align": "2.3.5",
     "rc-slider": "^9.2.3",
     "rc-tooltip": "^4.0.2",
