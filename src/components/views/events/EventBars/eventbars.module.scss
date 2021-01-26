@@ -61,6 +61,12 @@
           display: none;
         }
       }
+
+      &:last-child .dropdowns {
+        > div {
+          margin-left: 45px;
+        }
+      }
     }
   }
 }
