@@ -2,13 +2,14 @@
 
 .home {
   display: grid;
-  grid-template-columns: 36% 64%;
+  grid-template-columns: 34% 64%;
+  column-gap: 2%;
   grid-template-rows: 100%;
   padding: 0 !important;
 
   p {
     &:not(:last-child) {
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
     &.instructions {
       font-style: italic;
@@ -18,7 +19,6 @@
   .title {
     font-weight: 600;
     font-size: 22px;
-    text-transform: uppercase;
     color: $black;
     font-family: "Raleway", sans-serif;
   }
@@ -27,7 +27,7 @@
     display: flex;
     flex-flow: row;
     > * {
-      margin-right: 10px;
+      margin-right: 30px;
     }
     button {
       padding: 10px 20px;
@@ -45,7 +45,7 @@
     .buttons {
       padding: 20px 40px 0;
       &.title {
-        padding-top: 40px;
+        padding-top: 30px;
       }
     }
     .map {
@@ -77,11 +77,10 @@
 
     > div:first-child {
       .welcomeText {
-        margin: 40px 0 20px;
-        font-weight: 600;
-        line-height: 35px;
-        font-size: 32px;
-        text-transform: uppercase;
+        margin: 30px 0 20px;
+        font-weight: 700;
+        font-size: 28px;
+        line-height: 33px;
         color: $black;
         &.dark {
           color: white;
@@ -89,12 +88,15 @@
         font-family: "Raleway", sans-serif;
       }
       .welcomeDesc {
-        font-size: 18px;
+        font-size: 16px;
         font-family: "Open Sans", sans-serif;
         color: $black;
         &.dark {
           color: #eee;
         }
+      }
+      .instructions {
+        margin-bottom: 30px;
       }
     }
 
@@ -102,7 +104,8 @@
       display: flex;
       flex-flow: column;
       justify-content: space-between;
-      margin-top: 40px;
+      margin-top: 30px;
+      margin-bottom: 100px;
       .content {
         > div,
         a {

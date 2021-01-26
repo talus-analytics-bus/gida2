@@ -114,6 +114,8 @@ $phone-width-narrow: 375px;
   text-transform: capitalize;
   color: $black;
   font-family: "rawline", sans-serif;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 @mixin subtitle {
   margin-top: 20px;
