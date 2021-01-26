@@ -73,12 +73,12 @@ const Sankey = ({ eventId, curFlowType }) => {
         const value = d[curFlowType];
         const link = {};
         toCheck.forEach(role => {
-          const id = `${d[role].id.toString()}-${role}`;
-          if (nodesById[id] === undefined) {
-            nodesById[id] = { ...d[role], id, role };
+          const nodeId = `${d[role].id.toString()}-${role}`;
+          if (nodesById[nodeId] === undefined) {
+            nodesById[nodeId] = { ...d[role], nodeId, role };
           }
           const dir = role === "origin" ? "source" : "target";
-          link[dir] = id;
+          link[dir] = nodeId;
           link.value = value;
         });
         links.push(link);
@@ -256,6 +256,7 @@ const Sankey = ({ eventId, curFlowType }) => {
                     <td>{d.field}:</td>&nbsp;<td>{d.value}</td>
                   </tr>
                 ))}
+                {tooltipData.footer && <i>{tooltipData.footer}</i>}
               </table>
             )
           }

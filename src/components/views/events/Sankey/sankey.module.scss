@@ -55,6 +55,20 @@
           display: none;
         }
       }
+      text {
+        font-family: "open_sanssemibold", sans-serif;
+        a {
+          fill: $outbreak-blue-2;
+        }
+      }
+
+      // nodes and labels
+      rect,
+      text {
+        &.link {
+          cursor: pointer;
+        }
+      }
     }
   }
   .noDataMessage {

@@ -102,6 +102,9 @@ class D3Sankey extends Chart {
       origin: "Funder",
       target: "Recipient",
     };
+    function getIsLink(d) {
+      return d.subcat !== "other" && d.subcat !== "region";
+    }
     function updateTooltip(d) {
       const tooltipData = [
         {
@@ -114,6 +117,8 @@ class D3Sankey extends Chart {
           field: roleToNoun[d.role],
           value: d.name,
         });
+        const isLink = getIsLink(d);
+        if (isLink) tooltipData.footer = "Click to go to details page";
       } else if (d.source !== undefined) {
         tooltipData.unshift({
           field: "Recipient",
@@ -141,7 +146,7 @@ class D3Sankey extends Chart {
     if (graph.nodes.length === 0) return;
 
     const nodeId = function id(d) {
-      return d.id;
+      return d.nodeId;
     };
 
     const sortFlag = params.sortDesc ? -1 : 1;
@@ -283,6 +288,7 @@ class D3Sankey extends Chart {
       .attr("data-tip", true)
       .attr("data-for", "sankeyTooltip")
       .attr("data-index", d => d.index)
+      .classed(styles.link, d => getIsLink(d))
       .on("mouseleave", unhighlight)
       .on("mouseenter", function highlightOnNodeEnter(d) {
         const isSortedSide =
@@ -318,6 +324,15 @@ class D3Sankey extends Chart {
       .attr("height", d => d.y1 - d.y0)
       .attr("transform", function(d) {
         return "translate(" + d.x0 + "," + d.y0 + ")";
+      })
+      .on("click", function goToDetails(d) {
+        if (getIsLink(d)) {
+          if (typeof window !== undefined) {
+            window.location.assign(
+              `/details/${d.id}/${d.role === "origin" ? "funder" : "recipient"}`
+            );
+          }
+        }
       });
 
     // render node labels
@@ -371,7 +386,15 @@ class D3Sankey extends Chart {
         return "translate(" + (d.x0 + xShift) + "," + (d.y1 + d.y0) / 2 + ")";
       })
       .append("text")
-      .text(d => this.getShortName(d.name));
+      .classed(styles.link, d => getIsLink(d))
+      .html(d => {
+        const text = this.getShortName(d.name);
+        if (!getIsLink(d)) return text;
+        else
+          return `<a href="/details/${d.id}/${
+            d.role === "origin" ? "funder" : "recipient"
+          }">${text}</a>`;
+      });
 
     ReactTooltip.rebuild();
   }
