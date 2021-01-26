@@ -25,6 +25,7 @@ const Events = ({ slug, flowTypeInfo }) => {
   const [data, setData] = useState(null);
   const [stakeholders, setStakeholders] = useState({});
   const [countryImpacts, setCountryImpacts] = useState([]);
+  // const [curFlowType, setCurFlowType] = useState("disbursed_funds");
   const [curFlowType, setCurFlowType] = useState("committed_funds");
   const [caseData, setCaseData] = useState(null);
   const [deathData, setDeathData] = useState(null);
@@ -103,7 +104,7 @@ const Events = ({ slug, flowTypeInfo }) => {
         view their profile.
       </span>
     ),
-    content: <Sankey {...{ eventId: data.id }} />,
+    content: <Sankey {...{ eventId: data.id, curFlowType }} />,
   };
 
   const eventTable = dataLoaded && {

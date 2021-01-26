@@ -36,29 +36,61 @@ const Sankey = ({ eventId, curFlowType }) => {
 
   const processRawData = () => {
     console.log(rawData);
-    const nodes = [
-      {
-        id: "a",
-      },
-      {
-        id: "b",
-      },
-      {
-        id: "c",
-      },
-    ];
-    const links = [
-      {
-        source: "a",
-        target: "c",
-        value: 1,
-      },
-      {
-        source: "b",
-        target: "c",
-        value: 2,
-      },
-    ];
+
+    // NODES //
+    // get node data
+    const nodesById = {};
+    const toCheck = ["origin", "target"];
+    const links = [];
+    rawData
+      .filter(
+        d =>
+          d[curFlowType] !== 0 &&
+          d[curFlowType] !== null &&
+          d[curFlowType] !== undefined
+      )
+      // .slice(0, 50)
+      .forEach(d => {
+        const value = d[curFlowType];
+        const link = {};
+        toCheck.forEach(role => {
+          const id = `${d[role].id.toString()}-${role}`;
+          if (nodesById[id] === undefined) {
+            nodesById[id] = { ...d[role], id, role };
+          }
+          const dir = role === "origin" ? "source" : "target";
+          link[dir] = id;
+          link.value = value;
+        });
+        links.push(link);
+      });
+    const nodes = Object.values(nodesById);
+
+    // // LINKS //
+    // // TODO
+    // const nodes = [
+    //   {
+    //     id: "a",
+    //   },
+    //   {
+    //     id: "b",
+    //   },
+    //   {
+    //     id: "c",
+    //   },
+    // ];
+    // const links = [
+    //   {
+    //     source: "a",
+    //     target: "c",
+    //     value: 1,
+    //   },
+    //   {
+    //     source: "b",
+    //     target: "c",
+    //     value: 2,
+    //   },
+    // ];
     const graph = { nodes, links };
     setChartData(graph); // TODO
   };
@@ -93,7 +125,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   // JSX //
   return (
     <>
-      <Loading {...{ loaded: drawn, position: "absolute" }} />
+      <Loading {...{ loaded: true, position: "absolute" }} />
       <div className={styles.sankey} />
     </>
   );
