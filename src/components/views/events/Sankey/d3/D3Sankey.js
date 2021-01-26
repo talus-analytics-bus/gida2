@@ -3,7 +3,7 @@ import * as d3 from "d3/dist/d3.min";
 import * as sankey from "d3-sankey/dist/d3-sankey.js";
 import Chart from "../../../../chart/Chart.js";
 import Util, { formatRegion } from "../../../../misc/Util.js";
-import styles from "./d3sankey.module.scss";
+import styles from "../sankey.module.scss";
 import ReactTooltip from "react-tooltip";
 
 // // colors
@@ -27,7 +27,7 @@ class D3Sankey extends Chart {
     // Set dimensions
     this.width = this.containerwidth;
     this.height = this.containerheight;
-    this.margin = { top: 50, right: 70, bottom: 35, left: 0 };
+    this.margin = { top: 0, right: 0, bottom: 0, left: 0 };
 
     // Initialize chart
     this.init();
@@ -91,9 +91,24 @@ class D3Sankey extends Chart {
       return d.id;
     };
 
+    const sortFlag = params.sortDesc ? -1 : 1;
+    const skipSort = d => {
+      if (d.role !== undefined) {
+      }
+      if (params.sortFunder === true) {
+        return d.role === "target";
+      } else if (params.sortFunder === false) {
+        return d.role === "origin";
+      } else {
+        return false;
+      }
+    };
+
     const sortByValue = (a, b) => {
-      if (a.value > b.value) return -1;
-      else if (a.value < b.value) return 1;
+      if (skipSort(a)) return 0;
+      else if (skipSort(b)) return 0;
+      else if (a.value > b.value) return sortFlag;
+      else if (a.value < b.value) return -1 * sortFlag;
       else return 0;
     };
 
@@ -112,13 +127,53 @@ class D3Sankey extends Chart {
     // assign node and link properties
     generator();
 
+    const unhighlight = () => {
+      chart.selectAll("rect, path").classed(styles.highlighted, false);
+    };
+    const dir = params.sortFunder ? "source" : "target";
+    const otherDir = dir === "target" ? "source" : "target";
+    const linkKey = dir + "Links";
+    const otherLinkKey = otherDir + "Links";
+
     // render links
     chart
       .append("g")
       .selectAll("path")
       .data(graph.links)
       .join("path")
+      .on("mouseleave", unhighlight)
+      .on("mouseenter", function highlightOnLinkEnter(d) {
+        const highlightIndicesLinks = [
+          d.index, // TODO other links
+        ];
+
+        // if sorting by funder, highlight other links from this origin,
+        // otherwise highlight other links from this target
+        const otherLinks = d[dir][linkKey];
+        otherLinks
+          .map(dd => dd.index)
+          .forEach(id => highlightIndicesLinks.push(id));
+
+        const highlightIndicesNodes = [d[dir].index];
+        otherLinks
+          .map(dd => dd[otherDir].index)
+          .forEach(id => highlightIndicesNodes.push(id));
+
+        chart
+          .selectAll("rect")
+          .filter(d => {
+            return highlightIndicesNodes.includes(d.index); // TODO check slow?
+          })
+          .classed(styles.highlighted, true);
+        chart
+          .selectAll("path")
+          .filter(d => {
+            return highlightIndicesLinks.includes(d.index); // TODO check slow?
+          })
+          .classed(styles.highlighted, true);
+      })
       .attr("d", this.sankeyLinkPath)
+      .attr("data-index", d => d.index)
       // .attr("d", sankey.sankeyLinkHorizontal())
       .attr("stroke-width", function(d) {
         return d.width;
@@ -130,9 +185,41 @@ class D3Sankey extends Chart {
       .selectAll("rect")
       .data(graph.nodes)
       .join("rect")
-      .attr("title", d => {
-        // console.log(d);
-        return d.name;
+      .attr("data-index", d => d.index)
+      .on("mouseleave", unhighlight)
+      .on("mouseenter", function highlightOnNodeEnter(d) {
+        const isSortedSide =
+          (d.role === "origin" && params.sortFunder === true) ||
+          (d.role === "target" && params.sortFunder === false);
+
+        const highlightIndicesNodes = [
+          d.index, // TODO other nodes
+        ];
+        const highlightIndicesLinks = [
+          ...d.sourceLinks.map(dd => dd.index),
+          ...d.targetLinks.map(dd => dd.index),
+        ];
+
+        // add nodes on other "side" connected to links
+        console.log("d");
+        console.log(d);
+        d[isSortedSide ? linkKey : otherLinkKey]
+          .map(d => d[isSortedSide ? otherDir : dir].index)
+          .forEach(id => highlightIndicesNodes.push(id));
+        console.log("highlightIndicesNodes");
+        console.log(highlightIndicesNodes);
+        chart
+          .selectAll("rect")
+          .filter(d => {
+            return highlightIndicesNodes.includes(d.index); // TODO check slow?
+          })
+          .classed(styles.highlighted, true);
+        chart
+          .selectAll("path")
+          .filter(d => {
+            return highlightIndicesLinks.includes(d.index); // TODO check slow?
+          })
+          .classed(styles.highlighted, true);
       })
       .attr("width", d => d.x1 - d.x0)
       .attr("height", d => d.y1 - d.y0)

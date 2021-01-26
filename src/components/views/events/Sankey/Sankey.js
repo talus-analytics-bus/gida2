@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 
 // styles and assets
 import styles from "./sankey.module.scss";
+import sortedAsc from "../../../../assets/images/icons/sorted-asc.svg";
+import sortedDesc from "../../../../assets/images/icons/sorted-desc.svg";
+import unsorted from "../../../../assets/images/icons/unsorted.svg";
 
 // local components
 import { Settings } from "../../../../App";
@@ -18,6 +21,8 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [rawData, setRawData] = useState(null);
   const [chart, setChart] = useState(null);
   const [chartData, setChartData] = useState(null);
+  const [sortFunder, setSortFunder] = useState(true);
+  const [sortDesc, setSortDesc] = useState(true);
 
   // FUNCTIONS //
   const getData = async () => {
@@ -35,8 +40,6 @@ const Sankey = ({ eventId, curFlowType }) => {
   };
 
   const processRawData = () => {
-    console.log(rawData);
-
     // NODES //
     // get node data
     const nodesById = {};
@@ -99,7 +102,15 @@ const Sankey = ({ eventId, curFlowType }) => {
   const drawn = chart !== null && loaded;
 
   // chart params
-  const params = {};
+  const params = { sortDesc, sortFunder };
+
+  // sort button standard params
+  const sortParams = {
+    sortFunder,
+    setSortFunder,
+    sortDesc,
+    setSortDesc,
+  };
 
   // EFFECT HOOKS //
   // get raw data if null (initial load)
@@ -114,7 +125,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   // render chart when data is processed
   useEffect(() => {
     if (chartData !== null) {
-      const newChart = new D3Sankey("." + styles.sankey, {
+      const newChart = new D3Sankey("." + styles.chart, {
         ...params,
         demo: true,
         data: chartData,
@@ -125,21 +136,49 @@ const Sankey = ({ eventId, curFlowType }) => {
 
   // update entire chart when flow type is changed
   useEffect(() => {
-    console.log("useEffect - [curFlowType]");
-    console.log(chart);
     if (chart !== null) {
       console.log("Updating...");
       setChart(null);
       setChartData(null);
     }
-  }, [curFlowType]);
+  }, [curFlowType, sortDesc, sortFunder]);
 
   // JSX //
   return (
     <>
-      <Loading {...{ loaded: true, position: "absolute" }} />
-      <div className={styles.sankey} />
+      <div className={styles.sankey}>
+        <Loading {...{ loaded: true, position: "absolute" }} />
+        <div className={styles.sortButtons}>
+          <Sort {...{ label: "Funder", ...sortParams }} />
+          <Sort {...{ label: "Recipient", ...sortParams }} />
+        </div>
+        <div className={styles.chart} />
+      </div>
     </>
+  );
+};
+
+const Sort = ({ sortFunder, setSortFunder, sortDesc, setSortDesc, label }) => {
+  // CONSTANTS //
+  const isFunder = label === "Funder";
+  const isSorted = (sortFunder && isFunder) || (!sortFunder && !isFunder);
+  const isDesc = isSorted && sortDesc;
+  const isAsc = isSorted && !sortDesc;
+  const imgSrc = !isSorted ? unsorted : isDesc ? sortedDesc : sortedAsc;
+  // FUNCTIONS //
+  const onClick = () => {
+    if (sortFunder && isFunder) setSortDesc(!sortDesc);
+    else if (!sortFunder && !isFunder) setSortDesc(!sortDesc);
+    else {
+      setSortFunder(!sortFunder);
+      setSortDesc(true);
+    }
+  };
+  // JSX //
+  return (
+    <div onClick={onClick} className={styles.sortButton}>
+      {label} <img src={imgSrc} />
+    </div>
   );
 };
 export default Sankey;
