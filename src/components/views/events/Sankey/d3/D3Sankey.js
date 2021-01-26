@@ -103,7 +103,7 @@ class D3Sankey extends Chart {
       target: "Recipient",
     };
     function getIsLink(d) {
-      return d.subcat !== "other" && d.subcat !== "region";
+      return d.name !== "Not reported" && d.subcat !== "region";
     }
     function updateTooltip(d) {
       const tooltipData = [
