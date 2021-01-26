@@ -36,7 +36,31 @@ const Sankey = ({ eventId, curFlowType }) => {
 
   const processRawData = () => {
     console.log(rawData);
-    setChartData(rawData); // TODO
+    const nodes = [
+      {
+        id: "a",
+      },
+      {
+        id: "b",
+      },
+      {
+        id: "c",
+      },
+    ];
+    const links = [
+      {
+        source: "a",
+        target: "c",
+        value: 1,
+      },
+      {
+        source: "b",
+        target: "c",
+        value: 2,
+      },
+    ];
+    const graph = { nodes, links };
+    setChartData(graph); // TODO
   };
 
   // CONSTANTS //

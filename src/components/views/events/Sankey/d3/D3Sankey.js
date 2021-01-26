@@ -49,79 +49,52 @@ class D3Sankey extends Chart {
     const width = this.width;
     const height = this.height;
 
-    // prepare chart using demo data
-    if (params.demo) {
-      const nodes = [
-        {
-          id: "a",
-        },
-        {
-          id: "b",
-        },
-        {
-          id: "c",
-        },
-      ];
-      const links = [
-        {
-          source: "a",
-          target: "c",
-          value: 1,
-        },
-        {
-          source: "b",
-          target: "c",
-          value: 2,
-        },
-      ];
-      const graph = { nodes, links };
-      const nodeId = function id(d) {
-        return d.id;
-      };
+    const graph = params.data;
 
-      // TODO manage left and right margins dynamically based on label sizes
-      const generator = sankey
-        .sankey()
-        .size([width, height])
-        .linkSort(function linksByValue(a, b) {
-          if (a.value > b.value) return -1;
-          else if (a.value < b.value) return 1;
-          else return 0;
-        })
-        .nodeId(nodeId)
-        .nodeWidth(10)
-        .nodePadding(15)
-        .nodes(graph.nodes)
-        .links(graph.links);
-      console.log("generator");
-      console.log(generator);
-      console.log(generator());
+    const nodeId = function id(d) {
+      return d.id;
+    };
 
-      // render links
-      chart
-        .append("g")
-        .selectAll("path")
-        .data(graph.links)
-        .join("path")
-        .attr("d", sankey.sankeyLinkHorizontal())
-        .attr("stroke-width", function(d) {
-          return d.width;
-        });
+    // TODO manage left and right margins dynamically based on label sizes
+    const generator = sankey
+      .sankey()
+      .size([width, height])
+      .linkSort(function linksByValue(a, b) {
+        if (a.value > b.value) return -1;
+        else if (a.value < b.value) return 1;
+        else return 0;
+      })
+      .nodeId(nodeId)
+      .nodeWidth(10)
+      .nodePadding(15)
+      .nodes(graph.nodes)
+      .links(graph.links);
 
-      // render nodes
-      chart
-        .append("g")
-        .selectAll("rect")
-        .data(graph.nodes)
-        .join("rect")
-        .attr("width", d => d.x1 - d.x0)
-        .attr("height", d => d.y1 - d.y0)
-        .attr("transform", function(d) {
-          console.log("d");
-          console.log(d);
-          return "translate(" + d.x0 + "," + d.y0 + ")";
-        });
-    }
+    // assign node and link properties
+    generator();
+
+    // render links
+    chart
+      .append("g")
+      .selectAll("path")
+      .data(graph.links)
+      .join("path")
+      .attr("d", sankey.sankeyLinkHorizontal())
+      .attr("stroke-width", function(d) {
+        return d.width;
+      });
+
+    // render nodes
+    chart
+      .append("g")
+      .selectAll("rect")
+      .data(graph.nodes)
+      .join("rect")
+      .attr("width", d => d.x1 - d.x0)
+      .attr("height", d => d.y1 - d.y0)
+      .attr("transform", function(d) {
+        return "translate(" + d.x0 + "," + d.y0 + ")";
+      });
   }
 }
 export default D3Sankey;
