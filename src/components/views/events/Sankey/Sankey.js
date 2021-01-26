@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
 import tooltipStyles from "../../../common/tooltip.module.scss";
+import classNames from "classnames";
 
 // styles and assets
 import styles from "./sankey.module.scss";
@@ -89,7 +90,7 @@ const Sankey = ({ eventId, curFlowType }) => {
 
   // CONSTANTS //
   const drawn = chart !== null && loaded;
-  // const noData = chartData !== null && chartData.nodes.length === 0;
+  const sortedSide = sortFunder ? "left" : "right";
 
   // x-axis label
   const xLabel =
@@ -169,7 +170,10 @@ const Sankey = ({ eventId, curFlowType }) => {
     <>
       <div className={styles.sankey}>
         <Loading {...{ loaded: true, position: "absolute" }} />
-        <div style={{ marginLeft, marginRight }} className={styles.dropdowns}>
+        <div
+          style={{ marginLeft, marginRight }}
+          className={classNames(styles.dropdowns, styles[sortedSide])}
+        >
           <Selectpicker
             {...{
               label: `Filter ${roleNoun.toLowerCase()}s`,

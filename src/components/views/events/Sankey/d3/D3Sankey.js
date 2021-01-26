@@ -6,14 +6,6 @@ import Chart from "../../../../chart/Chart.js";
 import Util, { formatRegion } from "../../../../misc/Util.js";
 import styles from "../sankey.module.scss";
 
-// // colors
-// import {
-//   outbreakBlue2,
-//   outbreakBlue3,
-//   outbreakBlue4,
-//   outbreakBlue5,
-// } from "../../../../../assets/styles/colors.scss";
-
 class D3Sankey extends Chart {
   constructor(selector, params = {}) {
     super(selector, params);
@@ -216,6 +208,8 @@ class D3Sankey extends Chart {
       this.getShortName,
       params.labelShift
     );
+    params.setMarginLeft(left);
+    params.setMarginRight(right);
 
     this.updateWidth({
       ...this.margin,
