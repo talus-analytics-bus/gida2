@@ -10,6 +10,7 @@
 button.ghsaButton {
   color: $black;
   background-color: white !important;
+  border: 1px solid $black !important;
   &.dark {
   }
   &:hover,

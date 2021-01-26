@@ -19,7 +19,7 @@
     font-weight: 600;
     font-size: 22px;
     text-transform: uppercase;
-    color: #11315d;
+    color: $black;
     font-family: "Raleway", sans-serif;
   }
 
@@ -82,7 +82,7 @@
         line-height: 35px;
         font-size: 32px;
         text-transform: uppercase;
-        color: #11315d;
+        color: $black;
         &.dark {
           color: white;
         }
@@ -91,7 +91,7 @@
       .welcomeDesc {
         font-size: 18px;
         font-family: "Open Sans", sans-serif;
-        color: #4d4d4d;
+        color: $black;
         &.dark {
           color: #eee;
         }
