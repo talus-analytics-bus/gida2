@@ -15,13 +15,13 @@ const Button = ({ label, ...props }) => {
   const button = (
     <button
       style={props.linkTo === undefined ? props.style : undefined}
-      onClick={props.callback}
+      onClick={props.onClick || props.callback}
       className={classNames(...classes, styles.button, {
         [styles.secondary]: props.type === "secondary",
         [styles.primary]: props.type === "primary",
         [styles.close]: props.type === "close",
         [styles.closeBadge]: props.type === "close-badge",
-        [styles.dark]: props.isDark
+        [styles.dark]: props.isDark,
       })}
     >
       {props.type === "close" && <img src={close} />}

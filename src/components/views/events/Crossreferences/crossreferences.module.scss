@@ -1,2 +1,23 @@
 .crossreferences {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  .linkSections {
+    display: flex;
+    flex-flow: column;
+    .linkSection {
+      display: flex;
+      flex-flow: column;
+      p {
+        margin-bottom: 30px;
+      }
+      button {
+        width: max-content;
+        padding: 20px;
+        font-family: "open_sanssemibold", sans-serif;
+      }
+      &:not(:last-child) button {
+        margin-bottom: 40px;
+      }
+    }
+  }
 }
