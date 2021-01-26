@@ -16,6 +16,10 @@
     width: 100%;
     height: 500px;
     svg {
+      // chart title
+      .title {
+        font-family: "Open Sans", sans-serif;
+      }
       // nodes and links
       rect,
       path {

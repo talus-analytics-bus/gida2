@@ -209,7 +209,6 @@ const Sankey = ({ eventId, curFlowType }) => {
         </div>
         <div className={styles.sortButtons}>
           <Sort {...{ label: "Funder", ...sortParams }} />
-          <span className={styles.title}>{xLabel}</span>
           <Sort {...{ label: "Recipient", ...sortParams }} />
         </div>
         <div

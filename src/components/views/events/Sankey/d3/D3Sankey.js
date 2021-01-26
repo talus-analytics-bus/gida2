@@ -19,7 +19,7 @@ class D3Sankey extends Chart {
     // Set dimensions
     this.width = this.containerwidth;
     this.height = this.containerheight;
-    this.margin = { top: 0, right: 0, bottom: 0, left: 0 };
+    this.margin = { top: 25, right: 0, bottom: 0, left: 0 };
 
     // Initialize chart
     this.init();
@@ -395,6 +395,14 @@ class D3Sankey extends Chart {
             d.role === "origin" ? "funder" : "recipient"
           }">${text}</a>`;
       });
+
+    // render chart title (centered over links)
+    chart
+      .append("text")
+      .classed(styles.title, true)
+      .style("text-anchor", "middle")
+      .attr("transform", `translate(${this.width / 2}, -10)`)
+      .text(params.xLabel);
 
     ReactTooltip.rebuild();
   }
