@@ -37,10 +37,10 @@
         > div:not(.checkbox) {
           @include dropdown();
         }
-        .checkbox {
-          position: relative;
-          top: 13px;
-        }
+        // .checkbox {
+        //   position: relative;
+        //   top: 13px;
+        // }
       }
 
       .bars,
