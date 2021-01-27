@@ -288,6 +288,7 @@ class D3Sankey extends Chart {
 
       linkPaths.filter(excludePinnedLinks).sort(orderByValue);
     };
+    this.unhighlight = unhighlight;
 
     const orderByHighlight = (a, b, highlightedIdx) => {
       if (highlightedIdx.includes(a.index)) return 1;
@@ -399,16 +400,11 @@ class D3Sankey extends Chart {
         return "translate(" + d.x0 + "," + d.y0 + ")";
       })
       .on("click", function goToDetails(d) {
-        params.setClicked(d.index);
-        chart.clicked = d.index;
-        unhighlight();
-        return;
-        if (getIsLink(d)) {
-          if (typeof window !== undefined) {
-            window.location.assign(
-              `/details/${d.id}/${d.role === "origin" ? "funder" : "recipient"}`
-            );
-          }
+        if (chart.clicked === d.index) return;
+        else {
+          params.setClicked(d.index);
+          chart.clicked = d.index;
+          unhighlight();
         }
       });
 
@@ -485,6 +481,11 @@ class D3Sankey extends Chart {
       .text(params.xLabel);
 
     ReactTooltip.rebuild();
+
+    this.removeClicked = () => {
+      this.chart.clicked = null;
+      this.unhighlight();
+    };
   }
 }
 export default D3Sankey;

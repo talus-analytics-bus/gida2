@@ -1,5 +1,5 @@
 // 3rd party libs
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactTooltip from "react-tooltip";
 import tooltipStyles from "../../../common/tooltip.module.scss";
 import classNames from "classnames";
@@ -34,6 +34,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [marginLeft, setMarginLeft] = useState(0);
   const [marginRight, setMarginRight] = useState(0);
   const [clicked, setClicked] = useState(null);
+  const clickedRef = useRef(null);
 
   // TODO setClicked(null) on clicking outside chart
 
@@ -114,8 +115,6 @@ const Sankey = ({ eventId, curFlowType }) => {
     clicked,
     setClicked,
   };
-  console.log("clicked");
-  console.log(clicked);
 
   // funders or recipients?
   const roleNoun = sortFunder ? "Funder" : "Recipient";
@@ -129,6 +128,24 @@ const Sankey = ({ eventId, curFlowType }) => {
   };
 
   // EFFECT HOOKS //
+  // on click anywhere but in menu, and menu is shown, close menu; otherwise
+  // do nothing
+  useEffect(() => {
+    document.getElementById("root").onclick = e => {
+      const clickedOtherChartElement =
+        e.target.tagName === "path" ||
+        e.target.tagName === "svg" ||
+        +e.target.dataset.index === clicked;
+      if (clickedRef === null || clickedRef.current === null) return;
+      const clickedPos = clickedRef.current;
+      if (!clickedOtherChartElement && clickedPos.contains(e.target)) return;
+      else {
+        setClicked(null);
+        if (chart !== null) chart.removeClicked();
+      }
+    };
+  }, [clicked]);
+
   // get raw data if null (initial load)
   useEffect(() => {
     if (rawData === null) {
@@ -219,6 +236,7 @@ const Sankey = ({ eventId, curFlowType }) => {
           <Sort {...{ label: "Recipient", ...sortParams }} />
         </div>
         <div
+          ref={clickedRef}
           style={{
             height: noData ? 0 : undefined,
             marginBottom: noData ? 0 : undefined,
