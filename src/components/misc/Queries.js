@@ -7,6 +7,7 @@ import ObservationQuery from "./ObservationQuery";
 
 // constants
 const NONE_VALS = [null, undefined];
+const GOAL_API_URL = "https://goal-api.talusanalytics.com";
 
 export const NodeSums = async function({
   format,
@@ -276,6 +277,23 @@ export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
       spatial_resolution: "country",
     });
     return res.sort(sortByValAmount);
+  }
+};
+
+// get GOAL case study info
+let caseStudies;
+export const GOALCaseStudies = async () => {
+  if (caseStudies !== undefined) return caseStudies;
+  else {
+    // Send request
+    // Await response
+    const res = await axios({
+      method: "post",
+      url: `${GOAL_API_URL}/case_studies/catalog`,
+      data: { filters: {} },
+    });
+    caseStudies = res.data.data;
+    return res.data.data;
   }
 };
 
