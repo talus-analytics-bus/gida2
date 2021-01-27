@@ -78,7 +78,9 @@ const EventOverview = ({
       <div className={styles.name}>{name}</div>
       {showDesc && (
         <p className={styles.desc}>
-          {desc}
+          {desc.split("\n").map(d => (
+            <p>{d}</p>
+          ))}
           {hasDescDataSources && (
             <SourceText>
               {descDataSourcesNoun}:{" "}
