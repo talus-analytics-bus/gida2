@@ -165,6 +165,10 @@ $phone-width-narrow: 375px;
     display: none;
   }
 
+  > select {
+    cursor: pointer;
+  }
+
   :after {
     content: "keyboard_arrow_down";
 
