@@ -245,12 +245,19 @@ class D3Sankey extends Chart {
         .classed(styles.highlighted, false);
     };
 
+    const orderByHighlight = (a, b) => {
+      console.log(a);
+      return 0;
+    };
+    const orderByValue = () => 0;
+
     // render links
-    chart
+    const linkPaths = chart
       .append("g")
       .selectAll("path")
       .data(graph.links)
-      .join("path")
+      .join("path");
+    linkPaths
       .on("mouseover", updateTooltip)
       .on("mouseleave", unhighlight)
       .on("mouseenter", function highlightOnLinkEnter(d) {
@@ -282,6 +289,10 @@ class D3Sankey extends Chart {
             return highlightIndicesLinks.includes(d.index); // TODO check slow?
           })
           .classed(styles.highlighted, true);
+
+        // order by highlight on top
+        console.log(linkPaths);
+        linkPaths.sort(orderByHighlight);
       })
       .attr("data-tip", true)
       .attr("data-for", "sankeyTooltip")
