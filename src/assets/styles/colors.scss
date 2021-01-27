@@ -156,9 +156,11 @@ $phone-width-narrow: 375px;
     margin-bottom: $size;
   }
 }
+
+// adapted from:
+// https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/
 @mixin dropdown() {
   position: relative;
-  /*To remove button from IE11, thank you Matt */
   > select::-ms-expand {
     display: none;
   }
@@ -166,18 +168,10 @@ $phone-width-narrow: 375px;
   :after {
     content: "keyboard_arrow_down";
 
-    // font: 17px "Consolas", monospace;
     color: #333;
-    // -webkit-transform: rotate(90deg);
-    // -moz-transform: rotate(90deg);
-    // -ms-transform: rotate(90deg);
-    // transform: rotate(90deg);
     right: 5px;
-    /*Adjust for position however you want*/
-
     top: 35px;
     padding: 0 0 2px;
-
     position: absolute;
     pointer-events: none;
 
@@ -200,13 +194,11 @@ $phone-width-narrow: 375px;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    /* Add some styling */
 
     display: block;
     border-radius: 10px;
 
     width: 100%;
-    // max-width: 320px;
     height: 50px;
     float: right;
     margin: 5px 0 0 0;
@@ -224,20 +216,6 @@ $phone-width-narrow: 375px;
     font-size: 1.8rem;
   }
 }
-// @mixin dropdown() {
-//   text-transform: uppercase;
-//   > div > select {
-//     border-radius: 10px;
-//     padding: 10px;
-//     margin-right: 20px;
-//     font-family: "Rawline", serif;
-//     font-weight: 700;
-//     font-size: 1.8rem;
-//   }
-//   > div > div:first-child {
-//     margin-bottom: 5px;
-//   }
-// }
 
 // make colors available to JS
 :export {
