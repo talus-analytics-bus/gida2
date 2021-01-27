@@ -100,8 +100,9 @@ const Events = ({ slug, flowTypeInfo }) => {
     header: <h2>Flow of funding</h2>,
     text: (
       <span>
-        The chart below shows who funded whom. Click on a funder or recipient to
-        view their profile.
+        The chart below shows who funded whom. Click on a funder or recipient's
+        name to view their profile. Click on a rectangle to pin/unpin
+        highlights.
       </span>
     ),
     content: <Sankey {...{ eventId: data.id, curFlowType }} />,

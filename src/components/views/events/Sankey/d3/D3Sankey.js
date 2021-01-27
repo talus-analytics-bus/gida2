@@ -119,8 +119,7 @@ class D3Sankey extends Chart {
           field: roleToNoun[d.role],
           value: d.name,
         });
-        const isLink = getIsLink(d);
-        if (isLink) tooltipData.footer = "Click to go to details page";
+        tooltipData.footer = "Click to pin/unpin highlights";
       } else if (d.source !== undefined) {
         tooltipData.unshift({
           field: "Recipient",
@@ -253,11 +252,41 @@ class D3Sankey extends Chart {
       else return 0;
     };
 
+    const excludePinnedLinks = d => {
+      const clicked = chart.clicked !== null && chart.clicked !== undefined;
+
+      if (clicked) {
+        return (
+          d.source.index !== chart.clicked && d.target.index !== chart.clicked
+        );
+      } else return true;
+    };
+    const onlyPinnedLinks = d => !excludePinnedLinks(d);
     const unhighlight = () => {
+      const clicked = chart.clicked !== null && chart.clicked !== undefined;
       chart
-        .selectAll("rect, path, g.nodeLabel")
+        .selectAll("rect, g.nodeLabel")
+        .filter(d => {
+          if (clicked) {
+            const sameDirectionLinks =
+              d.role === "origin" ? "sourceLinks" : "targetLinks";
+            const otherRole = d.role === "origin" ? "target" : "source";
+            return (
+              d.index !== chart.clicked &&
+              !d[sameDirectionLinks].some(
+                dd => dd[otherRole].index === chart.clicked
+              )
+            );
+          } else return true;
+        })
         .classed(styles.highlighted, false);
-      linkPaths.sort(orderByValue);
+
+      chart
+        .selectAll("path")
+        .filter(excludePinnedLinks)
+        .classed(styles.highlighted, false);
+
+      linkPaths.filter(excludePinnedLinks).sort(orderByValue);
     };
 
     const orderByHighlight = (a, b, highlightedIdx) => {
@@ -300,9 +329,10 @@ class D3Sankey extends Chart {
           .classed(styles.highlighted, true);
 
         // order by highlight on top
-        linkPaths.sort(function(a, b) {
+        linkPaths.filter(excludePinnedLinks).sort(function(a, b) {
           return orderByHighlight(a, b, highlightIndicesLinks);
         });
+        linkPaths.filter(onlyPinnedLinks).raise();
       })
       .attr("data-tip", true)
       .attr("data-for", "sankeyTooltip")
@@ -332,6 +362,11 @@ class D3Sankey extends Chart {
         const highlightIndicesNodes = [
           d.index, // TODO other nodes
         ];
+
+        // add clicked node index
+        if (chart.clicked !== undefined && chart.clicked !== null)
+          highlightIndicesNodes.push(chart.clicked);
+
         const highlightIndicesLinks = [
           ...d.sourceLinks.map(dd => dd.index),
           ...d.targetLinks.map(dd => dd.index),
@@ -364,6 +399,10 @@ class D3Sankey extends Chart {
         return "translate(" + d.x0 + "," + d.y0 + ")";
       })
       .on("click", function goToDetails(d) {
+        params.setClicked(d.index);
+        chart.clicked = d.index;
+        unhighlight();
+        return;
         if (getIsLink(d)) {
           if (typeof window !== undefined) {
             window.location.assign(

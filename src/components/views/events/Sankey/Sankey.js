@@ -33,6 +33,9 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [noData, setNoData] = useState(false);
   const [marginLeft, setMarginLeft] = useState(0);
   const [marginRight, setMarginRight] = useState(0);
+  const [clicked, setClicked] = useState(null);
+
+  // TODO setClicked(null) on clicking outside chart
 
   // FUNCTIONS //
   const getData = async () => {
@@ -108,7 +111,11 @@ const Sankey = ({ eventId, curFlowType }) => {
     setMarginLeft,
     setMarginRight,
     labelShift: 10,
+    clicked,
+    setClicked,
   };
+  console.log("clicked");
+  console.log(clicked);
 
   // funders or recipients?
   const roleNoun = sortFunder ? "Funder" : "Recipient";

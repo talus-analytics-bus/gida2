@@ -28,6 +28,7 @@
       }
       // nodes
       rect {
+        cursor: pointer;
         &.highlighted {
           fill: $outbreak-blue-2;
         }
