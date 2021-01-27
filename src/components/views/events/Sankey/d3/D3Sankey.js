@@ -239,28 +239,6 @@ class D3Sankey extends Chart {
     const linkKey = dir + "Links";
     const otherLinkKey = otherDir + "Links";
 
-    // render links
-    const linkPaths = chart
-      .append("g")
-      .selectAll("path")
-      .data(graph.links)
-      .join("path");
-
-    const orderByValue = (a, b) => {
-      if (a.value > b.value) return 1;
-      else if (b.value > a.value) return -1;
-      else return 0;
-    };
-
-    const excludePinnedLinks = d => {
-      const clicked = chart.clicked !== null && chart.clicked !== undefined;
-
-      if (clicked) {
-        return (
-          d.source.index !== chart.clicked && d.target.index !== chart.clicked
-        );
-      } else return true;
-    };
     const onlyPinnedLinks = d => !excludePinnedLinks(d);
     const unhighlight = () => {
       const clicked = chart.clicked !== null && chart.clicked !== undefined;
@@ -289,6 +267,97 @@ class D3Sankey extends Chart {
       linkPaths.filter(excludePinnedLinks).sort(orderByValue);
     };
     this.unhighlight = unhighlight;
+
+    // render nodes
+    const nodeRects = chart
+      .append("g")
+      .selectAll("rect")
+      .data(graph.nodes)
+      .join("rect");
+    nodeRects
+      .on("mouseover", updateTooltip)
+      .attr("data-tip", true)
+      .attr("data-for", "sankeyTooltip")
+      .attr("data-index", d => d.index)
+      .classed(styles.link, d => getIsLink(d))
+      .on("mouseleave", unhighlight)
+      .on("mouseenter", function highlightOnNodeEnter(d) {
+        const isSortedSide =
+          (d.role === "origin" && params.sortFunder === true) ||
+          (d.role === "target" && params.sortFunder === false);
+
+        const highlightIndicesNodes = [
+          d.index, // TODO other nodes
+        ];
+
+        // add clicked node index
+        if (chart.clicked !== undefined && chart.clicked !== null)
+          highlightIndicesNodes.push(chart.clicked);
+
+        const highlightIndicesLinks = [
+          ...d.sourceLinks.map(dd => dd.index),
+          ...d.targetLinks.map(dd => dd.index),
+        ];
+
+        // add nodes on other "side" connected to links
+        d[isSortedSide ? linkKey : otherLinkKey]
+          .map(d => d[isSortedSide ? otherDir : dir].index)
+          .forEach(id => highlightIndicesNodes.push(id));
+        chart
+          .selectAll("rect, g.nodeLabel")
+          .filter(d => {
+            return highlightIndicesNodes.includes(d.index); // TODO check slow?
+          })
+          .classed(styles.highlighted, true);
+        chart
+          .selectAll("path")
+          .filter(d => {
+            return highlightIndicesLinks.includes(d.index); // TODO check slow?
+          })
+          .classed(styles.highlighted, true);
+        // order by highlight on top
+        linkPaths.sort(function(a, b) {
+          return orderByHighlight(a, b, highlightIndicesLinks);
+        });
+      })
+      .attr("width", d => d.x1 - d.x0)
+      .attr("height", d => d.y1 - d.y0)
+      .attr("transform", function(d) {
+        return "translate(" + d.x0 + "," + d.y0 + ")";
+      })
+      .on("click", function goToDetails(d) {
+        nodeRects.classed(styles.pinned, false);
+        d3.select(this).classed(styles.pinned, chart.clicked !== d.index);
+        if (chart.clicked === d.index) return;
+        else {
+          params.setClicked(d.index);
+          chart.clicked = d.index;
+          unhighlight();
+        }
+      });
+
+    // render links
+    const linkPaths = chart
+      .append("g")
+      .selectAll("path")
+      .data(graph.links)
+      .join("path");
+
+    const orderByValue = (a, b) => {
+      if (a.value > b.value) return 1;
+      else if (b.value > a.value) return -1;
+      else return 0;
+    };
+
+    const excludePinnedLinks = d => {
+      const clicked = chart.clicked !== null && chart.clicked !== undefined;
+
+      if (clicked) {
+        return (
+          d.source.index !== chart.clicked && d.target.index !== chart.clicked
+        );
+      } else return true;
+    };
 
     const orderByHighlight = (a, b, highlightedIdx) => {
       if (highlightedIdx.includes(a.index)) return 1;
@@ -341,71 +410,6 @@ class D3Sankey extends Chart {
       .attr("data-index", d => d.index)
       .attr("stroke-width", function(d) {
         return d.width;
-      });
-
-    // render nodes
-    chart
-      .append("g")
-      .selectAll("rect")
-      .data(graph.nodes)
-      .join("rect")
-      .on("mouseover", updateTooltip)
-      .attr("data-tip", true)
-      .attr("data-for", "sankeyTooltip")
-      .attr("data-index", d => d.index)
-      .classed(styles.link, d => getIsLink(d))
-      .on("mouseleave", unhighlight)
-      .on("mouseenter", function highlightOnNodeEnter(d) {
-        const isSortedSide =
-          (d.role === "origin" && params.sortFunder === true) ||
-          (d.role === "target" && params.sortFunder === false);
-
-        const highlightIndicesNodes = [
-          d.index, // TODO other nodes
-        ];
-
-        // add clicked node index
-        if (chart.clicked !== undefined && chart.clicked !== null)
-          highlightIndicesNodes.push(chart.clicked);
-
-        const highlightIndicesLinks = [
-          ...d.sourceLinks.map(dd => dd.index),
-          ...d.targetLinks.map(dd => dd.index),
-        ];
-
-        // add nodes on other "side" connected to links
-        d[isSortedSide ? linkKey : otherLinkKey]
-          .map(d => d[isSortedSide ? otherDir : dir].index)
-          .forEach(id => highlightIndicesNodes.push(id));
-        chart
-          .selectAll("rect, g.nodeLabel")
-          .filter(d => {
-            return highlightIndicesNodes.includes(d.index); // TODO check slow?
-          })
-          .classed(styles.highlighted, true);
-        chart
-          .selectAll("path")
-          .filter(d => {
-            return highlightIndicesLinks.includes(d.index); // TODO check slow?
-          })
-          .classed(styles.highlighted, true);
-        // order by highlight on top
-        linkPaths.sort(function(a, b) {
-          return orderByHighlight(a, b, highlightIndicesLinks);
-        });
-      })
-      .attr("width", d => d.x1 - d.x0)
-      .attr("height", d => d.y1 - d.y0)
-      .attr("transform", function(d) {
-        return "translate(" + d.x0 + "," + d.y0 + ")";
-      })
-      .on("click", function goToDetails(d) {
-        if (chart.clicked === d.index) return;
-        else {
-          params.setClicked(d.index);
-          chart.clicked = d.index;
-          unhighlight();
-        }
       });
 
     // render node labels
@@ -485,6 +489,7 @@ class D3Sankey extends Chart {
     this.removeClicked = () => {
       this.chart.clicked = null;
       this.unhighlight();
+      nodeRects.classed(styles.pinned, false);
     };
   }
 }

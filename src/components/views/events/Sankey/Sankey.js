@@ -136,7 +136,9 @@ const Sankey = ({ eventId, curFlowType }) => {
         e.target.tagName === "path" ||
         e.target.tagName === "svg" ||
         +e.target.dataset.index === clicked;
-      if (clickedRef === null || clickedRef.current === null) return;
+      const clickedSelect = e.target.tagName === "SELECT";
+      if (clickedSelect || clickedRef === null || clickedRef.current === null)
+        return;
       const clickedPos = clickedRef.current;
       if (!clickedOtherChartElement && clickedPos.contains(e.target)) return;
       else {

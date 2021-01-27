@@ -32,6 +32,11 @@
         &.highlighted {
           fill: $outbreak-blue-2;
         }
+        &.pinned,
+        &:hover {
+          stroke: $outbreak-yellow-1;
+          stroke-width: 1px;
+        }
       }
       // links
       g {
@@ -45,7 +50,7 @@
             opacity: 0.7;
           }
           &:hover {
-            stroke: #f5d24b;
+            stroke: $outbreak-yellow-1;
             stroke-width: 1px;
           }
         }
