@@ -239,17 +239,6 @@ class D3Sankey extends Chart {
     const otherDir = dir === "target" ? "source" : "target";
     const linkKey = dir + "Links";
     const otherLinkKey = otherDir + "Links";
-    const unhighlight = () => {
-      chart
-        .selectAll("rect, path, g.nodeLabel")
-        .classed(styles.highlighted, false);
-    };
-
-    const orderByHighlight = (a, b) => {
-      console.log(a);
-      return 0;
-    };
-    const orderByValue = () => 0;
 
     // render links
     const linkPaths = chart
@@ -257,6 +246,26 @@ class D3Sankey extends Chart {
       .selectAll("path")
       .data(graph.links)
       .join("path");
+
+    const orderByValue = (a, b) => {
+      if (a.value > b.value) return 1;
+      else if (b.value > a.value) return -1;
+      else return 0;
+    };
+
+    const unhighlight = () => {
+      chart
+        .selectAll("rect, path, g.nodeLabel")
+        .classed(styles.highlighted, false);
+      linkPaths.sort(orderByValue);
+    };
+
+    const orderByHighlight = (a, b, highlightedIdx) => {
+      if (highlightedIdx.includes(a.index)) return 1;
+      else if (highlightedIdx.includes(b.index)) return -1;
+      else return 0;
+    };
+
     linkPaths
       .on("mouseover", updateTooltip)
       .on("mouseleave", unhighlight)
@@ -291,8 +300,9 @@ class D3Sankey extends Chart {
           .classed(styles.highlighted, true);
 
         // order by highlight on top
-        console.log(linkPaths);
-        linkPaths.sort(orderByHighlight);
+        linkPaths.sort(function(a, b) {
+          return orderByHighlight(a, b, highlightIndicesLinks);
+        });
       })
       .attr("data-tip", true)
       .attr("data-for", "sankeyTooltip")
@@ -343,6 +353,10 @@ class D3Sankey extends Chart {
             return highlightIndicesLinks.includes(d.index); // TODO check slow?
           })
           .classed(styles.highlighted, true);
+        // order by highlight on top
+        linkPaths.sort(function(a, b) {
+          return orderByHighlight(a, b, highlightIndicesLinks);
+        });
       })
       .attr("width", d => d.x1 - d.x0)
       .attr("height", d => d.y1 - d.y0)
