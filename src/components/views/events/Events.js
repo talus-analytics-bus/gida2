@@ -131,7 +131,7 @@ const Events = ({ slug, flowTypeInfo }) => {
   const crossreferences = dataLoaded && {
     header: <h2>Case studies and DONS data</h2>,
     text: null,
-    content: <Crossreferences />,
+    content: <Crossreferences {...{ pathogen: data.pathogen }} />,
     showSource: false,
     toggleFlowType: false,
   };

@@ -18,13 +18,13 @@ const Crossreferences = ({ pathogen }) => {
     {
       text:
         "Click below to be redirected to the Georgetown Outbreak Activity Library (GOAL) to view all case studies related to this pathogen.",
-      label: "View all [pathogen.name] case studies",
+      label: `View all ${pathogen.pathogen_name} case studies`,
       onClick: () => console.log("click!"),
     },
     {
       text:
         "Click below to download a complete set of World Health Organization disease outbreak news reports (DONs) related to this event, compiled by the Georgetown Center for Global Health Science and Security. ",
-      label: "Download list of DONs for event",
+      label: "Download list of DONs for " + pathogen.pathogen_name,
       onClick: () => console.log("click!"),
     },
   ];
