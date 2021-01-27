@@ -24,7 +24,7 @@ import spinnerImg from "./assets/images/spinner.svg";
 // styles
 import styles from "./App.module.scss";
 import "./components/views/details/details.module.scss";
-import "material-design-icons/iconfont/material-icons.css";
+// import "material-design-icons/iconfont/material-icons.css";
 
 // queries
 import FlowTypeQuery from "./components/misc/FlowTypeQuery.js";
@@ -96,8 +96,8 @@ const App = () => {
   async function getAppData() {
     const queries = {
       flowTypeInfo: FlowTypeQuery({
-        flow_type_ids: null
-      })
+        flow_type_ids: null,
+      }),
     };
 
     const results = await Util.getQueryResults(queries);
@@ -127,7 +127,7 @@ const App = () => {
     const tableRows = [];
     data.forEach(node => {
       const row = {
-        name: node.focus_node_id
+        name: node.focus_node_id,
       };
       node.flow_bundles.forEach(fb => {
         if (valueCols.includes(fb.flow_type)) {
@@ -159,7 +159,7 @@ const App = () => {
       }
       const flow = {
         source: d.focus_node_id,
-        target: d.target.join(", ")
+        target: d.target.join(", "),
       };
 
       // Add flow type values
@@ -172,7 +172,7 @@ const App = () => {
   };
 
   const networkFlows = getNetworkFlows({
-    data: networkData
+    data: networkData,
   });
 
   const limit = 50;
@@ -180,19 +180,19 @@ const App = () => {
   const baseCols = [
     {
       name: "name",
-      display_name: "Name"
-    }
+      display_name: "Name",
+    },
   ];
 
   const baseColsNetwork = [
     {
       name: "source",
-      display_name: "Funder"
+      display_name: "Funder",
     },
     {
       name: "target",
-      display_name: "Recipient"
-    }
+      display_name: "Recipient",
+    },
   ];
 
   const getColInfo = ({ valueCols, baseCols, flowTypeInfo }) => {
@@ -242,7 +242,7 @@ const App = () => {
     edge: browser => browserModal("Edge"),
     ie: browser => browserModal("Internet Explorer"),
     opera: browser => browserModal("Opera"),
-    default: browser => browserModal("an unsupported browser")
+    default: browser => browserModal("an unsupported browser"),
   };
 
   // JSX for main app.
@@ -283,7 +283,7 @@ const App = () => {
                     supportTypeDefault: supportTypeDefault,
                     fundTypeDefault:
                       supportTypeDefault !== undefined ? "" : "false",
-                    setLoadingSpinnerOn
+                    setLoadingSpinnerOn,
                   });
                 }}
               />
@@ -302,7 +302,7 @@ const App = () => {
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
                     setGhsaOnly: setGhsaOnly,
-                    setLoadingSpinnerOn
+                    setLoadingSpinnerOn,
                   });
                 }}
               />
@@ -324,7 +324,7 @@ const App = () => {
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: defaultGhsaOnly,
                     setGhsaOnly: setEntityTableFundType,
-                    setLoadingSpinnerOn
+                    setLoadingSpinnerOn,
                   });
                 }}
               />
@@ -337,7 +337,7 @@ const App = () => {
                     ...d.match.params,
                     component: exportComponent,
                     setComponent: setExportComponent,
-                    setLoadingSpinnerOn
+                    setLoadingSpinnerOn,
                   });
                 }}
               />
@@ -353,7 +353,7 @@ const App = () => {
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: ghsaOnly,
                     setGhsaOnly: setGhsaOnly,
-                    setLoadingSpinnerOn
+                    setLoadingSpinnerOn,
                   });
                 }}
               />
@@ -372,7 +372,7 @@ const App = () => {
                     flowTypeInfo: flowTypeInfo,
                     ghsaOnly: entityTableFundType,
                     setGhsaOnly: setEntityTableFundType,
-                    setLoadingSpinnerOn
+                    setLoadingSpinnerOn,
                   });
                 }}
               />
@@ -389,7 +389,7 @@ const App = () => {
                       loading: loading,
                       setLoading: setLoading,
                       flowTypeInfo: flowTypeInfo,
-                      setLoadingSpinnerOn
+                      setLoadingSpinnerOn,
                     });
                   } else setPage(undefined);
                   return (
@@ -446,7 +446,7 @@ const App = () => {
           <div
             id={"loadingSpinner"}
             className={classNames(styles.loadingSpinner, {
-              [styles.on]: page !== "home" && page !== "about" && spinnerOn
+              [styles.on]: page !== "home" && page !== "about" && spinnerOn,
             })}
           >
             <img src={spinnerImg} />
@@ -459,7 +459,7 @@ const App = () => {
 
 export const Settings = {
   startYear: 2014,
-  endYear: 2020
+  endYear: 2020,
 };
 
 export default App;
