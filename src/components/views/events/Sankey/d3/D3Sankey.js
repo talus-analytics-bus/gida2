@@ -107,7 +107,7 @@ class D3Sankey extends Chart {
     function getIsLink(d) {
       return d.name !== "Not reported" && d.subcat !== "region";
     }
-    function updateTooltip(d) {
+    function updateTooltip(d, isLabel = false) {
       const tooltipData = [
         {
           field: params.xLabel,
@@ -119,7 +119,8 @@ class D3Sankey extends Chart {
           field: roleToNoun[d.role],
           value: d.name,
         });
-        tooltipData.footer = "Click to pin/unpin highlights";
+        if (isLabel) tooltipData.footer = "Click to go to details page";
+        else tooltipData.footer = "Click to pin/unpin highlights";
       } else if (d.source !== undefined) {
         tooltipData.unshift({
           field: "Recipient",
@@ -275,7 +276,7 @@ class D3Sankey extends Chart {
       .data(graph.nodes)
       .join("rect");
     nodeRects
-      .on("mouseover", updateTooltip)
+      .on("mouseover", d => updateTooltip(d, false))
       .attr("data-tip", true)
       .attr("data-for", "sankeyTooltip")
       .attr("data-index", d => d.index)
@@ -366,7 +367,7 @@ class D3Sankey extends Chart {
     };
 
     linkPaths
-      .on("mouseover", updateTooltip)
+      .on("mouseover", d => updateTooltip(d, false))
       .on("mouseleave", unhighlight)
       .on("mouseenter", function highlightOnLinkEnter(d) {
         const highlightIndicesLinks = [
@@ -421,7 +422,9 @@ class D3Sankey extends Chart {
       .attr("class", d => styles[d.role])
       .classed("nodeLabel", true)
       .classed(styles.hidden, getBelowMinNodeHeight)
-      .on("mouseover", updateTooltip)
+      .on("mouseover", d => {
+        updateTooltip(d, true);
+      })
       .attr("data-tip", true)
       .attr("data-for", "sankeyTooltip")
       .attr("data-index", d => d.index)
