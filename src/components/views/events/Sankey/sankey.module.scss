@@ -6,14 +6,25 @@
   }
 
   .dropdowns {
-    > div {
-      margin: 0;
-      // @include dropdown();
-      // width: max-content;
-    }
     &.right {
       text-align: right;
     }
+    display: flex;
+    align-items: flex-end;
+    > div,
+    form label {
+      margin: 0;
+    }
+    margin-bottom: 30px;
+    @include spaceChildrenHoriz(10px);
+    text-transform: uppercase;
+    > div:not(.checkbox) {
+      @include dropdown();
+    }
+    // .checkbox {
+    //   position: relative;
+    //   top: 13px;
+    // }
   }
   .chart {
     width: 100%;
