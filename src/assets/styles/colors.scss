@@ -111,7 +111,6 @@ $phone-width-narrow: 375px;
 @mixin title {
   font-weight: 700;
   font-size: 28px;
-  text-transform: capitalize;
   color: $black;
   font-family: "rawline", sans-serif;
   margin-top: 10px;
