@@ -94,7 +94,7 @@ const EventTable = ({
     <Loading loaded={dataLoaded}>
       <TableInstance
         paging={true}
-        sortByProp={"years"}
+        sortByProp={props.sortByProp || "years"}
         tableColumns={[
           {
             title: "Event response",

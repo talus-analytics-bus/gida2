@@ -124,6 +124,7 @@ const Events = ({ slug, flowTypeInfo }) => {
           curFlowType,
           curFlowTypeName,
           setEventTotalsData: () => "",
+          sortByProp: "amount",
         }}
       />
     ),
