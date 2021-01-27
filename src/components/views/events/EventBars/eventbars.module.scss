@@ -27,12 +27,20 @@
       .dropdowns {
         display: flex;
         align-items: flex-end;
-        margin-bottom: 30px;
         > div,
         form label {
           margin: 0;
         }
+        margin-bottom: 30px;
         @include spaceChildrenHoriz(10px);
+        text-transform: uppercase;
+        > div:not(.checkbox) {
+          @include dropdown();
+        }
+        .checkbox {
+          position: relative;
+          top: 13px;
+        }
       }
 
       .bars,

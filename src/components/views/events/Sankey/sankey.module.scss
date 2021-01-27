@@ -4,9 +4,12 @@
   > :empty {
     margin: 0;
   }
+
   .dropdowns {
     > div {
       margin: 0;
+      // @include dropdown();
+      // width: max-content;
     }
     &.right {
       text-align: right;

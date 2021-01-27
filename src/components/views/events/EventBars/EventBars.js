@@ -402,6 +402,7 @@ const EventBars = ({
                         value: "top10only",
                         curChecked: top10Only,
                         callback: () => setTop10Only(!top10Only),
+                        classes: [styles.checkbox],
                       }}
                     />
                   )}

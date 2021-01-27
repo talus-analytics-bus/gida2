@@ -1,12 +1,20 @@
 import React from "react";
 import styles from "./checkbox.module.scss";
+import classNames from "classnames";
 
 /**
  * Generic radio toggle
  * TODO implement tooltip
  * @method Checkbox
  */
-const Checkbox = ({ label, value, curChecked, callback, ...props }) => {
+const Checkbox = ({
+  label,
+  value,
+  curChecked,
+  callback,
+  classes = [],
+  ...props
+}) => {
   /**
    * When radio button changes, set current choice equal to its value.
    * @method onChange
@@ -19,7 +27,7 @@ const Checkbox = ({ label, value, curChecked, callback, ...props }) => {
   };
 
   return (
-    <div className={styles.checkbox}>
+    <div className={classNames(styles.checkbox, ...classes)}>
       <form>
         <label onClick={callback ? onChange : undefined} for={label}>
           <input
