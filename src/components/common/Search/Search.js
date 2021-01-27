@@ -17,7 +17,7 @@ const Search = ({ callback, name, ...props }) => {
   const [showResults, setShowResults] = React.useState(false);
   const [results, setResults] = React.useState(null);
 
-  const handleInputChange = async e => {
+  const handleInputChange = async (e) => {
     const val = e.target.value;
     // If no value, show region list.
     if (val === "") {
@@ -30,7 +30,7 @@ const Search = ({ callback, name, ...props }) => {
     }
   };
 
-  const handleKeyPress = e => {
+  const handleKeyPress = (e) => {
     if (e.keyCode === 27) {
       e.target.value = "";
       setResults(null);
@@ -42,9 +42,9 @@ const Search = ({ callback, name, ...props }) => {
     setResults(null);
   };
 
-  const getResults = results => {
+  const getResults = (results) => {
     if (callback === undefined) {
-      return results.map(d => (
+      return results.map((d) => (
         <Link
           onClick={unset}
           to={`/details/${d.id}/${
@@ -61,7 +61,7 @@ const Search = ({ callback, name, ...props }) => {
         </Link>
       ));
     } else
-      return results.map(d => (
+      return results.map((d) => (
         <div
           onClick={() => {
             unset();
@@ -76,7 +76,7 @@ const Search = ({ callback, name, ...props }) => {
   };
 
   // Hide menus on root click
-  document.getElementById("root").onclick = e => {
+  document.getElementById("root").onclick = (e) => {
     setShowResults(false);
   };
 
@@ -96,12 +96,13 @@ const Search = ({ callback, name, ...props }) => {
     <div onClick={() => setShowResults(true)} className={styles.search}>
       <div
         className={classNames(styles.searchBar, {
-          [styles.expanded]: expanded
+          [styles.expanded]: expanded,
+          [styles.dark]: props.isDark,
         })}
       >
         <div className={styles.field}>
           <i
-            onClick={e => {
+            onClick={(e) => {
               // If search bar results are showing when it's minimized, then
               // hide the results.
               if (expanded) {
@@ -121,7 +122,7 @@ const Search = ({ callback, name, ...props }) => {
         <div
           style={{ display: showResults ? "flex" : "none" }}
           className={classNames(styles.results, {
-            [styles.dark]: props.isDark
+            [styles.dark]: props.isDark,
           })}
         >
           {results.length > 0 && getResults(results)}
