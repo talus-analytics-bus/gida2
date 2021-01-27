@@ -128,16 +128,27 @@ const Events = ({ slug, flowTypeInfo }) => {
     ),
   };
 
+  // get crossreferences section dynamic title
+  const hasDons = true; // TODO
+  const hasCaseStudies = data !== null && data.int_refs.length > 0;
+  const titleArr = [];
+  if (hasCaseStudies) titleArr.push("Case studies");
+  if (hasDons) titleArr.push("DONs data");
+  const title = titleArr.join(" and ");
+
   const crossreferences = dataLoaded && {
-    header: <h2>Case studies and DONS data</h2>,
+    header: <h2>{title}</h2>,
     text: null,
-    content: <Crossreferences {...{ ...data }} />,
+    content: <Crossreferences {...{ ...data, hasCaseStudies, hasDons }} />,
     showSource: false,
     toggleFlowType: false,
+    hide: !hasCaseStudies && !hasDons,
   };
 
   // collate subsections
-  const subsections = [eventBars, sankey, eventTable, crossreferences];
+  const subsections = [eventBars, sankey, eventTable, crossreferences].filter(
+    d => d.hide !== true
+  );
   const subsectionsJsx = subsections.map(
     ({ header, text, content, toggleFlowType = true, ...props }) => (
       <DetailsSection

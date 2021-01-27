@@ -16,7 +16,7 @@ const Carousel = ({ items }) => {
   const [data, setData] = useState(null);
 
   // CONSTANTS //
-  const item = idx !== null ? data[idx] : {};
+  const item = idx !== null && data[idx] !== undefined ? data[idx] : {};
   const imgSrc =
     item.images !== undefined ? `${GOAL_URL}/${item.images[0].fn}` : null;
 

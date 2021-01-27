@@ -14,7 +14,7 @@ import tooltipStyles from "../../../common/tooltip.module.scss";
 export const GOAL_URL = "https://goal.ghscosting.org/";
 export const GOAL_API_URL = "https://goal-api.talusanalytics.com/";
 
-const Crossreferences = ({ pathogen, int_refs }) => {
+const Crossreferences = ({ pathogen, int_refs, hasCaseStudies, hasDons }) => {
   // CONSTANTS //
   const linkSections = [
     {
@@ -22,6 +22,7 @@ const Crossreferences = ({ pathogen, int_refs }) => {
         "Click below to be redirected to the Georgetown Outbreak Activity Library (GOAL) to view all case studies related to this pathogen.",
       label: `View all ${pathogen.pathogen_name} case studies`,
       url: "https://goal.ghscosting.org/case-studies",
+      show: hasCaseStudies,
     },
     {
       text:
@@ -30,25 +31,26 @@ const Crossreferences = ({ pathogen, int_refs }) => {
       onClick: () => console.log("clicked"),
       "data-for": "infoTooltip",
       "data-tip": "This feature is currently being developed",
+      show: hasDons,
     },
   ];
 
-  const linkSectionsJsx = linkSections.map(
-    ({ text, label, onClick, url, ...props }) => (
+  const linkSectionsJsx = linkSections
+    .filter(d => d.show)
+    .map(({ text, label, onClick, url, ...props }) => (
       <div className={styles.linkSection}>
         <p>{text}</p>
         <span {...{ ...props }}>
           <Button {...{ label, onClick, type: "primary", url }} />
         </span>
       </div>
-    )
-  );
+    ));
 
   // JSX //
   return (
     <>
       <div className={styles.crossreferences}>
-        <Carousel {...{ items: int_refs }} />
+        {hasCaseStudies && <Carousel {...{ items: int_refs }} />}
         <div className={styles.linkSections}>{linkSectionsJsx}</div>
       </div>
       {
