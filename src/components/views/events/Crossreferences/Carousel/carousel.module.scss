@@ -30,7 +30,7 @@
     .toggler {
       display: flex;
       flex-flow: row;
-      justify-content: space-between;
+      justify-content: space-around;
       margin: 0 20%;
       .circle {
         $size: 13px;
