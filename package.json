@@ -55,7 +55,7 @@
     "tslint": "./node_modules/.bin/tslint",
     "deploy": "CI=false yarn build && aws s3 sync build/ s3://gida-tracking  --acl public-read --delete",
     "deploy-dev": "CI=false REACT_APP_API_URL=https://gida-tracking-api-test.ghscosting.org yarn build && aws s3 sync build/ s3://gida-tracking-dev  --acl public-read --delete",
-    "deploy-remake": "CI=false && REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_API_URL=https://ghs-tracking-api.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking  --acl public-read --delete && aws cloudfront create-invalidation --distribution-id E152A1LOQ63YSI --paths \"/*\""
+    "deploy-remake": "CI=false && REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_API_URL=https://ghs-tracking-api.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking  --acl public-read --delete"
   },
   "eslintConfig": {
     "extends": "react-app"
