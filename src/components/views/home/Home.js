@@ -4,6 +4,7 @@ import Search from "../../common/Search/Search.js";
 import styles from "./home.module.scss";
 import Button from "../../common/Button/Button.js";
 import mapImage from "../../../assets/images/map.png";
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 
 // JSX for about page.
 const Home = () => {
@@ -12,12 +13,13 @@ const Home = () => {
       <div className={styles.leftPane}>
         <div className={styles.welcomeContainer}>
           <div className={styles.welcomeText}>
-            Welcome to the Georgetown Global Health Security Tracking site
+            Welcome to the <br />
+            Georgetown Global Health Security Tracking site
           </div>
 
           <div className={styles.welcomeDesc}>
             <p>
-              The Georgetown Infectious Disease Atlas (GIDA) Global Health
+              The International Disease and Events Analysis (IDEA) Global Health
               Security Tracking site maps the flow of funding and in-kind
               support for global health security. Use the search bar below to
               view more details about a funder or recipient's activities, or
@@ -25,15 +27,16 @@ const Home = () => {
               funding and capacity.
             </p>
             <p className={styles.instructions}>
-              This site is designed to be used in Chrome or Firefox desktop
-              browsers.
+              Note: This tool is designed to be used in Google Chrome or Mozilla
+              Firefox.
             </p>
           </div>
         </div>
-
+        <GhsaButton {...{ active: false, isDark: false }} />
         <div className={styles.searchContainer}>
           <div className={styles.title}>
-            View specific country or organization details
+            View specific country or
+            <br /> organization details
           </div>
           <div className={styles.content}>
             <Search name={"home"} expandedDefault={true} />

@@ -11,7 +11,10 @@
       }
       border: none;
       padding: 5px;
-      border: 1px solid $grey;
+      border: 1px solid $black;
+    }
+    &.dark .field {
+      border: 1px solid #eee;
     }
     .field {
       display: flex;
@@ -19,7 +22,7 @@
       border-radius: $border-radius;
 
       i {
-        color: $grey;
+        color: $black;
         cursor: pointer;
         &:hover {
           color: darken($grey, 10%);
@@ -33,7 +36,7 @@
         outline: none;
         border: none;
         font-size: 0.925em;
-        color: gray;
+        color: lighten($black, 30%);
         font-family: "Open Sans", sans-serif;
       }
     }

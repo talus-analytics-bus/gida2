@@ -2,8 +2,8 @@ import React from "react";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./nav.module.scss";
-import logoLight from "../../../assets/images/logo-light.png";
-import logoDark from "../../../assets/images/logo-dark.png";
+import logoLight from "../../../assets/images/tracking.png";
+import logoDark from "../../../assets/images/tracking.png"; // TODO add dark version of logo
 import ReactTooltip from "react-tooltip";
 import Menu from "./content/Menu/Menu.js";
 import Search from "../../common/Search/Search.js";
@@ -12,7 +12,7 @@ import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 const Nav = ({ page, ...props }) => {
   const logo = props.isDark ? logoDark : logoLight;
   const [openMenu, setOpenMenu] = React.useState("");
-  const toggleMenu = name => {
+  const toggleMenu = (name) => {
     setOpenMenu(openMenu !== name ? name : "");
   };
 
@@ -21,7 +21,10 @@ const Nav = ({ page, ...props }) => {
       className={classNames(
         styles.nav,
         "dark-bg-allowed",
-        { [styles.loading]: props.loadingNav },
+        {
+          [styles.loading]: props.loadingNav,
+          [styles.dark]: props.isDark,
+        },
         styles[page]
       )}
     >
@@ -37,7 +40,7 @@ const Nav = ({ page, ...props }) => {
           <img src={logo} className={styles.logo} alt="GIDA - Tracker" />
         </Link>
         <div className={styles.links}>
-          <GhsaButton {...{ active: page === "ghsa", isDark: props.isDark }} />
+          {/* <GhsaButton {...{ active: page === "ghsa", isDark: props.isDark }} /> */}
           <Link
             className={page === "explore-map" ? styles.active : ""}
             to="/explore/map"

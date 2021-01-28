@@ -1,66 +1,82 @@
 @import "../../../assets/styles/colors.scss";
 
-$button-width: 250px;
-$button-font-size: 16px;
-$spacing: 10px;
-
+$phone: "screen and (max-width : 812px)";
+$phone-narrow: "screen and (max-width : 550px)";
 .footer {
+  height: 90px;
   width: 100%;
-  border-top: 1px $grey solid;
   background-color: white;
-  &.dark {
-    background-color: $dark-background-color;
-    .content {
-      div:first-child {
-        color: #999999 !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid $black;
+  .content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 1170px;
+    margin: 0 auto;
+    width: 100%;
+    .links {
+      display: flex;
+      flex-direction: row;
+      a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0px 40px;
+        &:not(:last-child) {
+          border-right: 1px solid $black;
+        }
+        &:first-child {
+          padding-left: 0px;
+        }
+      }
+      img {
+        height: 40px;
       }
     }
+    .dataAsOf {
+      font-style: italic;
+      font-family: "Open Sans", sans-serif;
+      font-size: 16px;
+      color: $gray-2;
+    }
   }
-
   &.wide .content {
     max-width: 1366px;
   }
-  .content {
-    max-width: 1170px;
+  &.dark {
+    background-color: $dark-background-color;
+    border-top: 1px solid #999999;
+    .content {
+      .dataAsOf {
+        color: #999999 !important;
+      }
+      .links {
+        a {
+          &:not(:last-child) {
+            border-right: 1px solid #999999;
+          }
+        }
+      }
+    }
   }
-
-  $item-spacing: 30px;
-  .content {
-    display: flex;
-    flex-flow: row;
-    justify-content: space-between;
-    align-items: flex-end;
-
-    min-height: 70px;
-    padding: 20px 0;
-    margin: 0 auto;
-    div:first-child {
-      font-style: italic;
-      font-family: "Open Sans", sans-serif;
-      color: #999999;
-      font-size: 16px;
-    }
-
-    img {
-      height: 70px;
-      padding: 0 $item-spacing;
-    }
-
-    a:first-child:not(:last-child) img {
-      border-right: 1px solid $grey;
-    }
-    a:last-child img {
-      padding-right: 0;
-    }
-    a {
-      position: relative;
-      > div {
-        position: absolute;
-        top: -25px;
-        left: $item-spacing;
-        font-size: 0.9em;
-        pointer-events: none;
-        color: #333;
+  @media #{$phone-narrow} {
+    height: unset;
+    margin-top: 40px;
+    padding: 10px 0px;
+    .content {
+      flex-direction: column;
+      a {
+        &:not(:last-child) {
+          border-right: 0px solid $black;
+        }
+      }
+      img {
+        height: 70px;
+        padding: 10px 0px;
       }
     }
   }

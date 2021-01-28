@@ -25,12 +25,12 @@ const Explore = ({
   const getHeaderData = tab => {
     if (tab === "org") {
       return {
-        header: "EXPLORE ORGANIZATION FUNDERS AND RECIPIENTS",
+        header: "Explore organization funders and recipients",
         instructions: "Choose organization in table to view details.",
       };
     } else if (tab === "map") {
       return {
-        header: "EXPLORE COUNTRIES ON A MAP",
+        header: "Explore countries on a map",
         instructions: "Choose country on map to view details.",
       };
     }
@@ -106,8 +106,7 @@ const Explore = ({
     } else {
       // Set page header data
       setPageHeaderData({
-        main: "ORGANIZATION FUNDERS AND RECIPIENTS",
-        instructions: "Choose organization in table to view details.",
+        main: "Organization funders and recipients",
         instructions: "Choose organization in table to view details.",
       });
 

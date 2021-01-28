@@ -51,6 +51,13 @@ $jee-yellow-light: #ecb97e;
 $jee-red: #ac1329;
 $jee-gray: #808080;
 
+// IDEA re-brand vars
+$black: #303434;
+$primary-dark-blue: #023f88;
+$gray-2: #828282;
+$gray-4: #f2f2f2;
+$primary-light-blue: #009bdf;
+
 // Gradients
 $light-blue-1: #87acd5;
 $light-blue-2: #5697bf;
@@ -98,11 +105,12 @@ $phone-width: 670px;
 $phone-width-narrow: 375px;
 
 @mixin title {
-  font-weight: 600;
-  font-size: 30px;
-  text-transform: uppercase;
-  color: #11315d;
+  font-weight: 700;
+  font-size: 28px;
+  color: $black;
   font-family: "rawline", sans-serif;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 @mixin eventTitle {
@@ -116,9 +124,9 @@ $phone-width-narrow: 375px;
 @mixin subtitle {
   margin-top: 20px;
   margin-bottom: 10px;
-  font-weight: 600;
-  font-size: 25px;
-  color: #11315d;
+  font-weight: 700;
+  font-size: 22px;
+  color: $black;
   font-family: "rawline", sans-serif;
 
   display: flex;
