@@ -14,13 +14,20 @@ import tooltipStyles from "../../../common/tooltip.module.scss";
 export const GOAL_URL = "https://goal.ghscosting.org/";
 export const GOAL_API_URL = "https://goal-api.talusanalytics.com/";
 
-const Crossreferences = ({ pathogen, int_refs, hasCaseStudies, hasDons }) => {
+const Crossreferences = ({
+  id,
+  pathogen,
+  int_refs,
+  hasCaseStudies,
+  hasDons,
+}) => {
   // CONSTANTS //
   const linkSections = [
     {
       text:
         "Click below to be redirected to the Georgetown Outbreak Activity Library (GOAL) to view all case studies related to this pathogen.",
       label: `View all ${pathogen.pathogen_name} case studies`,
+      wrapper: children => <>{children}</>,
       url: "https://goal.ghscosting.org/case-studies",
       show: hasCaseStudies,
     },
@@ -28,23 +35,32 @@ const Crossreferences = ({ pathogen, int_refs, hasCaseStudies, hasDons }) => {
       text:
         "Click below to download a complete set of World Health Organization disease outbreak news reports (DONs) related to this event, compiled by the Georgetown Center for Global Health Science and Security. ",
       label: "Download list of DONs for " + pathogen.pathogen_name,
-      onClick: () => console.log("clicked"),
-      "data-for": "infoTooltip",
-      "data-tip": "This feature is currently being developed",
+      wrapper: children => (
+        <form
+          action={`${
+            process.env.REACT_APP_API_URL
+          }/post/export_dons?event_id=${id}`}
+          method="POST"
+        >
+          {children}
+        </form>
+      ),
       show: hasDons,
     },
   ];
 
   const linkSectionsJsx = linkSections
     .filter(d => d.show)
-    .map(({ text, label, onClick, url, ...props }) => (
-      <div className={styles.linkSection}>
-        <p>{text}</p>
-        <span {...{ ...props }}>
-          <Button {...{ label, onClick, type: "primary", url }} />
-        </span>
-      </div>
-    ));
+    .map(({ text, label, onClick, url, wrapper, ...props }) =>
+      wrapper(
+        <div className={styles.linkSection}>
+          <p>{text}</p>
+          <span {...{ ...props }}>
+            <Button {...{ label, onClick, type: "primary", url }} />
+          </span>
+        </div>
+      )
+    );
 
   // JSX //
   return (
