@@ -177,7 +177,7 @@ const Events = ({ slug, flowTypeInfo }) => {
   return (
     <div className={classNames(styles.events)}>
       <div className={classNames("pageContainer", styles.content)}>
-        <div className={styles.title}>Outbreak event</div>
+        <div className={styles.title}>Outbreak-specific funding</div>
 
         {dataLoaded && (
           <Loading
