@@ -131,7 +131,7 @@ const Events = ({ slug, flowTypeInfo }) => {
   };
 
   // get crossreferences section dynamic title
-  const hasDons = true; // TODO
+  const hasDons = data !== null && data.any_dons;
   const hasCaseStudies = data !== null && data.int_refs.length > 0;
   const titleArr = [];
   if (hasCaseStudies) titleArr.push("Case studies");
