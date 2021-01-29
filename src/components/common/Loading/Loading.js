@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./loading.module.scss";
-import spinnerImg from "../../../assets/images/spinner.svg";
+import spinnerImg from "../../../assets/images/loading.gif";
+// import spinnerImg from "../../../assets/images/spinner.svg";
 
 const Loading = ({
   loaded = true,
