@@ -15,7 +15,7 @@ import Home from "./components/views/home/Home.js";
 import { renderExplore } from "./components/views/explore/Explore.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
 import { renderExport } from "./components/views/export/Export.js";
-import { renderAnalysisData } from "./components/views/analysis/AnalysisData.js";
+import AnalysisData from "./components/views/analysis/AnalysisData.js";
 import Events from "./components/views/events/Events";
 import Details from "./components/views/details/Details";
 import Background from "./components/views/about/Background.js";
@@ -359,15 +359,19 @@ const App = () => {
                 path="/analysis"
                 render={d => {
                   setPage("analysis");
-                  return renderAnalysisData({
-                    ...d.match.params,
-                    component: analysisDataComponent,
-                    setComponent: setAnalysisDataComponent,
-                    flowTypeInfo: flowTypeInfo,
-                    ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly,
-                    setLoadingSpinnerOn,
-                  });
+                  return (
+                    <AnalysisData
+                      {...{
+                        ...d.match.params,
+                        component: analysisDataComponent,
+                        setComponent: setAnalysisDataComponent,
+                        flowTypeInfo: flowTypeInfo,
+                        ghsaOnly: ghsaOnly,
+                        setGhsaOnly: setGhsaOnly,
+                        setLoadingSpinnerOn,
+                      }}
+                    />
+                  );
                 }}
               />
               <Route
