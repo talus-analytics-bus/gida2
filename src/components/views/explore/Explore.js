@@ -75,6 +75,7 @@ const Explore = ({
   }, [fundType]);
 
   useEffect(() => {
+    setPageHeaderData({});
     // Set isDark defaults.
     props.setIsDark(activeTab === "map");
 
