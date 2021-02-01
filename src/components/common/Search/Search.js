@@ -26,6 +26,7 @@ const Search = ({ callback, name, ...props }) => {
       // Find country or org matches
       // Return them by setting the country values
       const searchableSubcats = [
+        "country",
         "government",
         "organization",
         // "region",
