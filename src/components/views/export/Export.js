@@ -51,11 +51,13 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     ["years", "Transaction year range"],
     [
       "committed_funds",
-      `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
+      `Amount committed`,
+      // `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
     ],
     [
       "disbursed_funds",
-      `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
+      `Amount disbursed`,
+      // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
     ],
   ];
 
