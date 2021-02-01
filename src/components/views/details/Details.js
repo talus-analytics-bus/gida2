@@ -10,7 +10,7 @@ import {
   isUnknownDataOnly,
   parseIdsAsNames,
 } from "../../misc/Data.js";
-import Util from "../../misc/Util.js";
+import Util, { isEmpty } from "../../misc/Util.js";
 
 // queries
 import {
@@ -135,29 +135,16 @@ const Details = ({
     else setPvs({ ...defaultPvs, loading: false });
   };
 
-  // TODO handle response data
-  // const noResponseData = data.flows.paging.n_records === 0;
-  // const getDefaultTab = () => {
-  //   if (data.no_data || data.inkind_only) return "event";
-  //   else return "ihr";
-  // };
   const [curTab, setCurTab] = useState("ihr");
-  const [showFlag, setShowFlag] = useState(nodeData.cat === "country");
-
+  const [showFlag, setShowFlag] = useState(nodeData.subcat === "country");
   const [curPvsEdition, setCurPvsEdition] = useState(pvs.eds[0] || {});
-  // if (noResponseData && curTab === "event") setCurTab("ihr");
 
   // Get display name for current flow type
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
 
   // True if there are no data to show for the entire page, false otherwise.
-  // TODO make work with new API
   const noFinancialData = false;
-
-  // // stop loading spinner if no data
-  // if (noData || noFinancialData)
-  //   setLoadingSpinnerOn(false, false, undefined, true);
 
   // True if the only available data to show are for "unknown" values (specific
   // value no reported).
@@ -564,7 +551,7 @@ const Details = ({
     : `https://flags.talusanalytics.com/1000px/${flagId}.png`;
   // : `https://www.countryflags.io/${flagId}/flat/64.png`;
   const flag =
-    nodeData.cat === "country" || ghsa ? (
+    !isEmpty(nodeData) && (showFlag || ghsa) ? (
       <img
         key={flagId}
         onError={e => addDefaultSrc(e)}
@@ -572,14 +559,14 @@ const Details = ({
         src={flagSrc}
       />
     ) : null;
-  // const flag = `/flags/${nodeData.iso2 || nodeData.id}.png`;
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
     ev.target.src = "/flags/unspecified.png";
-    // ev.target.classList.add(styles.unspec);
     setShowFlag(false);
   };
+
+  // update all data when `id` changes
   useEffect(() => {
     setShowFlag(true);
     setPvs(defaultPvs);
@@ -601,15 +588,6 @@ const Details = ({
   useEffect(() => {
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
-
-  // console.log("\nhaveAny");
-  // console.log(haveAny);
-  // console.log("haveAssistance");
-  // console.log(haveAssistance);
-  // console.log("haveEvent");
-  // console.log(haveEvent);
-  // console.log("havePvs");
-  // console.log(havePvs);
 
   // update initial tab if IHR data not avail.
   useEffect(() => {
@@ -638,6 +616,13 @@ const Details = ({
   useLayoutEffect(() => {
     if (!dataLoaded) getData();
   }, [id, dataLoaded]);
+
+  // when node data are updated, update flag show/hide
+  useLayoutEffect(() => {
+    if (!isEmpty(nodeData)) {
+      setShowFlag(nodeData.subcat === "country");
+    }
+  }, [nodeData]);
 
   // Return JSX
   return (
