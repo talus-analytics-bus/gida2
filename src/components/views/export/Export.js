@@ -374,22 +374,6 @@ export const renderExport = ({
  * @param  {[type]}       entityRole          [description]
  */
 const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
-  // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
-
-  const baseQueryParams = {
-    focus_node_ids: null,
-    focus_node_type: "source",
-    flow_type_ids: [5],
-    start_date: `${Settings.startYear}-01-01`,
-    end_date: `${Settings.endYear}-12-31`,
-
-    // Add filters as appropriate.
-    filters: {},
-  };
-
-  // Set base query params for FlowQuery
-  const baseFlowQueryParams = JSON.parse(JSON.stringify(baseQueryParams));
-
   // Define queries for typical Export page.
   const queries = {
     // Information about the entity
