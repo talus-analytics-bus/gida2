@@ -5,7 +5,7 @@ import EntityRoleToggle from "../../../../misc/EntityRoleToggle.js";
 import GhsaToggle from "../../../../misc/GhsaToggle.js";
 import RadioToggle from "../../../../misc/RadioToggle.js";
 import { Settings } from "../../../../../App.js";
-import Util from "../../../../misc/Util.js";
+import Util, { getLastUpdatedDate } from "../../../../misc/Util.js";
 import {
   execute,
   NodeSums,
@@ -43,6 +43,7 @@ const MapViewer = ({
   events,
   setEvents,
   flowTypeInfo,
+  versionData,
   isDark,
   supportTypeDefault,
   setSupportTypeToSwitchTo,
@@ -51,6 +52,13 @@ const MapViewer = ({
   setLoaded,
   ...props
 }) => {
+  // CONSTANTS //
+  const jeeLastUpdatedDateStr = getLastUpdatedDate({
+    versionType: "jee",
+    data: versionData,
+  });
+
+  // STATE //
   // Track transaction type selected for the map
   const [transactionType, setTransactionType] = React.useState("disbursed");
 
@@ -190,7 +198,7 @@ const MapViewer = ({
           : "";
       return {
         main: "JEE score by country",
-        subtitle: `JEE score data as of May 27, 2020${filterText}`,
+        subtitle: `JEE score data as of ${jeeLastUpdatedDateStr}${filterText}`,
       };
     } else if (supportType === "needs_met") {
       const filterText =
@@ -567,6 +575,7 @@ export const renderMapViewer = ({
   entityRole,
   setEntityRole,
   flowTypeInfo,
+  versionData,
   fundType,
   setFundType,
   supportTypeDefault,
@@ -602,6 +611,7 @@ export const renderMapViewer = ({
       setComponent: setComponent,
       id: id,
       flowTypeInfo: flowTypeInfo,
+      versionData,
       fundType: fundType,
       setFundType: setFundType,
       entityRole: entityRole,
@@ -619,7 +629,9 @@ export const renderMapViewer = ({
     return component ? component : <div className={"placeholder"} />;
   } else if (component.props.isDark !== props.isDark) {
     setComponent(
-      <MapViewer {...{ ...component.props, isDark: props.isDark }} />
+      <MapViewer
+        {...{ ...component.props, isDark: props.isDark, versionData }}
+      />
     );
   } else {
     return component;
@@ -640,6 +652,7 @@ const getComponentData = async ({
   entityRole,
   setEntityRole,
   flowTypeInfo,
+  versionData,
   fundType,
   setFundType,
   setSupportTypeToSwitchTo,
@@ -763,6 +776,7 @@ const getComponentData = async ({
       setEntityRole={setEntityRole}
       data={results}
       flowTypeInfo={flowTypeInfo}
+      versionData={versionData}
       fundType={fundType}
       setFundType={setFundType}
       setComponent={setComponent}

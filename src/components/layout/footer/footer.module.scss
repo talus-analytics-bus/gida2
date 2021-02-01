@@ -42,6 +42,7 @@ $phone-narrow: "screen and (max-width : 550px)";
       font-family: "Open Sans", sans-serif;
       font-size: 16px;
       color: $gray-2;
+      margin: auto 0;
     }
   }
   &.wide .content {

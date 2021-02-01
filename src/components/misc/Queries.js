@@ -110,6 +110,19 @@ const Flow = async function({
 };
 
 /**
+ * Get version data from API.
+ * @method Version
+ */
+
+export const Version = async function() {
+  // Send request, await response
+  const res = await axios.get(`${process.env.REACT_APP_API_URL}/get/versions`);
+
+  // Return response data
+  return res.data;
+};
+
+/**
  * Get flow type data from API.
  * @method FlowType
  */

@@ -1,4 +1,5 @@
 import * as d3 from "d3/dist/d3.min";
+import moment from "moment";
 
 // Utility functions and data.
 const Util = {};
@@ -1106,5 +1107,14 @@ export const floatToPctString = f => {
 
 // none values
 export const NONE_VALS = [undefined, null, ""];
+
+// get last updated date as formatted str, or null
+export const getLastUpdatedDate = ({ versionType, data }) => {
+  const datum = data.find(d => d.version_type === versionType);
+  if (datum === undefined) return null;
+  else {
+    return moment(datum.last_updated_date).format("MMM D, YYYY");
+  }
+};
 
 export default Util;

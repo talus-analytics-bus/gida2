@@ -1,15 +1,22 @@
 import React from "react";
 import classNames from "classnames";
 import styles from "./footer.module.scss";
+import moment from "moment";
 import talus from "../../../assets/images/logo-talus.png";
 import talusDark from "../../../assets/images/logo-talus-dark.png";
 import gu from "../../../assets/images/logo-georgetown.png";
 import guDark from "../../../assets/images/logo-georgetown-dark.png";
 import idea from "../../../assets/images/logo-title.png";
 import ideaDark from "../../../assets/images/logo-idea-dark.png";
-import Util from "../../misc/Util.js";
+import Util, { getLastUpdatedDate } from "../../misc/Util.js";
 
-const Footer = ({ ...props }) => {
+const Footer = ({ versionData, ...props }) => {
+  // CONSTANTS //
+  // get last updated date for assistance data
+  const lastedUpdatedDateStr = getLastUpdatedDate({
+    versionType: "assistance",
+    data: versionData,
+  });
   const images = [
     {
       imgSrc: props.isDark ? ideaDark : idea,
@@ -38,20 +45,17 @@ const Footer = ({ ...props }) => {
     >
       <div className={styles.content}>
         <div className={styles.links}>
-          {images.map((d) => (
+          {images.map(d => (
             <a target="_blank" href={d.url}>
               <img src={d.imgSrc} alt={d.alt} />
             </a>
           ))}
         </div>
-        <div className={styles.dataAsOf}>
-          Data last updated{" "}
-          {Util.lastUpdated({}).toLocaleString("en-US", {
-            month: "short",
-            year: "numeric",
-            day: "numeric",
-          })}
-        </div>
+        {lastedUpdatedDateStr && (
+          <div className={styles.dataAsOf}>
+            Data last updated {lastedUpdatedDateStr}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -19,8 +19,11 @@ const Explore = ({
   data,
   flowTypeInfo,
   supportTypeDefault,
+  versionData,
   ...props
 }) => {
+  console.log("versionData");
+  console.log(versionData);
   // Returns correct header content given the active tab
   const getHeaderData = tab => {
     if (tab === "org") {
@@ -95,6 +98,7 @@ const Explore = ({
     if (activeTab === "map") {
       renderMapViewer({
         ...mapProps,
+        versionData,
         coreCapacities: [],
         events: [],
         isDark: true,
@@ -157,6 +161,7 @@ const Explore = ({
     setSupportTypeToSwitchTo,
     loaded,
     setLoaded,
+    versionData,
   };
 
   const orgProps = {
@@ -306,14 +311,18 @@ export const renderExplore = ({
   flowTypeInfo,
   fundType,
   setFundType,
+  versionData,
   ...props
 }) => {
   if (loading) {
     return <div className={"placeholder"} />;
   } else {
+    console.log("versionData");
+    console.log(versionData);
     return (
       <Explore
         flowTypeInfo={flowTypeInfo}
+        versionData={versionData}
         fundType={fundType}
         setFundType={setFundType}
         setComponent={setComponent}
