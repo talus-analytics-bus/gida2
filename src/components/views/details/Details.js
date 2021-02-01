@@ -398,7 +398,7 @@ const Details = ({
                   attributeType={"core_capacities"}
                   nodeType={nodeType}
                   otherNodeType={otherNodeType}
-                  placeType={nodeData.cat}
+                  placeType={nodeData.subcat}
                   id={id}
                   ghsaOnly={ghsaOnly}
                   render={curTab === "ihr"}
