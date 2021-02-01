@@ -910,6 +910,9 @@ Util.formatValue = (val, cn, units = true, round = false) => {
         return Util.formatSIInteger(val) + " cases";
       case "total_deaths":
         return Util.formatSIInteger(val) + " deaths";
+      case "project_name":
+        if (val === -9999 || val === "zzz") return undefined;
+        else return val;
       default:
         if (val === -9999 || val === "zzz") return undefined;
         else return comma(val);
