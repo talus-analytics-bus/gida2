@@ -522,6 +522,7 @@ const Details = ({
                       curFlowTypeName,
                       setEventTotalsData, // set flows to var. for totals
                       isGhsaPage: id === "ghsa",
+                      sortByProp: "amount",
                     }}
                   />
                 </div>
