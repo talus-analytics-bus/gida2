@@ -3,6 +3,7 @@
 .search {
   font-size: 16px; // base font size
   max-width: 275px;
+  position: relative;
   .searchBar {
     &.expanded .field {
       input {
@@ -50,7 +51,9 @@
     box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
     -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
     z-index: 1000;
-
+    > a {
+      margin: 0 !important;
+    }
     &.dark {
       background-color: #222;
       // border: 1px solid #ccc;
@@ -85,5 +88,8 @@
         cursor: pointer;
       }
     }
+  }
+  &.top .results {
+    bottom: 40px;
   }
 }

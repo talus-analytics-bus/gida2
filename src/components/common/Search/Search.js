@@ -10,7 +10,7 @@ import Util from "../../misc/Util.js";
  * TODO implement tooltip
  * @method Search
  */
-const Search = ({ callback, name, ...props }) => {
+const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   const [expanded, setExpanded] = React.useState(
     props.expandedDefault || false
   );
@@ -37,7 +37,7 @@ const Search = ({ callback, name, ...props }) => {
       ];
       const results = await Stakeholder({
         search: val,
-        limit: 5,
+        limit: limit || 5,
         filters: { "Stakeholder.subcat": searchableSubcats },
       });
       setResults(results);
@@ -106,8 +106,12 @@ const Search = ({ callback, name, ...props }) => {
     />
   );
 
+  // JSX //
   return (
-    <div onClick={() => setShowResults(true)} className={styles.search}>
+    <div
+      onClick={() => setShowResults(true)}
+      className={classNames(styles.search, { [styles.top]: top })}
+    >
       <div
         className={classNames(styles.searchBar, {
           [styles.expanded]: expanded,

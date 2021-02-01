@@ -39,7 +39,12 @@ const Home = () => {
             <br /> organization details
           </div>
           <div className={styles.content}>
-            <Search name={"home"} expandedDefault={true} />
+            <Search
+              top={false}
+              name={"home"}
+              expandedDefault={true}
+              limit={3}
+            />
           </div>
         </div>
       </div>
