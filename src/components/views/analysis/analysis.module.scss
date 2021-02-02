@@ -123,6 +123,11 @@
           margin-right: 0;
         }
       }
+
+      // float source text to right
+      + a {
+        float: right;
+      }
     }
   }
 }
