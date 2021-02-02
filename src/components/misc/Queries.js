@@ -1,6 +1,7 @@
 // 3rd party libs
 import axios from "axios";
 import * as d3 from "d3/dist/d3.min";
+import moment from "moment";
 
 // local libs
 import ObservationQuery from "./ObservationQuery";
@@ -8,6 +9,7 @@ import ObservationQuery from "./ObservationQuery";
 // constants
 const NONE_VALS = [null, undefined];
 const GOAL_API_URL = "https://goal-api.talusanalytics.com";
+const API_URL = process.env.REACT_APP_API_URL;
 
 export const NodeSums = async function({
   format,
@@ -33,7 +35,7 @@ export const NodeSums = async function({
   // Await response
   const res = await axios({
     method: "post",
-    url: `${process.env.REACT_APP_API_URL}/post/node_sums`,
+    url: `${API_URL}/post/node_sums`,
     data: { filters },
     params,
   });
@@ -52,7 +54,7 @@ export const Chords = async function({ format, filters, group_by, ...props }) {
   // Await response
   const res = await axios({
     method: "post",
-    url: `${process.env.REACT_APP_API_URL}/post/chords`,
+    url: `${API_URL}/post/chords`,
     data: { filters },
     params,
   });
@@ -98,11 +100,7 @@ const Flow = async function({
   } else {
     // Send request
     // Await response
-    const res = await axios.post(
-      `${process.env.REACT_APP_API_URL}/post/flows`,
-      data,
-      { params }
-    );
+    const res = await axios.post(`${API_URL}/post/flows`, data, { params });
 
     // Return response data
     return res.data;
@@ -116,7 +114,7 @@ const Flow = async function({
 
 export const Version = async function() {
   // Send request, await response
-  const res = await axios.get(`${process.env.REACT_APP_API_URL}/get/versions`);
+  const res = await axios.get(`${API_URL}/get/versions`);
 
   // Return response data
   return res.data;
@@ -142,10 +140,7 @@ export const FlowType = async function({ flow_type_ids }) {
   };
 
   // Send request, await response
-  const res = await axios.get(
-    `${process.env.REACT_APP_API_URL}/get/flow_types`,
-    config
-  );
+  const res = await axios.get(`${API_URL}/get/flow_types`, config);
 
   // Return response data
   return res.data;
@@ -174,10 +169,7 @@ export const Assessment = async function({ ...props }) {
 
   // Send request
   // Await response
-  const res = await axios.get(
-    `${process.env.REACT_APP_API_URL}/get/assessments`,
-    config
-  );
+  const res = await axios.get(`${API_URL}/get/assessments`, config);
 
   // Return response data
   return res.data;
@@ -221,7 +213,7 @@ export const Stakeholder = async function({
     return allStakeholders[by];
   }
   const res = await axios.post(
-    `${process.env.REACT_APP_API_URL}/post/stakeholders`,
+    `${API_URL}/post/stakeholders`,
     { filters },
     {
       params,
@@ -251,10 +243,7 @@ export const Outbreak = async function({ id, slug, format, ...props }) {
 
   // Send request
   // Await response
-  const res = await axios.get(
-    `${process.env.REACT_APP_API_URL}/get/outbreaks`,
-    config
-  );
+  const res = await axios.get(`${API_URL}/get/outbreaks`, config);
 
   // Return response data
   return res.data;
@@ -308,6 +297,51 @@ export const GOALCaseStudies = async () => {
     caseStudies = res.data.data;
     return res.data.data;
   }
+};
+
+/**
+ * Get export data from API.
+ */
+export const Excel = async function({
+  method,
+  data = null,
+  class_name,
+  params = undefined,
+}) {
+  let req;
+  if (method === "get") {
+    req = await axios(`${API_URL}/export`);
+  } else if (method === "post") {
+    if (data === null) {
+      console.error("Error: `data` is required for method POST.");
+    }
+
+    req = axios({
+      url: `${API_URL}/post/export`,
+      method: "POST",
+      responseType: "blob",
+      data,
+      params,
+    });
+
+    // TODO comments below
+    const res = await req;
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    const dateString = moment().format("YYYY-MM-DD");
+    const fn = `GHS Tracking - Data Export ${dateString}.xlsx`;
+    link.setAttribute("download", fn);
+    document.body.appendChild(link);
+    link.click();
+    return;
+  } else {
+    console.error("Error: Method not implemented for `Export`: " + method);
+    return false;
+  }
+  const res = await req;
+  if (res.data !== undefined) return res.data;
+  else return false;
 };
 
 /**

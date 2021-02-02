@@ -3,7 +3,7 @@ import classNames from "classnames";
 import styles from "./export.module.scss";
 import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
-import { execute, Stakeholder, Outbreak } from "../../misc/Queries";
+import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries";
 import FlowQuery from "../../misc/FlowQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 import OutbreakQuery from "../../misc/OutbreakQuery.js";
@@ -303,7 +303,35 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   </div>
                   <div>
                     <Button
-                      callback={download}
+                      callback={() => {
+                        getFlowQuery({
+                          curPage,
+                          props: {
+                            funders,
+                            recipients,
+                            coreCapacities,
+                            outbreaks,
+                            supportType,
+                          },
+                          forExport: true,
+                          ...props,
+                        }).then(paramsTmp => {
+                          // URL query params
+                          const params = paramsTmp.params;
+
+                          // POST body JSON
+                          const data = { filters: paramsTmp.data.filters };
+                          data.cols = cols.filter(d =>
+                            exportCols.includes(d[0])
+                          );
+
+                          Excel({
+                            method: "post",
+                            data,
+                            params,
+                          });
+                        });
+                      }}
                       label={
                         <span>
                           <span
@@ -332,7 +360,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                       type={"primary"}
                     />
                   </div>
-                  {exportFlowJsx}
+                  {
+                    // exportFlowJsx
+                  }
                 </div>
               </div>
             </div>,
