@@ -12,6 +12,7 @@ import { comma } from "../../../misc/Util";
 import Loading from "../../../common/Loading/Loading";
 
 const ColList = ({ items = [], max = 10, isGlobal = false }) => {
+  console.log(items);
   // STATE //
   const [viewAll, setViewAll] = useState(
     items.length !== 0 && items.length <= max

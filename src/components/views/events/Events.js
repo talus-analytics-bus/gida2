@@ -37,7 +37,7 @@ const Events = ({ slug, flowTypeInfo }) => {
         outbreak: Outbreak({ slug, format: "event_page" }),
         stakeholders: Stakeholder({
           by: "iso3",
-          filters: { "Stakeholder.cat": ["country", "world"] },
+          filters: { "Stakeholder.subcat": ["country", "world"] },
         }),
       },
     });

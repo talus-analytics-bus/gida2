@@ -119,11 +119,20 @@ const EventBars = ({
 
   // return stakeholder categories that should be requested based on `funds`
   // (fund type to show)
-  const getStakeholderCats = () => {
+  const getStakeholderSubcats = () => {
     if (showRegionFilter) return COUNTRY_CATS;
     else if (funds === "recipient_org" || funds === "funder_org")
       return ORG_CATS;
     else {
+      console.error("Unknown `funds` value: " + funds);
+    }
+  };
+  const setStakeholderFilter = f => {
+    if (showRegionFilter) f["Stakeholder.subcat"] = COUNTRY_CATS;
+    else if (funds === "recipient_org" || funds === "funder_org") {
+      f["Stakeholder.cat"] = ORG_CATS;
+      f["Stakeholder.subcat"] = [["neq", ["country"]]];
+    } else {
       console.error("Unknown `funds` value: " + funds);
     }
   };
@@ -132,10 +141,11 @@ const EventBars = ({
     // define query filters
     const filters = {
       "Event.id": [eventId],
-      "Stakeholder.cat": getStakeholderCats(),
+      // "Stakeholder.subcat": getStakeholderSubcats(),
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     };
+    setStakeholderFilter(filters);
 
     // add region filter
     if (showRegionFilter && region !== "") {
