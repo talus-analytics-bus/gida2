@@ -38,7 +38,10 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       const results = await Stakeholder({
         search: val,
         limit: limit || 5,
-        filters: { "Stakeholder.subcat": searchableSubcats },
+        filters: {
+          "Stakeholder.subcat": searchableSubcats,
+          "Stakeholder.slug": [["neq", ["not-reported"]]],
+        },
       });
       setResults(results);
     }
