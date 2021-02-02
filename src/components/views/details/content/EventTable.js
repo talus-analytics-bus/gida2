@@ -37,7 +37,7 @@ const EventTable = ({
 }) => {
   // STATE //
   const [outbreaks, setOutbreaks] = useState([]);
-  const [flows, setFlows] = useState({ data: [] });
+  const [flows, setFlows] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const getData = async () => {
@@ -73,9 +73,13 @@ const EventTable = ({
     }
 
     const results = await execute({ queries });
-    setFlows(results.flows);
+
+    // filter out flows with outbreaks not in database
+    const eventsNotNull = d => d.events.length !== 0 && d.events[0] !== null;
+    const newFlows = results.flows.data.filter(eventsNotNull);
+    setFlows(newFlows);
     setOutbreaks(results.outbreaks);
-    setEventTotalsData(results.flows.data);
+    setEventTotalsData(newFlows);
     setDataLoaded(true);
   };
 
@@ -86,7 +90,7 @@ const EventTable = ({
   }, [dataLoaded]);
 
   useLayoutEffect(() => {
-    setFlows({ data: [] });
+    setFlows([]);
     setDataLoaded(false);
   }, [id, direction]);
 
@@ -186,7 +190,7 @@ const EventTable = ({
                 : Util.formatValue(d, curFlowType),
           },
         ]}
-        tableData={flows.data}
+        tableData={flows}
         hide={r => r.amount === -9999}
       />
     </Loading>
