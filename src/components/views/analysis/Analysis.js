@@ -48,12 +48,14 @@ const Analysis = ({
   const [chordData, setChordData] = useState(null);
   const [tableData, setTableData] = useState(null);
   const [initialized, setInitialized] = useState(false);
+  const [chordGettingData, setChordGettingData] = useState(true);
 
   // FUNCTIONS //
   const getChordData = async () => {
     // Define typical base query parameters used in FlowQuery,
     // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
     // modified in code below.
+    setChordGettingData(true);
     const nodeType = entityRole === "recipient" ? "target" : "origin";
 
     const filters = {
@@ -86,6 +88,7 @@ const Analysis = ({
     // Get query results.
     const results = await Util.getQueryResults(queries);
     setChordData(results.chords);
+    setChordGettingData(false);
   };
   const getTableData = async () => {
     // Define typical base query parameters used in FlowQuery,
@@ -389,7 +392,6 @@ const Analysis = ({
                     callback={setSelectedEntity}
                     expandedDefault={true}
                   />
-
                   <TimeSlider
                     minYearDefault={Settings.startYear}
                     maxYearDefault={Settings.endYear}
@@ -430,6 +432,16 @@ const Analysis = ({
                     }}
                   />
                   {info}
+                  <Loading
+                    {...{
+                      loaded: !chordGettingData,
+                      small: true,
+                      position: "absolute",
+                      margin: 0,
+                      right: 20,
+                      top: 20,
+                    }}
+                  />
                 </div>
                 {<SourceText />}
               </div>
