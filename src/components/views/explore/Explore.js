@@ -26,6 +26,8 @@ const Explore = ({
   const [mapViewerComponent, setMapViewerComponent] = useState(null);
   const [orgComponent, setOrgComponent] = useState(null);
   const [curComponent, setCurComponent] = useState(null);
+  const [loadedMapOnce, setLoadedMapOnce] = useState(false);
+  if (loadedMapOnce) supportTypeDefault = undefined;
 
   // Track whether components are loaded or not
   const [loaded, setLoaded] = useState(false);
@@ -99,6 +101,7 @@ const Explore = ({
         loaded,
         setLoaded,
       });
+      if (!loadedMapOnce) setLoadedMapOnce(true);
     } else {
       // Set page header data
       setPageHeaderData({
