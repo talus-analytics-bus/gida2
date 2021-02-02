@@ -340,7 +340,7 @@ const Analysis = ({
       <div className={styles.content}>
         <p>
           The tables below identify the funders that have committed the most
-          funds, and the recipients that have recieved the most funds. Click on
+          funds, and the recipients that have received the most funds. Click on
           any entry in the tables for additional detail on that funder or
           recipient's activities. For information on a funder or recipient not
           included on this list, search for that country or organization below.
