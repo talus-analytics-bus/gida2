@@ -1,6 +1,10 @@
+// 3rd party libs
 import React from "react";
-import styles from "./detailssection.module.scss";
 import SourceText from "../../../common/SourceText/SourceText.js";
+import classNames from "classnames";
+
+// styles
+import styles from "./detailssection.module.scss";
 
 // FC for DetailsSection.
 const DetailsSection = ({
@@ -12,6 +16,9 @@ const DetailsSection = ({
   flowTypeInfo,
   toggleFlowType,
   noFinancialData,
+  // show data source text if true, hide otherwise
+  showSource = true,
+  classes = [],
   ...props
 }) => {
   /**
@@ -32,7 +39,7 @@ const DetailsSection = ({
     return "";
   };
   return (
-    <div className={styles.detailsSection}>
+    <div className={classNames(styles.detailsSection, ...classes)}>
       {header}
       {text && <div className={styles.text}>{text}</div>}
       {toggleFlowType && !noFinancialData && (
@@ -53,7 +60,7 @@ const DetailsSection = ({
       {!noFinancialData && (
         <div className={styles.content}>
           {content}
-          <SourceText />
+          {showSource && <SourceText />}
         </div>
       )}
       {noFinancialData && <span>No financial assistance data to show.</span>}

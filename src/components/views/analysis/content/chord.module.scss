@@ -1,8 +1,20 @@
 @import "../../../../assets/styles/colors.scss";
 .chord {
+  position: relative;
   .chordChart {
     display: flex;
     width: 800px;
     height: 800px;
+  }
+  .noDataMessage {
+    transition: opacity 0.5s;
+    opacity: 0;
+    font-size: 3rem;
+    position: relative;
+    top: -75%;
+    text-align: center;
+    &.show {
+      opacity: 1;
+    }
   }
 }

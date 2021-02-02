@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./search.module.scss";
-import NodeQuery from "../../misc/NodeQuery.js";
+import { Stakeholder } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 
 /**
@@ -10,14 +10,14 @@ import Util from "../../misc/Util.js";
  * TODO implement tooltip
  * @method Search
  */
-const Search = ({ callback, name, ...props }) => {
+const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   const [expanded, setExpanded] = React.useState(
     props.expandedDefault || false
   );
   const [showResults, setShowResults] = React.useState(false);
   const [results, setResults] = React.useState(null);
 
-  const handleInputChange = async (e) => {
+  const handleInputChange = async e => {
     const val = e.target.value;
     // If no value, show region list.
     if (val === "") {
@@ -25,12 +25,29 @@ const Search = ({ callback, name, ...props }) => {
     } else {
       // Find country or org matches
       // Return them by setting the country values
-      const results = await NodeQuery({ search: val });
-      setResults(results.slice(0, 5));
+      const searchableSubcats = [
+        "country",
+        "government",
+        "organization",
+        // "region",
+        "state_/_department_/_territory",
+        "agency",
+        "other",
+        "sub-organization",
+      ];
+      const results = await Stakeholder({
+        search: val,
+        limit: limit || 5,
+        filters: {
+          "Stakeholder.subcat": searchableSubcats,
+          "Stakeholder.slug": [["neq", ["not-reported"]]],
+        },
+      });
+      setResults(results);
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = e => {
     if (e.keyCode === 27) {
       e.target.value = "";
       setResults(null);
@@ -42,26 +59,26 @@ const Search = ({ callback, name, ...props }) => {
     setResults(null);
   };
 
-  const getResults = (results) => {
+  const getResults = results => {
     if (callback === undefined) {
-      return results.map((d) => (
-        <Link
-          onClick={unset}
-          to={`/details/${d.id}/${
-            d.primary_role === "source" ? "funder" : "recipient"
-          }`}
-        >
-          <div className={styles.result}>
-            <div className={styles.name}>{d.name}</div>
-            <div className={styles.type}>
-              {Util.getInitCap(d.type)}, mainly{" "}
-              {d.primary_role === "source" ? "funder" : "recipient"}
+      return results.map(d => {
+        d = { cat: "Stakeholder", ...d };
+        let catTmp = d["cat"];
+        if (catTmp.startsWith("ngo")) catTmp = "NGO";
+        const cat = catTmp.replaceAll("_", " ").trim();
+        return (
+          <Link onClick={unset} to={`/details/${d.id}/${d.primary_role}`}>
+            <div className={styles.result}>
+              <div className={styles.name}>{d.name}</div>
+              <div className={styles.type}>
+                {Util.getInitCap(cat)}, mainly {d.primary_role}
+              </div>
             </div>
-          </div>
-        </Link>
-      ));
+          </Link>
+        );
+      });
     } else
-      return results.map((d) => (
+      return results.map(d => (
         <div
           onClick={() => {
             unset();
@@ -76,7 +93,7 @@ const Search = ({ callback, name, ...props }) => {
   };
 
   // Hide menus on root click
-  document.getElementById("root").onclick = (e) => {
+  document.getElementById("root").onclick = e => {
     setShowResults(false);
   };
 
@@ -92,17 +109,20 @@ const Search = ({ callback, name, ...props }) => {
     />
   );
 
+  // JSX //
   return (
-    <div onClick={() => setShowResults(true)} className={styles.search}>
+    <div
+      onClick={() => setShowResults(true)}
+      className={classNames(styles.search, { [styles.top]: top })}
+    >
       <div
         className={classNames(styles.searchBar, {
           [styles.expanded]: expanded,
-          [styles.dark]: props.isDark,
         })}
       >
         <div className={styles.field}>
           <i
-            onClick={(e) => {
+            onClick={e => {
               // If search bar results are showing when it's minimized, then
               // hide the results.
               if (expanded) {

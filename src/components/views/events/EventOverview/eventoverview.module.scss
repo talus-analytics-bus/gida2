@@ -1,0 +1,13 @@
+@import "../../../../assets/styles/colors.scss";
+.eventOverview {
+  $spacing: 50px;
+  @include spaceChildrenVert(40px);
+  .name {
+    @include eventTitle;
+    margin-bottom: $spacing;
+  }
+  .desc {
+    line-height: 1.5;
+    @include spaceChildrenVert(10px);
+  }
+}

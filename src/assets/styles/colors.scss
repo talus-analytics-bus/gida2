@@ -25,17 +25,13 @@ $dark-background-color: #333;
 $dark-color: #eeeeee;
 $glowBorder: #3b88fd;
 
-$critical: #e91b25;
-$critical-light: #eda8ac;
-$critical-translucent: rgba(235, 28, 37, 0.1);
-
-$alerted: #f9be3c;
-$alerted-light: #f7c96d;
-$alerted-translucent: rgba(249, 190, 60, 0.1);
-
-$stable: #029b67;
-$stable-light: #3dc191;
-$stable-translucent: rgba(2, 155, 103, 0.1);
+// "Outbreak" color palette
+$outbreak-gray-3: #c4c4c4;
+$outbreak-blue-2: #125088;
+$outbreak-blue-3: #457daf;
+$outbreak-blue-4: #2f85d1;
+$outbreak-blue-5: #8fc9fb;
+$outbreak-yellow-1: #f5d24b;
 
 $layout-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
@@ -116,6 +112,15 @@ $phone-width-narrow: 375px;
   margin-top: 10px;
   margin-bottom: 20px;
 }
+
+@mixin eventTitle {
+  font-size: 3.4rem; // 34px
+  font-weight: 600;
+  color: black;
+  text-transform: none;
+  font-family: "rawline", sans-serif;
+}
+
 @mixin subtitle {
   margin-top: 20px;
   margin-bottom: 10px;
@@ -130,6 +135,11 @@ $phone-width-narrow: 375px;
   svg {
     top: 5px;
   }
+}
+
+@mixin sectionTitle {
+  text-transform: uppercase;
+  font-size: 1.6rem;
 }
 
 @mixin header {
@@ -148,4 +158,81 @@ $phone-width-narrow: 375px;
   > *:not(:last-child) {
     margin-right: $size;
   }
+}
+@mixin spaceChildrenVert($size) {
+  > :not(:last-child) {
+    margin-bottom: $size;
+  }
+}
+
+// adapted from:
+// https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/
+@mixin dropdown() {
+  position: relative;
+  > select::-ms-expand {
+    display: none;
+  }
+
+  > select {
+    cursor: pointer;
+  }
+
+  :after {
+    content: "keyboard_arrow_down";
+
+    color: #333;
+    right: 5px;
+    top: 30px;
+    padding: 0 0 2px;
+    position: absolute;
+    pointer-events: none;
+
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 3.6rem;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  > select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    display: block;
+    border-radius: 10px;
+
+    width: 100%;
+    height: 40px;
+    float: right;
+    margin: 5px 0 0 0;
+    padding: 0px 40px 0 10px;
+    font-size: 16px;
+    line-height: 1.75;
+    color: #333;
+    background-color: #ffffff;
+    background-image: none;
+    border: 1px solid $outbreak-gray-3;
+    -ms-word-break: normal;
+    word-break: normal;
+    font-family: "Rawline", serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+  }
+}
+
+// make colors available to JS
+:export {
+  outbreakBlue2: $outbreak-blue-2;
+  outbreakBlue3: $outbreak-blue-3;
+  outbreakBlue4: $outbreak-blue-4;
+  outbreakBlue5: $outbreak-blue-5;
 }

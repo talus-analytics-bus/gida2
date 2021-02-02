@@ -91,61 +91,52 @@ class D3Chord extends Chart {
     // Determine sizes and start/end positions of region arcs (A-Z) based on
     // share of total pie.
     const flowTypeName = this.params.transactionType + "_funds";
+
     this.params.chordData = this.params.chordData
-      .filter(
-        d =>
-          d.flow_types[flowTypeName] !== undefined &&
-          d.source.length === 1 &&
-          d.target.length === 1
-      )
+      .filter(d => d[flowTypeName] !== undefined)
       .sort((a, b) => {
-        return d3.ascending(
-          a.target[0].region || other,
-          b.target[0].region || other
-        );
+        return d3.ascending(a.target.region || other, b.target.region || other);
       });
 
     const regionTotals = {};
     let total = 0;
     this.params.chordData.forEach(d => {
-      const weight = d.flow_types[flowTypeName].focus_node_weight;
-      // source
-      const types = [["target", "source"], ["source", "target"]];
-      types.forEach(type => {
-        const focusRegion = d[type[0]][0].region || other;
+      const weight = d[flowTypeName];
+      // origin
+      const types = [["target", "origin"], ["origin", "target"]];
+      types.forEach(([to, from]) => {
+        const focusRegion = d[to].region || other;
         if (regionTotals[focusRegion] === undefined) {
           regionTotals[focusRegion] = {
-            [type[0]]: weight,
-            [type[1]]: 0,
+            [to]: weight,
+            [from]: 0,
             total: weight,
-            subregions: {}
+            subregions: {},
           };
         } else {
-          regionTotals[focusRegion][type[0]] += weight;
+          regionTotals[focusRegion][to] += weight;
           regionTotals[focusRegion].total += weight;
         }
         total += weight;
 
         // Now check focus subregion
-        const focusSubregion = d[type[0]][0].subregion || other;
+        const focusSubregion = d[to].subregion || other;
         if (
           regionTotals[focusRegion].subregions[focusSubregion] === undefined
         ) {
           regionTotals[focusRegion].subregions[focusSubregion] = {
-            [type[0]]: weight,
-            [type[1]]: 0,
+            [to]: weight,
+            [from]: 0,
             total: weight,
-            entities: {}
+            entities: {},
           };
         } else {
-          regionTotals[focusRegion].subregions[focusSubregion][
-            type[0]
-          ] += weight;
+          regionTotals[focusRegion].subregions[focusSubregion][to] += weight;
           regionTotals[focusRegion].subregions[focusSubregion].total += weight;
         }
 
         // Now check focus entity
-        const focusEntity = d[type[0]][0].name || other;
+        const focusEntity = d[to].name || other;
         if (
           regionTotals[focusRegion].subregions[focusSubregion].entities[
             focusEntity
@@ -154,28 +145,28 @@ class D3Chord extends Chart {
           regionTotals[focusRegion].subregions[focusSubregion].entities[
             focusEntity
           ] = {
-            [type[0]]: weight,
-            [type[1]]: 0,
+            [to]: weight,
+            [from]: 0,
             total: weight,
-            data: d[type[0]][0],
+            data: d[to],
             remainingFlowThetaFraction: 1,
             flows: {
               target: [],
-              source: [],
-              all: []
-            }
+              origin: [],
+              all: [],
+            },
           };
         } else {
           regionTotals[focusRegion].subregions[focusSubregion].entities[
             focusEntity
-          ][type[0]] += weight;
+          ][to] += weight;
           regionTotals[focusRegion].subregions[focusSubregion].entities[
             focusEntity
           ].total += weight;
         }
         regionTotals[focusRegion].subregions[focusSubregion].entities[
           focusEntity
-        ].flows[type[0]].push(d);
+        ].flows[to].push(d);
         regionTotals[focusRegion].subregions[focusSubregion].entities[
           focusEntity
         ].flows.all.push(d);
@@ -187,7 +178,7 @@ class D3Chord extends Chart {
       region: [],
       subregion: [],
       entity: [],
-      flow: []
+      flow: [],
     };
 
     // Compute arc region sizes.
@@ -195,20 +186,20 @@ class D3Chord extends Chart {
       region: 0,
       subregion: 0,
       entity: 0,
-      flow: 0
+      flow: 0,
     };
     const thetaChunk = {
       region: 2 * Math.PI,
       subregion: undefined,
       entity: undefined,
-      flow: undefined
+      flow: undefined,
     };
     for (let key in regionTotals) {
       const region = regionTotals[key];
       region.theta1 = currentTheta1.region;
       region.theta2 =
         thetaChunk.region * (region.total / total) + region.theta1;
-      region.color = color(region.source / region.total);
+      region.color = color(region.origin / region.total);
 
       // Process subregions
       currentTheta1.subregion = currentTheta1.region;
@@ -224,7 +215,7 @@ class D3Chord extends Chart {
         subregion.theta2 =
           thetaChunk.subregion * (subregion.total / region.total) +
           subregion.theta1;
-        subregion.color = color(subregion.source / subregion.total);
+        subregion.color = color(subregion.origin / subregion.total);
 
         // Process entities
         currentTheta1.entity = currentTheta1.subregion;
@@ -235,12 +226,12 @@ class D3Chord extends Chart {
           entity.theta2 =
             thetaChunk.entity * (entity.total / subregion.total) +
             entity.theta1;
-          entity.color = color(entity.source / entity.total);
+          entity.color = color(entity.origin / entity.total);
           currentTheta1.entity = entity.theta2;
 
           arcsData.entity.push({
             ...entity,
-            name: entity.data.name
+            name: entity.data.name,
           });
           currentTheta1.entity = entity.theta2;
         }
@@ -250,7 +241,7 @@ class D3Chord extends Chart {
         // subregion.theta2 += this.arcPadding;
         arcsData.subregion.push({
           ...subregion,
-          name: focusSubregion
+          name: focusSubregion,
         });
         nSubregion++;
       }
@@ -258,7 +249,7 @@ class D3Chord extends Chart {
 
       arcsData.region.push({
         ...region,
-        name: key
+        name: key,
       });
     }
 
@@ -271,18 +262,18 @@ class D3Chord extends Chart {
       {
         name: "regionArcs",
         type: "region",
-        generator: regionArcGenerator
+        generator: regionArcGenerator,
       },
       {
         name: "subregionArcs",
         type: "subregion",
-        generator: subregionArcGenerator
+        generator: subregionArcGenerator,
       },
       {
         name: "entityArcs",
         type: "entity",
-        generator: entityArcGenerator
-      }
+        generator: entityArcGenerator,
+      },
     ];
 
     const chart = this;
@@ -291,13 +282,16 @@ class D3Chord extends Chart {
         chart.params.setSelectedEntity(null);
       } else chart.params.setSelectedEntity(d.data.id);
     };
-    const offset = (arcsData.region[0].theta2 - arcsData.region[0].theta1) / 2;
-    arcTypes.forEach(arcType => {
-      arcsData[arcType.type].forEach(d => {
-        d.theta1 -= offset;
-        d.theta2 -= offset;
+    let offset = 0;
+    if (arcsData.region.length > 0) {
+      offset = (arcsData.region[0].theta2 - arcsData.region[0].theta1) / 2;
+      arcTypes.forEach(arcType => {
+        arcsData[arcType.type].forEach(d => {
+          d.theta1 -= offset;
+          d.theta2 -= offset;
+        });
       });
-    });
+    }
 
     this.params.setEntityArcInfo(arcsData.entity);
 
@@ -317,7 +311,7 @@ class D3Chord extends Chart {
         .selectAll("path")
         .classed(styles.hidden, true)
         .filter(dd => {
-          return dd.source_id === id || dd.target_id === id;
+          return dd.origin_id === id || dd.target_id === id;
         })
         .classed(styles.hidden, false);
     };
@@ -333,7 +327,7 @@ class D3Chord extends Chart {
     // Define flows
     const ribbon = d3
       .ribbon()
-      .source(d => d.source)
+      .source(d => d.origin)
       .target(d => d.target)
       .startAngle(d => d.theta1)
       .endAngle(d => d.theta2)
@@ -343,26 +337,26 @@ class D3Chord extends Chart {
 
     // Process flows between entities.
     arcsData.entity.forEach(d => {
-      if (d.flows.source.length === 0) return;
+      if (d.flows.origin.length === 0) return;
 
       // For each flow
-      d.flows.source.forEach(f => {
-        const weight = f.flow_types[flowTypeName].focus_node_weight;
+      d.flows.origin.forEach(f => {
+        const weight = f[flowTypeName];
         const info = {
-          source: {
-            region: f.source[0].region || other,
-            subregion: f.source[0].subregion || other,
-            entity: f.source[0].name || other
+          origin: {
+            region: f.origin.region || other,
+            subregion: f.origin.subregion || other,
+            entity: f.origin.name || other,
           },
           target: {
-            region: f.target[0].region || other,
-            subregion: f.target[0].subregion || other,
-            entity: f.target[0].name || other
-          }
+            region: f.target.region || other,
+            subregion: f.target.subregion || other,
+            entity: f.target.name || other,
+          },
         };
-        const source =
-          regionTotals[info.source.region].subregions[info.source.subregion]
-            .entities[info.source.entity];
+        const origin =
+          regionTotals[info.origin.region].subregions[info.origin.subregion]
+            .entities[info.origin.entity];
         const target =
           regionTotals[info.target.region].subregions[info.target.subregion]
             .entities[info.target.entity];
@@ -378,10 +372,10 @@ class D3Chord extends Chart {
         const updatedFracArcLengthAlreadyUsedT =
           updatedArcLengthAlreadyUsedT / arcLengthT;
 
-        // Math for source
-        const arcLengthS = source.theta2 - source.theta1;
-        const fracArcLengthToUseS = weight / source.total;
-        const fracArcLengthAlreadyUsedS = 1 - source.remainingFlowThetaFraction;
+        // Math for origin
+        const arcLengthS = origin.theta2 - origin.theta1;
+        const fracArcLengthToUseS = weight / origin.total;
+        const fracArcLengthAlreadyUsedS = 1 - origin.remainingFlowThetaFraction;
         const arcLengthToUseS = fracArcLengthToUseS * arcLengthS;
         const arcLengthAlreadyUsedS = fracArcLengthAlreadyUsedS * arcLengthS;
         const updatedArcLengthAlreadyUsedS =
@@ -389,24 +383,24 @@ class D3Chord extends Chart {
         const updatedFracArcLengthAlreadyUsedS =
           updatedArcLengthAlreadyUsedS / arcLengthS;
 
-        // Math for source flow thetas
+        // Math for origin flow thetas
         const flowThetas = {
-          source_id: source.data.id,
+          origin_id: origin.data.id,
           target_id: target.data.id,
-          source_name: source.data.name,
+          origin_name: origin.data.name,
           target_name: target.data.name,
-          source: {},
+          origin: {},
           target: {},
-          weight: weight
+          weight: weight,
         };
 
-        // Source: Go from original theta 1 plus already used...
+        // origin: Go from original theta 1 plus already used...
         // ...to original theta 1 plus updated already used.
-        flowThetas.source.theta1 =
-          source.theta1 + arcLengthAlreadyUsedS - offset;
-        flowThetas.source.theta2 =
-          source.theta1 + updatedArcLengthAlreadyUsedS - offset;
-        source.remainingFlowThetaFraction =
+        flowThetas.origin.theta1 =
+          origin.theta1 + arcLengthAlreadyUsedS - offset;
+        flowThetas.origin.theta2 =
+          origin.theta1 + updatedArcLengthAlreadyUsedS - offset;
+        origin.remainingFlowThetaFraction =
           1 - updatedFracArcLengthAlreadyUsedS;
 
         // Same for target
@@ -442,16 +436,16 @@ class D3Chord extends Chart {
         const tooltipData = [
           {
             field: "Funder",
-            value: d.source_name
+            value: d.origin_name,
           },
           {
             field: "Recipient",
-            value: d.target_name
+            value: d.target_name,
           },
           {
             field: `Total ${params.transactionType} funds`,
-            value: Util.money(d.weight)
-          }
+            value: Util.money(d.weight),
+          },
         ];
 
         chart.params.setTooltipData(tooltipData);
@@ -476,7 +470,7 @@ class D3Chord extends Chart {
           const tooltipData = [
             {
               field: "Name",
-              value: d.name
+              value: d.name,
             },
             {
               field: `Total ${
@@ -484,7 +478,7 @@ class D3Chord extends Chart {
                   ? "commitments"
                   : "disbursements"
               } provided`,
-              value: Util.money(d.source)
+              value: Util.money(d.origin),
             },
             {
               field: `Total ${
@@ -492,8 +486,8 @@ class D3Chord extends Chart {
                   ? "commitments"
                   : "disbursements"
               } received`,
-              value: Util.money(d.target)
-            }
+              value: Util.money(d.target),
+            },
           ];
 
           chart.params.setTooltipData(tooltipData);

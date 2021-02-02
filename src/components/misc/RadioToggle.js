@@ -24,8 +24,6 @@ const RadioToggle = ({
    */
   const onChange = e => {
     if (props.selectpicker) {
-      console.log("e");
-      console.log(e);
       callback(e.target.value);
     } else {
       const input = e.target.closest("label").querySelector("input");
@@ -40,7 +38,7 @@ const RadioToggle = ({
       <div
         className={classNames(styles.radioToggle, {
           [styles.disabled]: props.disabled === true,
-          [styles.horizontal]: props.horizontal === true
+          [styles.horizontal]: props.horizontal === true,
         })}
       >
         <div className={classNames(className !== undefined ? className : "")}>
@@ -58,7 +56,7 @@ const RadioToggle = ({
       <div
         className={classNames(styles.radioToggle, {
           [styles.disabled]: props.disabled === true,
-          [styles.horizontal]: props.horizontal === true
+          [styles.horizontal]: props.horizontal === true,
         })}
       >
         <div className={classNames(className !== undefined ? className : "")}>

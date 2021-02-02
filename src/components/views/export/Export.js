@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import classNames from "classnames";
 import styles from "./export.module.scss";
 import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
+import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries";
 import FlowQuery from "../../misc/FlowQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 import OutbreakQuery from "../../misc/OutbreakQuery.js";
@@ -14,20 +15,24 @@ import Button from "../../common/Button/Button.js";
 import axios from "axios";
 
 // Content components
-import { renderExportTable, getFlowQuery } from "./ExportTable.js";
+import ExportTable, { getFlowQuery } from "./ExportTable.js";
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
-  const [coreCapacities, setCoreCapacities] = React.useState([]);
-  const [supportType, setSupportType] = React.useState([]);
-  const [funders, setFunders] = React.useState([]);
-  const [recipients, setRecipients] = React.useState([]);
-  const [outbreaks, setOutbreaks] = React.useState([]);
-  const [exportTable, setExportTable] = React.useState(null);
-  const [nRecords, setNRecords] = React.useState(0);
-  const [curPage, setCurPage] = React.useState(1);
-  const [exportAction, setExportAction] = React.useState(undefined);
-  const [exportBody, setExportBody] = React.useState(undefined);
+  const [coreCapacities, setCoreCapacities] = useState([]);
+  const [supportType, setSupportType] = useState([]);
+  const [funders, setFunders] = useState([]);
+  const [recipients, setRecipients] = useState([]);
+  const [outbreaks, setOutbreaks] = useState([]);
+  const [exportTable, setExportTable] = useState(null);
+  const [nRecords, setNRecords] = useState(0);
+  const [curPage, setCurPage] = useState(1);
+  const [exportAction, setExportAction] = useState(undefined);
+  const [exportBody, setExportBody] = useState(undefined);
+
+  // if page is changed, show pagination loading
+  const [pageLoading, setPageLoading] = useState(false);
+
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
@@ -36,26 +41,27 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     recipients.length > 0;
 
   const cols = [
-    ["project_name", "Project name", true],
-    ["description", "Project description"],
-    ["data_sources", "Data source"],
-    ["core_capacities", "Core capacities"],
-    ["source", "Funder"],
-    ["target", "Recipient"],
+    ["name", "Project name", true],
+    ["desc", "Project description"],
+    ["sources", "Data source"],
+    ["ccs", "Core capacities"],
+    ["origins", "Funder"],
+    ["targets", "Recipient"],
     ["assistance_type", "Support type"],
-    ["year_range", "Transaction year range"],
+    ["years", "Transaction year range"],
     [
       "committed_funds",
-      `Amount committed (${Settings.startYear} - ${Settings.endYear})`
+      `Amount committed`,
+      // `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
     ],
     [
       "disbursed_funds",
-      `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`
-    ]
+      `Amount disbursed`,
+      // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
+    ],
   ];
 
-  const [exportCols, setExportCols] = React.useState(cols.map(d => d[0]));
-
+  const [exportCols, setExportCols] = useState(cols.map(d => d[0]));
   const remove = (arr, aTmp) => {
     const a = aTmp;
     let what,
@@ -82,22 +88,26 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     }
   };
 
-  const dataTable = renderExportTable({
-    ...{
-      outbreaks,
-      coreCapacities,
-      supportType,
-      funders,
-      recipients,
-      exportCols,
-      setNRecords,
-      component: exportTable,
-      setComponent: setExportTable,
-      setLoadingSpinnerOn,
-      curPage,
-      setCurPage
-    }
-  });
+  const dataTable = (
+    <ExportTable
+      {...{
+        outbreaks,
+        coreCapacities,
+        supportType,
+        funders,
+        recipients,
+        exportCols,
+        setNRecords,
+        component: exportTable,
+        setComponent: setExportTable,
+        curPage,
+        setCurPage,
+        stakeholders: data.stakeholders,
+        pageLoading,
+        setPageLoading,
+      }}
+    />
+  );
 
   const filterTest = (
     <FilterDropdown
@@ -105,7 +115,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         label: "",
         options: core_capacities,
         placeholder: "Funding by core capacity",
-        onChange: setCoreCapacities
+        onChange: setCoreCapacities,
       }}
     />
   );
@@ -123,14 +133,15 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     Util.createCookie("download_completed", "no");
     getFlowQuery({
       curPage,
-      funders,
-      recipients,
-      outbreaks,
-      coreCapacities,
-      supportType,
+      props: {
+        funders,
+        recipients,
+        coreCapacities,
+        outbreaks,
+        supportType,
+      },
       forExport: true,
-      paramsOnly: true, // ONLY RETURN PARAMETER SET.
-      ...props
+      ...props,
     }).then(paramsTmp => {
       // URL query params
       const params = paramsTmp.params;
@@ -139,14 +150,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       const data = paramsTmp.data;
       data.cols = cols.filter(d => exportCols.includes(d[0]));
 
-      const queryString = Object.keys(params)
-        .map(key => {
-          if (params[key] !== null && params[key] !== undefined) {
-            return key + "=" + params[key];
-          } else return undefined;
-        })
-        .filter(d => d)
-        .join("&");
+      const queryString = params.toString();
 
       const exportBodyRows = [];
       for (let key in data) {
@@ -157,14 +161,16 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
               {...{
                 name: key,
                 id: key,
-                value: JSON.stringify(d)
+                value: JSON.stringify(d),
               }}
             />
           </div>
         );
       }
       const exportBody = exportBodyRows;
-      setExportAction(Util.API_URL + "/flows?" + queryString);
+      setExportAction(
+        process.env.REACT_APP_API_URL + "/post/export?" + queryString
+      );
       setExportBody(exportBody);
     });
   };
@@ -185,11 +191,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     if (exportAction !== undefined && exportBody !== undefined) {
       const el = document.getElementById("download");
       if (el) {
-        setLoadingSpinnerOn(true);
         el.click();
         const downloadCompletedCheck = setInterval(() => {
           if (Util.readCookie("download_completed") === "yes") {
-            setLoadingSpinnerOn(false);
             clearInterval(downloadCompletedCheck);
           }
         }, 500);
@@ -225,7 +229,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: core_capacities,
                     placeholder: "Funding by core capacity",
                     onChange: setCoreCapacities,
-                    curValues: coreCapacities
+                    curValues: coreCapacities,
                   }}
                 />
                 <FilterDropdown
@@ -233,39 +237,45 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     label: "",
                     options: [
                       { value: "financial", label: "Direct financial support" },
-                      { value: "inkind", label: "In-kind support" }
+                      { value: "inkind", label: "In-kind support" },
                     ],
                     placeholder: "Support type",
                     onChange: setSupportType,
                     curValues: supportType,
-                    isSearchable: false
+                    isSearchable: false,
                   }}
                 />
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: data.entities,
+                    options: Object.values(data.stakeholders).map(d => {
+                      return { value: d.id, label: d.name };
+                    }),
                     placeholder: "Funder",
                     onChange: setFunders,
-                    curValues: funders
+                    curValues: funders,
                   }}
                 />
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: data.entities,
+                    options: Object.values(data.stakeholders).map(d => {
+                      return { value: d.id, label: d.name };
+                    }),
                     placeholder: "Recipient",
                     onChange: setRecipients,
-                    curValues: recipients
+                    curValues: recipients,
                   }}
                 />
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: data.outbreaks,
+                    options: data.outbreaks.map(d => {
+                      return { value: d.id, label: d.name };
+                    }),
                     placeholder: "Event response",
                     onChange: setOutbreaks,
-                    curValues: outbreaks
+                    curValues: outbreaks,
                   }}
                 />
               </div>
@@ -285,7 +295,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                               label: d[1],
                               value: d[0],
                               curChecked: exportCols.includes(d[0]),
-                              callback: updateExportCols
+                              callback: updateExportCols,
                             }}
                           />
                         )
@@ -293,7 +303,35 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   </div>
                   <div>
                     <Button
-                      callback={download}
+                      callback={() => {
+                        getFlowQuery({
+                          curPage,
+                          props: {
+                            funders,
+                            recipients,
+                            coreCapacities,
+                            outbreaks,
+                            supportType,
+                          },
+                          forExport: true,
+                          ...props,
+                        }).then(paramsTmp => {
+                          // URL query params
+                          const params = paramsTmp.params;
+
+                          // POST body JSON
+                          const data = { filters: paramsTmp.data.filters };
+                          data.cols = cols.filter(d =>
+                            exportCols.includes(d[0])
+                          );
+
+                          Excel({
+                            method: "post",
+                            data,
+                            params,
+                          });
+                        });
+                      }}
                       label={
                         <span>
                           <span
@@ -301,23 +339,34 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                               "glyphicon glyphicon-download-alt"
                             )}
                           />
-                          {!showClear
-                            ? `Download all available data (${Util.comma(
-                                nRecords
-                              )} ${nRecords !== 1 ? "records" : "record"})`
-                            : `Download selected data (${Util.comma(
-                                nRecords
-                              )} ${nRecords !== 1 ? "records" : "record"})`}
+                          {!showClear ? (
+                            <>
+                              Download all available data
+                              {nRecords !== undefined && nRecords !== null && (
+                                <>
+                                  {" "}
+                                  ({Util.comma(nRecords)}{" "}
+                                  {nRecords !== 1 ? "records" : "record"})
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            `Download selected data (${Util.comma(nRecords)} ${
+                              nRecords !== 1 ? "records" : "record"
+                            })`
+                          )}
                         </span>
                       }
                       type={"primary"}
                     />
                   </div>
-                  {exportFlowJsx}
+                  {
+                    // exportFlowJsx
+                  }
                 </div>
               </div>
-            </div>
-          ]
+            </div>,
+          ],
         }}
       />
       {dataTable}
@@ -329,7 +378,7 @@ export const renderExport = ({
   component,
   setComponent,
   setLoadingSpinnerOn,
-  loading
+  loading,
 }) => {
   // Get data
   if (loading) {
@@ -337,7 +386,7 @@ export const renderExport = ({
   } else if (component === null) {
     getComponentData({
       setComponent: setComponent,
-      setLoadingSpinnerOn
+      setLoadingSpinnerOn,
     });
 
     return component ? component : <div className={"placeholder"} />;
@@ -355,32 +404,15 @@ export const renderExport = ({
  * @param  {[type]}       entityRole          [description]
  */
 const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
-  // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
-
-  const baseQueryParams = {
-    focus_node_ids: null,
-    focus_node_type: "source",
-    flow_type_ids: [5],
-    start_date: `${Settings.startYear}-01-01`,
-    end_date: `${Settings.endYear}-12-31`,
-
-    // Add filters as appropriate.
-    filters: {}
-  };
-
-  // Set base query params for FlowQuery
-  const baseFlowQueryParams = JSON.parse(JSON.stringify(baseQueryParams));
-
   // Define queries for typical Export page.
   const queries = {
     // Information about the entity
-    entities: NodeQuery({ setKeys: "value,label" }),
-    outbreaks: OutbreakQuery({})
+    stakeholders: Stakeholder({ by: "id" }),
+    outbreaks: Outbreak({}),
   };
 
   // Get results in parallel
-  setLoadingSpinnerOn(true);
-  const results = await Util.getQueryResults(queries);
+  const results = await execute({ queries });
 
   // Set the component
   setComponent(

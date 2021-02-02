@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./chord.module.scss";
+import classNames from "classnames";
 import TableInstance from "../../../chart/table/TableInstance.js";
 import Util from "../../../misc/Util.js";
 import FlowBundleGeneralQuery from "../../../misc/FlowBundleGeneralQuery.js";
@@ -18,11 +19,12 @@ const Chord = ({
   setShowInfo,
   ...props
 }) => {
-  const [chord, setChord] = React.useState(null);
-  const [tooltipData, setTooltipData] = React.useState(false);
+  const [chord, setChord] = useState(null);
+  const [noChart, setNoChart] = useState(false);
+  const [tooltipData, setTooltipData] = useState(false);
 
   // Initial load: draw chord diagram
-  React.useEffect(() => {
+  useEffect(() => {
     setSelectedEntity(null);
     setShowInfo(false);
     const chordNew = new D3Chord("." + styles.chordChart, {
@@ -32,12 +34,13 @@ const Chord = ({
       transactionType,
       setEntityArcInfo,
       noResizeEvent: true,
-      setTooltipData
+      setTooltipData,
     });
     setChord(chordNew);
+    setNoChart(chordData.length === 0);
   }, [chordData, transactionType]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (chord !== null) {
       chord.params.selectedEntity = selectedEntity;
       if (selectedEntity !== null) {
@@ -51,6 +54,11 @@ const Chord = ({
   return (
     <div className={styles.chord}>
       <div className={styles.chordChart} />
+      <div
+        className={classNames(styles.noDataMessage, { [styles.show]: noChart })}
+      >
+        No data for selected filters
+      </div>
       {
         // Tooltip for info tooltip icons.
         <ReactTooltip

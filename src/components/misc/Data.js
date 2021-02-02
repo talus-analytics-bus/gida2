@@ -6,7 +6,7 @@ import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
   getMapColorScale,
-  getMapMetricValue
+  getMapMetricValue,
 } from "../map/MapUtil.js";
 
 export const fetchPost = async (url, data, config) => {
@@ -27,7 +27,7 @@ const getFlowValues = ({
   minYear,
   maxYear,
   entityRole,
-  coreCapacities
+  coreCapacities,
 }) => {
   // Define the flows that should be used to get the flow values.
   const flowsTmp =
@@ -55,9 +55,9 @@ const getFlowValues = ({
             flowType: f,
             minYear,
             maxYear,
-            entityRole
+            entityRole,
           });
-        }
+        },
       };
     });
   } else {
@@ -71,7 +71,7 @@ const getFlowValues = ({
             d: datum,
             supportType: supportTypeForValues,
             flowType: f,
-            coreCapacities
+            coreCapacities,
           }) || 0,
           f
         ),
@@ -82,9 +82,9 @@ const getFlowValues = ({
             flowType: f,
             minYear,
             maxYear,
-            entityRole
+            entityRole,
           });
-        }
+        },
       };
     });
   }
@@ -102,7 +102,7 @@ export const getInfoBoxData = ({
   flowType,
   minYear,
   maxYear,
-  simple = false
+  simple = false,
 }) => {
   // If a node has been selected, get the info box data for it.
   // First, get the JEE score for the node, if it exists. If it is not avail,
@@ -117,8 +117,8 @@ export const getInfoBoxData = ({
     // Get JEE score (avg) to display.
     const jeeScoresToAvg = getJeeScores({
       scores: jeeScores, // TODO
-      iso2: nodeDataToCheck.id, // TODO
-      coreCapacities
+      iso3: nodeDataToCheck.iso3, // TODO
+      coreCapacities,
     });
 
     // Average JEE score is mean.
@@ -137,21 +137,12 @@ export const getInfoBoxData = ({
 
   if (datum === undefined && supportType === "needs_met") {
     datum = {
-      flow_types: {
-        disbursed_funds: {
-          focus_node_weight: 0
-        }
-      },
-      target: [
-        {
-          ...nodeDataToCheck
-        }
-      ]
+      disbursed_funds: 0,
     };
   }
   const nodeMapData =
     nodeDataToCheck !== undefined
-      ? mapData.find(d => d.id === nodeDataToCheck.id)
+      ? mapData.find(d => d.iso3 === nodeDataToCheck.iso3)
       : undefined;
   let infoBoxData = {
     scoreOfNode: scoreOfNode,
@@ -162,9 +153,9 @@ export const getInfoBoxData = ({
       minYear,
       maxYear,
       entityRole,
-      coreCapacities
+      coreCapacities,
     }),
-    colorScale: colorScale
+    colorScale: colorScale,
   };
 
   // Get the node data that is in the table of values for display in the map.
@@ -184,9 +175,9 @@ export const getInfoBoxData = ({
         d: datum,
         supportType,
         flowType,
-        coreCapacities
+        coreCapacities,
       }),
-      entityRole: entityRole
+      entityRole: entityRole,
     });
 
     // Get other data for info box depending on the support type.
@@ -200,7 +191,7 @@ export const getInfoBoxData = ({
           minYear,
           maxYear,
           entityRole,
-          coreCapacities
+          coreCapacities,
         });
         break;
 
@@ -213,7 +204,7 @@ export const getInfoBoxData = ({
           minYear,
           maxYear,
           entityRole,
-          coreCapacities
+          coreCapacities,
         });
         break;
 
@@ -227,7 +218,7 @@ export const getInfoBoxData = ({
           minYear,
           maxYear,
           entityRole,
-          coreCapacities
+          coreCapacities,
         });
         break;
 
@@ -241,13 +232,13 @@ export const getInfoBoxData = ({
   return infoBoxData;
 };
 
-// Given the full set of JEE scores, an ISO2 code, and a set of core capacities,
+// Given the full set of JEE scores, an iso3 code, and a set of core capacities,
 // returns the average core capacity score for each defined core capacity for
-// the location with the provided ISO2 code.
-export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
+// the location with the provided iso3 code.
+export const getJeeScores = ({ scores, iso3, coreCapacities }) => {
   // TODO
-  if (iso2 === undefined) return [];
-  const scoresForPlace = scores[iso2];
+  if (iso3 === undefined) return [];
+  const scoresForPlace = scores[iso3];
   if (scoresForPlace === undefined) return [];
   const ccsToInclude =
     coreCapacities.length > 0
@@ -258,12 +249,12 @@ export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
     if (scoreForPlace === undefined)
       return {
         value: cc,
-        score: null
+        score: null,
       };
     else
       return {
         value: cc,
-        score: scoreForPlace // TODO
+        score: scoreForPlace, // TODO
       };
   });
   return output;
@@ -279,25 +270,24 @@ export const getJeeScores = ({ scores, iso2, coreCapacities }) => {
  * @return {[type]}                                 [description]
  */
 const debugNeedsMet = false;
+// TODO move to API
 export const calculateNeedsMet = ({ datum, avgCapScores }) => {
   // Get the disbursed funds received for this datum.
-  const disbursedFundsReceived = datum.flow_types["disbursed_funds"]
-    ? datum.flow_types["disbursed_funds"].focus_node_weight
-    : undefined;
-
+  const disbursedFundsReceived = datum["disbursed_funds"];
   if (
     (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&
     avgCapScores < 3
   )
-    return 0;
+    return 0; // 0 - needs most unmet (CONFIRM)
   if (
     (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&
     avgCapScores >= 3
   )
-    return null;
-  if (disbursedFundsReceived === undefined) return -9999;
-  if (disbursedFundsReceived === "unknown") return -8888;
+    return null; // doing better than 3 and got nothing? no data. ???
+  if (disbursedFundsReceived === undefined) return -9999; // no fund info? unknown
+  if (disbursedFundsReceived === "unknown") return -8888; // hatch? hatch
   if (avgCapScores === undefined) return -9999;
+  // no score? unknown
   else {
     // Finally, perform the needs met calculation if needed data are avail.
     // The numerator.
@@ -318,108 +308,108 @@ export const core_capacities = [
   {
     value: "P.1",
     label: "P.1 - National Legislation, Policy, and Financing",
-    cat: "Prevent"
+    cat: "Prevent",
   },
   {
     value: "P.2",
     label: "P.2 - IHR Coordination, Communicaton and Advocacy",
-    cat: "Prevent"
+    cat: "Prevent",
   },
   {
     value: "P.3",
     label: "P.3 - Antimicrobial Resistance (AMR)",
-    cat: "Prevent"
+    cat: "Prevent",
   },
   {
     value: "P.4",
     label: "P.4 - Zoonotic Disease",
-    cat: "Prevent"
+    cat: "Prevent",
   },
   {
     value: "P.5",
     label: "P.5 - Food Safety",
-    cat: "Prevent"
+    cat: "Prevent",
   },
   {
     value: "P.6",
     label: "P.6 - Biosafety and Biosecurity",
-    cat: "Prevent"
+    cat: "Prevent",
   },
   {
     value: "P.7",
     label: "P.7 - Immunization",
-    cat: "Prevent"
+    cat: "Prevent",
   },
   {
     value: "D.1",
     label: "D.1 - National Laboratory System",
-    cat: "Detect"
+    cat: "Detect",
   },
   {
     value: "D.2",
     label: "D.2 - Real Time Surveillance",
-    cat: "Detect"
+    cat: "Detect",
   },
   {
     value: "D.3",
     label: "D.3 - Reporting",
-    cat: "Detect"
+    cat: "Detect",
   },
   {
     value: "D.4",
     label: "D.4 - Workforce Development",
-    cat: "Detect"
+    cat: "Detect",
   },
   {
     value: "R.1",
     label: "R.1 - Preparedness",
-    cat: "Respond"
+    cat: "Respond",
   },
   {
     value: "R.2",
     label: "R.2 - Emergency Response Operations",
-    cat: "Respond"
+    cat: "Respond",
   },
   {
     value: "R.3",
     label: "R.3 - Linking Public Health and Security Authorities",
-    cat: "Respond"
+    cat: "Respond",
   },
   {
     value: "R.4",
     label: "R.4 - Medical Countermeasures and Personnel Deployment",
-    cat: "Respond"
+    cat: "Respond",
   },
   {
     value: "R.5",
     label: "R.5 - Risk Communication",
-    cat: "Respond"
+    cat: "Respond",
   },
   {
     value: "PoE",
     label: "PoE - Point of Entry (PoE)",
-    cat: "Other"
+    cat: "Other",
   },
   {
     value: "CE",
     label: "CE - Chemical Events",
-    cat: "Other"
+    cat: "Other",
   },
   {
     value: "RE",
     label: "RE - Radiation Emergencies",
-    cat: "Other"
+    cat: "Other",
   },
   {
     value: "General IHR",
     label: "General IHR Implementation",
-    cat: "Other"
+    cat: "Other",
   },
   {
     value: "Unspecified",
     label: "Unspecified",
-    cat: "Unspecified"
-  }
+    cat: "Unspecified",
+  },
 ];
 
 // Core capacities grouped by core elements
@@ -427,20 +417,20 @@ export const core_capacities = [
 export const core_capacities_grouped = [
   {
     label: "Prevent",
-    options: core_capacities.filter(cc => cc.cat === "Prevent")
+    options: core_capacities.filter(cc => cc.cat === "Prevent"),
   },
   {
     label: "Detect",
-    options: core_capacities.filter(cc => cc.cat === "Detect")
+    options: core_capacities.filter(cc => cc.cat === "Detect"),
   },
   {
     label: "Respond",
-    options: core_capacities.filter(cc => cc.cat === "Respond")
+    options: core_capacities.filter(cc => cc.cat === "Respond"),
   },
   {
     label: "Other",
-    options: core_capacities.filter(cc => cc.cat === "Other")
-  }
+    options: core_capacities.filter(cc => cc.cat === "Other"),
+  },
 ];
 
 /**
@@ -459,7 +449,7 @@ export const getNodeLinkList = ({
   nodeList,
   entityRole,
   id,
-  otherId
+  otherId,
 }) => {
   let urlFunc;
   if (urlType === "pair-table") {
@@ -483,11 +473,12 @@ export const getNodeLinkList = ({
   }
 
   // Do not list URLs unless the node belongs to any of these types
-  const urlTypes = ["country", "organization", "agency", "other"];
+  const urlTypes = ["country", "organization", "agency"];
+  const nonUrlTypes = ["region", "state_/_department_/_territory", "other"];
   return nodeList.map((node, i) => {
     const url = urlFunc(node.id);
-    const type = node.type;
-    const doUrl = urlTypes.includes(type) && node.name !== "Not reported";
+    const type = node.cat;
+    const doUrl = !nonUrlTypes.includes(type) && node.slug !== "not-reported";
     const skipUrlBecauseIsTargetInRecipientCol =
       otherId && node.id === otherId && entityRole === "recipient";
     const skipUrlBecauseIsSourceInFunderCol =
@@ -564,7 +555,7 @@ export const getTableCellCodeFromVal = ({ val, type, ...props }) => {
 export const getTableRowData = ({
   tableRowDefs,
   data,
-  filterFcn = d => true
+  filterFcn = d => true,
 }) => {
   const tableRows = [];
   data.forEach(d => {
@@ -577,7 +568,7 @@ export const getTableRowData = ({
         };
       row[def.prop] = getTableCellCodeFromVal({
         val: def.func(d),
-        type: def.type
+        type: def.type,
       });
     });
     if (filterFcn(row)) tableRows.push(row);
@@ -631,7 +622,7 @@ export const getSummaryAttributeWeightsByNode = ({
   data.forEach(d => {
     // Create output object
     const output = {
-      [nodeType]: d[nodeType]
+      [nodeType]: d[nodeType],
     };
 
     // Flag false if no data for any flow type, true otherwise
@@ -652,8 +643,8 @@ export const getSummaryAttributeWeightsByNode = ({
       if (curFtData.summaries === undefined) {
         curFtData.summaries = {
           [field]: {
-            Unspecified: curFtData["focus_node_weight"]
-          }
+            Unspecified: curFtData["focus_node_weight"],
+          },
         };
       }
       const summaries = curFtData.summaries;
@@ -664,7 +655,7 @@ export const getSummaryAttributeWeightsByNode = ({
         Object.keys(summaries[field]).length === 0
       )
         summaries[field] = {
-          Unspecified: curFtData["focus_node_weight"]
+          Unspecified: curFtData["focus_node_weight"],
         };
 
       // return;
@@ -727,7 +718,7 @@ export const getWeightsBySummaryAttributeSimple = ({
         const attribute = format(kTmp);
         const outputObj = {
           attribute: attribute,
-          [ft]: v
+          [ft]: v,
         };
         const nodeTypes = ["source", "target"];
         nodeTypes.forEach(nodeType => {
@@ -810,8 +801,8 @@ export const getWeightsBySummaryAttribute = ({
               [otherNodesStr]: {
                 [ft]: v,
                 attribute: k,
-                [otherNodeType]: otherNodesStr
-              }
+                [otherNodeType]: otherNodesStr,
+              },
             };
           // otherwise, simply add an entry for the flow type and attribute
           // (not specifying target/source)
@@ -824,7 +815,7 @@ export const getWeightsBySummaryAttribute = ({
           output[k][otherNodesStr] = {
             [ft]: v,
             attribute: k,
-            [otherNodeType]: otherNodesStr
+            [otherNodeType]: otherNodesStr,
           };
         // otherwise, the flow type/attribute/target-source node has been
         // seen before, so increment its value as appropriate
@@ -876,12 +867,26 @@ export const getNodeData = id => {
     case "ghsa":
       return {
         name: "Global Health Security Agenda (GHSA)",
-        id: id
+        id: id,
       };
     default:
       return {
         name: id,
-        id: id
+        id: id,
       };
   }
+};
+
+// given datum `d` from NodeSums or Flows, and dict of stakeholder info
+// `stakeholders` with keys of stakeholder IDs, return list of names
+export const parseIdsAsNames = ({ d, field = "id", stakeholders }) => {
+  const value = d[field];
+  const ids = typeof value === "object" ? value : d[field].split("; ");
+
+  // split ids on semicolon
+  const shArr = [];
+  ids.forEach(id => {
+    shArr.push(stakeholders[id]);
+  });
+  return JSON.stringify(shArr);
 };

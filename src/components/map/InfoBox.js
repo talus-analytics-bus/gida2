@@ -43,8 +43,8 @@ const InfoBox = ({
       return {
         baseColor: baseColor,
         style: {
-          backgroundColor: baseColor
-        }
+          backgroundColor: baseColor,
+        },
       };
     } else if (
       infoBoxData.colorValue === undefined ||
@@ -53,24 +53,24 @@ const InfoBox = ({
       return {
         baseColor: "#ccc",
         style: {
-          backgroundColor: "#ccc"
-        }
+          backgroundColor: "#ccc",
+        },
       };
     } else if (infoBoxData.colorValue === -8888) {
       return {
         baseColor: "rgb(204, 204, 204)",
         style: {
           background:
-            "repeating-linear-gradient(-45deg, #afafaf, #afafaf 17px, #fff 17px, #fff 20px)"
-        }
+            "repeating-linear-gradient(-45deg, #afafaf, #afafaf 17px, #fff 17px, #fff 20px)",
+        },
       };
     } else {
       const baseColor = infoBoxData.colorScale(infoBoxData.colorValue);
       return {
         baseColor: baseColor,
         style: {
-          backgroundColor: baseColor
-        }
+          backgroundColor: baseColor,
+        },
       };
     }
   };
@@ -93,13 +93,13 @@ const InfoBox = ({
           [styles.show]: show,
           [styles.dark]: isDark,
           [styles.simple]: simple,
-          [styles.revealed]: revealed !== false || revealed === undefined
+          [styles.revealed]: revealed !== false || revealed === undefined,
         })}
       >
         <div
           style={headerStyle.style}
           className={classNames(styles.header, {
-            [styles.darkFont]: Util.isLightColor(headerColor)
+            [styles.darkFont]: Util.isLightColor(headerColor),
           })}
         >
           <div className={styles.name}>{nodeData.name}</div>
@@ -123,6 +123,7 @@ const InfoBox = ({
           </div>
           <div>
             {supportType !== "jee" &&
+              !missingScore &&
               flowValuesKnown &&
               infoBoxData.flowValues.map(d => (
                 <div className={styles.flowValues}>

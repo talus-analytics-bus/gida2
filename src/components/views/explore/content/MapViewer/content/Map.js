@@ -13,14 +13,14 @@ import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
   getMapColorScale,
-  getMapMetricValue
+  getMapMetricValue,
 } from "../../../../../map/MapUtil.js";
 import {
   getNodeData,
   getTableRowData,
   getInfoBoxData,
   calculateNeedsMet,
-  getFlowValues
+  getFlowValues,
 } from "../../../../../misc/Data.js";
 import Util from "../../../../../misc/Util.js";
 import { getJeeScores, getNodeLinkList } from "../../../../../misc/Data.js";
@@ -38,21 +38,101 @@ const Map = ({
   jeeScores,
   ghsaOnly,
   isDark,
-  setLoadingSpinnerOn,
+  loaded,
+  setLoaded,
   ...props
 }) => {
   // Get node type from entity role
-  const nodeType = entityRole === "funder" ? "source" : "target";
+  const nodeType = entityRole === "funder" ? "origin" : "target";
 
-  // Get map color scale to use.
+  const addNeedsMetDatum = ({
+    d,
+    dataNeedsMet,
+    iso3WithJeeAdded,
+    coreCapacities,
+    iso3,
+    jeeScores,
+  }) => {
+    const hasJee = jeeScores[iso3] !== undefined;
+    const hasDisbursementOrZero =
+      d.disbursed_funds === undefined || d.disbursed_funds >= 0;
+    if (hasJee) {
+      iso3WithJeeAdded.push(iso3);
+      let needs_met = -9999;
+      let avgJeeScore;
+      if (hasDisbursementOrZero) {
+        const scores = getJeeScores({
+          scores: jeeScores,
+          iso3,
+          coreCapacities,
+        });
+        avgJeeScore = d3.mean(scores, d => d.score);
+
+        needs_met = calculateNeedsMet({
+          datum: d,
+          avgCapScores: avgJeeScore,
+        });
+      }
+      dataNeedsMet.push({
+        ...d,
+        needs_met,
+        avgJeeScore,
+      });
+    }
+  };
+
+  const dataNeedsMet = [];
+  if (supportType === "needs_met") {
+    const iso3WithJeeAdded = [];
+    data.forEach(d => {
+      const iso3 = d.target !== undefined ? d.target.iso3 : d.origin.iso3;
+      addNeedsMetDatum({
+        d,
+        dataNeedsMet,
+        iso3WithJeeAdded,
+        coreCapacities,
+        iso3,
+        jeeScores,
+      });
+    });
+
+    // Add data for countries with JEE scores but no funds
+    for (const iso3 in jeeScores) {
+      if (!iso3WithJeeAdded.includes(iso3)) {
+        addNeedsMetDatum({
+          d: { target: { iso3 }, disbursed_funds: 0 },
+          dataNeedsMet,
+          iso3WithJeeAdded,
+          coreCapacities,
+          iso3,
+          jeeScores,
+        });
+      }
+    }
+
+    // make null values equal to highest val
+    const maxVal = d3.max(dataNeedsMet, d => d.needs_met);
+    dataNeedsMet.forEach(d => {
+      if (d.needs_met === null) d.needs_met = maxVal;
+    });
+  }
+
   const colorScale = getMapColorScale({
     supportType: supportType,
     data: data,
+    dataNeedsMet,
     flowType: flowType,
     jeeScores,
     coreCapacities,
-    entityRole
+    entityRole,
   });
+
+  // console.log("colorScale.values");
+  // console.log(colorScale.values);
+  // console.log("colorScale");
+  // console.log(colorScale);
+  // console.log("colorScale.type");
+  // console.log(colorScale.type);
 
   // Define hatch mark pattern.
   // const defs = (
@@ -102,15 +182,22 @@ const Map = ({
           nodeList: JSON.parse(d),
           entityRole: entityRole,
           id: undefined,
-          otherId: undefined
-        })
+          otherId: undefined,
+        }),
     },
     {
       title: "Location (ID)",
       prop: "id",
       type: "text",
-      func: d => d[nodeType][0].id,
-      render: d => d
+      func: d => d[nodeType].id,
+      render: d => d,
+    },
+    {
+      title: "Location (ISO3)",
+      prop: "iso3",
+      type: "text",
+      func: d => d[nodeType].iso3,
+      render: d => d,
     },
     {
       title: "Map metric raw value",
@@ -123,8 +210,8 @@ const Map = ({
           flowType,
           coreCapacities,
           forTooltip: false,
-          scores: jeeScores
-        })
+          scores: jeeScores,
+        }),
     },
     {
       title: "Map metric display value",
@@ -138,8 +225,8 @@ const Map = ({
           flowType,
           coreCapacities,
           forTooltip: true,
-          scores: jeeScores
-        })
+          scores: jeeScores,
+        }),
     },
     {
       title: "Unknown value explanation (if applicable)",
@@ -154,10 +241,10 @@ const Map = ({
             supportType,
             flowType,
             coreCapacities,
-            scores: jeeScores
+            scores: jeeScores,
           }),
-          entityRole: entityRole
-        })
+          entityRole: entityRole,
+        }),
     },
     {
       title: "Map tooltip label",
@@ -170,7 +257,7 @@ const Map = ({
           flowType,
           minYear,
           maxYear,
-          entityRole
+          entityRole,
         }),
       func: d =>
         getMapMetricValue({
@@ -178,8 +265,8 @@ const Map = ({
           supportType,
           flowType,
           coreCapacities,
-          scores: jeeScores
-        })
+          scores: jeeScores,
+        }),
     },
     {
       title: "Color",
@@ -192,10 +279,10 @@ const Map = ({
               fill:
                 supportType === "jee"
                   ? colorScale(Util.getScoreShortName(d))
-                  : colorScale(d)
+                  : colorScale(d),
             }}
             className={classNames(styles.square, {
-              [styles.hatch]: d === "yyy" || d === -8888
+              [styles.hatch]: d === "yyy" || d === -8888,
             })}
           />
           {
@@ -209,90 +296,41 @@ const Map = ({
           supportType,
           flowType,
           coreCapacities,
-          scores: jeeScores
-        })
-    }
+          scores: jeeScores,
+        }),
+    },
   ];
 
   // Get data for d3Map
   let mapData;
   if (supportType !== "jee") {
     // add missing countries as zeros
-
-    mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data });
-
-    if (supportType === "needs_met") {
-      for (let placeId in jeeScores) {
-        const match = mapData.find(d => d.id === parseInt(placeId));
-        if (match === undefined) {
-          // Get score avg.
-          const scores = getJeeScores({
-            scores: jeeScores,
-            iso2: placeId,
-            coreCapacities
-          });
-          const avgJeeScore = d3.mean(scores, d => d.score);
-
-          const datum = {
-            flow_types: {
-              disbursed_funds: {
-                focus_node_weight: 0
-              }
-            }
-          };
-          const value = calculateNeedsMet({ datum, avgCapScores: avgJeeScore });
-          mapData.push({
-            id: parseInt(placeId),
-            value: 0,
-            value_raw: value,
-            tooltip_label: 0,
-            color: value,
-            target: JSON.stringify([
-              {
-                id: placeId,
-                name: "TBD",
-                type: "country"
-              }
-            ])
-          });
-          // data.push({
-          //   flow_types: { disbursed_funds: { focus_node_weight: 0 } },
-          //   target: [
-          //     {
-          //       id: placeId,
-          //       name: "TBD",
-          //       type: "country"
-          //     }
-          //   ]
-          // });
-        }
-      }
-    }
+    const dataArr =
+      supportType === "needs_met" ? dataNeedsMet : Object.values(data);
+    mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data: dataArr });
   } else {
     const jeeScoreData = [];
-    // if place not in data...
-    for (let place_id in jeeScores) {
+    for (let iso3 in jeeScores) {
       jeeScoreData.push({
-        [nodeType]: [
-          {
-            id: parseInt(place_id)
-          }
-        ]
+        [nodeType]: {
+          iso3,
+        },
+        value_raw: 5,
       });
     }
     mapData = getTableRowData({
       tableRowDefs: d3MapDataFields,
-      data: jeeScoreData
+      data: jeeScoreData,
     });
   }
   // Get datum for the selected node, if it exists.
   const datumForInfoBox =
     nodeData !== undefined
-      ? data.find(d => d[nodeType].find(dd => dd.id === nodeData.id))
+      ? data.find(d => d[nodeType].iso3 === nodeData.iso3)
       : undefined;
   const datumForTooltip =
     tooltipNodeData !== undefined
-      ? data.find(d => d[nodeType].find(dd => dd.id === tooltipNodeData.id))
+      ? data.find(d => d[nodeType].iso3 === tooltipNodeData.iso3)
       : undefined;
 
   const infoBoxData = getInfoBoxData({
@@ -307,7 +345,7 @@ const Map = ({
     minYear,
     maxYear,
     flowType,
-    simple: false
+    simple: false,
   });
 
   const tooltipData =
@@ -324,7 +362,7 @@ const Map = ({
           minYear,
           maxYear,
           flowType,
-          simple: true
+          simple: true,
         })
       : undefined;
   return (
@@ -344,8 +382,8 @@ const Map = ({
           d3MapDataFields,
           ghsaOnly,
           setNodeData,
-          setLoadingSpinnerOn,
-          isDark
+          setLoaded,
+          isDark,
         }}
       />
       <div className={styles.legend}>
@@ -356,7 +394,7 @@ const Map = ({
             flowType,
             isDark,
             entityRole,
-            style: { borderBottom: "none" }
+            style: { borderBottom: "none" },
           }}
         />
       </div>
@@ -369,7 +407,7 @@ const Map = ({
             setNodeData,
             infoBoxData,
             isDark,
-            style: { border: "1px solid #ccc" }
+            style: { border: "1px solid #ccc" },
           }}
         />
       </div>
@@ -379,7 +417,7 @@ const Map = ({
           id={"mapTooltip"}
           type="light"
           className={classNames(tooltipStyles.tooltip, tooltipStyles.simple, {
-            [tooltipStyles.dark]: isDark
+            [tooltipStyles.dark]: isDark,
           })}
           place="top"
           effect="float"
@@ -393,7 +431,7 @@ const Map = ({
                   nodeData: tooltipNodeData,
                   setNodeData,
                   infoBoxData: tooltipData,
-                  isDark
+                  isDark,
                 }}
               />
             )

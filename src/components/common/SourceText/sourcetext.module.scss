@@ -5,3 +5,15 @@
   text-decoration: underline;
   margin: 10px 0 0 auto;
 }
+.sourceTextList {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 10px;
+  @include spaceChildrenVert(10px);
+}
+.custom {
+  font-size: 1.2rem;
+  font-style: italic;
+  margin-top: 10px;
+  color: #828282;
+}

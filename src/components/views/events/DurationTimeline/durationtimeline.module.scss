@@ -1,0 +1,60 @@
+@import "../../../../assets/styles/colors.scss";
+.durationTimeline {
+  width: 100%;
+  margin-bottom: 40px !important; // offset for absolute positioning of labels
+  $thickLineBlue: #125088;
+  .title {
+    @include sectionTitle;
+    margin-bottom: 10px;
+  }
+  .track {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    margin-top: 35px;
+    height: 1px;
+    background-color: black;
+    .ticks {
+      width: 100%;
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      position: absolute;
+      top: 0;
+      .tick {
+        width: 1px;
+        height: 10px;
+        background-color: black;
+      }
+    }
+
+    .dots {
+      display: flex;
+      flex-flow: row;
+    }
+  }
+  .thickTrack {
+    position: relative;
+    width: 100%;
+    height: 5px;
+    background-color: #125088;
+  }
+  .arrow {
+    position: absolute;
+    height: 15px;
+    transform: translate(-1px);
+  }
+  .years {
+    width: 100%;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    .year {
+      font-family: "Rawline", serif;
+      text-align: center;
+      margin-top: 10px;
+    }
+  }
+}

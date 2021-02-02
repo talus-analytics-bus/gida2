@@ -11,7 +11,6 @@ import Button from "../../common/Button/Button.js";
  */
 const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
   const nOptions = Util.comma(options.length);
-
   let value = [];
 
   if (props.curValues && props.curValues.length > 0) {
@@ -25,16 +24,16 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
     option: (provided, state) => {
       return {
         ...provided,
-        color: state.isSelected ? "#333 !important" : "inherit"
+        color: state.isSelected ? "#333 !important" : "inherit",
       };
-    }
+    },
   };
 
   return (
     <div
       className={classNames(styles.filterDropdown, {
         [styles.up]: props.openDirection === "up",
-        [styles.dark]: props.isDark
+        [styles.dark]: props.isDark,
       })}
     >
       <div

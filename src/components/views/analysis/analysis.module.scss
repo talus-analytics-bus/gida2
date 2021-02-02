@@ -91,6 +91,7 @@
       border: 1px solid #ccc;
       padding: 20px;
       width: 100%;
+      position: relative;
       > div {
         margin: 20px 0;
         &:first-child {
@@ -122,6 +123,11 @@
         &:last-child {
           margin-right: 0;
         }
+      }
+
+      // float source text to right
+      + a {
+        float: right;
       }
     }
   }

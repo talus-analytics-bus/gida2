@@ -30,15 +30,14 @@
       flex-flow: column;
       background-color: #f2f2f2;
       padding: 20px;
+      min-height: 120px;
+      justify-content: center;
 
       .bannerRow {
-        display: flex;
-        flex-flow: row;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr auto;
         align-items: center;
-        // &:last-child {
-        //   align-items: flex-end;
-        // }
+        grid-gap: 0 20px;
       }
 
       .countryName {
@@ -90,6 +89,10 @@
       border-radius: $border-radius $border-radius 0 0;
       border-color: #ccc;
       border-width: 1px;
+
+      &.invis {
+        display: none;
+      }
 
       &:not(.selected) {
         background-color: transparent;

@@ -4,8 +4,10 @@
   display: flex;
   flex-flow: row;
   align-items: center;
-  border-radius: $border-radius;
+  border-radius: $border-radius * 2;
   color: #333;
+  font-size: 1.6rem;
+  width: max-content;
 
   span[class^="glyphicon"] {
     margin-right: 10px;
@@ -105,6 +107,7 @@
   }
 }
 .link {
+  width: max-content;
   &:hover,
   &:focus {
     text-decoration: none;

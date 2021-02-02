@@ -1,4 +1,5 @@
 import * as d3 from "d3/dist/d3.min";
+import moment from "moment";
 
 // Utility functions and data.
 const Util = {};
@@ -90,9 +91,10 @@ Util.isLightColor = color => {
 };
 
 // Return init cap version of input string
-Util.getInitCap = str => {
+export const getInitCap = str => {
   return str.charAt(0).toUpperCase() + str.slice(1, str.length);
 };
+Util.getInitCap = getInitCap;
 
 // Returns correct noun form of entity given their role
 Util.getRoleTerm = ({ type, role }) => {
@@ -206,7 +208,7 @@ Util.getCumulativeCount = (data, nMonth = 12, lagMonths = 0) => {
     stale_flag: start.stale_flag,
     updated_at: start.updated_at,
     value: cumulativeCount,
-    n_null: nNull
+    n_null: nNull,
   };
 };
 
@@ -249,7 +251,7 @@ Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
     start_obs: start.observation_id,
     startDatum: start,
     endDatum: end,
-    incomplete: start.n_null > 0 || end.n_null > 0
+    incomplete: start.n_null > 0 || end.n_null > 0,
   };
 };
 
@@ -297,7 +299,7 @@ Util.getDeltaData = datum => {
       delta: datum["percent_change"],
       deltaSign: Util.getDeltaSign(datum["percent_change"]),
       deltaFmt: Util.percentizeDelta(datum["percent_change"]),
-      direction: direction
+      direction: direction,
     };
   } else return {};
 };
@@ -313,7 +315,7 @@ Util.changeColors = {
   negLight: valueGreen2,
   pos: valueRed,
   posLight: valueRed2,
-  missing: "#b3b3b3"
+  missing: "#b3b3b3",
 };
 
 // Color series used to indicate relative vaccination coverage from least to
@@ -324,7 +326,7 @@ Util.vaccinationColors = [
   "#7fcdbb",
   "#41b6c4",
   "#2c7fb8",
-  "#303d91"
+  "#303d91",
 ];
 
 // const vaccinationColorScale = (val) => {
@@ -350,16 +352,16 @@ Util.getMetricChartParams = metric => {
           const firstStr = fakeObsDt.toLocaleString("en-us", {
             month: "short",
             year: "numeric",
-            timeZone: "UTC"
+            timeZone: "UTC",
           });
           const lastStr = firstObsDt.toLocaleString("en-us", {
             month: "short",
             year: "numeric",
-            timeZone: "UTC"
+            timeZone: "UTC",
           });
 
           return `${firstStr} to ${lastStr}`;
-        }
+        },
       };
     case "caseload_totalpop":
       return {
@@ -370,7 +372,7 @@ Util.getMetricChartParams = metric => {
         getUnits: val => (val === 1 ? "case" : "cases"),
         sort: "desc",
         label: "Total cases of measles",
-        name: "Total cases of measles"
+        name: "Total cases of measles",
       };
     case "incidence_monthly":
       return {
@@ -382,7 +384,7 @@ Util.getMetricChartParams = metric => {
         getUnits: val =>
           val === 1 ? "case per 1M population" : "cases per 1M population",
         label: "Monthly incidence of measles (cases per 1M population)",
-        name: "Monthly incidence rate"
+        name: "Monthly incidence rate",
       };
     case "incidence_yearly":
       return {
@@ -394,7 +396,7 @@ Util.getMetricChartParams = metric => {
         getUnits: val =>
           val === 1 ? "case per 1M population" : "cases per 1M population",
         label: "Yearly incidence of measles (cases per 1M population)",
-        name: "Yearly incidence rate"
+        name: "Yearly incidence rate",
       };
     case "monthlycaseload_totalpop":
       return {
@@ -403,7 +405,7 @@ Util.getMetricChartParams = metric => {
         metric: "monthlycaseload_totalpop",
         sort: "desc",
         temporal_resolution: "monthly",
-        label: "Cases reported globally"
+        label: "Cases reported globally",
       };
 
     case "coverage_mcv1_infant": // DEBUG
@@ -414,7 +416,7 @@ Util.getMetricChartParams = metric => {
         temporal_resolution: "yearly",
         sort: "asc",
         label: "Vaccination coverage (% of infants)",
-        dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year")
+        dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year"),
       };
 
     case "avg_coverage_mcv1_infant": // DEBUG
@@ -426,7 +428,7 @@ Util.getMetricChartParams = metric => {
         sort: "asc",
         defaultTicks: [0, 50, 100],
         label: "Average vaccination coverage",
-        dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year")
+        dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year"),
       };
   }
 };
@@ -467,7 +469,7 @@ Util.getColorScaleForMetric = (metric, domain) => {
   }
 };
 
-Util.getIntArray = (min, max) => {
+export const getIntArray = (min, max) => {
   const list = [];
   for (let i = min; i <= max; i++) {
     list.push(i);
@@ -532,7 +534,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "month",
         value: datum.value === null ? null : Util.comma(datum.value),
-        label: datum.value === 1 ? "case" : "cases"
+        label: datum.value === 1 ? "case" : "cases",
       };
     case "incidence_monthly": // DEBUG
       return {
@@ -540,7 +542,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "month",
         value: datum.value === null ? null : Util.formatIncidence(datum.value),
-        label: "cases per 1M population"
+        label: "cases per 1M population",
       };
     case "monthlycaseload_totalpop": // DEBUG
       return {
@@ -548,7 +550,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "month",
         value: Util.comma(datum.value),
-        label: "cases"
+        label: "cases",
       };
     case "coverage_mcv1_infant": // DEBUG
       return {
@@ -556,7 +558,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "year",
         value: datum.value ? Util.percentize(datum.value) : null,
-        label: "of infants"
+        label: "of infants",
       };
     case "avg_coverage_mcv1_infant": // DEBUG
       return {
@@ -564,7 +566,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "year",
         value: Util.percentize(datum.value),
-        label: "of infants"
+        label: "of infants",
       };
     case "total_population":
       return {
@@ -572,7 +574,7 @@ Util.getTooltipItem = datum => {
         datum: datum,
         period: "year",
         value: Util.formatSI(datum.value),
-        label: "cases"
+        label: "cases",
       };
   }
 };
@@ -580,20 +582,20 @@ Util.getTooltipItem = datum => {
 Util.quantiles = [
   {
     name: "Very low",
-    value: 0.2
+    value: 0.2,
   },
   {
     name: "Low",
-    value: 0.6
+    value: 0.6,
   },
   {
     name: "Average",
-    value: 1.4
+    value: 1.4,
   },
   {
     name: "High",
-    value: 4.1
-  }
+    value: 4.1,
+  },
 ];
 
 // const getIncidenceQuantile = (allObsTmp, countryObs) => {
@@ -687,19 +689,19 @@ Util.getDateTimeRange = item => {
   const firstStr = new Date(first.replace(/-/g, "/")).toLocaleString("en-us", {
     month: "short",
     year: "numeric",
-    timeZone: "UTC"
+    timeZone: "UTC",
   });
   const firstStrNoYear = new Date(first.replace(/-/g, "/")).toLocaleString(
     "en-us",
     {
       month: "short",
-      timeZone: "UTC"
+      timeZone: "UTC",
     }
   );
   const lastStr = new Date(last.replace(/-/g, "/")).toLocaleString("en-us", {
     month: "short",
     year: "numeric",
-    timeZone: "UTC"
+    timeZone: "UTC",
   });
   const sameYear = first.slice(0, 4) === last.slice(0, 4);
 
@@ -757,12 +759,12 @@ Util.getDatetimeStamp = (datum, type = "year") => {
     datetimeStamp = new Date(date_time).toLocaleString("en-US", {
       month: "short",
       year: "numeric",
-      timeZone: "UTC"
+      timeZone: "UTC",
     });
   } else if (type === "year") {
     datetimeStamp = new Date(date_time).toLocaleString("en-US", {
       year: "numeric",
-      timeZone: "UTC"
+      timeZone: "UTC",
     });
   }
   return `${datetimeStamp}`;
@@ -840,10 +842,11 @@ Util.formatIncidence = inc => {
 Util.decimalizeOne = d3.format(".1f");
 
 // Comma-ize numbers
-Util.comma = function(num) {
+export const comma = function(num) {
   const resultTmp = d3.format(",.0f")(num);
   return resultTmp;
 };
+Util.comma = comma;
 
 Util.formatLabel = ft => {
   switch (ft) {
@@ -883,7 +886,7 @@ Util.getScoreShortName = score => {
 // Formats value based on column name
 Util.formatValue = (val, cn, units = true, round = false) => {
   if (val === -8888 || val === "yyy") return "Specific amount not reported";
-  if (val === "n/a") return val;
+  if (val === "n/a" || val === "Unavailable") return val;
   if (val === undefined || val === null) val = 0;
   else {
     switch (cn) {
@@ -903,9 +906,16 @@ Util.formatValue = (val, cn, units = true, round = false) => {
         if (val === "unknown") return "Specific amount not reported";
         else if (val === -9999 || val === "zzz") return undefined;
         else return val || 0;
-      default:
+      case "total_cases":
+        return Util.formatSIInteger(val) + " cases";
+      case "total_deaths":
+        return Util.formatSIInteger(val) + " deaths";
+      case "project_name":
         if (val === -9999 || val === "zzz") return undefined;
         else return val;
+      default:
+        if (val === -9999 || val === "zzz") return undefined;
+        else return comma(val);
     }
   }
 };
@@ -919,9 +929,31 @@ Util.money = (val, units = true, round = false) => {
   } else return `${Util.formatSI(val)}${units ? " USD" : ""}`;
 };
 
+export const regions = [
+  { value: "", label: "All regions" },
+  { value: "afro", label: "African Region (AFRO)" },
+  { value: "paho", label: "Region of the Americas (PAHO)" },
+  { value: "searo", label: "South-East Asia Region (SEARO)" },
+  { value: "euro", label: "European Region (EURO)" },
+  {
+    value: "emro",
+    label: "Eastern Mediterranean Region (EMRO)",
+  },
+  { value: "wpro", label: "Western Pacific Region (WPRO)" },
+];
+
+export const regionsByValue = {};
+regions.forEach(d => {
+  if (d.value !== "") regionsByValue[d.value] = d.label;
+});
+
+export const formatRegion = v => {
+  return regionsByValue[v] || v;
+};
+
 Util.formatSIInteger = val => {
   if (val === 0) return "0";
-  else if (val <= 999) return val;
+  else if (val <= 999) return comma(val);
   else
     return d3
       .format(".2s")(val)
@@ -971,14 +1003,14 @@ Util.formatDatetime = input => {
     minute: "2-digit",
     second: "2-digit",
     year: "numeric",
-    day: "numeric"
+    day: "numeric",
   });
 };
-Util.formatDate = input => {
+export const formatDate = input => {
   return input.toLocaleString("en-us", {
     month: "short",
     year: "numeric",
-    day: "numeric"
+    day: "numeric",
   });
 };
 
@@ -1053,6 +1085,38 @@ Util.getAttrFormatter = name => {
       };
     default:
       return v => v;
+  }
+};
+
+/**
+ * Returns true if the object has no keys, false otherwise.
+ * @method isEmpty
+ * @param  {[type]}  d [description]
+ * @return {Boolean}   [description]
+ */
+export const isEmpty = d => {
+  if (d === undefined || Object.keys(d).length === 0) return true;
+  else return false;
+};
+
+// convert float to pct string with limited precision
+export const floatToPctString = f => {
+  const s = f.toString();
+  if (s.includes(".")) {
+    const sArr = s.split(".");
+    return `${sArr[0]}.${sArr[1].slice(0, 3)}%`;
+  } else return s.slice(0, 3);
+};
+
+// none values
+export const NONE_VALS = [undefined, null, ""];
+
+// get last updated date as formatted str, or null
+export const getLastUpdatedDate = ({ versionType, data }) => {
+  const datum = data.find(d => d.version_type === versionType);
+  if (datum === undefined) return null;
+  else {
+    return moment(datum.last_updated_date).format("MMM D, YYYY");
   }
 };
 

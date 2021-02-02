@@ -19,7 +19,7 @@ const Home = () => {
 
           <div className={styles.welcomeDesc}>
             <p>
-              The International Disease and Events Analysis (IDEA) Global Health
+              The Georgetown Infectious Disease Atlas (GIDA) Global Health
               Security Tracking site maps the flow of funding and in-kind
               support for global health security. Use the search bar below to
               view more details about a funder or recipient's activities, or
@@ -39,7 +39,12 @@ const Home = () => {
             <br /> organization details
           </div>
           <div className={styles.content}>
-            <Search name={"home"} expandedDefault={true} />
+            <Search
+              top={false}
+              name={"home"}
+              expandedDefault={true}
+              limit={3}
+            />
           </div>
         </div>
       </div>

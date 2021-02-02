@@ -1,0 +1,84 @@
+@import "../../../../assets/styles/colors.scss";
+.eventBars {
+  // loading
+  display: flex;
+  flex-flow: column;
+  .charts {
+    display: grid;
+    width: 100%;
+    &.two {
+      grid-template-columns: 3fr 1fr;
+    }
+    &.one {
+      grid-template-columns: 1fr;
+    }
+    &.shown {
+      opacity: 1;
+      transition: 0.5s all;
+    }
+    &:not(.shown) {
+      opacity: 0;
+      transition: 0.5s all;
+    }
+    .chart {
+      height: auto;
+      width: 100%;
+
+      .dropdowns {
+        display: flex;
+        align-items: flex-end;
+        > div,
+        form label {
+          margin: 0;
+        }
+        margin-bottom: 30px;
+        @include spaceChildrenHoriz(10px);
+        text-transform: uppercase;
+        > div:not(.checkbox) {
+          @include dropdown();
+        }
+        // .checkbox {
+        //   position: relative;
+        //   top: 13px;
+        // }
+      }
+
+      .bars,
+      .impacts {
+        height: auto;
+        width: 100%;
+        &.hidden {
+          display: none;
+        }
+        text {
+          font-size: 16px;
+          font-family: "Open Sans", sans-serif;
+          a,
+          tspan {
+            font-family: "open_sanssemibold", sans-serif;
+          }
+          a {
+            fill: $outbreak-blue-2;
+          }
+        }
+        g[class="x axis"] text,
+        text[class*="axis-title"] {
+          font-size: 1.4rem;
+        }
+        circle {
+          fill: $outbreak-blue-2;
+          z-index: 100;
+        }
+        image {
+          display: none;
+        }
+      }
+
+      &:last-child .dropdowns {
+        > div {
+          margin-left: 45px;
+        }
+      }
+    }
+  }
+}

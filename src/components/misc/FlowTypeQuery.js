@@ -3,10 +3,10 @@ import Util from "./Util.js";
 
 /**
  * Get flow type data from API.
- * @method FlowTypeQuery
+ * @method FlowType
  */
 
-const FlowTypeQuery = async function({ flow_type_ids }) {
+const FlowType = async function({ flow_type_ids }) {
   // Define URL parameters //
   const params = {
     flow_type_ids: flow_type_ids !== null ? flow_type_ids.join(",") : null
@@ -25,4 +25,4 @@ const FlowTypeQuery = async function({ flow_type_ids }) {
   return res.data;
 };
 
-export default FlowTypeQuery;
+export default FlowType;

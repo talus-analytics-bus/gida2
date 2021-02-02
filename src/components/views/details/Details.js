@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./details.module.scss";
 import classNames from "classnames";
@@ -7,14 +7,21 @@ import {
   getNodeLinkList,
   getWeightsBySummaryAttributeSimple,
   getSummaryAttributeWeightsByNode,
-  isUnknownDataOnly
+  isUnknownDataOnly,
+  parseIdsAsNames,
 } from "../../misc/Data.js";
-import Util from "../../misc/Util.js";
-import FlowQuery from "../../misc/FlowQuery.js";
-import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
-import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
-import NodeQuery from "../../misc/NodeQuery.js";
-import ScoreQuery from "../../misc/ScoreQuery.js";
+import Util, { isEmpty } from "../../misc/Util.js";
+
+// queries
+import {
+  execute,
+  Stakeholder,
+  Assessment,
+  Flow,
+  NodeSums,
+  Outbreak,
+} from "../../misc/Queries";
+
 import { purples, greens, pvsCats, pvsColors } from "../../map/MapUtil.js";
 
 // Content components
@@ -24,11 +31,16 @@ import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
+import Loading from "../../common/Loading/Loading.js";
 import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
 import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
 import ReactTooltip from "react-tooltip";
 import tooltipStyles from "../../common/tooltip.module.scss";
+import TopTable from "../../chart/TopTable/TopTable";
+
+// local components
+import EventTable from "./content/EventTable";
 
 // FC for Details.
 const Details = ({
@@ -42,8 +54,9 @@ const Details = ({
   setLoadingSpinnerOn,
   ...props
 }) => {
-  console.log("data");
-  console.log(data);
+  const direction = entityRole === "funder" ? "origin" : "target";
+  const otherDirection = direction === "origin" ? "target" : "origin";
+
   let pageType;
   if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
   else pageType = "entity";
@@ -59,145 +72,133 @@ const Details = ({
 
   // Define the other node type based on the current entity role, which is used
   // in certain charts.
-  const nodeType = entityRole === "funder" ? "source" : "target";
-  const otherNodeType = entityRole === "funder" ? "target" : "source";
+  const nodeType = entityRole === "funder" ? "origin" : "target";
+  const otherNodeType = entityRole === "funder" ? "target" : "origin";
 
   // Track whether viewing committed or disbursed/provided assistance
-  const [curFlowType, setCurFlowType] = React.useState("disbursed_funds");
-  const [pvsTooltipData, setPvsTooltipData] = React.useState(undefined);
+  const [curFlowType, setCurFlowType] = useState("disbursed_funds");
+  const [pvsTooltipData, setPvsTooltipData] = useState(undefined);
 
-  const noResponseData = data.flows.flows.length === 0;
-  const [curTab, setCurTab] = React.useState("ihr");
-  const [showFlag, setShowFlag] = React.useState(
-    data.nodeData.type === "country"
-  );
+  // is there any data to show? Inkind only?
+  const [noData, setNoData] = useState(false);
+  const [inkindOnly, setInkindOnly] = useState(false);
 
-  const [curPvsEdition, setCurPvsEdition] = React.useState(
-    data.pvs.eds[0] || {}
-  );
+  // track flows used to calc. total event funding
+  const [eventTotalsData, setEventTotalsData] = useState(null);
 
-  if (noResponseData && curTab === "event") setCurTab("ihr");
+  // is there any event funding?
+  const noEventFunding =
+    eventTotalsData === null || eventTotalsData.length === 0;
+
+  const [nodeData, setNodeData] = useState({});
+  const [nodesData, setNodesData] = useState({});
+  const defaultPvs = { eds: [], data: [], loading: true };
+  const [pvs, setPvs] = useState(defaultPvs);
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  const getData = async () => {
+    // define directions for queries
+    const direction = entityRole === "funder" ? "origin" : "target";
+    const otherDirection = direction === "origin" ? "target" : "origin";
+
+    // define common filters for most queries
+    const commonFilters = {};
+
+    // if GHSA page, filter by `is_ghsa === true`
+    const isGhsaPage = id === "ghsa";
+    if (isGhsaPage) {
+      commonFilters["Flow.is_ghsa"] = [true];
+    }
+
+    const queries = {
+      // Information about the entity
+      nodesData: Stakeholder({ by: "id" }),
+    };
+
+    if (!isGhsaPage)
+      queries.pvs = Assessment({
+        id,
+        scoreType: "PVS",
+      });
+
+    // Get query results.
+    // setLoadingSpinnerOn(true);
+    const results = await execute({ queries });
+
+    // use first and only node result
+    if (!isGhsaPage) results.nodeData = results.nodesData[id];
+    else results.nodeData = { id: -9999, name: "GHSA" };
+
+    setNodeData(results.nodeData);
+    setNodesData(results.nodesData);
+    if (!isGhsaPage) setPvs(results.pvs);
+    else setPvs({ ...defaultPvs, loading: false });
+  };
+
+  const [curTab, setCurTab] = useState("ihr");
+  const [showFlag, setShowFlag] = useState(nodeData.subcat === "country");
+  const [curPvsEdition, setCurPvsEdition] = useState(pvs.eds[0] || {});
 
   // Get display name for current flow type
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
     .display_name;
 
-  // Track the Top Recipients/Funders table data
-  const topTableData = getSummaryAttributeWeightsByNode({
-    data: data.flowBundlesFocusOther.flow_bundles,
-    field: "core_elements",
-    flowTypes: ["disbursed_funds", "committed_funds"],
-    nodeType: otherNodeType
-  }).filter(
-    d =>
-      d[otherNodeType] !== undefined &&
-      (d[otherNodeType][0].name !== "Not reported" ||
-        d[otherNodeType].length > 1)
-  );
-
-  // If on GHSA page, get "other" top table to display.
-  const topTableDataOther =
-    pageType === "ghsa"
-      ? getSummaryAttributeWeightsByNode({
-          data: data.focusSummary.flow_bundles,
-          field: "core_elements",
-          flowTypes: ["disbursed_funds", "committed_funds"],
-          nodeType: nodeType
-        }).filter(d => d[nodeType].name !== "Not reported")
-      : null;
-
   // True if there are no data to show for the entire page, false otherwise.
-  const noData = data.focusSummary.flow_bundles[0] === undefined;
-
-  const noFinancialData = noData
-    ? true
-    : data.focusSummary.master_summary.flow_types["disbursed_funds"] ===
-        undefined &&
-      data.focusSummary.master_summary.flow_types["committed_funds"] ===
-        undefined;
-
-  if (noData || noFinancialData)
-    setLoadingSpinnerOn(false, false, undefined, true);
+  const noFinancialData = false;
 
   // True if the only available data to show are for "unknown" values (specific
   // value no reported).
-  const unknownDataOnly = isUnknownDataOnly({
-    masterSummary: data.focusSummary.master_summary
-  });
-
-  // Define standard colums for Top Funders and Top Recipients tables.
-  const topTableCols = [
-    {
-      prop: "total",
-      func: d => (d[curFlowType] ? d[curFlowType].total : undefined),
-      type: "num",
-      className: d => (d > 0 ? "num" : "num-with-text"),
-      title: `Total ${
-        curFlowType === "disbursed_funds" ? "disbursed" : "committed"
-      }`,
-      render: v => Util.formatValue(v, "disbursed_funds")
-    }
-  ].concat(
-    [
-      ["P", "Prevent"],
-      ["D", "Detect"],
-      ["R", "Respond"],
-      ["Other", "Other"],
-      ["General IHR", "General IHR Implementation"],
-      ["Unspecified", "Unspecified"]
-    ].map(c => {
-      return {
-        func: d => (d[curFlowType] ? d[curFlowType][c[0]] : undefined),
-        type: "num",
-        className: d => (d > 0 ? "num" : "num-with-text"),
-        title: c[1],
-        prop: c[1],
-        render: v => Util.formatValue(v, "disbursed_funds")
-      };
-    })
-  );
+  // TODO make work with new API
+  const unknownDataOnly = false;
 
   // Define header charts
   const pageHeaderContent = {
-    header: (
-      <h2>
-        Total funds {Util.getRoleTerm({ type: "adjective", role: entityRole })}{" "}
-        from {Settings.startYear} to {Settings.endYear}
-      </h2>
-    ),
+    header: null,
     content: (
       <FundsByYear
         id={id}
         entityRole={entityRole}
-        data={data.focusSummary.master_summary.flow_types}
+        otherEntityRole={otherEntityRole}
         unknownDataOnly={unknownDataOnly}
         noFinancialData={noFinancialData}
         flowTypeInfo={flowTypeInfo}
         ghsaOnly={ghsaOnly}
-        params={props.focusSummaryQueryParams}
         setLoadingSpinnerOn={setLoadingSpinnerOn}
+        setNoData={setNoData}
+        setInkindOnly={setInkindOnly}
+        header={
+          <h2>
+            Total funds{" "}
+            {Util.getRoleTerm({ type: "adjective", role: entityRole })} from{" "}
+            {Settings.startYear} to {Settings.endYear}
+          </h2>
+        }
       />
     ),
     toggleFlowType: false,
-    hide: noData
+    // hide: noData,
   };
 
   // Define details content sections.
-  const showTabs = !noData && !unknownDataOnly && !noFinancialData;
+  const showTabs = true;
+  // const showTabs = !noData && !unknownDataOnly && !noFinancialData;
 
-  // For response event funding: get totals.
-  const responseEventTotals = (
+  // For event response funding: get totals.
+  // TODO move into EventTable
+  const eventResponseTotals = (
     <div className={styles.totals}>
       <TotalByFlowType
+        key={"d"}
         inline={true}
         flowType="disbursed_funds"
-        data={data.flows.flows}
+        data={eventTotalsData}
         label={"event response funding"}
       />
       <TotalByFlowType
+        key={"c"}
         inline={true}
         flowType="committed_funds"
-        data={data.flows.flows}
+        data={eventTotalsData}
         label={"event response funding"}
       />
     </div>
@@ -223,7 +224,7 @@ const Details = ({
   );
 
   const updatePvsTooltipData = d => {
-    const allEdVals = data.pvs.scores.filter(
+    const allEdVals = pvs.data.filter(
       dd => dd.ind.toLowerCase() === d.indName.toLowerCase()
     );
 
@@ -243,7 +244,7 @@ const Details = ({
       cols: ["Edition number", "Score"],
       rows: allEdVals.map((dd, ii) => {
         return [dd.ed, dd.score];
-      })
+      }),
     };
     setPvsTooltipData(tooltipData);
   };
@@ -267,20 +268,22 @@ const Details = ({
               <form>
                 <select
                   onChange={v =>
-                    setCurPvsEdition(
-                      data.pvs.eds.find(d => d.ed === v.target.value)
-                    )
+                    setCurPvsEdition(pvs.eds.find(d => d.ed === v.target.value))
                   }
                 >
-                  {[...new Set(data.pvs.eds.map(d => d.ed))].map(d => (
+                  {[...new Set(pvs.eds.map(d => d.ed))].map(d => (
                     <option value={d}>{d}</option>
                   ))}
                 </select>
               </form>
             </div>
-            <p className={styles.subText}>
-              Evaluation conducted in {curPvsEdition.date}
-            </p>
+            {curPvsEdition.date !== undefined &&
+              curPvsEdition.date !== null &&
+              curPvsEdition.date !== "NaN" && (
+                <p className={styles.subText}>
+                  Evaluation conducted in {curPvsEdition.date}
+                </p>
+              )}
           </div>
           {pvsLegend}
         </div>
@@ -306,7 +309,7 @@ const Details = ({
                   >
                     {Util.roman(d)}
                   </div>
-                )
+                ),
               },
               {
                 title: "Indicator ID",
@@ -314,7 +317,7 @@ const Details = ({
                 type: "text",
                 func: d => d.indId,
                 render: d => d,
-                hide: true
+                hide: true,
               },
               {
                 title: "Indicator name (only)",
@@ -322,14 +325,14 @@ const Details = ({
                 type: "text",
                 func: d => d.ind,
                 render: d => d,
-                hide: true
+                hide: true,
               },
               {
                 title: "Core competency",
                 prop: "ind",
                 type: "text",
                 func: d => d.indId + " " + d.ind,
-                render: d => d
+                render: d => d,
               },
               {
                 title: "Level of advancement (1 to 5)",
@@ -342,50 +345,38 @@ const Details = ({
                     {...{
                       value: d,
                       rangeArray: [1, 2, 3, 4, 5],
-                      colors: pvsColors
+                      colors: pvsColors,
                     }}
                   />
-                )
-              }
+                ),
+              },
             ]}
-            tableData={data.pvs.scores.filter(d => d.ed === curPvsEdition.ed)}
+            tableData={pvs.data.filter(d => d.ed === curPvsEdition.ed)}
             sortOrder={"ascending"}
             hide={r => r.amount === -9999}
           />
         </div>
       ),
       toggleFlowType: false,
-      hide: noData || unknownDataOnly || noFinancialData
-    }
+      // hide: noData || unknownDataOnly || noFinancialData,
+    },
   ];
+
+  // constants
+  const havePvs = pvs.data.length !== 0 && entityRole !== "funder";
+  const haveAssistance = noData !== null ? !noData && !inkindOnly : true;
+  const haveEvent =
+    eventTotalsData !== null ? eventTotalsData.length !== 0 : false;
+  const haveAny = havePvs || haveAssistance || haveEvent;
 
   const tabSections = showTabs
     ? [
         {
           slug: "ihr",
           header: "IHR funding",
+          hide: noData || inkindOnly,
+          noData: noData || inkindOnly,
           content: [
-            // {
-            //   header: <h2>Funding by core element</h2>,
-            //   text: (
-            //     <p>
-            //       Percentages shown for each core element based on total
-            //       funding.
-            //     </p>
-            //   ),
-            //   content: (
-            //     <Donuts
-            //       data={data.focusSummary.master_summary}
-            //       flowType={curFlowType}
-            //       ghsaOnly={ghsaOnly}
-            //       attributeType={"core_elements"}
-            //       nodeType={nodeType}
-            //       id={id}
-            //     />
-            //   ),
-            //   toggleFlowType: true,
-            //   hide: noData || unknownDataOnly || noFinancialData
-            // },
             {
               header: <h2>Funding by core capacity</h2>,
               text: (
@@ -393,7 +384,7 @@ const Details = ({
                   The chart below shows the funds{" "}
                   {Util.getRoleTerm({
                     type: "adjective",
-                    role: entityRole
+                    role: entityRole,
                   })}{" "}
                   by core capacity. Only funded core capacities are shown. Hover
                   over a bar to see additional funding details.
@@ -401,29 +392,21 @@ const Details = ({
               ),
               content: (
                 <StackBar
-                  data={getWeightsBySummaryAttributeSimple({
-                    field: "core_capacities",
-                    flowTypes: ["disbursed_funds", "committed_funds"],
-                    data: data.flowBundlesFocusOther.flow_bundles,
-                    // data: data.flowBundles.flow_bundles,
-                    byOtherNode: true,
-                    nodeType: nodeType,
-                    otherNodeType: otherNodeType
-                  })}
+                  staticStakeholders={props.nodesData}
                   flowType={curFlowType}
                   flowTypeName={curFlowTypeName}
                   attributeType={"core_capacities"}
                   nodeType={nodeType}
                   otherNodeType={otherNodeType}
-                  jeeScores={data.jeeScores[data.nodeData.id]}
-                  placeType={data.nodeData.type}
+                  placeType={nodeData.subcat}
                   id={id}
                   ghsaOnly={ghsaOnly}
                   render={curTab === "ihr"}
+                  otherDirection={otherDirection}
                 />
               ),
               toggleFlowType: true,
-              hide: noData || unknownDataOnly || noFinancialData
+              hide: noData || unknownDataOnly || noFinancialData,
             },
             {
               header: <h2>Top {otherEntityRole}s</h2>,
@@ -433,312 +416,214 @@ const Details = ({
                   of funds{" "}
                   {Util.getRoleTerm({
                     type: "adjective",
-                    role: otherEntityRole
+                    role: otherEntityRole,
                   })}
                   . Click on a{" "}
                   {Util.getRoleTerm({
                     type: "noun",
-                    role: otherEntityRole
+                    role: otherEntityRole,
                   })}{" "}
                   name to view their profile.
                 </p>
               ),
               content: (
-                <TableInstance
-                  sortByProp={"total"}
-                  paging={true}
-                  tableColumns={[
-                    {
-                      title: Util.getInitCap(
-                        Util.getRoleTerm({
-                          type: "noun",
-                          role: otherEntityRole
-                        })
-                      ),
-                      prop: otherNodeType,
-                      type: "text",
-                      func: d => JSON.stringify(d[otherNodeType]),
-                      render: d =>
-                        getNodeLinkList({
-                          urlType: "details",
-                          nodeList: JSON.parse(d),
-                          entityRole: otherEntityRole,
-                          id: id
-                        })
-                    }
-                  ].concat(topTableCols)}
-                  tableData={
-                    topTableData
-                      ? topTableData.filter(d => d[curFlowType] !== undefined)
-                      : []
-                  }
+                <TopTable
+                  {...{
+                    id,
+                    curFlowType,
+                    otherEntityRole,
+                    otherNodeType: otherDirection,
+                    direction: otherDirection,
+                    staticStakeholders: nodesData,
+                  }}
                 />
               ),
               toggleFlowType: true,
-              hide: noData || unknownDataOnly || noFinancialData
+              hide: noData || noFinancialData,
             },
             {
               header: <h2>Top {entityRole}s</h2>,
               content: pageType === "ghsa" && (
-                <TableInstance
-                  sortByProp={"total"}
-                  tableColumns={[
-                    {
-                      title: Util.getInitCap(
-                        Util.getRoleTerm({
-                          type: "noun",
-                          role: entityRole
-                        })
-                      ),
-                      prop: nodeType,
-                      type: "text",
-                      func: d => JSON.stringify(d[nodeType]),
-                      render: d =>
-                        getNodeLinkList({
-                          urlType: "details",
-                          nodeList: JSON.parse(d),
-                          entityRole: entityRole,
-                          id: id
-                        })
-                    }
-                  ].concat(topTableCols)}
-                  tableData={
-                    topTableDataOther
-                      ? topTableDataOther.filter(
-                          d => d[curFlowType] !== undefined
-                        )
-                      : []
-                  }
+                <TopTable
+                  {...{
+                    id,
+                    curFlowType,
+                    otherEntityRole: entityRole,
+                    otherNodeType: otherDirection,
+                    direction: otherDirection,
+                    staticStakeholders: nodesData,
+                  }}
                 />
               ),
               toggleFlowType: true,
-              hide:
-                noData ||
-                pageType !== "ghsa" ||
-                unknownDataOnly ||
-                noFinancialData
-            }
-          ]
+              hide: noData || pageType !== "ghsa" || noFinancialData,
+            },
+          ],
         },
         {
           slug: "event",
           header: "Event response funding",
-          hide: noResponseData,
-          content:
-            data.flows.flows.length > 0
-              ? [
-                  {
-                    header: (
-                      <div>
-                        <h2>
-                          Recent event response funding projects <br />
-                          {
-                            // Time frame
-                            // <span>in past 12 months</span>
-                          }
-                          {
-                            // Date range
-                            <span className={styles.timeFrame}>
-                              {props.responseStart.toLocaleString("en-us", {
-                                // month: "short",
-                                // day: "numeric",
-                                year: "numeric",
-                                timeZone: "UTC"
-                              })}{" "}
-                              -{" "}
-                              {props.responseEnd.toLocaleString("en-us", {
-                                // month: "short",
-                                // day: "numeric",
-                                year: "numeric",
-                                timeZone: "UTC"
-                              })}
-                            </span>
-                          }
-                        </h2>
-                      </div>
-                    ),
-                    text: (
-                      <div>
-                        <p>
-                          This tab shows recent event response funding projects
-                          where {data.nodeData.name} or an associated
-                          region/group was a {entityRole}. Note that all values
-                          listed here may not apply specifically to{" "}
-                          {data.nodeData.name}.
-                        </p>
-                        {responseEventTotals}
-                      </div>
-                    ),
-                    content: (
-                      <div>
-                        <TableInstance
-                          paging={true}
-                          sortByProp={"year_range"}
-                          tableColumns={[
-                            {
-                              title: "Event year",
-                              prop: "year_range",
-                              type: "text",
-                              func: d => d.flow_info.outbreak.year_range,
-                              render: d => d
-                            },
-                            {
-                              title: "Event response",
-                              prop: "event",
-                              type: "text",
-                              func: d => d.flow_info.outbreak.name,
-                              render: d => d
-                            },
-                            {
-                              title: "Project name",
-                              prop: "project_name",
-                              type: "text",
-                              func: d => d.flow_info.project_name,
-                              render: d => d
-                            },
-                            {
-                              title: Util.getInitCap(
-                                Util.getRoleTerm({
-                                  type: "noun",
-                                  role: "funder"
-                                })
-                              ),
-                              prop: "source",
-                              type: "text",
-                              func: d => JSON.stringify(d.source),
-                              render: d =>
-                                getNodeLinkList({
-                                  urlType: "details",
-                                  nodeList: JSON.parse(d),
-                                  entityRole: "funder",
-                                  id: id
-                                })
-                            },
-                            {
-                              title: Util.getInitCap(
-                                Util.getRoleTerm({
-                                  type: "noun",
-                                  role: "recipient"
-                                })
-                              ),
-                              prop: "target",
-                              type: "text",
-                              func: d => JSON.stringify(d.target),
-                              render: d =>
-                                getNodeLinkList({
-                                  urlType: "details",
-                                  nodeList: JSON.parse(d),
-                                  entityRole: "recipient",
-                                  id: id
-                                })
-                            },
-                            {
-                              title: "Funding year(s)",
-                              prop: "year_range_proj",
-                              type: "text",
-                              func: d => d.year_range,
-                              render: d => Util.formatValue(d, "year_range")
-                            },
-                            {
-                              title:
-                                curFlowTypeName + ' (or "In-kind support")',
-                              prop: "amount",
-                              type: "num",
-                              className: d => (d > 0 ? "num" : "num-with-text"),
-                              func: d => {
-                                // Check whether the monetary amount is available
-                                const ft = d.flow_types[curFlowType];
-                                const financial = ft !== undefined;
-                                if (financial) return ft.focus_node_weight;
-                                else {
-                                  // If no financial, check for inkind
-                                  const inkindField =
-                                    curFlowType === "disbursed_funds"
-                                      ? "provided_inkind"
-                                      : "committed_inkind";
-                                  const inkind =
-                                    d.flow_types[inkindField] !== undefined;
-                                  if (inkind) return -7777;
-                                  else return -9999;
-                                }
-                              },
-                              render: d =>
-                                d === -7777
-                                  ? Util.formatValue(
-                                      "In-kind support",
-                                      "inkind"
-                                    )
-                                  : Util.formatValue(d, curFlowType)
-                            }
-                          ]}
-                          tableData={data.flows.flows}
-                          hide={r => r.amount === -9999}
-                        />
-                      </div>
-                    ),
-                    toggleFlowType: true,
-                    hide: noData || unknownDataOnly || noFinancialData
-                  }
-                ]
-              : [
-                  {
-                    header: <h2>Event response funding</h2>,
-                    content: (
-                      <div>
-                        <i>No data to show</i>
-                      </div>
-                    ),
-                    toggleFlowType: false,
-                    hide: noData || unknownDataOnly || noFinancialData
-                  }
-                ]
+          hide:
+            noData ||
+            (eventTotalsData !== null && eventTotalsData.length === 0),
+          invis: eventTotalsData === null, // not yet loaded
+          content: [
+            {
+              header: (
+                <div>
+                  <h2>
+                    Recent event response funding projects <br />
+                    {
+                      // Time frame
+                      // <span>in past 12 months</span>
+                    }
+                    {
+                      // // Date range
+                      // <span className={styles.timeFrame}>
+                      //   {props.responseStart.toLocaleString("en-us", {
+                      //     // month: "short",
+                      //     // day: "numeric",
+                      //     year: "numeric",
+                      //     timeZone: "UTC",
+                      //   })}{" "}
+                      //   -{" "}
+                      //   {props.responseEnd.toLocaleString("en-us", {
+                      //     // month: "short",
+                      //     // day: "numeric",
+                      //     year: "numeric",
+                      //     timeZone: "UTC",
+                      //   })}
+                      // </span>
+                    }
+                  </h2>
+                </div>
+              ),
+              text: (
+                <div>
+                  <p>
+                    This tab shows recent event response funding projects where{" "}
+                    {nodeData.name} or an associated region/group was a{" "}
+                    {entityRole}. Note that all values listed here may not apply
+                    specifically to {nodeData.name}.
+                  </p>
+                  {eventResponseTotals}
+                </div>
+              ),
+              content: (
+                <div>
+                  <EventTable
+                    {...{
+                      id,
+                      direction,
+                      otherDirection,
+                      entityRole,
+                      otherEntityRole,
+                      curFlowType,
+                      curFlowTypeName,
+                      setEventTotalsData, // set flows to var. for totals
+                      isGhsaPage: id === "ghsa",
+                      sortByProp: "amount",
+                    }}
+                  />
+                </div>
+              ),
+              toggleFlowType: true,
+              hide: noData || noFinancialData,
+            },
+          ],
         },
         {
           slug: "pvs",
           header: "PVS scores",
           content: pvsTabContent,
-          hide: data.pvs.scores.length === 0 || entityRole === "funder"
-        }
+          hide: pvs.data.length === 0 || entityRole === "funder",
+          noData: pvs.data.length === 0 || entityRole === "funder",
+          invis: pvs.loading, // not yet loaded
+        },
       ]
     : [];
 
-  const flagId = data.nodeData.iso2
-    ? data.nodeData.iso2.toLowerCase()
-    : "unspecified";
+  const flagId = nodeData.slug ? nodeData.slug : "unspecified";
 
   const ghsa = pageType === "ghsa";
 
   const flagSrc = ghsa
     ? `/flags/ghsa.png`
-    : `https://www.countryflags.io/${flagId}/flat/64.png`;
+    : `https://flags.talusanalytics.com/1000px/${flagId}.png`;
+  // : `https://www.countryflags.io/${flagId}/flat/64.png`;
   const flag =
-    data.nodeData.type === "country" || ghsa ? (
+    !isEmpty(nodeData) && (showFlag || ghsa) ? (
       <img
+        key={flagId}
         onError={e => addDefaultSrc(e)}
         className={classNames({ [styles.small]: ghsa })}
         src={flagSrc}
       />
     ) : null;
-  // const flag = `/flags/${data.nodeData.iso2 || data.nodeData.id}.png`;
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
     ev.target.src = "/flags/unspecified.png";
-    // ev.target.classList.add(styles.unspec);
     setShowFlag(false);
   };
 
-  React.useEffect(() => {
+  // update all data when `id` changes
+  useEffect(() => {
     setShowFlag(true);
-    setCurPvsEdition(data.pvs.eds[0] || {});
-    window.scrollTo(0, 0);
+    setPvs(defaultPvs);
+    setEventTotalsData(null);
+    setCurPvsEdition(pvs.eds[0] || {});
+
+    window.scrollTo(0, 0); // TODO check
+    setDataLoaded(false);
+
+    // reset data when ID changes
+    setEventTotalsData(null);
   }, [id]);
-  React.useEffect(() => {
+
+  // update pvs edition
+  useEffect(() => {
+    setCurPvsEdition(pvs.eds[0] || {});
+  }, [pvs]);
+
+  useEffect(() => {
     ReactTooltip.rebuild();
   }, [curPvsEdition]);
-  React.useEffect(() => {
-    setCurTab("ihr");
+
+  // update initial tab if IHR data not avail.
+  useEffect(() => {
+    if (noData !== null && eventTotalsData !== null) {
+      if (!haveAssistance) {
+        if (haveEvent) setCurTab("event");
+        else if (havePvs) setCurTab("pvs");
+        else setCurTab(null);
+      } else setCurTab("ihr");
+    } else setCurTab("ihr");
+  }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id]);
+
+  useEffect(() => {
+    // setCurTab("ihr");
+    setDataLoaded(false);
+    // reset data when role changes
+    setEventTotalsData(null);
   }, [entityRole]);
+
+  // if no event response data then set current tab to IHR
+  useEffect(() => {
+    if (eventTotalsData !== null && eventTotalsData.length === 0)
+      setCurTab("ihr");
+  }, [eventTotalsData]);
+
+  useLayoutEffect(() => {
+    if (!dataLoaded) getData();
+  }, [id, dataLoaded]);
+
+  // when node data are updated, update flag show/hide
+  useLayoutEffect(() => {
+    if (!isEmpty(nodeData)) {
+      setShowFlag(nodeData.subcat === "country");
+    }
+  }, [nodeData]);
 
   // Return JSX
   return (
@@ -748,7 +633,7 @@ const Details = ({
           <div
             style={{
               backgroundColor:
-                entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)"
+                entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)",
             }}
             className={styles.entityRole}
           >
@@ -759,7 +644,7 @@ const Details = ({
           <div className={styles.bannerRow}>
             <div className={styles.countryName}>
               {showFlag && flag && flag}
-              <h1>{data.nodeData.name}</h1>
+              <h1>{nodeData.name}</h1>
             </div>
             {!ghsa && (
               <EntityRoleToggle
@@ -794,38 +679,50 @@ const Details = ({
             .map(s => (
               <button
                 className={classNames(styles.tabToggle, {
-                  [styles.selected]: s.slug === curTab
+                  [styles.selected]: s.slug === curTab,
+                  [styles.invis]: s.invis,
                 })}
                 onClick={() => setCurTab(s.slug)}
               >
                 {s.header}
               </button>
             ))}
+          {
+            <Loading
+              small={true}
+              loaded={!haveAny || !tabSections.some(s => s.invis === true)}
+              margin={"0 0 0 20px"}
+              top={5}
+            />
+          }
         </div>
       )}
-      {showTabs && (
+      {showTabs && haveAny && (
         <div className={styles.tabContent}>
           {tabSections
             .filter(s => s.hide !== true)
-            .map(s => (
-              <Tab
-                selected={curTab === s.slug}
-                content={s.content.map(
-                  s =>
-                    !s.hide && (
-                      <DetailsSection
-                        header={s.header}
-                        text={s.text}
-                        content={s.content}
-                        curFlowType={curFlowType}
-                        setCurFlowType={setCurFlowType}
-                        flowTypeInfo={flowTypeInfo}
-                        toggleFlowType={s.toggleFlowType}
-                      />
-                    )
-                )}
-              />
-            ))}
+            .map(
+              s =>
+                !s.noData && (
+                  <Tab
+                    selected={curTab === s.slug}
+                    content={s.content.map(
+                      s =>
+                        !s.hide && (
+                          <DetailsSection
+                            header={s.header}
+                            text={s.text}
+                            content={s.content}
+                            curFlowType={curFlowType}
+                            setCurFlowType={setCurFlowType}
+                            flowTypeInfo={flowTypeInfo}
+                            toggleFlowType={s.toggleFlowType}
+                          />
+                        )
+                    )}
+                  />
+                )
+            )}
         </div>
       )}
       {[].map(
@@ -841,12 +738,7 @@ const Details = ({
             />
           )
       )}
-      {noData && (
-        <span>
-          No {ghsaOnly === "true" ? "GHSA-specific " : ""}funding data are
-          currently available where {data.nodeData.name} is a {entityRoleNoun}.
-        </span>
-      )}
+
       {
         // Tooltip for info tooltip icons.
         <ReactTooltip
@@ -891,201 +783,6 @@ const Details = ({
         />
       }
     </div>
-  );
-};
-
-export const renderDetails = ({
-  detailsComponent,
-  setDetailsComponent,
-  loading,
-  id,
-  entityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setLoadingSpinnerOn,
-  setGhsaOnly
-}) => {
-  if (loading) {
-    return <div className={"placeholder"} />;
-  } else if (
-    detailsComponent === null ||
-    (detailsComponent &&
-      (detailsComponent.props.id !== id ||
-        detailsComponent.props.entityRole !== entityRole ||
-        detailsComponent.props.ghsaOnly !== ghsaOnly))
-  ) {
-    getComponentData({
-      setDetailsComponent: setDetailsComponent,
-      id: id,
-      entityRole: entityRole,
-      flowTypeInfo: flowTypeInfo,
-      ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly,
-      setLoadingSpinnerOn
-    });
-
-    return detailsComponent ? (
-      detailsComponent
-    ) : (
-      <div className={"placeholder"} />
-    );
-  } else {
-    return detailsComponent;
-  }
-};
-
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for response funding page
- * @method getComponentData
- * @param  {[type]}       setDetailsComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setDetailsComponent,
-  id,
-  entityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
-  setLoadingSpinnerOn
-}) => {
-  // Define typical base query parameters used in FlowQuery,
-  // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
-  // modified in code below.
-  const nodeType =
-    entityRole === undefined
-      ? "target"
-      : entityRole === "recipient"
-      ? "target"
-      : "source";
-  const otherNodeType = entityRole === "recipient" ? "source" : "target";
-  const baseQueryParams = {
-    focus_node_ids: id === "ghsa" ? null : [id],
-    focus_node_type: nodeType,
-    flow_type_ids: [1, 2, 3, 4],
-    start_date: `${Settings.startYear}-01-01`,
-    end_date: `${Settings.endYear}-12-31`,
-    by_neighbor: false,
-    filters: { parent_flow_info_filters: [] },
-    summaries: {
-      flow_info_summary: ["core_capacities", "core_elements"]
-    },
-    include_master_summary: true
-  };
-
-  // If GHSA page, then filter by GHSA projects, and add "year" filter to the
-  // summaries.
-  // TODO ADD summaries to FlowBundleGeneralQuery so we don't need this hack.
-  if (ghsaOnly === "true") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "ghsa_funding",
-      "True"
-    ]);
-  } else if (ghsaOnly === "event") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "outbreak_id:not",
-      null
-    ]);
-  } else if (ghsaOnly === "capacity") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "response_or_capacity:not",
-      "response"
-    ]);
-  }
-
-  if (id === "ghsa") {
-    baseQueryParams.summaries.flow_info_summary.push("year");
-    if (ghsaOnly !== "true")
-      baseQueryParams.filters.parent_flow_info_filters.push([
-        "ghsa_funding",
-        "True"
-      ]);
-  }
-
-  const flowQueryParams = {
-    ...JSON.parse(JSON.stringify(baseQueryParams)),
-    by_outbreak: true,
-    flow_type_ids: [5],
-    include_general_amounts: true
-  };
-  flowQueryParams.filters.parent_flow_info_filters.push([
-    "outbreak_id:not",
-    null
-  ]);
-
-  // Define queries for typical details page.
-  const now = new Date(`${Settings.endYear}-12-31`);
-  const then = new Date(`${Settings.startYear}-01-01`);
-  const queries = {
-    // Information about the entity
-    nodeData: NodeQuery({ node_id: id }),
-
-    jeeScores: ScoreQuery({
-      type: "jee_v1"
-    }),
-
-    pvs: ScoreQuery({
-      id,
-      scoreType: "pvs"
-    }),
-
-    // Flow bundles by source/target specific pairing, oriented from the other
-    // node type (e.g., for a given source node whose page this is, return one
-    // row per target node it has a flow with)
-    flowBundlesFocusOther: FlowBundleFocusQuery({
-      ...baseQueryParams,
-      by_neighbor: true
-    }),
-    flows: FlowQuery({
-      ...flowQueryParams,
-      start_date: Util.formatDatetimeApi(then),
-      end_date: Util.formatDatetimeApi(now)
-    })
-  };
-
-  // If GHSA page, add additional query to show both top funders and top
-  // recipients.
-  let focusSummaryQueryParams;
-  if (id === "ghsa") {
-    queries["flowBundles"] = FlowBundleGeneralQuery(baseQueryParams);
-    focusSummaryQueryParams = {
-      ...baseQueryParams,
-      focus_node_type: entityRole === "recipient" ? "target" : "source",
-      focus_node_ids: null
-    };
-    queries["focusSummary"] = FlowBundleFocusQuery(focusSummaryQueryParams);
-  } else {
-    focusSummaryQueryParams = {
-      ...baseQueryParams,
-      by_neighbor: false,
-      summaries: {
-        flow_info_summary: ["core_capacities", "core_elements", "year"]
-      }
-    };
-    queries["focusSummary"] = FlowBundleFocusQuery(focusSummaryQueryParams);
-  }
-
-  // Get query results.
-  setLoadingSpinnerOn(true);
-  const results = await Util.getQueryResults(queries);
-
-  // Feed results and other data to the details component and mount it.
-  setDetailsComponent(
-    <Details
-      id={id}
-      entityRole={entityRole}
-      data={results}
-      flowTypeInfo={flowTypeInfo}
-      ghsaOnly={ghsaOnly}
-      setGhsaOnly={setGhsaOnly}
-      setComponent={setDetailsComponent}
-      responseStart={then}
-      responseEnd={now}
-      setLoadingSpinnerOn={setLoadingSpinnerOn}
-      focusSummaryQueryParams={focusSummaryQueryParams}
-    />
   );
 };
 

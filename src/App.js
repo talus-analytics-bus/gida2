@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom";
 import BrowserDetection from "react-browser-detection";
@@ -6,15 +6,23 @@ import BrowserDetection from "react-browser-detection";
 // layout
 import Nav from "./components/layout/nav/Nav.js";
 import Footer from "./components/layout/footer/Footer.js";
-import Util from "./components/misc/Util.js";
+
+// queries
+import {
+  execute,
+  FlowType,
+  Stakeholder,
+  Version,
+} from "./components/misc/Queries";
 
 // views
 import Home from "./components/views/home/Home.js";
 import { renderExplore } from "./components/views/explore/Explore.js";
-import { renderDetails } from "./components/views/details/Details.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
 import { renderExport } from "./components/views/export/Export.js";
-import { renderAnalysisData } from "./components/views/analysis/AnalysisData.js";
+import AnalysisData from "./components/views/analysis/AnalysisData.js";
+import Events from "./components/views/events/Events";
+import Details from "./components/views/details/Details";
 import Background from "./components/views/about/Background.js";
 import DataSources from "./components/views/about/DataSources.js";
 import Citations from "./components/views/about/Citations.js";
@@ -26,42 +34,38 @@ import styles from "./App.module.scss";
 import "./components/views/details/details.module.scss";
 // import "material-design-icons/iconfont/material-icons.css";
 
-// queries
-import FlowTypeQuery from "./components/misc/FlowTypeQuery.js";
-
 // testing components
 import SimpleTable from "./components/chart/table/SimpleTable.js";
 
 // Misc
 import Modal from "reactjs-popup";
 
-//: React.FC
+//: FC
 const App = () => {
   // Track whether the component is still loading.
-  const [loading, setLoading] = React.useState(true);
-  const [funderData, setFunderData] = React.useState([]);
-  const [recipientData, setRecipientData] = React.useState([]);
-  const [countryFunderData, setCountryFunderData] = React.useState([]);
-  const [countryRecipientData, setCountryRecipientData] = React.useState([]);
-  const [networkData, setNetworkData] = React.useState([]);
-  const [flowTypeInfo, setFlowTypeInfo] = React.useState([]);
+  const [loading, setLoading] = useState(true);
+  const [funderData, setFunderData] = useState([]);
+  const [recipientData, setRecipientData] = useState([]);
+  const [countryFunderData, setCountryFunderData] = useState([]);
+  const [countryRecipientData, setCountryRecipientData] = useState([]);
+  const [networkData, setNetworkData] = useState([]);
+  const [flowTypeInfo, setFlowTypeInfo] = useState([]);
+  const [versionData, setVersionData] = useState([]);
 
   // Try components
-  const [detailsComponent, setDetailsComponent] = React.useState(null);
-  const [entityTableComponent, setEntityTableComponent] = React.useState(null);
-  const [entityTableFundType, setEntityTableFundType] = React.useState("false");
-  const [exploreComponent, setExploreComponent] = React.useState(null);
-  const [exportComponent, setExportComponent] = React.useState(null);
-  const [analysisDataComponent, setAnalysisDataComponent] = React.useState(
-    null
-  );
+  const [detailsComponent, setDetailsComponent] = useState(null);
+  const [entityTableComponent, setEntityTableComponent] = useState(null);
+  const [entityTableFundType, setEntityTableFundType] = useState("false");
+  const [exploreComponent, setExploreComponent] = useState(null);
+  const [exportComponent, setExportComponent] = useState(null);
+  const [analysisDataComponent, setAnalysisDataComponent] = useState(null);
 
   // Track data selections
-  const [ghsaOnly, setGhsaOnly] = React.useState("false");
-  const [spinnerOn, setSpinnerOn] = React.useState(false);
+  const [ghsaOnly, setGhsaOnly] = useState("false");
+  const [spinnerOn, setSpinnerOn] = useState(false);
 
   // Track whether styling is dark or light
-  const [isDark, setIsDark] = React.useState(false);
+  const [isDark, setIsDark] = useState(false);
   const loadingSpinnerOn = false;
   const waitingFor = [];
   const setLoadingSpinnerOn = (
@@ -93,20 +97,20 @@ const App = () => {
     }
   };
 
-  async function getAppData() {
+  async function getData() {
     const queries = {
-      flowTypeInfo: FlowTypeQuery({
-        flow_type_ids: null,
-      }),
+      flowTypeInfo: FlowType({}),
+      versions: Version(),
     };
 
-    const results = await Util.getQueryResults(queries);
+    const results = await execute({ queries });
     setFlowTypeInfo(results.flowTypeInfo);
+    setVersionData(results.versions);
     setLoading(false);
   }
 
-  React.useEffect(() => {
-    getAppData();
+  useEffect(() => {
+    getData();
   }, []);
 
   // Define what columns to show in tables
@@ -201,7 +205,7 @@ const App = () => {
   };
 
   // Track the current page.
-  const [page, setPage] = React.useState(undefined);
+  const [page, setPage] = useState(undefined);
 
   // Define a modal to show if an unexpected or unsupported browser is detected
   const browserModal = browser => (
@@ -271,11 +275,12 @@ const App = () => {
 
                   return renderExplore({
                     ...d.match.params,
+                    versionData,
                     component: exploreComponent,
                     setComponent: setExploreComponent,
                     loading: loading,
                     setLoading: setLoading,
-                    flowTypeInfo: flowTypeInfo,
+                    flowTypeInfo,
                     ghsaOnly: ghsaOnly,
                     setGhsaOnly: setGhsaOnly,
                     isDark: isDark,
@@ -291,21 +296,38 @@ const App = () => {
                 exact
                 path="/details/:id/:entityRole"
                 render={d => {
-                  setPage(undefined);
-                  return renderDetails({
-                    ...d.match.params,
-                    id: parseInt(d.match.params.id),
-                    detailsComponent: detailsComponent,
-                    setDetailsComponent: setDetailsComponent,
-                    loading: loading,
-                    setLoading: setLoading,
-                    flowTypeInfo: flowTypeInfo,
-                    ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly,
-                    setLoadingSpinnerOn,
-                  });
+                  return (
+                    <Details
+                      {...{
+                        ...d.match.params,
+                        id: parseInt(d.match.params.id),
+                        loading: loading,
+                        setLoading: setLoading,
+                        flowTypeInfo: flowTypeInfo,
+                        ghsaOnly: ghsaOnly,
+                        setGhsaOnly: setGhsaOnly,
+                        setLoadingSpinnerOn,
+                      }}
+                    />
+                  );
                 }}
               />
+              {
+                // <Route
+                //   exact
+                //   path="/events/:slug"
+                //   render={d => {
+                //     return (
+                //       <Events
+                //         {...{
+                //           ...d.match.params, // id
+                //           flowTypeInfo,
+                //         }}
+                //       />
+                //     );
+                //   }}
+                // />
+              }
               <Route
                 exact
                 path="/table/:id/:entityRole"
@@ -346,15 +368,19 @@ const App = () => {
                 path="/analysis"
                 render={d => {
                   setPage("analysis");
-                  return renderAnalysisData({
-                    ...d.match.params,
-                    component: analysisDataComponent,
-                    setComponent: setAnalysisDataComponent,
-                    flowTypeInfo: flowTypeInfo,
-                    ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly,
-                    setLoadingSpinnerOn,
-                  });
+                  return (
+                    <AnalysisData
+                      {...{
+                        ...d.match.params,
+                        component: analysisDataComponent,
+                        setComponent: setAnalysisDataComponent,
+                        flowTypeInfo: flowTypeInfo,
+                        ghsaOnly: ghsaOnly,
+                        setGhsaOnly: setGhsaOnly,
+                        setLoadingSpinnerOn,
+                      }}
+                    />
+                  );
                 }}
               />
               <Route
@@ -382,15 +408,28 @@ const App = () => {
                 render={d => {
                   if (d.match.params.id === "ghsa") {
                     setPage("ghsa");
-                    return renderDetails({
-                      ...d.match.params,
-                      detailsComponent: detailsComponent,
-                      setDetailsComponent: setDetailsComponent,
-                      loading: loading,
-                      setLoading: setLoading,
-                      flowTypeInfo: flowTypeInfo,
-                      setLoadingSpinnerOn,
-                    });
+                    return (
+                      <Details
+                        {...{
+                          ...d.match.params,
+                          detailsComponent: detailsComponent,
+                          setDetailsComponent: setDetailsComponent,
+                          loading: loading,
+                          setLoading: setLoading,
+                          flowTypeInfo: flowTypeInfo,
+                          setLoadingSpinnerOn,
+                        }}
+                      />
+                    );
+                    // return renderDetails({
+                    //   ...d.match.params,
+                    //   detailsComponent: detailsComponent,
+                    //   setDetailsComponent: setDetailsComponent,
+                    //   loading: loading,
+                    //   setLoading: setLoading,
+                    //   flowTypeInfo: flowTypeInfo,
+                    //   setLoadingSpinnerOn,
+                    // });
                   } else setPage(undefined);
                   return (
                     <Redirect to={`/details/${d.match.params.id}/funder`} />
@@ -441,7 +480,11 @@ const App = () => {
           </Switch>
           <BrowserDetection>{modalToShow}</BrowserDetection>
         </BrowserRouter>
-        {<Footer {...{ isDark, isWide: page === "explore-map" }} />}
+        {
+          <Footer
+            {...{ versionData, isDark, isWide: page === "explore-map" }}
+          />
+        }
         {
           <div
             id={"loadingSpinner"}

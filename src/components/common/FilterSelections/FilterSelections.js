@@ -48,7 +48,7 @@ const FilterSelections = ({
           <Button
             callback={getBadgeCancelCallbackFunc({
               type,
-              valToRmv: d.value
+              valToRmv: d.value,
             })}
             type={"close-badge"}
           />
