@@ -5,8 +5,7 @@
   &.dark {
     border-bottom: 1px solid #999999;
   }
-  padding: 15px 5px;
-  // padding: 20px 5px;
+  padding: 20px 5px;
   position: sticky;
   top: 0;
   background-color: white;
@@ -19,8 +18,7 @@
     align-items: center;
     justify-content: space-between;
     img.logo {
-      height: 70px;
-      // height: 50px;
+      height: 50px;
     }
     .links {
       display: flex;
