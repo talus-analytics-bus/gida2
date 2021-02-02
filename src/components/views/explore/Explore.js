@@ -22,24 +22,6 @@ const Explore = ({
   versionData,
   ...props
 }) => {
-  console.log("versionData");
-  console.log(versionData);
-  // Returns correct header content given the active tab
-  const getHeaderData = tab => {
-    if (tab === "org") {
-      return {
-        header: "Explore organization funders and recipients",
-        instructions: "Choose organization in table to view details.",
-      };
-    } else if (tab === "map") {
-      return {
-        header: "Explore countries on a map",
-        instructions: "Choose country on map to view details.",
-      };
-    }
-    return undefined;
-  };
-
   // Track tab content components
   const [mapViewerComponent, setMapViewerComponent] = useState(null);
   const [orgComponent, setOrgComponent] = useState(null);
@@ -75,7 +57,16 @@ const Explore = ({
   }, [fundType]);
 
   useEffect(() => {
-    setPageHeaderData({});
+    // show correct map header label based on default support type
+    const main =
+      supportTypeDefault !== undefined && supportTypeDefault === "jee"
+        ? "JEE score by country"
+        : "Recipients by country";
+    setPageHeaderData({
+      main: null,
+      instructions: "Loading map",
+    });
+    console.log(main);
     // Set isDark defaults.
     props.setIsDark(activeTab === "map");
 
@@ -138,7 +129,6 @@ const Explore = ({
   }, []);
 
   // Get header data
-  const headerData = getHeaderData(activeTab);
   const [pageHeaderData, setPageHeaderData] = useState({});
 
   const mapProps = {
@@ -226,81 +216,82 @@ const Explore = ({
       });
   }, [props.isDark]);
 
+  // is loading spinner shown?
+  const spinnerDone = loaded || !tabInitialized;
+
   // Return JSX
-  if (headerData === undefined) return <div className={"placeholder"} />;
-  else
-    return (
-      <div
-        className={classNames(
-          "pageContainer",
-          { wide: activeTab === "map" },
-          styles.explore,
-          {
-            [styles.dark]: props.isDark,
-            [styles[activeTab]]: true,
-          }
-        )}
-      >
-        <div className={styles.header}>
-          <div className={styles.titles}>
+  return (
+    <div
+      className={classNames(
+        "pageContainer",
+        { wide: activeTab === "map" },
+        styles.explore,
+        {
+          [styles.dark]: props.isDark,
+          [styles[activeTab]]: true,
+        }
+      )}
+    >
+      <div className={styles.header}>
+        <div className={styles.titles}>
+          {(tabInitialized || activeTab !== "map") && (
             <div className={styles.left}>
-              <div className={styles.title}>{pageHeaderData.main}</div>
+              {<div className={styles.title}>{pageHeaderData.main}</div>}
               <span>{pageHeaderData.subtitle}</span>
             </div>
-            <div className={styles.right}>
-              <Loading
-                {...{ small: true, loaded: loaded || !tabInitialized }}
-              />
-            </div>
-          </div>
-          <div className={styles.controls}>
-            <span>
-              <i>{pageHeaderData.instructions}</i>
-            </span>
-            <div className={styles.buttons}>
-              {pageHeaderData.entityRoleToggle}
-              {activeTab === "map" && (
-                <div
-                  className={classNames(styles.darkToggle, {
-                    [styles.shown]: tabInitialized,
-                  })}
-                >
-                  <Toggle
-                    checked={props.isDark}
-                    knobColor="#ccc"
-                    borderWidth="1px"
-                    borderColor="#ccc"
-                    radius="3px"
-                    knobWidth="8px"
-                    backgroundColor={props.isDark ? "#333" : "white"}
-                    radiusBackground="2px"
-                    knobRadius="2px"
-                    width={"55px"}
-                    name="toggle-1"
-                    onToggle={() => props.setIsDark(!props.isDark)}
-                  />
-                  <div className={classNames({ [styles.dark]: props.isDark })}>
-                    {props.isDark ? `Dark` : "Light"}
-                  </div>
-                </div>
-              )}
-            </div>
+          )}
+          <div className={styles.right}>
+            <Loading {...{ small: true, loaded: spinnerDone }} />
           </div>
         </div>
-        {
-          // primary loading spinner for page initialization
-        }
-        <Loading loaded={loaded || tabInitialized}>
-          <div
-            className={classNames(styles.content, {
-              [styles.dark]: props.isDark,
-            })}
-          >
-            {activeTab === "map" ? mapViewerComponent : orgComponent}
+        <div className={styles.controls}>
+          <span>
+            <i>{pageHeaderData.instructions}</i>
+          </span>
+          <div className={styles.buttons}>
+            {pageHeaderData.entityRoleToggle}
+            {activeTab === "map" && (
+              <div
+                className={classNames(styles.darkToggle, {
+                  [styles.shown]: tabInitialized,
+                })}
+              >
+                <Toggle
+                  checked={props.isDark}
+                  knobColor="#ccc"
+                  borderWidth="1px"
+                  borderColor="#ccc"
+                  radius="3px"
+                  knobWidth="8px"
+                  backgroundColor={props.isDark ? "#333" : "white"}
+                  radiusBackground="2px"
+                  knobRadius="2px"
+                  width={"55px"}
+                  name="toggle-1"
+                  onToggle={() => props.setIsDark(!props.isDark)}
+                />
+                <div className={classNames({ [styles.dark]: props.isDark })}>
+                  {props.isDark ? `Dark` : "Light"}
+                </div>
+              </div>
+            )}
           </div>
-        </Loading>
+        </div>
       </div>
-    );
+      {
+        // primary loading spinner for page initialization
+      }
+      <Loading loaded={loaded || tabInitialized}>
+        <div
+          className={classNames(styles.content, {
+            [styles.dark]: props.isDark,
+          })}
+        >
+          {activeTab === "map" ? mapViewerComponent : orgComponent}
+        </div>
+      </Loading>
+    </div>
+  );
 };
 
 export const renderExplore = ({
@@ -318,8 +309,6 @@ export const renderExplore = ({
   if (loading) {
     return <div className={"placeholder"} />;
   } else {
-    console.log("versionData");
-    console.log(versionData);
     return (
       <Explore
         flowTypeInfo={flowTypeInfo}
