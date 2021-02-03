@@ -73,12 +73,7 @@
       justify-content: space-between;
       width: 100%;
       align-items: flex-end;
-      // float: right;
-      // margin-left: auto;
-      .tabs {
-        display: flex;
-        flex-flow: row;
-      }
+
       .buttons {
         display: flex;
         flex-flow: row;
@@ -86,6 +81,19 @@
         align-items: center;
         > :not(:last-child) {
           margin-right: 10px;
+        }
+      }
+      .tabs {
+        display: flex;
+        flex-flow: row;
+      }
+      &.loading {
+        .instructions {
+          text-align: center;
+          margin: 0 auto;
+        }
+        .buttons {
+          display: none;
         }
       }
     }
