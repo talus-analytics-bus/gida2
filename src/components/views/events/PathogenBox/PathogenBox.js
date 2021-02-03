@@ -43,7 +43,7 @@ const PathogenBox = ({
     {
       icon: syringeSvg,
       title: "Medical countermeasures",
-      data: [MCMBox({ onset: mcms_during_event, today: mcms_available })],
+      data: MCMBox({ onset: mcms_during_event, today: mcms_available }),
       fmt: v => v,
     },
   ];
@@ -83,30 +83,36 @@ const PathogenBox = ({
 };
 
 const MCMBox = ({ onset = [], today = [] }) => {
-  // JSX //
-  const onsetJsx = (
-    <>
-      <div className={styles.subtitle}>Available at onset:</div>
-      <div className={styles.value}>
-        {onset.length > 0 && getInitCap(onset.join(", ").toLowerCase())}
-      </div>
-    </>
-  );
-  const todayJsx = (
-    <>
-      <div className={styles.subtitle}>Developed during or after event:</div>
-      <div className={styles.value}>
-        {today.length > 0 && getInitCap(today.join(", ").toLowerCase())}
-      </div>
-    </>
-  );
-  if (onset.length && today.length === 0) return null;
-  else
-    return (
+  if (
+    onset === null ||
+    today === null ||
+    (onset.length === 0 && today.length === 0)
+  )
+    return null;
+  else {
+    // JSX //
+    const onsetJsx = (
+      <>
+        <div className={styles.subtitle}>Available at onset:</div>
+        <div className={styles.value}>
+          {onset.length > 0 && getInitCap(onset.join(", ").toLowerCase())}
+        </div>
+      </>
+    );
+    const todayJsx = (
+      <>
+        <div className={styles.subtitle}>Developed during or after event:</div>
+        <div className={styles.value}>
+          {today.length > 0 && getInitCap(today.join(", ").toLowerCase())}
+        </div>
+      </>
+    );
+    return [
       <>
         {onsetJsx}
         {todayJsx}
-      </>
-    );
+      </>,
+    ];
+  }
 };
 export default PathogenBox;
