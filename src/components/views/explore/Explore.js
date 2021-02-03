@@ -68,7 +68,6 @@ const Explore = ({
       main: null,
       instructions: "Loading map",
     });
-    console.log(main);
     // Set isDark defaults.
     props.setIsDark(activeTab === "map");
 
@@ -221,6 +220,9 @@ const Explore = ({
 
   // is loading spinner shown?
   const spinnerDone = loaded || !tabInitialized;
+  const initialSpinnerDone = loaded || tabInitialized;
+  const loadingInstructions =
+    activeTab === "map" ? "Loading map" : "Loading tables";
 
   // Return JSX
   return (
@@ -247,9 +249,17 @@ const Explore = ({
             <Loading {...{ small: true, loaded: spinnerDone }} />
           </div>
         </div>
-        <div className={styles.controls}>
-          <span>
-            <i>{pageHeaderData.instructions}</i>
+        <div
+          className={classNames(styles.controls, {
+            [styles.loading]: !initialSpinnerDone,
+          })}
+        >
+          <span className={styles.instructions}>
+            {initialSpinnerDone ? (
+              <i>{pageHeaderData.instructions}</i>
+            ) : (
+              <i>{loadingInstructions}</i>
+            )}
           </span>
           <div className={styles.buttons}>
             {pageHeaderData.entityRoleToggle}
@@ -283,16 +293,16 @@ const Explore = ({
       </div>
       {
         // primary loading spinner for page initialization
+        <Loading {...{ loaded: initialSpinnerDone, align: "center" }}>
+          <div
+            className={classNames(styles.content, {
+              [styles.dark]: props.isDark,
+            })}
+          >
+            {activeTab === "map" ? mapViewerComponent : orgComponent}
+          </div>
+        </Loading>
       }
-      <Loading loaded={loaded || tabInitialized}>
-        <div
-          className={classNames(styles.content, {
-            [styles.dark]: props.isDark,
-          })}
-        >
-          {activeTab === "map" ? mapViewerComponent : orgComponent}
-        </div>
-      </Loading>
     </div>
   );
 };

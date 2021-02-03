@@ -9,6 +9,7 @@ const Loading = ({
   loaded = true,
   small = false,
   slideUp = false,
+  align = "left", // or 'center'
   children,
 
   // custom styles
@@ -24,7 +25,9 @@ const Loading = ({
       {!loaded && (
         <div
           style={{ margin, top, right, minHeight, position }}
-          className={classNames(styles.placeholder, { [styles.small]: small })}
+          className={classNames(styles.placeholder, styles[align], {
+            [styles.small]: small,
+          })}
         >
           <div className={styles.imgContainer}>
             <img src={spinnerImg} />

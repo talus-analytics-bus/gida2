@@ -4,13 +4,13 @@ orbs:
   aws-cli: circleci/aws-cli@0.1.13
 
 jobs:
-  deploy-prod:
+  deploy:
     working_directory: ~/repo
 
     docker:
       - image: circleci/node:12.16.3-stretch
     environment:
-      API_URL: http://gida-tracking-api-dev.us-west-1.elasticbeanstalk.com/
+      API_URL: https://ghs-tracking-api.ghscosting.org
 
     steps:
       - checkout
@@ -28,27 +28,19 @@ jobs:
       - aws-cli/configure
 
       - run:
-          name: Setup environment variables
-          command: |
-            echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
-
-      - run:
-          name: "What was my custom environment variable?"
-          command: echo ${MY_ENV_VAR}
-
-      - run:
-          name: yarn build
+          name: Install packages
           command: rm yarn.lock; yarn install --network-timeout 1000000
 
       - run:
-          name: deploy
+          name: Deploy
           command: yarn run deploy
 
       - run:
-          name: Notify Slack
+          name: Invalidate Cloudfront cache
           command: |
-            curl -X POST -H 'Content-type: application/json' --data '{"text":"http://measles-tracker.s3-website-us-west-1.amazonaws.com"}' \
-            https://hooks.slack.com/services/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
+            aws cloudfront create-invalidation \
+            --distribution-id E152A1LOQ63YSI \
+            --paths "/*"
 
   deploy-dev:
     working_directory: ~/repo
@@ -56,13 +48,13 @@ jobs:
     docker:
       - image: circleci/node:12.16.3-stretch
     environment:
-      API_URL: http://gida-tracking-api-dev.us-west-1.elasticbeanstalk.com/
+      API_URL: https://ghs-tracking-api-dev.ghscosting.org/
 
     steps:
       - checkout
 
       - run:
-          name: Installing Deployment Dependencies
+          name: Install deployment dependencies
           working_directory: /
           command: |
             sudo apt-get -y -qq update
@@ -74,71 +66,25 @@ jobs:
       - aws-cli/configure
 
       - run:
-          name: "What was my custom environment variable?"
-          command: echo ${MY_ENV_VAR}
-
-      - run:
-          name: yarn build:dev
+          name: Install packages
           command: rm yarn.lock; yarn install --network-timeout 1000000
 
       - run:
-          name: deploy
-          command: aws s3 sync build/ s3://gida-tracking-dev --acl public-read --delete
-
-      # - run:
-      #     name: deploy
-      #     command: yarn run deploy-dev
+          name: Deploy
+          command: yarn run deploy-dev
 
       - run:
-          name: cloudfront invalidation
+          name: Invalidate Cloudfront cache
           command: |
             aws cloudfront create-invalidation \
-            --distribution-id EYL69FA0BI36W \
-            --paths "/*"
-
-  deploy-dev2:
-    working_directory: ~/repo
-
-    docker:
-      - image: circleci/node:12.16.3-stretch
-    environment:
-      API_URL: https://ghs-tracking-api.ghscosting.org/
-
-    steps:
-      - checkout
-
-      - run:
-          name: Installing Deployment Dependencies
-          working_directory: /
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get install python3-pip python3-dev g++ build-essential
-            sudo pip3 install --upgrade setuptools pytz
-            sudo pip3 install awsebcli --upgrade
-
-      - aws-cli/install
-      - aws-cli/configure
-
-      - run:
-          name: yarn build:dev
-          command: rm yarn.lock; yarn install --network-timeout 1000000
-
-      - run:
-          name: deploy dev2
-          command: CI=false && REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_API_URL=https://ghs-tracking-api.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking  --acl public-read --delete
-
-      - run:
-          name: cloudfront invalidation
-          command: |
-            aws cloudfront create-invalidation \
-            --distribution-id E152A1LOQ63YSI \
+            --distribution-id E375JMTWL12BHY \
             --paths "/*"
 
 workflows:
   version: 2
   build:
     jobs:
-      - deploy-prod:
+      - deploy:
           filters:
             branches:
               only:
@@ -148,8 +94,3 @@ workflows:
             branches:
               only:
                 - dev
-      - deploy-dev2:
-          filters:
-            branches:
-              only:
-                - update-api
