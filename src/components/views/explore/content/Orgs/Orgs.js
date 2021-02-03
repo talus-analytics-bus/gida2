@@ -716,32 +716,8 @@ const getComponentData = async ({
     ]);
   }
 
-  // Define queries for typical details page.
-  const allowedCats = [
-    // "world",
-    // "government",
-    "international_organization_",
-    "private_sector",
-    "foundation",
-    "international_organization",
-    // "country",
-    "ngo",
-    "ngo_",
-    "other",
-    "academia",
-  ];
-  const allowedSubcats = [
-    // "government",
-    "organization",
-    // "region",
-    // "state_/_department_/_territory",
-    // "agency",
-    "other",
-    "sub-organization",
-  ];
   const nodeSumsFilters = {
-    "Stakeholder.cat": allowedCats,
-    "Stakeholder.subcat": allowedSubcats,
+    "Stakeholder.cat": ["organization"],
     "Stakeholder.slug": [["neq", ["not-reported"]]],
     "Flow.year": [["gt_eq", props.minYear], ["lt_eq", props.maxYear]],
   };
