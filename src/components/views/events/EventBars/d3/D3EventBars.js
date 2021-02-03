@@ -470,22 +470,30 @@ class D3EventBars extends Chart {
               x: -badgeWidth + 12,
               y: -(badgeHeight / 2),
             };
-            iconGroup
-              .append("image")
-              .attr("href", dataByName[d].flag_url)
-              .attr("width", badgeDim.width)
-              .attr("height", badgeDim.height)
-              .attr("x", badgeDim.x)
-              .attr("y", badgeDim.y)
-              .on("load", function onError(d) {
-                d3.select(this).style("display", "block");
-              })
-              .on("error", function onError(d) {
-                d3.select(this).attr(
-                  "href",
-                  "https://flags.talusanalytics.com/64px/org.png"
-                );
-              });
+            const flagUrl = dataByName[d].flag_url;
+            const showFlag = flagUrl !== null;
+            if (showFlag) {
+              iconGroup
+                .append("image")
+                .attr("href", dataByName[d].flag_url)
+                .attr("width", badgeDim.width)
+                .attr("height", badgeDim.height)
+                .attr("x", badgeDim.x)
+                .attr("y", badgeDim.y)
+                .on("load", function onError(d) {
+                  d3.select(this).style("display", "block");
+                })
+                .on("error", function onError(d) {
+                  d3.select(this).attr(
+                    "href",
+                    "https://flags.talusanalytics.com/64px/org.png"
+                  );
+                });
+            } else {
+              // nudge y-axis tick label to right to occupy space where flag
+              // would be
+              g.select("text").attr("x", -10);
+            }
           });
       }
 

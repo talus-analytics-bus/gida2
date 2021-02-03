@@ -91,6 +91,14 @@ const EventBars = ({
     funds === "recipient_country" || funds === "funder_country";
 
   // FUNCTIONS //
+  // get flag urls
+  const getFlagUrl = (name, iso2) => {
+    const showFlag =
+      name !== "General Global Benefit" && name !== "Not reported";
+    if (showFlag) {
+      return `https://flags.talusanalytics.com/64px/${iso2}.png`;
+    } else return null;
+  };
 
   // return stakeholder dictionary keeping only those that match region filter
   // if applicable
@@ -233,15 +241,17 @@ const EventBars = ({
               const shInfo = filteredStakeholders[iso3];
               let iso2 = (shInfo.iso2 || "none").toLowerCase();
               const name = shInfo.name || d.place_name || d.name;
-              newDataForChart[flowType].push({
+              const newDatumForChart = {
                 value: 0,
                 iso2,
-                flag_url: `https://flags.talusanalytics.com/64px/${iso2}.png`,
                 bar_id: iso2 + "-" + flowType,
                 id: shInfo.id,
                 name,
+                flag_url: getFlagUrl(name, iso2),
                 region_who: shInfo.region_who,
-              });
+              };
+
+              newDataForChart[flowType].push(newDatumForChart);
             }
           });
         }
@@ -317,7 +327,7 @@ const EventBars = ({
   // JSX //
   return (
     <>
-      <Loading {...{ loaded: drawn, position: "absolute" }} />
+      <Loading {...{ loaded: drawn, position: "absolute", right: 0 }} />
       <div className={styles.eventBars}>
         {
           <div
