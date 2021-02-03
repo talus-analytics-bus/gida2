@@ -9,7 +9,7 @@ import styles from "./carousel.module.scss";
 import { GOAL_URL, GOAL_API_URL } from "../Crossreferences";
 import { GOALCaseStudies, execute } from "../../../../misc/Queries";
 
-const Carousel = ({ items }) => {
+const Carousel = ({ items, setGoalAgentName }) => {
   // STATE //
   const [loaded, setLoaded] = useState(false);
   const [idx, setIdx] = useState(null);
@@ -27,6 +27,7 @@ const Carousel = ({ items }) => {
     const results = await execute({ queries });
     const newData = results.data.filter(d => ids.includes(d.id));
     setData(newData);
+    setGoalAgentName(newData[0].agent);
     setIdx(0);
     setLoaded(true);
   };
