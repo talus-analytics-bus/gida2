@@ -63,8 +63,8 @@ const Background = ({ ...props }) => {
           </p>
           <p>
             Please submit comments or any other inquires by email at&nbsp;
-            <a target="_blank" href="mailto:ihrcosting@georgetown.edu">
-              ihrcosting@georgetown.edu
+            <a target="_blank" href="mailto:outbreaks@georgetown.edu">
+              outbreaks@georgetown.edu
             </a>
             .
           </p>
