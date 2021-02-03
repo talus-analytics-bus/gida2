@@ -338,7 +338,7 @@ const EventBars = ({
                       Recipient: [
                         {
                           value: "recipient_all",
-                          label: "Recipient (all)",
+                          label: "Recipient (all types)",
                         },
                         {
                           value: "recipient_country",
@@ -356,7 +356,7 @@ const EventBars = ({
                       Funder: [
                         {
                           value: "funder_all",
-                          label: "Funder (all)",
+                          label: "Funder (all types)",
                         },
                         { value: "funder_country", label: "Funder (country)" },
                         { value: "funder_org", label: "Funder (organization)" },
