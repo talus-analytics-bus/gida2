@@ -19,18 +19,6 @@ import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
 import Loading from "../../../common/Loading/Loading";
 import Checkbox from "../../../common/Checkbox/Checkbox";
 
-const COUNTRY_CATS = ["country", "world"];
-export const ORG_CATS = [
-  "academia",
-  "foundation",
-  "government",
-  "international_organization",
-  "international_organization_",
-  "ngo",
-  "ngo_",
-  "private_sector",
-];
-
 const EventBars = ({
   eventId,
   curFlowType,
@@ -117,22 +105,15 @@ const EventBars = ({
     }
   };
 
-  // return stakeholder categories that should be requested based on `funds`
-  // (fund type to show)
-  const getStakeholderSubcats = () => {
-    if (showRegionFilter || funds === "recipient_region") return COUNTRY_CATS;
-    else if (funds === "recipient_org" || funds === "funder_org")
-      return ORG_CATS;
-    else {
-      console.error("Unknown `funds` value: " + funds);
-    }
-  };
   const setStakeholderFilter = f => {
-    if (showRegionFilter || funds === "recipient_region")
-      f["Stakeholder.subcat"] = COUNTRY_CATS;
-    else if (funds === "recipient_org" || funds === "funder_org") {
-      f["Stakeholder.cat"] = ORG_CATS;
-      f["Stakeholder.subcat"] = [["neq", ["country"]]];
+    const isCountries = showRegionFilter;
+    const isRegions = funds === "recipient_region";
+    const isOrgs = funds === "recipient_org" || funds === "funder_org";
+    if (isCountries) f["Stakeholder.subcat"] = ["country", "world"];
+    else if (isRegions) {
+      f["Stakeholder.subcat"] = ["country"];
+    } else if (isOrgs) {
+      f["Stakeholder.cat"] = ["organization"];
     } else {
       console.error("Unknown `funds` value: " + funds);
     }
@@ -142,7 +123,6 @@ const EventBars = ({
     // define query filters
     const filters = {
       "Event.id": [eventId],
-      // "Stakeholder.subcat": getStakeholderSubcats(),
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     };
