@@ -13,6 +13,7 @@ import { NONE_VALS, getInitCap } from "../../../misc/Util";
 
 const PathogenBox = ({
   pathogen_name,
+  mcms_available,
   transmission_type,
   route_of_infection,
   signs_and_symptoms,
@@ -41,8 +42,8 @@ const PathogenBox = ({
     },
     {
       icon: syringeSvg,
-      title: "Medical countermeasures available at onset of event",
-      data: mcms_during_event,
+      title: "Medical countermeasures",
+      data: [MCMBox({ onset: mcms_during_event, today: mcms_available })],
       fmt: v => v,
     },
   ];
@@ -79,5 +80,33 @@ const PathogenBox = ({
       <div className={styles.facts}>{facts}</div>
     </div>
   );
+};
+
+const MCMBox = ({ onset = [], today = [] }) => {
+  // JSX //
+  const onsetJsx = (
+    <>
+      <div className={styles.subtitle}>Available at onset:</div>
+      <div className={styles.value}>
+        {onset.length > 0 && getInitCap(onset.join(", ").toLowerCase())}
+      </div>
+    </>
+  );
+  const todayJsx = (
+    <>
+      <div className={styles.subtitle}>Developed during or after event:</div>
+      <div className={styles.value}>
+        {today.length > 0 && getInitCap(today.join(", ").toLowerCase())}
+      </div>
+    </>
+  );
+  if (onset.length && today.length === 0) return null;
+  else
+    return (
+      <>
+        {onsetJsx}
+        {todayJsx}
+      </>
+    );
 };
 export default PathogenBox;
