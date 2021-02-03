@@ -39,7 +39,7 @@ const EventBars = ({
   const [impact, setImpact] = useState("cases");
 
   // "Funds by"
-  const [funds, setFunds] = useState("recipient_country");
+  const [funds, setFunds] = useState("recipient_all");
 
   // "Filter recipients/funders"
   const [region, setRegion] = useState("");
@@ -106,10 +106,12 @@ const EventBars = ({
   };
 
   const setStakeholderFilter = f => {
+    const isAll = funds.endsWith("_all");
     const isCountries = showRegionFilter;
     const isRegions = funds === "recipient_region";
     const isOrgs = funds === "recipient_org" || funds === "funder_org";
-    if (isCountries) f["Stakeholder.subcat"] = ["country", "world"];
+    if (isAll) return;
+    else if (isCountries) f["Stakeholder.subcat"] = ["country", "world"];
     else if (isRegions) {
       f["Stakeholder.subcat"] = ["country"];
     } else if (isOrgs) {
@@ -335,6 +337,10 @@ const EventBars = ({
                     optionGroups: {
                       Recipient: [
                         {
+                          value: "recipient_all",
+                          label: "Recipient (all)",
+                        },
+                        {
                           value: "recipient_country",
                           label: "Recipient (country)",
                         },
@@ -348,6 +354,10 @@ const EventBars = ({
                         },
                       ],
                       Funder: [
+                        {
+                          value: "funder_all",
+                          label: "Funder (all)",
+                        },
                         { value: "funder_country", label: "Funder (country)" },
                         { value: "funder_org", label: "Funder (organization)" },
                       ],
