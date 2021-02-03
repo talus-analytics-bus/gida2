@@ -10,7 +10,7 @@ const DataSources = () => {
   return (
     <div className={classNames(styles.about, "pageContainer")}>
       <div className={styles.header}>
-        <div className={styles.title}>Data sources</div>
+        <div className={styles.title}>Data sources</div> 
       </div>
       <div className={styles.description}>
         <p>

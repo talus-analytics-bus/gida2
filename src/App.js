@@ -111,6 +111,8 @@ const App = () => {
 
   useEffect(() => {
     getData();
+    const envName = process.env.REACT_APP_ENV_NAME;
+    console.log("[INFO] Environment name: " + envName);
   }, []);
 
   // Define what columns to show in tables
