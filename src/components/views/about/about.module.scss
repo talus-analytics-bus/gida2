@@ -2,19 +2,25 @@
 
 .about {
   min-height: 81vh;
-
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .aboutContainer {
+    max-width: 700px;
+    margin-bottom: 80px;
+  }
   .header {
     @include header;
     .title {
       @include title;
     }
+    margin-bottom: 0px;
   }
   .description {
-    max-width: 800px;
     // max-width: unset;
     font-size: 16px;
     p {
-      margin: 0 0 10px;
+      margin: 0 0 20px;
     }
     .citation {
       margin-left: 40px;
@@ -26,7 +32,7 @@
   }
 
   table {
-    font-size: 14px;
+    font-size: 16px;
     color: #333;
   }
   hr {
@@ -34,7 +40,7 @@
   }
 
   table {
-    margin-top: 30px;
+    margin-top: 50px;
     tr {
       height: 50px;
     }
