@@ -118,6 +118,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       <div
         className={classNames(styles.searchBar, {
           [styles.expanded]: expanded,
+          [styles.dark]: props.isDark,
         })}
       >
         <div className={styles.field}>
