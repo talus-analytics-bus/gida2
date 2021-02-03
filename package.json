@@ -47,19 +47,19 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:dev": "export REACT_APP_METRICS_API_URL=http://localhost:5002 && export REACT_APP_AMP_METRICS_API_URL=http://amp-metric-api.us-west-1.elasticbeanstalk.com/ && export REACT_APP_API_URL=http://localhost:8000 && react-scripts start",
+    "start:dev": "REACT_APP_METRICS_API_URL=http://localhost:5002 REACT_APP_AMP_METRICS_API_URL=http://amp-metric-api.us-west-1.elasticbeanstalk.com/ REACT_APP_API_URL=http://localhost:8000 react-scripts start",
     "build": "react-scripts build",
-    "build:prod": "export REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_API_URL=https://ghs-tracking-api.ghscosting.org && react-scripts build",
-    "build:dev": "export REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org && react-scripts build",
+    "build:prod": "REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api.ghscosting.org react-scripts build",
+    "build:dev": "REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tslint": "./node_modules/.bin/tslint",
-    "deploy": "export CI=false && export REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && export REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && export REACT_APP_API_URL=https://ghs-tracking-api.ghscosting.org && yarn build && aws s3 sync build/ s3://ghs-tracking  --acl public-read --delete",
-    "deploy-dev": "export CI=false && export REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && export REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && export REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org && yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete",
+    "deploy": "CI=false REACT_APP_ENV_NAME=prod REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking  --acl public-read --delete",
+    "deploy-dev": "CI=false REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete",
     "deploy-old": "CI=false yarn build && aws s3 sync build/ s3://gida-tracking  --acl public-read --delete",
     "deploy-dev-old": "CI=false REACT_APP_API_URL=https://gida-tracking-api-test.ghscosting.org yarn build && aws s3 sync build/ s3://gida-tracking-dev  --acl public-read --delete",
-    "deploy-remake": "CI=false && REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org && yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete",
-    "deploy-dev-new": "CI=false && REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com && REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org && yarn build && aws s3 sync build/ s3://gida-tracking-dev  --acl public-read --delete"
+    "deploy-remake": "CI=false REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete",
+    "deploy-dev-new": "CI=false REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org yarn build && aws s3 sync build/ s3://gida-tracking-dev  --acl public-read --delete"
   },
   "eslintConfig": {
     "extends": "react-app"
