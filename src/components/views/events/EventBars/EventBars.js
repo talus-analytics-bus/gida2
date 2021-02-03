@@ -120,7 +120,7 @@ const EventBars = ({
   // return stakeholder categories that should be requested based on `funds`
   // (fund type to show)
   const getStakeholderSubcats = () => {
-    if (showRegionFilter) return COUNTRY_CATS;
+    if (showRegionFilter || funds === "recipient_region") return COUNTRY_CATS;
     else if (funds === "recipient_org" || funds === "funder_org")
       return ORG_CATS;
     else {
@@ -128,7 +128,8 @@ const EventBars = ({
     }
   };
   const setStakeholderFilter = f => {
-    if (showRegionFilter) f["Stakeholder.subcat"] = COUNTRY_CATS;
+    if (showRegionFilter || funds === "recipient_region")
+      f["Stakeholder.subcat"] = COUNTRY_CATS;
     else if (funds === "recipient_org" || funds === "funder_org") {
       f["Stakeholder.cat"] = ORG_CATS;
       f["Stakeholder.subcat"] = [["neq", ["country"]]];
