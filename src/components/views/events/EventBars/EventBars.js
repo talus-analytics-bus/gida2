@@ -119,7 +119,12 @@ const EventBars = ({
     const isRegions = funds === "recipient_region";
     const isOrgs = funds === "recipient_org" || funds === "funder_org";
     if (isAll) return;
-    else if (isCountries) f["Stakeholder.subcat"] = ["country", "world"];
+    else {
+      f["Stakeholder.slug"] = [
+        ["neq", ["not-reported", "general-global-benefit"]],
+      ];
+    }
+    if (isCountries) f["Stakeholder.subcat"] = ["country", "world"];
     else if (isRegions) {
       f["Stakeholder.subcat"] = ["country"];
     } else if (isOrgs) {
