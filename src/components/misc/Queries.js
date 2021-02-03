@@ -307,17 +307,20 @@ export const Excel = async function({
   data = null,
   class_name,
   params = undefined,
+  filename = "GHS Tracking - Data Export",
+  isDONs = false,
 }) {
+  const route = isDONs ? "export_dons" : "export";
   let req;
   if (method === "get") {
-    req = await axios(`${API_URL}/export`);
+    req = await axios(`${API_URL}/${route}`);
   } else if (method === "post") {
     if (data === null) {
       console.error("Error: `data` is required for method POST.");
     }
 
     req = axios({
-      url: `${API_URL}/post/export`,
+      url: `${API_URL}/post/${route}`,
       method: "POST",
       responseType: "blob",
       data,
@@ -330,7 +333,7 @@ export const Excel = async function({
     const link = document.createElement("a");
     link.href = url;
     const dateString = moment().format("YYYY-MM-DD");
-    const fn = `GHS Tracking - Data Export ${dateString}.xlsx`;
+    const fn = `${filename} - ${dateString}.xlsx`;
     link.setAttribute("download", fn);
     document.body.appendChild(link);
     link.click();
