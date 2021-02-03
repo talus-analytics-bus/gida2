@@ -474,11 +474,17 @@ export const getNodeLinkList = ({
 
   // Do not list URLs unless the node belongs to any of these types
   const urlTypes = ["country", "organization", "agency"];
-  const nonUrlTypes = ["region", "state_/_department_/_territory", "other"];
+  const nonUrlTypes = ["region", "state_/_department_/_territory"];
+  const nonUrlSubcats = ["region"];
+  // const nonUrlTypes = ["region", "state_/_department_/_territory", "other"];
   return nodeList.map((node, i) => {
     const url = urlFunc(node.id);
     const type = node.cat;
-    const doUrl = !nonUrlTypes.includes(type) && node.slug !== "not-reported";
+    const subcat = node.subcat;
+    const doUrl =
+      !nonUrlTypes.includes(type) &&
+      !nonUrlSubcats.includes(subcat) &&
+      node.slug !== "not-reported";
     const skipUrlBecauseIsTargetInRecipientCol =
       otherId && node.id === otherId && entityRole === "recipient";
     const skipUrlBecauseIsSourceInFunderCol =
