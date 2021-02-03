@@ -41,6 +41,12 @@
       // @include placeholder(30px);
     }
   }
+
+  &.center {
+    .imgContainer {
+      text-align: center;
+    }
+  }
 }
 .content {
   opacity: 0;
