@@ -9,7 +9,7 @@ const Citations = () => {
   return (
     <div className={classNames(styles.about, "pageContainer")}>
       <div className={styles.header}>
-        <div className={styles.title}>Citations</div>
+        <div className={styles.title}>Citations and data use</div>
       </div>
       <div className={styles.description}>
         <p>
@@ -20,21 +20,52 @@ const Citations = () => {
           >
             here
           </a>
-          .
+          , with the following suggested citation:
+        </p>
+        <p className={styles.citation}>
+          Katz, R; Graeden, E; Kerr, J; Eaneff, S. “Tracking the Flow of Funds
+          in Global Health Security.” EcoHealth (2019) 16:298-305.
         </p>
         <p>
-          Suggested citation: Katz, R; Graeden, E; Kerr, J; Eaneff, S.
-          &ldquo;Tracking the Flow of Funds in Global Health Security.&rdquo;
-          <em> EcoHealth</em> (2019) 16:298-305.
+          The Georgetown University Center for Global Health Science and
+          Security, working with Talus Analytics, has created and maintains this
+          site for use by researchers, decision-makers and other interested
+          parties. We encourage you to use the data from this site. If you do,
+          though, please use the following citation:{" "}
+        </p>
+        <p className={styles.citation}>
+          Georgetown University Center for Global Health Science & Security.
+          Global Health Security Tracking. Washington, DC: Georgetown
+          University. Available at https://tracking.ghscosting.org/
         </p>
         <p>
-          We invite you to share any research conducted using GIDA Global Health
-          Security Tracking, so we can link to it from the dashboard. Please
-          contact us by email at{" "}
-          <a target="_blank" href="mailto:ihrcosting@georgetown.edu">
-            ihrcosting@georgetown.edu
+          We ask that you let us know if you publish anything using data from
+          this site, so we can link to it. Contact us at{" "}
+          <a target="_blank" href="mailto:outbreaks@georgetown.edu">
+            outbreaks@georgetown.edu
           </a>
           .
+        </p>
+        <p>
+          These tools and underlying datasets are available for use under the
+          Creative Commons Attribution By License agreement (
+          <a
+            target="_blank"
+            href="https://creativecommons.org/licenses/by/4.0/"
+          >
+            https://creativecommons.org/licenses/by/4.0/
+          </a>
+          ), with appropriate reference and acknowledgement of the original
+          research team.
+        </p>
+        <p>
+          In addition to direct downloads from the sites, we are happy to work
+          with your team to provide automated access via API or other data
+          sharing method. Please contact us at{" "}
+          <a target="_blank" href="mailto:outbreaks@georgetown.edu">
+            outbreaks@georgetown.edu
+          </a>{" "}
+          for more information.
         </p>
         <table>
           <tbody>
