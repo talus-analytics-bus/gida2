@@ -10,6 +10,7 @@ import OutbreakQuery from "../../misc/OutbreakQuery.js";
 import Drawer from "../../common/Drawer/Drawer.js";
 import Checkbox from "../../common/Checkbox/Checkbox.js";
 import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
+import Loading from "../../common/Loading/Loading";
 import { core_capacities } from "../../misc/Data.js";
 import Button from "../../common/Button/Button.js";
 import axios from "axios";
@@ -29,6 +30,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const [curPage, setCurPage] = useState(1);
   const [exportAction, setExportAction] = useState(undefined);
   const [exportBody, setExportBody] = useState(undefined);
+  const [downloading, setDownloading] = useState(false);
 
   // if page is changed, show pagination loading
   const [pageLoading, setPageLoading] = useState(false);
@@ -304,6 +306,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   <div>
                     <Button
                       callback={() => {
+                        setDownloading(true);
                         getFlowQuery({
                           curPage,
                           props: {
@@ -329,40 +332,59 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                             method: "post",
                             data,
                             params,
+                          }).then(() => {
+                            setDownloading(false);
                           });
                         });
                       }}
+                      disabled={downloading}
                       label={
-                        <span>
-                          <span
-                            className={classNames(
-                              "glyphicon glyphicon-download-alt"
-                            )}
-                          />
-                          {!showClear ? (
+                        <span className={styles.downloadBtn}>
+                          {downloading && (
                             <>
-                              Download all available data
-                              {nRecords !== undefined && nRecords !== null && (
+                              <Loading
+                                {...{
+                                  loaded: false,
+                                  small: true,
+                                  margin: "0 10px 0 0",
+                                }}
+                              />
+                              Downloading...
+                            </>
+                          )}
+                          {!downloading && (
+                            <span
+                              className={classNames(
+                                "glyphicon glyphicon-download-alt"
+                              )}
+                            />
+                          )}
+                          {!downloading && (
+                            <>
+                              {!showClear ? (
                                 <>
-                                  {" "}
-                                  ({Util.comma(nRecords)}{" "}
+                                  Download all available data
+                                  {nRecords !== undefined && nRecords !== null && (
+                                    <>
+                                      {" "}
+                                      ({Util.comma(nRecords)}{" "}
+                                      {nRecords !== 1 ? "records" : "record"})
+                                    </>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  Download selected data ({Util.comma(nRecords)}{" "}
                                   {nRecords !== 1 ? "records" : "record"})
                                 </>
                               )}
                             </>
-                          ) : (
-                            `Download selected data (${Util.comma(nRecords)} ${
-                              nRecords !== 1 ? "records" : "record"
-                            })`
                           )}
                         </span>
                       }
                       type={"primary"}
                     />
                   </div>
-                  {
-                    // exportFlowJsx
-                  }
                 </div>
               </div>
             </div>,

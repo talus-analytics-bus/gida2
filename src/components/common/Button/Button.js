@@ -10,7 +10,7 @@ import plusWhite from "../../../assets/images/plus-white.svg";
  * TODO implement tooltip
  * @method Button
  */
-const Button = ({ label, url, ...props }) => {
+const Button = ({ label, url, disabled = false, ...props }) => {
   const classes = props.className ? [props.className] : [];
   const button = (
     <button
@@ -22,6 +22,7 @@ const Button = ({ label, url, ...props }) => {
         [styles.close]: props.type === "close",
         [styles.closeBadge]: props.type === "close-badge",
         [styles.dark]: props.isDark,
+        [styles.disabled]: disabled,
       })}
     >
       {props.type === "close" && <img src={close} />}
