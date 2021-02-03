@@ -237,11 +237,14 @@ class D3ImpactBars extends Chart {
       }
 
       // set axes labels
-      xLabel.text(
-        getInitCap(params.impact) +
-          " by " +
-          (params.stack ? "region" : "country")
-      );
+      // e.g., "Total cases"
+      xLabel.text(`Total ${params.impact}`);
+      // // e.g., "Cases by country"
+      // xLabel.text(
+      //   getInitCap(params.impact) +
+      //     " by " +
+      //     (params.stack ? "region" : "country")
+      // );
 
       chart.select(".y-label-text").attr("x", -newHeight / 2);
 
