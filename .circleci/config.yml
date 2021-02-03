@@ -71,7 +71,7 @@ jobs:
 
       - run:
           name: Deploy
-          command: yarn run deploy:dev
+          command: yarn run deploy-dev
 
       - run:
           name: Invalidate Cloudfront cache
