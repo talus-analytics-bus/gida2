@@ -120,7 +120,7 @@ class D3ImpactBars extends Chart {
         stackData = [];
         const dataByRegion = {};
         data.forEach(d => {
-          const region = d.region_who || "None";
+          const region = d.region_who || "No WHO region";
           if (dataByRegion[region] === undefined) {
             dataByRegion[region] = [d];
           } else if (

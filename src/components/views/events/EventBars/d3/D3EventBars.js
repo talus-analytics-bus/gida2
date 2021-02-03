@@ -175,7 +175,7 @@ class D3EventBars extends Chart {
         stackData = [];
         const newDataByRegion = {};
         newData.forEach(d => {
-          const region = d.region_who || "None";
+          const region = d.region_who || "No WHO region";
           if (newDataByRegion[region] === undefined) {
             newDataByRegion[region] = [d];
           } else if (
