@@ -469,7 +469,10 @@ const EventBars = ({
           getContent={() =>
             tooltipData && (
               <Popup
-                {...{ gridTemplateColumns: "115px auto", ...tooltipData }}
+                {...{
+                  style: { gridTemplateColumns: "115px auto" },
+                  ...tooltipData,
+                }}
               />
             )
           }

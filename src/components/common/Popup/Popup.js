@@ -15,11 +15,12 @@ import deathSvg from "./svg/deaths.svg";
 const Popup = ({
   body,
   header = { title: "Germany", label: "funder" },
-  ...style
+  popupStyle,
+  style,
 }) => {
   // JSX //
   return (
-    <div className={styles.popup}>
+    <div style={popupStyle} className={styles.popup}>
       <Header {...{ ...header, style }} />
       <Body {...{ data: body, style }} />
     </div>

@@ -235,10 +235,10 @@ class D3EventBars extends Chart {
             const tooltipData = {
               header: { title, label: params.role },
               body: [
-                {
-                  field: "Name",
-                  value: title,
-                },
+                // {
+                //   field: "Name",
+                //   value: title,
+                // },
                 {
                   field: xLabel.text().replace(" (USD)", ""),
                   value: Util.money(dataByName[region][d].value),
@@ -251,10 +251,10 @@ class D3EventBars extends Chart {
             const tooltipData = {
               header: { title, label: params.role },
               body: [
-                {
-                  field: "Name",
-                  value: title,
-                },
+                // {
+                //   field: "Name",
+                //   value: title,
+                // },
                 {
                   field: xLabel.text().replace(" (USD)", ""),
                   value: Util.money(
@@ -270,10 +270,10 @@ class D3EventBars extends Chart {
           const tooltipData = {
             header: { title, label: params.role },
             body: [
-              {
-                field: "Name",
-                value: title,
-              },
+              // {
+              //   field: "Name",
+              //   value: title,
+              // },
               {
                 field: xLabel.text().replace(" (USD)", ""),
                 value: Util.money(dataByName[d].value),

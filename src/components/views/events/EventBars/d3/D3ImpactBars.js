@@ -174,9 +174,8 @@ class D3ImpactBars extends Chart {
                   : params.impact.slice(0, params.impact.length - 1)),
             },
           ],
-          gridTemplateColumns: "auto auto",
-          display: "flex",
-          // gridTemplateColumns: "80px auto",
+          style: { gridTemplateColumns: "auto auto", display: "flex" },
+          popupStyle: { minWidth: "unset" },
         };
         params.setTooltipData(tooltipData);
       }
