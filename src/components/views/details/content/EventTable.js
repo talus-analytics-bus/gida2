@@ -10,7 +10,7 @@ import {
   parseIdsAsNames,
 } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
-import {Loading} from "../../../common";
+import { Loading } from "../../../common";
 
 // local components
 import TableInstance from "../../../chart/table/TableInstance.js";
@@ -32,7 +32,8 @@ const EventTable = ({
   curFlowType,
   curFlowTypeName,
   isGhsaPage = false,
-  setEventTotalsData,
+  setEventTotalsData = () => "",
+  setLoaded = () => "",
   ...props
 }) => {
   // STATE //
@@ -81,6 +82,7 @@ const EventTable = ({
     setOutbreaks(results.outbreaks);
     setEventTotalsData(newFlows);
     setDataLoaded(true);
+    setLoaded(true);
   };
 
   useLayoutEffect(() => {

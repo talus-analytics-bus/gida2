@@ -10,6 +10,7 @@ const Loading = ({
   small = false,
   slideUp = false,
   align = "left", // or 'center'
+  message = null,
   children,
 
   // custom styles
@@ -30,6 +31,7 @@ const Loading = ({
           })}
         >
           <div className={styles.imgContainer}>
+            {message && <i>{message}</i>}
             <img src={spinnerImg} />
           </div>
         </div>

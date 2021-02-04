@@ -6,13 +6,13 @@ import logoLight from "../../../assets/images/tracking.png";
 import logoDark from "../../../assets/images/tracking-dark-mode.png";
 import ReactTooltip from "react-tooltip";
 import Menu from "./content/Menu/Menu.js";
-import {Search} from "../../common";
-import {GhsaButton} from "../../common";
+import { Search } from "../../common";
+import { GhsaButton } from "../../common";
 
 const Nav = ({ page, ...props }) => {
   const logo = props.isDark ? logoDark : logoLight;
   const [openMenu, setOpenMenu] = React.useState("");
-  const toggleMenu = (name) => {
+  const toggleMenu = name => {
     setOpenMenu(openMenu !== name ? name : "");
   };
 
@@ -45,7 +45,7 @@ const Nav = ({ page, ...props }) => {
             className={page === "explore-map" ? styles.active : ""}
             to="/explore/map"
           >
-            Map
+            Countries
           </Link>
           <Link
             className={page === "explore-org" ? styles.active : ""}
@@ -54,10 +54,12 @@ const Nav = ({ page, ...props }) => {
             Orgs
           </Link>
           <Link
-            className={page === "analysis" ? styles.active : ""}
-            to="/analysis"
+            className={
+              page === "events" || page === "event" ? styles.active : ""
+            }
+            to="/events"
           >
-            Analysis
+            PHEICs
           </Link>
           <Link className={page === "data" ? styles.active : ""} to="/data">
             Data

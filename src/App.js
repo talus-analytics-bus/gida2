@@ -22,6 +22,7 @@ import { renderEntityTable } from "./components/views/entitytable/EntityTable.js
 import { renderExport } from "./components/views/export/Export.js";
 import AnalysisData from "./components/views/analysis/AnalysisData.js";
 import Events from "./components/views/events/Events";
+import Event from "./components/views/event/Event";
 import Details from "./components/views/details/Details";
 import Background from "./components/views/about/Background.js";
 import DataSources from "./components/views/about/DataSources.js";
@@ -314,10 +315,27 @@ const App = () => {
               {
                 <Route
                   exact
-                  path="/events/:slug"
+                  path="/events"
                   render={d => {
+                    setPage("events");
                     return (
                       <Events
+                        {...{
+                          flowTypeInfo,
+                        }}
+                      />
+                    );
+                  }}
+                />
+              }
+              {
+                <Route
+                  exact
+                  path="/events/:slug"
+                  render={d => {
+                    setPage("event");
+                    return (
+                      <Event
                         {...{
                           ...d.match.params, // id
                           flowTypeInfo,
