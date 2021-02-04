@@ -11,6 +11,7 @@ import Drawer from "./Drawer/Drawer.js";
 import Pagination from "./Pagination/Pagination.js";
 import FilterDropdown from "./FilterDropdown/FilterDropdown.js";
 import ScoreBlocks from "./ScoreBlocks/ScoreBlocks.js";
+import Popup from "./Popup/Popup.js";
 export {
   Button,
   FilterSelections,
@@ -25,4 +26,5 @@ export {
   Pagination,
   FilterDropdown,
   ScoreBlocks,
+  Popup,
 };
