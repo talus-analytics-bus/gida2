@@ -12,6 +12,8 @@
   @include shadow();
   .popup {
     opacity: 1;
+    max-width: 25vw;
+    min-width: 400px;
     .header,
     .body {
       padding: $padding;

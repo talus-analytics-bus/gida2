@@ -71,11 +71,6 @@ class D3EventBars extends Chart {
       .scale(y)
       .tickSize(0)
       .tickSizeOuter(5)
-      // TODO format country name / flag
-      // .tickFormat(v => {
-      //   if (v === undefined) return "";
-      //   return this.getShortName(v);
-      // })
       .tickPadding(params.stack ? 10 : 50);
 
     if (params.stack) yAxis.tickFormat(formatRegion);
@@ -137,17 +132,6 @@ class D3EventBars extends Chart {
       fakeText.remove();
       return maxLabelWidth + padding;
     };
-
-    // add y-axis label
-    // const yLabel = chart
-    //   .append("text")
-    //   .attr("transform", "rotate(-90)")
-    //   .attr("y", 0)
-    //   .attr("x", -height / 2)
-    //   .style("font-weight", 600)
-    //   .style("text-anchor", "middle")
-    //   .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
-    //   .text("y-axis label");
 
     function getRunningValues(data, sortKey) {
       data
@@ -501,12 +485,11 @@ class D3EventBars extends Chart {
                     "https://flags.talusanalytics.com/64px/org.png"
                   );
                 });
+            } else {
+              // nudge y-axis tick label to right to occupy space where flag
+              // would be
+              g.select("text").attr("x", -10);
             }
-            // else {
-            //   // nudge y-axis tick label to right to occupy space where flag
-            //   // would be
-            //   g.select("text").attr("x", -10);
-            // }
           });
       }
 
