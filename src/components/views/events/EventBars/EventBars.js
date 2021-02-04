@@ -24,6 +24,7 @@ const EventBars = ({
   caseData,
   deathData,
   stakeholders,
+  setNoData,
 }) => {
   // STATE //
   const [chart, setChart] = useState(null);
@@ -158,6 +159,7 @@ const EventBars = ({
 
     // add values that appear in case date but not funding
     setData(results.nodeSums);
+    setNoData(!Object.values(results.nodeSums).some(d => d.length !== 0));
   };
 
   // EFFECT HOOKS //

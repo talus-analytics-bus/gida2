@@ -1,6 +1,6 @@
 // 3rd party libs
 import React from "react";
-import {SourceText} from "../../../common";
+import { SourceText } from "../../../common";
 import classNames from "classnames";
 
 // styles
@@ -16,6 +16,7 @@ const DetailsSection = ({
   flowTypeInfo,
   toggleFlowType,
   noFinancialData,
+  noDataContent = null,
   // show data source text if true, hide otherwise
   showSource = true,
   classes = [],
@@ -38,32 +39,40 @@ const DetailsSection = ({
     if (match) return match.display_name;
     return "";
   };
+  const showCustomNoDataContent = noFinancialData && noDataContent !== null;
   return (
     <div className={classNames(styles.detailsSection, ...classes)}>
       {header}
-      {text && <div className={styles.text}>{text}</div>}
-      {toggleFlowType && !noFinancialData && (
-        <form>
-          {["disbursed_funds", "committed_funds"].map(flowType => (
-            <label onClick={onChange} for={flowType}>
-              <input
-                type="radio"
-                name="radio"
-                value={flowType}
-                checked={curFlowType === flowType}
-              />
-              <span>{getFlowTypeLabel(flowType, flowTypeInfo)}</span>
-            </label>
-          ))}
-        </form>
+      {showCustomNoDataContent && noDataContent}
+      {!showCustomNoDataContent && (
+        <>
+          {text && <div className={styles.text}>{text}</div>}
+          {toggleFlowType && !noFinancialData && (
+            <form>
+              {["disbursed_funds", "committed_funds"].map(flowType => (
+                <label onClick={onChange} for={flowType}>
+                  <input
+                    type="radio"
+                    name="radio"
+                    value={flowType}
+                    checked={curFlowType === flowType}
+                  />
+                  <span>{getFlowTypeLabel(flowType, flowTypeInfo)}</span>
+                </label>
+              ))}
+            </form>
+          )}
+          {!noFinancialData && (
+            <div className={styles.content}>
+              {content}
+              {showSource && <SourceText />}
+            </div>
+          )}
+          {noFinancialData && (
+            <span>No financial assistance data to show.</span>
+          )}
+        </>
       )}
-      {!noFinancialData && (
-        <div className={styles.content}>
-          {content}
-          {showSource && <SourceText />}
-        </div>
-      )}
-      {noFinancialData && <span>No financial assistance data to show.</span>}
     </div>
   );
 };

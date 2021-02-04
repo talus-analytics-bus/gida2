@@ -1,5 +1,6 @@
 // 3rd party libs
 import React, { useState, useLayoutEffect } from "react";
+import { Link } from "react-router-dom";
 
 // styles, colors, and assets
 import styles from "./events.module.scss";
@@ -29,6 +30,7 @@ const Events = ({ slug, flowTypeInfo }) => {
   const [curFlowType, setCurFlowType] = useState("committed_funds");
   const [caseData, setCaseData] = useState(null);
   const [deathData, setDeathData] = useState(null);
+  const [noFundingData, setNoFundingData] = useState(false);
 
   // FUNCTIONS //
   const getData = async () => {
@@ -92,8 +94,15 @@ const Events = ({ slug, flowTypeInfo }) => {
           caseData,
           deathData,
           stakeholders,
+          setNoData: setNoFundingData,
         }}
       />
+    ),
+    noDataContent: (
+      <i>
+        There are no funding data for this event yet.{" "}
+        <Link to={"/about/submit"}>Click here to submit data</Link>.
+      </i>
     ),
   };
   // const sankey = dataLoaded && {
@@ -108,27 +117,28 @@ const Events = ({ slug, flowTypeInfo }) => {
   //   content: <Sankey {...{ eventId: data.id, curFlowType }} />,
   // };
 
-  const eventTable = dataLoaded && {
-    header: <h2>Funders for {data.name}</h2>,
-    text: (
-      <span>
-        The table below displays funders in order of amount of funds provided.
-        Click on a funder or recipient to view their profile.
-      </span>
-    ),
-    content: (
-      <EventTable
-        {...{
-          hideName: true,
-          eventId: data.id,
-          curFlowType,
-          curFlowTypeName,
-          setEventTotalsData: () => "",
-          sortByProp: "amount",
-        }}
-      />
-    ),
-  };
+  const eventTable = dataLoaded &&
+    !noFundingData && {
+      header: <h2>Funders for {data.name}</h2>,
+      text: (
+        <span>
+          The table below displays funders in order of amount of funds provided.
+          Click on a funder or recipient to view their profile.
+        </span>
+      ),
+      content: (
+        <EventTable
+          {...{
+            hideName: true,
+            eventId: data.id,
+            curFlowType,
+            curFlowTypeName,
+            setEventTotalsData: () => "",
+            sortByProp: "amount",
+          }}
+        />
+      ),
+    };
 
   // get crossreferences section dynamic title
   const hasDons = data !== null && data.any_dons;
@@ -150,10 +160,17 @@ const Events = ({ slug, flowTypeInfo }) => {
   // collate subsections
   const subsections = [eventBars, eventTable, crossreferences].filter(
     // const subsections = [eventBars, sankey, eventTable, crossreferences].filter(
-    d => d.hide !== true
+    d => d.hide !== true && d !== false
   );
   const subsectionsJsx = subsections.map(
-    ({ header, text, content, toggleFlowType = true, ...props }) => (
+    ({
+      header,
+      text,
+      content,
+      toggleFlowType = true,
+      noDataContent = null,
+      ...props
+    }) => (
       <DetailsSection
         {...{
           classes: [styles.subsection],
@@ -164,6 +181,13 @@ const Events = ({ slug, flowTypeInfo }) => {
           flowTypeInfo,
           curFlowType,
           setCurFlowType,
+          noFinancialData: noFundingData && noDataContent !== null,
+          noDataContent: (
+            <p className={styles.noDataContent}>
+              There are no funding data for this event yet.{" "}
+              <Link to={"/about/submit"}>Click here to submit data</Link>.
+            </p>
+          ),
           ...props,
         }}
       />

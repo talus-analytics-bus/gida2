@@ -73,4 +73,9 @@
       }
     }
   }
+
+  .noDataContent {
+    padding-bottom: $spacing;
+    font-style: italic;
+  }
 }
