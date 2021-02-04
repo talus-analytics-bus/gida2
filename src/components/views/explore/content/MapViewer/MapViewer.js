@@ -14,15 +14,15 @@ import {
 } from "../../../../misc/Queries";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
-import {FilterDropdown} from "../../../../common";
-import {FilterSelections} from "../../../../common";
+import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
+import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import ScoreQuery from "../../../../misc/ScoreQuery.js";
 import OutbreakQuery from "../../../../misc/OutbreakQuery.js";
 import Tab from "../../../../misc/Tab.js";
 import { core_capacities } from "../../../../misc/Data.js";
-import {SlideToggle} from "../../../../common";
-import {Button} from "../../../../common";
+import SlideToggle from "../../../../common/SlideToggle/SlideToggle.js";
+import Button from "../../../../common/Button/Button.js";
 
 // Local content components
 import Map from "./content/Map.js";

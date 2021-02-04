@@ -10,16 +10,16 @@ import TableInstance from "../../chart/table/TableInstance.js";
 import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
 import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
 import Chord from "./content/Chord.js";
-import {Search} from "../../common";
+import Search from "../../common/Search/Search.js";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { execute, NodeSums, Chords } from "../../misc/Queries";
 import { core_capacities, getNodeLinkList } from "../../misc/Data.js";
-import {FilterDropdown} from "../../common";
-import {SourceText} from "../../common";
-import {Button} from "../../common";
-import {Chevron} from "../../common";
-import {Loading} from "../../common";
+import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
+import SourceText from "../../common/SourceText/SourceText.js";
+import Button from "../../common/Button/Button.js";
+import Chevron from "../../common/Chevron/Chevron.js";
+import Loading from "../../common/Loading/Loading.js";
 
 // FC for Analysis.
 const Analysis = ({

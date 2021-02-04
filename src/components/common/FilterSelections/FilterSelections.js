@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import styles from "./filterselections.module.scss";
 import Util from "../../misc/Util.js";
-import {Button} from "../../common";
+import Button from "../../common/Button/Button.js";
 
 /**
  * @method FilterSelections

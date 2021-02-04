@@ -10,7 +10,7 @@ import {
   parseIdsAsNames,
 } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
-import {Loading} from "../../../common";
+import Loading from "../../../common/Loading/Loading";
 
 // local components
 import TableInstance from "../../../chart/table/TableInstance.js";

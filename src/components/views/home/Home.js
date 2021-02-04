@@ -1,10 +1,10 @@
 import React from "react";
 import classNames from "classnames";
-import {Search} from "../../common";
+import Search from "../../common/Search/Search.js";
 import styles from "./home.module.scss";
-import {Button} from "../../common";
+import Button from "../../common/Button/Button.js";
 import mapImage from "../../../assets/images/map.png";
-import {GhsaButton} from "../../common";
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 
 // JSX for home page
 const Home = () => {

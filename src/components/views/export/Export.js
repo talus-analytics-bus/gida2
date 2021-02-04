@@ -7,12 +7,12 @@ import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries";
 import FlowQuery from "../../misc/FlowQuery.js";
 import NodeQuery from "../../misc/NodeQuery.js";
 import OutbreakQuery from "../../misc/OutbreakQuery.js";
-import {Drawer} from "../../common";
-import {Checkbox} from "../../common";
-import {FilterDropdown} from "../../common";
-import {Loading} from "../../common";
+import Drawer from "../../common/Drawer/Drawer.js";
+import Checkbox from "../../common/Checkbox/Checkbox.js";
+import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
+import Loading from "../../common/Loading/Loading";
 import { core_capacities } from "../../misc/Data.js";
-import {Button} from "../../common";
+import Button from "../../common/Button/Button.js";
 import axios from "axios";
 
 // Content components

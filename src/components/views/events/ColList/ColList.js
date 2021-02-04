@@ -9,7 +9,7 @@ import styles from "./collist.module.scss";
 import { comma } from "../../../misc/Util";
 
 // local components
-import {Loading} from "../../../common";
+import Loading from "../../../common/Loading/Loading";
 
 const ColList = ({ items = [], max = 10, isGlobal = false }) => {
   // STATE //

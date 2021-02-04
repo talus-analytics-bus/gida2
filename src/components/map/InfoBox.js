@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import styles from "./infobox.module.scss";
 import classNames from "classnames";
 import Util from "../misc/Util.js";
-import {Button} from "../common";
+import Button from "../common/Button/Button.js";
 // import * as d3 from "d3/dist/d3.min";
 
 /**

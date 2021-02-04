@@ -5,9 +5,9 @@ import { Settings } from "../../../App.js";
 import { execute, Flow } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
-import {Chevron} from "../../common";
-import {Loading} from "../../common";
-import {Pagination} from "../../common";
+import Chevron from "../../common/Chevron/Chevron.js";
+import Loading from "../../common/Loading/Loading.js";
+import Pagination from "../../common/Pagination/Pagination.js";
 
 // Content components
 import TableInstance from "../../chart/table/TableInstance.js";

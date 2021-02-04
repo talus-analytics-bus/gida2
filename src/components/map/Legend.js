@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./legend.module.scss";
 import classNames from "classnames";
 import Util from "../misc/Util.js";
-import {SlideToggle} from "../common";
+import SlideToggle from "../common/SlideToggle/SlideToggle.js";
 
 /**
  * Given the support type and flow type, returns the correct legend title.

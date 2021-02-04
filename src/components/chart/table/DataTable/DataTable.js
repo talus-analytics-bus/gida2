@@ -3,8 +3,8 @@ import React from "react";
 // import { Link } from "react-router-dom";
 // import styles from "./entitytable.module.scss";
 import TableInstance from "../../../chart/table/TableInstance.js";
-import {Pagination} from "../../../common";
-import {Loading} from "../../../common";
+import Pagination from "../../../common/Pagination/Pagination.js";
+import Loading from "../../../common/Loading/Loading";
 import Util from "../../../misc/Util";
 
 // FC for DataTable.
