@@ -27,8 +27,8 @@
       align-items: center;
       .label {
         // "Funder" and "Recipient" SVG has specific fixed size
+        justify-self: flex-end;
         &.isRole {
-          justify-self: flex-end;
           height: 30px;
           &.funder {
             width: 105px;
@@ -55,6 +55,7 @@
       }
       .value {
         color: black;
+        font-weight: normal;
         font-family: "open_sanssemibold", sans-serif;
       }
     }

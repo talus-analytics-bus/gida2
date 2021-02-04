@@ -15,21 +15,13 @@ const Dot = ({ left, date, desc = "" }) => {
   // CONSTANTS //
   // formatted date
   const dateStr = formatDate(new Date(date));
-  // const dataHtml = renderToString(
-  //   <div className={styles.dotTip}>
-  //     <p>
-  //       <strong>{desc}</strong>
-  //     </p>
-  //     <p>{formatDate(new Date(date))}</p>
-  //   </div>
-  // );
   const dataHtml = renderToString(
     <Popup
       {...{
         body: [{ field: "Date", value: dateStr }],
         header: { title: desc, label: "calendar" },
+        style: { gridTemplateColumns: "40px auto" },
         popupStyle: { minWidth: "unset" },
-        align: "left",
       }}
     />
   );

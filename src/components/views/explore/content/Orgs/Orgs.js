@@ -10,11 +10,11 @@ import Util from "../../../../misc/Util.js";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import TableInstance from "../../../../chart/table/TableInstance.js";
 import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js";
-import {FilterDropdown} from "../../../../common";
-import {FilterSelections} from "../../../../common";
-import {Loading} from "../../../../common";
-import {Chevron} from "../../../../common";
-import {Drawer} from "../../../../common";
+import { FilterDropdown } from "../../../../common";
+import { FilterSelections } from "../../../../common";
+import { Loading } from "../../../../common";
+import { Chevron } from "../../../../common";
+import { Drawer } from "../../../../common";
 import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
@@ -32,7 +32,7 @@ import {
 } from "../../../../misc/Queries";
 import { getNodeData, getTableRowData } from "../../../../misc/Data.js";
 import { getNodeLinkList } from "../../../../misc/Data.js";
-import {SourceText} from "../../../../common";
+import { SourceText } from "../../../../common";
 import InfoBox from "../../../../map/InfoBox.js";
 import { appContext } from "../../../../misc/ContextProvider";
 
@@ -69,16 +69,6 @@ const Orgs = ({
   const [revealed, setRevealed] = useState(false);
   const [tooltipNodeData, setTooltipNodeData] = useState(undefined);
   const [hoveredEntity, setHoveredEntity] = useState(undefined);
-  // if (revealed) {
-  //   console.log("\ntooltipData");
-  //   console.log(tooltipData);
-  //   console.log("tooltipNodeData");
-  //   console.log(tooltipNodeData);
-  //   console.log("revealed");
-  //   console.log(revealed);
-  //   console.log("hoveredEntity");
-  //   console.log(hoveredEntity);
-  // }
 
   // Define filter content
   const outbreakOptions = data.outbreaks.map(d => {

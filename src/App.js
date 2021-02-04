@@ -78,16 +78,13 @@ const App = () => {
     if (el) {
       if (get) {
         return spinnerOn;
-        // return el.classList.contains(styles.on);
       } else {
         if (val) {
-          // el.classList.toggle(styles.on, true);
           setSpinnerOn(true);
           if (id) waitingFor.push(id);
         } else {
           if (id) waitingFor.pop();
           if (waitingFor.length === 0 || override) {
-            // el.classList.toggle(styles.on, false);
             setSpinnerOn(false);
           }
         }
