@@ -1,3 +1,61 @@
-.popup {
-  height: auto;
+@import "src/assets/styles/colors.scss";
+[class*="__react_component_tooltip"].container {
+  padding: 0;
+  opacity: 1;
+  $padding: 15px;
+  $grid-gap: 1rem 2rem;
+  &,
+  > .popup {
+    border-radius: $border-radius;
+  }
+  background-color: none;
+  @include shadow();
+  .popup {
+    opacity: 1;
+    .header,
+    .body {
+      padding: $padding;
+    }
+    .header {
+      background-color: $light-grey-3;
+      border-bottom: 1px solid $outbreak-gray-3;
+      display: grid;
+      grid-template-columns: 115px auto;
+      grid-gap: $grid-gap;
+      align-items: center;
+      .label {
+        justify-self: flex-end;
+
+        // "Funder" and "Recipient" SVG has specific fixed size
+        &.isRole {
+          height: 30px;
+          &.funder {
+            width: 105px;
+          }
+          &.recipient {
+            width: 120px;
+          }
+        }
+      }
+      .title {
+        font-size: 2rem;
+        font-family: "open_sanssemibold", sans-serif;
+      }
+    }
+    .body {
+      display: grid;
+      grid-template-columns: 115px auto;
+      grid-gap: $grid-gap;
+      .label {
+        color: $outbreak-gray-2;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        text-align: right;
+      }
+      .value {
+        color: black;
+        font-family: "open_sanssemibold", sans-serif;
+      }
+    }
+  }
 }

@@ -26,6 +26,7 @@ $dark-color: #eeeeee;
 $glowBorder: #3b88fd;
 
 // "Outbreak" color palette
+$outbreak-gray-2: #828282;
 $outbreak-gray-3: #c4c4c4;
 $outbreak-blue-2: #125088;
 $outbreak-blue-3: #457daf;
@@ -227,6 +228,11 @@ $phone-width-narrow: 375px;
     font-weight: 700;
     font-size: 1.8rem;
   }
+}
+
+@mixin shadow() {
+  box-shadow: $layout-box-shadow;
+  -webkit-box-shadow: $layout-box-shadow;
 }
 
 // make colors available to JS

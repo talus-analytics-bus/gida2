@@ -1,7 +1,7 @@
 // 3rd party libs
 import React, { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
-import tooltipStyles from "../../../common/tooltip.module.scss";
+
 import { Settings } from "../../../../App";
 
 // styles
@@ -16,7 +16,7 @@ import D3EventBars from "./d3/D3EventBars";
 import D3ImpactBars from "./d3/D3ImpactBars";
 import { execute, NodeSums } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
-import { Loading, Checkbox, Popup } from "../../../common";
+import { Loading, Checkbox, Popup, popupStyles } from "../../../common";
 
 const EventBars = ({
   eventId,
@@ -463,10 +463,10 @@ const EventBars = ({
         <ReactTooltip
           id={"chartTooltip"}
           type="light"
-          className={tooltipStyles.tooltip}
+          className={popupStyles.container}
           place="top"
           effect="float"
-          getContent={() => tooltipData && <Popup {...{ data: tooltipData }} />}
+          getContent={() => tooltipData && <Popup {...{ ...tooltipData }} />}
         />
       }
     </>

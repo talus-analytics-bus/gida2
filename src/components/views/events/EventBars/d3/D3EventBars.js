@@ -247,43 +247,55 @@ class D3EventBars extends Chart {
           const isBarSegment = dataByName[region] !== undefined;
           const isBarLabel = !isBarSegment;
           if (isBarSegment) {
-            const tooltipData = [
-              {
-                field: "Name",
-                value: dataByName[region][d].name,
-              },
-              {
-                field: xLabel.text().replace(" (USD)", ""),
-                value: Util.money(dataByName[region][d].value),
-              },
-            ];
+            const title = dataByName[region][d].name;
+            const tooltipData = {
+              header: { title, label: params.role },
+              body: [
+                {
+                  field: "Name",
+                  value: title,
+                },
+                {
+                  field: xLabel.text().replace(" (USD)", ""),
+                  value: Util.money(dataByName[region][d].value),
+                },
+              ],
+            };
             params.setTooltipData(tooltipData);
           } else if (isBarLabel) {
-            const tooltipData = [
-              {
-                field: "Name",
-                value: formatRegion(d),
-              },
-              {
-                field: xLabel.text().replace(" (USD)", ""),
-                value: Util.money(
-                  d3.sum(Object.values(dataByName[d]), dd => dd.value)
-                ),
-              },
-            ];
+            const title = formatRegion(d);
+            const tooltipData = {
+              header: { title, label: params.role },
+              body: [
+                {
+                  field: "Name",
+                  value: title,
+                },
+                {
+                  field: xLabel.text().replace(" (USD)", ""),
+                  value: Util.money(
+                    d3.sum(Object.values(dataByName[d]), dd => dd.value)
+                  ),
+                },
+              ],
+            };
             params.setTooltipData(tooltipData);
           }
         } else {
-          const tooltipData = [
-            {
-              field: "Name",
-              value: dataByName[d].name,
-            },
-            {
-              field: xLabel.text().replace(" (USD)", ""),
-              value: Util.money(dataByName[d].value),
-            },
-          ];
+          const title = dataByName[d].name;
+          const tooltipData = {
+            header: { title, label: params.role },
+            body: [
+              {
+                field: "Name",
+                value: title,
+              },
+              {
+                field: xLabel.text().replace(" (USD)", ""),
+                value: Util.money(dataByName[d].value),
+              },
+            ],
+          };
           params.setTooltipData(tooltipData);
         }
       }

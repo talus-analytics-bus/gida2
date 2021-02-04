@@ -12,6 +12,7 @@ import Pagination from "./Pagination/Pagination.js";
 import FilterDropdown from "./FilterDropdown/FilterDropdown.js";
 import ScoreBlocks from "./ScoreBlocks/ScoreBlocks.js";
 import Popup from "./Popup/Popup.js";
+import popupStyles from "./Popup/popup.module.scss";
 export {
   Button,
   FilterSelections,
@@ -27,4 +28,5 @@ export {
   FilterDropdown,
   ScoreBlocks,
   Popup,
+  popupStyles,
 };
