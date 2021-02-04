@@ -16,8 +16,7 @@ import D3EventBars from "./d3/D3EventBars";
 import D3ImpactBars from "./d3/D3ImpactBars";
 import { execute, NodeSums } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
-import {Loading} from "../../../common";
-import {Checkbox} from "../../../common";
+import { Loading, Checkbox, Popup } from "../../../common";
 
 const EventBars = ({
   eventId,
@@ -467,17 +466,7 @@ const EventBars = ({
           className={tooltipStyles.tooltip}
           place="top"
           effect="float"
-          getContent={() =>
-            tooltipData && (
-              <table>
-                {tooltipData.map(d => (
-                  <tr>
-                    <td>{d.field}:</td>&nbsp;<td>{d.value}</td>
-                  </tr>
-                ))}
-              </table>
-            )
-          }
+          getContent={() => tooltipData && <Popup {...{ data: tooltipData }} />}
         />
       }
     </>
