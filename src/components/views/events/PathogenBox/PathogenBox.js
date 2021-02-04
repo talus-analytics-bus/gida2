@@ -16,7 +16,7 @@ const PathogenBox = ({
   mcms_available,
   transmission_type,
   route_of_infection,
-  signs_and_symptoms,
+  // signs_and_symptoms,
   mcms_during_event,
 }) => {
   // CONSTANTS //
@@ -34,12 +34,12 @@ const PathogenBox = ({
       data: route_of_infection,
       fmt: arrJoin,
     },
-    {
-      icon: stethoscopeSvg,
-      title: "Signs & symptoms",
-      data: signs_and_symptoms,
-      fmt: v => v,
-    },
+    // {
+    //   icon: stethoscopeSvg,
+    //   title: "Signs & symptoms",
+    //   data: signs_and_symptoms,
+    //   fmt: v => v,
+    // },
     {
       icon: syringeSvg,
       title: "Medical countermeasures",
