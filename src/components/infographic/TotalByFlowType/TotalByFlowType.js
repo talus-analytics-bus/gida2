@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import Util from "../../misc/Util.js";
-import Loading from "../../common/Loading/Loading";
+import {Loading} from "../../common";
 import styles from "./totalbyflowtype.module.scss";
 
 // local components

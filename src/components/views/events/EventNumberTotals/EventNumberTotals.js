@@ -8,7 +8,7 @@ import dollarSvg from "./svg/dollar.svg";
 import personSvg from "./svg/person.svg";
 
 // local components
-import SourceText, { Website } from "../../../common/SourceText/SourceText";
+import { SourceText } from "../../../common";
 import TotalByFlowType from "../../../infographic/TotalByFlowType/TotalByFlowType";
 import { execute, CumulativeCasesOrDeaths, Flow } from "../../../misc/Queries";
 import { NONE_VALS } from "../../../misc/Util";
@@ -126,7 +126,7 @@ const EventNumberTotals = ({
             <SourceText>
               {impactDataSourcesNoun}:{" "}
               {eventData.cases_and_deaths_refs.map(d => (
-                <Website {...{ ...d }} />
+                <SourceText.Website {...{ ...d }} />
               ))}
             </SourceText>
           )}

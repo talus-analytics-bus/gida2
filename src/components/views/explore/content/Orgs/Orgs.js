@@ -10,11 +10,11 @@ import Util from "../../../../misc/Util.js";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import TableInstance from "../../../../chart/table/TableInstance.js";
 import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js";
-import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
-import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
-import Loading from "../../../../common/Loading/Loading";
-import Chevron from "../../../../common/Chevron/Chevron.js";
-import Drawer from "../../../../common/Drawer/Drawer.js";
+import {FilterDropdown} from "../../../../common";
+import {FilterSelections} from "../../../../common";
+import {Loading} from "../../../../common";
+import {Chevron} from "../../../../common";
+import {Drawer} from "../../../../common";
 import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
@@ -32,7 +32,7 @@ import {
 } from "../../../../misc/Queries";
 import { getNodeData, getTableRowData } from "../../../../misc/Data.js";
 import { getNodeLinkList } from "../../../../misc/Data.js";
-import SourceText from "../../../../common/SourceText/SourceText.js";
+import {SourceText} from "../../../../common";
 import InfoBox from "../../../../map/InfoBox.js";
 import { appContext } from "../../../../misc/ContextProvider";
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import Util, { isEmpty } from "../../misc/Util";
 import { getNodeLinkList, parseIdsAsNames } from "../../misc/Data";
-import Loading from "../../common/Loading/Loading";
+import {Loading} from "../../common";
 import { execute, NodeSums, Stakeholder } from "../../misc/Queries";
 import TableInstance from "../table/TableInstance";
 import { Settings } from "../../../App.js";
