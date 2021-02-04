@@ -15,20 +15,18 @@ import deathSvg from "./svg/deaths.svg";
 const Popup = ({
   body,
   header = { title: "Germany", label: "funder" },
-  ...props
+  ...style
 }) => {
-  // CONSTANTS //
-
   // JSX //
   return (
     <div className={styles.popup}>
-      <Header {...{ ...header }} />
-      <Body {...{ data: body }} />
+      <Header {...{ ...header, style }} />
+      <Body {...{ data: body, style }} />
     </div>
   );
 };
 
-const Header = ({ label, title }) => {
+const Header = ({ label, title, style }) => {
   const isRole = ["funder", "recipient"].includes(label);
   const roleIcon = isRole ? (
     label === "funder" ? (
@@ -37,11 +35,11 @@ const Header = ({ label, title }) => {
       <RecipientIcon />
     )
   ) : null;
-  const caseIcon = label === "cases" ? caseSvg : null;
-  const deathIcon = label === "deaths" ? deathSvg : null;
+  const caseIcon = label === "cases" ? <img src={caseSvg} /> : null;
+  const deathIcon = label === "deaths" ? <img src={deathSvg} /> : null;
   const icon = roleIcon || caseIcon || deathIcon;
   return (
-    <div className={styles.header}>
+    <div style={style} className={styles.header}>
       <div
         className={classNames(styles.label, styles[label], {
           [styles.isRole]: isRole,
@@ -54,9 +52,9 @@ const Header = ({ label, title }) => {
   );
 };
 
-const Body = ({ data }) => {
+const Body = ({ data, style }) => {
   return (
-    <div className={styles.body}>
+    <div style={style} className={styles.body}>
       {data.map(d => (
         <>
           <div className={styles.label}>{d.field}</div>

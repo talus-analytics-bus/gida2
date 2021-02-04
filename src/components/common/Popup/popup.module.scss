@@ -20,14 +20,13 @@
       background-color: $light-grey-3;
       border-bottom: 1px solid $outbreak-gray-3;
       display: grid;
-      grid-template-columns: 115px auto;
+      grid-template-columns: auto auto;
       grid-gap: $grid-gap;
       align-items: center;
       .label {
-        justify-self: flex-end;
-
         // "Funder" and "Recipient" SVG has specific fixed size
         &.isRole {
+          justify-self: flex-end;
           height: 30px;
           &.funder {
             width: 105px;
@@ -44,7 +43,7 @@
     }
     .body {
       display: grid;
-      grid-template-columns: 115px auto;
+      grid-template-columns: auto auto;
       grid-gap: $grid-gap;
       .label {
         color: $outbreak-gray-2;

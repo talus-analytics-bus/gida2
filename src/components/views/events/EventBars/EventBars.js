@@ -466,7 +466,13 @@ const EventBars = ({
           className={popupStyles.container}
           place="top"
           effect="float"
-          getContent={() => tooltipData && <Popup {...{ ...tooltipData }} />}
+          getContent={() =>
+            tooltipData && (
+              <Popup
+                {...{ gridTemplateColumns: "115px auto", ...tooltipData }}
+              />
+            )
+          }
         />
       }
     </>

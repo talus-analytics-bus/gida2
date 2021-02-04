@@ -156,18 +156,28 @@ class D3ImpactBars extends Chart {
 
       function updateTooltip(dTmp) {
         const d = typeof dTmp === "object" ? dTmp.name : dTmp;
-        const tooltipData = [
-          {
-            field: "Name",
-            value: params.stack
+        const tooltipData = {
+          header: {
+            title: params.stack
               ? formatRegion(dataByName[d].name)
               : dataByName[d].name,
+            label: params.impact,
           },
-          {
-            field: xLabel.text(),
-            value: Util.formatSIInteger(dataByName[d].value),
-          },
-        ];
+          body: [
+            {
+              field: xLabel.text(),
+              value:
+                Util.formatSIInteger(dataByName[d].value) +
+                " " +
+                (dataByName[d].value !== 1
+                  ? params.impact
+                  : params.impact.slice(0, params.impact.length - 1)),
+            },
+          ],
+          gridTemplateColumns: "auto auto",
+          display: "flex",
+          // gridTemplateColumns: "80px auto",
+        };
         params.setTooltipData(tooltipData);
       }
 
