@@ -21,7 +21,7 @@ const SourceText = ({
   return component;
 };
 
-export const Website = ({
+const Website = ({
   url,
   name,
   date_published,
@@ -77,5 +77,5 @@ export const WebsiteList = ({ websites, linksOnly }) => {
     ));
   }
 };
-
+SourceText.Website = Website;
 export default SourceText;

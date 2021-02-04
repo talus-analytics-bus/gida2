@@ -4,7 +4,7 @@ import ReactTooltip from "react-tooltip";
 
 // local components
 import Carousel from "./Carousel/Carousel";
-import Button from "../../../common/Button/Button";
+import {Button} from "../../../common";
 import { Excel } from "../../../misc/Queries";
 
 // styles and assets

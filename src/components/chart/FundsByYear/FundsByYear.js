@@ -8,8 +8,7 @@ import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.j
 import AreaLine from "../AreaLine/AreaLine.js";
 import { Settings } from "../../../App.js";
 import tableIcon from "../../../assets/images/table-funds.svg";
-import Button from "../../common/Button/Button.js";
-import Loading from "../../common/Loading/Loading";
+import { Button, Loading } from "../../common";
 import GhsaToggle from "../../misc/GhsaToggle.js";
 import { execute, NodeSums } from "../../misc/Queries";
 

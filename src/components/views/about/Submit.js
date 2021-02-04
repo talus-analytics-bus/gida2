@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./about.module.scss";
 import classNames from "classnames";
-import Button from "../../common/Button/Button.js";
+import {Button} from "../../common";
 import Util from "../../misc/Util.js";
 import axios from "axios";
 

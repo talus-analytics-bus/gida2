@@ -5,7 +5,7 @@ import classNames from "classnames";
 
 // Content components
 import GhsaToggle from "../../misc/GhsaToggle.js";
-import Loading from "../../common/Loading/Loading";
+import {Loading} from "../../common";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import { Settings } from "../../../App.js";
 import Tab from "../../misc/Tab.js";

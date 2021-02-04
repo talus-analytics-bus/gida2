@@ -1,6 +1,6 @@
 // 3rd party libs
 import React from "react";
-import SourceText from "../../../common/SourceText/SourceText.js";
+import {SourceText} from "../../../common";
 import classNames from "classnames";
 
 // styles

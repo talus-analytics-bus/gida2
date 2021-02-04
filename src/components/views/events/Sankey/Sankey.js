@@ -15,8 +15,8 @@ import { Settings } from "../../../../App";
 import D3Sankey from "./d3/D3Sankey";
 import { execute, Chords } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
-import Checkbox from "../../../common/Checkbox/Checkbox";
-import Loading from "../../../common/Loading/Loading";
+import {Checkbox} from "../../../common";
+import {Loading} from "../../../common";
 
 const Sankey = ({ eventId, curFlowType }) => {
   // STATE //

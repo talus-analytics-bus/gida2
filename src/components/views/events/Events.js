@@ -15,7 +15,7 @@ import {
   Crossreferences,
 } from ".";
 import { Outbreak, Stakeholder, execute } from "../../misc/Queries";
-import Loading from "../../common/Loading/Loading";
+import { Loading } from "../../common";
 import EventTable from "../details/content/EventTable";
 import DetailsSection from "../details/content/DetailsSection";
 

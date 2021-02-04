@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import styles from "./pagination.module.scss";
 import Util from "../../misc/Util.js";
-import Loading from "../../common/Loading/Loading";
+import {Loading} from "../../common";
 
 /**
  * @method Pagination

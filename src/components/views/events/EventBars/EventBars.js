@@ -16,8 +16,8 @@ import D3EventBars from "./d3/D3EventBars";
 import D3ImpactBars from "./d3/D3ImpactBars";
 import { execute, NodeSums } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
-import Loading from "../../../common/Loading/Loading";
-import Checkbox from "../../../common/Checkbox/Checkbox";
+import {Loading} from "../../../common";
+import {Checkbox} from "../../../common";
 
 const EventBars = ({
   eventId,
