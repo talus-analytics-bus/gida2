@@ -8,14 +8,30 @@ import styles from "./dot.module.scss";
 // utility
 import { formatDate } from "../../../../misc/Util";
 
+// common
+import { Popup } from "../../../../common";
+
 const Dot = ({ left, date, desc = "" }) => {
+  // CONSTANTS //
+  // formatted date
+  const dateStr = formatDate(new Date(date));
+  // const dataHtml = renderToString(
+  //   <div className={styles.dotTip}>
+  //     <p>
+  //       <strong>{desc}</strong>
+  //     </p>
+  //     <p>{formatDate(new Date(date))}</p>
+  //   </div>
+  // );
   const dataHtml = renderToString(
-    <div className={styles.dotTip}>
-      <p>
-        <strong>{desc}</strong>
-      </p>
-      <p>{formatDate(new Date(date))}</p>
-    </div>
+    <Popup
+      {...{
+        body: [{ field: "Date", value: dateStr }],
+        header: { title: desc, label: "calendar" },
+        popupStyle: { minWidth: "unset" },
+        align: "left",
+      }}
+    />
   );
   return (
     <div

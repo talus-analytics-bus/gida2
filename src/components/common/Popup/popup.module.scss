@@ -58,5 +58,15 @@
         font-family: "open_sanssemibold", sans-serif;
       }
     }
+
+    &.left {
+      .body,
+      .header {
+        display: flex;
+      }
+      .body .label {
+        text-align: left;
+      }
+    }
   }
 }

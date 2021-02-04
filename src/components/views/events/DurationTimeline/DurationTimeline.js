@@ -6,7 +6,7 @@ import * as d3 from "d3/dist/d3.min";
 
 // styles and assets
 import styles from "./durationtimeline.module.scss";
-import tooltipStyles from "../../../common/tooltip.module.scss";
+import { popupStyles } from "../../../common";
 import arrowSvg from "./svg/arrow.svg";
 
 // utility
@@ -176,13 +176,12 @@ const DurationTimeline = ({ points, isOngoing }) => {
         // Info tooltip that is displayed whenever a dot is hovered
         <ReactTooltip
           id={"dotTip"}
-          class={tooltipStyles.tooltip}
+          class={popupStyles.container}
           type="light"
           effect="float"
           place="top"
           delayHide={250}
           clickable={false}
-          getContent={d => d}
         />
       }
     </>

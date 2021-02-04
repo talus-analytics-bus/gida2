@@ -8,6 +8,7 @@ import { FunderIcon, RecipientIcon } from "../../misc/EntityRoleToggle";
 // assets
 import caseSvg from "./svg/cases.svg";
 import deathSvg from "./svg/deaths.svg";
+import calendarSvg from "./svg/calendar.svg";
 
 /**
  * @method Popup
@@ -17,28 +18,49 @@ const Popup = ({
   header = { title: "Germany", label: "funder" },
   popupStyle,
   style,
+  align = "center",
 }) => {
   // JSX //
-  return (
-    <div style={popupStyle} className={styles.popup}>
-      <Header {...{ ...header, style }} />
-      <Body {...{ data: body, style }} />
-    </div>
-  );
+  if (body === null) return null;
+  else
+    return (
+      <div
+        style={popupStyle}
+        className={classNames(styles.popup, styles[align])}
+      >
+        <Header {...{ ...header, style }} />
+        <Body {...{ data: body, style }} />
+      </div>
+    );
+};
+
+// return correct icon component given the label
+const getIcon = label => {
+  const isRole = ["funder", "recipient"].includes(label);
+  const isMaterial = false; // TODO
+  const labelToSvg = {
+    cases: caseSvg,
+    deaths: deathSvg,
+    calendar: calendarSvg,
+  };
+  const isSvg = Object.keys(labelToSvg).includes(label);
+
+  if (isMaterial) {
+    return <i className={"material-icons"}>{label}</i>;
+  } else if (isRole) {
+    return label === "funder" ? <FunderIcon /> : <RecipientIcon />;
+  } else if (isSvg) {
+    return <img src={labelToSvg[label]} />;
+  } else {
+    return null;
+  }
 };
 
 const Header = ({ label, title, style }) => {
   const isRole = ["funder", "recipient"].includes(label);
-  const roleIcon = isRole ? (
-    label === "funder" ? (
-      <FunderIcon />
-    ) : (
-      <RecipientIcon />
-    )
-  ) : null;
-  const caseIcon = label === "cases" ? <img src={caseSvg} /> : null;
-  const deathIcon = label === "deaths" ? <img src={deathSvg} /> : null;
-  const icon = roleIcon || caseIcon || deathIcon;
+
+  const icon = getIcon(label, isRole);
+
   return (
     <div style={style} className={styles.header}>
       <div
@@ -54,14 +76,17 @@ const Header = ({ label, title, style }) => {
 };
 
 const Body = ({ data, style }) => {
+  const isArr = data.map !== undefined;
   return (
     <div style={style} className={styles.body}>
-      {data.map(d => (
-        <>
-          <div className={styles.label}>{d.field}</div>
-          <div className={styles.value}>{d.value}</div>
-        </>
-      ))}
+      {!isArr && data}
+      {isArr &&
+        data.map(d => (
+          <>
+            <div className={styles.label}>{d.field}</div>
+            <div className={styles.value}>{d.value}</div>
+          </>
+        ))}
     </div>
   );
 };
