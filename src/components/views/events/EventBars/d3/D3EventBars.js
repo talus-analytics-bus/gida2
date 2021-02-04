@@ -489,11 +489,12 @@ class D3EventBars extends Chart {
                     "https://flags.talusanalytics.com/64px/org.png"
                   );
                 });
-            } else {
-              // nudge y-axis tick label to right to occupy space where flag
-              // would be
-              g.select("text").attr("x", -10);
             }
+            // else {
+            //   // nudge y-axis tick label to right to occupy space where flag
+            //   // would be
+            //   g.select("text").attr("x", -10);
+            // }
           });
       }
 
