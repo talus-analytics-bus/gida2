@@ -95,10 +95,13 @@ class D3Sankey extends Chart {
       fakeText.remove();
       return maxLabelWidth + padding;
     };
-
+    const labelsBelowMinNodeHeight = [];
     const getBelowMinNodeHeight = d => {
+      if (d.type !== "ihr") return false;
       const nodeHeight = d.y1 - d.y0;
-      return nodeHeight < 30;
+      const below = nodeHeight < 30;
+
+      return below;
     };
 
     // Initialize some constants
@@ -195,7 +198,7 @@ class D3Sankey extends Chart {
       .nodeSort(sortByValueOrIhr)
       .nodeId(nodeId)
       .nodeWidth(10)
-      .nodePadding(1)
+      .nodePadding(2)
       .nodes(graph.nodes)
       .links(graph.links);
 
@@ -218,8 +221,8 @@ class D3Sankey extends Chart {
     generator();
 
     // const labeledNodes = graph.nodes;
-    const labeledNodes = graph.nodes;
-    // const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
+    // const labeledNodes = graph.nodes;
+    const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
     const maxLenGlobal = Infinity;
     // const maxLenGlobal = 20;
     const maxLenLeft = d3.min([
@@ -439,7 +442,12 @@ class D3Sankey extends Chart {
       .join("g")
       .attr("class", d => styles[d.role])
       .classed("nodeLabel", true)
-      // .classed(styles.hidden, getBelowMinNodeHeight)
+      .classed(styles.hidden, d => {
+        const below = getBelowMinNodeHeight(d);
+        if (below && !labelsBelowMinNodeHeight.includes(d.name))
+          labelsBelowMinNodeHeight.push([d.name, d.value]);
+        return below;
+      })
       .on("mouseover", d => {
         updateTooltip(d, true);
       })
@@ -498,7 +506,9 @@ class D3Sankey extends Chart {
             d.role === "origin" ? "funder" : "recipient"
           }">${text}</a>`;
       });
-
+    console.log("labelsBelowMinNodeHeight");
+    console.log(labelsBelowMinNodeHeight);
+    params.setLabelsBelowMinNodeHeight(labelsBelowMinNodeHeight);
     // render chart title (centered over links)
     chart
       .append("text")

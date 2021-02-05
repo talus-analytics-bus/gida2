@@ -36,6 +36,7 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [marginLeft, setMarginLeft] = useState(0);
   const [marginRight, setMarginRight] = useState(0);
   const [clicked, setClicked] = useState(null);
+  const [labelsBelowMinNodeHeight, setLabelsBelowMinNodeHeight] = useState([]);
   const clickedRef = useRef(null);
 
   // TODO setClicked(null) on clicking outside chart
@@ -152,6 +153,7 @@ const Sankey = ({ eventId, curFlowType }) => {
     labelShift: 10,
     clicked,
     setClicked,
+    setLabelsBelowMinNodeHeight,
   };
 
   // funders or recipients?
@@ -291,6 +293,17 @@ const Sankey = ({ eventId, curFlowType }) => {
           }}
           className={styles.chart}
         />
+        {labelsBelowMinNodeHeight
+          .sort(function(a, b) {
+            if (a[1] > b[1]) return -1;
+            else if (a[1] < b[1]) return 1;
+            else return 0;
+          })
+          .map(d => (
+            <p style={{ marginLeft: "auto", fontFamily: "open_sanssemibold" }}>
+              {d[0]}
+            </p>
+          ))}
         {noData && (
           <div className={styles.noDataMessage}>
             No {roleNoun.toLowerCase()} data for {curFlowType.replace("_", " ")}{" "}
