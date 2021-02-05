@@ -4,7 +4,10 @@
     @include title;
   }
   .intro {
-    font-size: 1.4rem;
-    margin-top: 10px;
+    @include intro;
+  }
+  .instructions {
+    @include instructions;
+    margin-bottom: 20px;
   }
 }

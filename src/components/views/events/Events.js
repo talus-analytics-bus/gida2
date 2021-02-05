@@ -16,10 +16,13 @@ export const Events = ({ ...props }) => {
   // JSX //
   return (
     <div className={classNames("pageContainer", styles.events)}>
-      <h2 className={styles.title}>PHEICs</h2>
-      <Loading {...{ loaded, align: "center", message: "Loading events" }}>
-        <div className={styles.intro}>Intro text.</div>
-        <EventTable {...{ setLoaded }} />
+      <h2 className={styles.title}>PHEIC funding projects</h2>
+      <Loading {...{ loaded, align: "center", message: "Loading PHEICs" }}>
+        <div className={styles.instructions}>
+          Choose PHEIC in table to view details. Each row is a project
+          supporting the response to a particular PHEIC.
+        </div>
+        <EventTable {...{ setLoaded, sortByProp: "amount-disbursed_funds" }} />
       </Loading>
     </div>
   );

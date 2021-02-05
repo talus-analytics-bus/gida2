@@ -31,8 +31,8 @@ import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
-import {Loading} from "../../common";
-import {ScoreBlocks} from "../../common";
+import { Loading } from "../../common";
+import { ScoreBlocks } from "../../common";
 import Tab from "../../misc/Tab.js";
 import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
 import ReactTooltip from "react-tooltip";
@@ -522,7 +522,7 @@ const Details = ({
                       curFlowTypeName,
                       setEventTotalsData, // set flows to var. for totals
                       isGhsaPage: id === "ghsa",
-                      sortByProp: "amount",
+                      sortByProp: `amount-${curFlowType}`,
                     }}
                   />
                 </div>

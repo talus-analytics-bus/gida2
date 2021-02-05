@@ -138,6 +138,16 @@ $phone-width-narrow: 375px;
   }
 }
 
+@mixin intro {
+  font-size: 1.4rem;
+  margin-top: 10px;
+}
+
+@mixin instructions {
+  @include intro;
+  font-style: italic;
+}
+
 @mixin sectionTitle {
   text-transform: uppercase;
   font-size: 1.6rem;

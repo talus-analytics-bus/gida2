@@ -1,6 +1,12 @@
+// 3rd party libs
 import React, { useState, useLayoutEffect } from "react";
-import styles from "../details.module.scss";
+import { Link } from "react-router-dom";
 import classNames from "classnames";
+
+// assets and styles
+import styles from "../details.module.scss";
+
+// local
 import { Settings } from "../../../../App.js";
 import {
   getNodeLinkList,
@@ -11,8 +17,6 @@ import {
 } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
 import { Loading } from "../../../common";
-
-// local components
 import TableInstance from "../../../chart/table/TableInstance.js";
 
 // queries
@@ -40,6 +44,124 @@ const EventTable = ({
   const [outbreaks, setOutbreaks] = useState([]);
   const [flows, setFlows] = useState([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+
+  // CONSTANTS //
+  const showBothFlowTypes = curFlowType === undefined; // TODO implement
+  const standardCols = [
+    {
+      title: "PHEIC",
+      prop: "event",
+      type: "text",
+      func: d => {
+        // get link to outbreak page
+        const matchingOutbreaks = outbreaks.filter(dd =>
+          d.events.includes(dd.id)
+        );
+
+        return matchingOutbreaks.map((dd, ii) => {
+          const comma = ii !== matchingOutbreaks.length - 1 ? ", " : null;
+          return (
+            <span>
+              <Link {...{ to: `/events/${dd.slug}` }}>{dd.name}</Link>
+              {comma}
+            </span>
+          );
+        });
+      },
+      render: d => d,
+      hide: hideName,
+    },
+    {
+      title: "Project name",
+      prop: "project_name",
+      type: "text",
+      func: d => d.name,
+      render: d => d,
+    },
+    {
+      title: Util.getInitCap(
+        Util.getRoleTerm({
+          type: "noun",
+          role: "funder",
+        })
+      ),
+      prop: "origins",
+      type: "text",
+      func: d => JSON.stringify(d.origins),
+      render: d =>
+        getNodeLinkList({
+          urlType: "details",
+          nodeList: JSON.parse(d),
+          entityRole: "funder",
+          id,
+        }),
+    },
+    {
+      title: Util.getInitCap(
+        Util.getRoleTerm({
+          type: "noun",
+          role: "recipient",
+        })
+      ),
+      prop: "targets",
+      type: "text",
+      func: d => JSON.stringify(d.targets),
+      render: d =>
+        getNodeLinkList({
+          urlType: "details",
+          nodeList: JSON.parse(d),
+          entityRole: "recipient",
+          id,
+        }),
+    },
+    {
+      title: "Funding year(s)",
+      prop: "year_range_proj",
+      type: "text",
+      func: d => d.years,
+      render: d => d,
+    },
+  ];
+
+  // FUNCTIONS //
+  const getFlowTypeCol = (curFlowType, curFlowTypeName) => {
+    return {
+      title: curFlowTypeName + ' (or "In-kind support")',
+      prop: `amount-${curFlowType}`,
+      type: "num",
+      className: d => (d > 0 ? "num" : "num-with-text"),
+      func: d => {
+        // Check whether the monetary amount is available
+        const ft = d[curFlowType];
+        const financial = !d.is_inkind;
+        if (financial) return ft;
+        else {
+          // If no financial, check for inkind
+          const inkindField =
+            curFlowType === "disbursed_funds"
+              ? "provided_inkind"
+              : "committed_inkind";
+          const inkind = d[inkindField] !== null;
+          if (inkind) return -7777;
+          else return -9999;
+        }
+      },
+      render: d =>
+        d === -7777
+          ? Util.formatValue("In-kind support", "inkind")
+          : Util.formatValue(d, curFlowType),
+    };
+  };
+  const getTableColumns = (standardCols, showBothFlowTypes) => {
+    if (!showBothFlowTypes) {
+      const curFlowTypeCol = getFlowTypeCol(curFlowType, curFlowTypeName);
+      return standardCols.concat(curFlowTypeCol);
+    } else
+      return standardCols.concat([
+        getFlowTypeCol("disbursed_funds", "Disbursed funds"),
+        getFlowTypeCol("committed_funds", "Committed funds"),
+      ]);
+  };
 
   const getData = async () => {
     const queries = {
@@ -85,6 +207,10 @@ const EventTable = ({
     setLoaded(true);
   };
 
+  // FUNCTION CALLS //
+  const tableColumns = getTableColumns(standardCols, showBothFlowTypes);
+
+  // EFFECT HOOKS //
   useLayoutEffect(() => {
     if (!dataLoaded) {
       getData();
@@ -101,97 +227,7 @@ const EventTable = ({
       <TableInstance
         paging={true}
         sortByProp={props.sortByProp || "years"}
-        tableColumns={[
-          {
-            title: "Event response",
-            prop: "event",
-            type: "text",
-            func: d => {
-              return outbreaks
-                .filter(dd => d.events.includes(dd.id))
-                .map(dd => dd.name)
-                .join("· ");
-            },
-            render: d => d,
-            hide: hideName,
-          },
-          {
-            title: "Project name",
-            prop: "project_name",
-            type: "text",
-            func: d => d.name,
-            render: d => d,
-          },
-          {
-            title: Util.getInitCap(
-              Util.getRoleTerm({
-                type: "noun",
-                role: "funder",
-              })
-            ),
-            prop: "origins",
-            type: "text",
-            func: d => JSON.stringify(d.origins),
-            render: d =>
-              getNodeLinkList({
-                urlType: "details",
-                nodeList: JSON.parse(d),
-                entityRole: "funder",
-                id,
-              }),
-          },
-          {
-            title: Util.getInitCap(
-              Util.getRoleTerm({
-                type: "noun",
-                role: "recipient",
-              })
-            ),
-            prop: "targets",
-            type: "text",
-            func: d => JSON.stringify(d.targets),
-            render: d =>
-              getNodeLinkList({
-                urlType: "details",
-                nodeList: JSON.parse(d),
-                entityRole: "recipient",
-                id,
-              }),
-          },
-          {
-            title: "Funding year(s)",
-            prop: "year_range_proj",
-            type: "text",
-            func: d => d.years,
-            render: d => d,
-          },
-          {
-            title: curFlowTypeName + ' (or "In-kind support")',
-            prop: "amount",
-            type: "num",
-            className: d => (d > 0 ? "num" : "num-with-text"),
-            func: d => {
-              // Check whether the monetary amount is available
-              const ft = d[curFlowType];
-              const financial = !d.is_inkind;
-              if (financial) return ft;
-              else {
-                // If no financial, check for inkind
-                const inkindField =
-                  curFlowType === "disbursed_funds"
-                    ? "provided_inkind"
-                    : "committed_inkind";
-                const inkind = d[inkindField] !== null;
-                if (inkind) return -7777;
-                else return -9999;
-              }
-            },
-            render: d =>
-              d === -7777
-                ? Util.formatValue("In-kind support", "inkind")
-                : Util.formatValue(d, curFlowType),
-          },
-        ]}
+        tableColumns={tableColumns}
         tableData={flows}
         hide={r => r.amount === -9999}
       />
