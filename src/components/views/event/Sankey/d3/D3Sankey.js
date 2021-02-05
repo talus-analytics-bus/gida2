@@ -482,7 +482,7 @@ class D3Sankey extends Chart {
           params.labelShift * (d.role === "origin" ? -1 : 1) +
           (d.role === "origin" ? 0 : generator.nodeWidth() - 2);
         return (
-          "translate(" + (d.x0 + xShift) + "," + (d.y1 + d.y0 + 5) / 2 + ")"
+          "translate(" + (d.x0 + xShift) + "," + (d.y1 + d.y0 + 10) / 2 + ")"
         );
       })
       .append("text")
@@ -514,7 +514,7 @@ class D3Sankey extends Chart {
         const g = d3.select(this).classed("iconned", true);
 
         // left side: move left
-        if (d.type !== "ihr") g.select("text").attr("x", -45);
+        if (d.type !== "ihr") g.select("text").attr("x", -37);
 
         const axisGap = 3;
         // const axisGap = -7;
@@ -523,12 +523,13 @@ class D3Sankey extends Chart {
           .attr("class", "icon")
           .attr("transform", `translate(${axisGap}, -5)`);
 
-        const badgeHeight = 30;
-        const badgeWidth = badgeHeight * 2;
+        const badgeHeight = 32;
+        const badgeWidth = badgeHeight;
+        // const badgeWidth = badgeHeight * 2;
         const badgeDim = {
           width: badgeWidth,
           height: badgeHeight,
-          x: -badgeWidth + 12,
+          x: -badgeWidth,
           y: -(badgeHeight / 2),
         };
 

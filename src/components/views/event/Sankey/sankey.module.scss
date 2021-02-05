@@ -16,7 +16,7 @@
     form label {
       margin: 0;
     }
-    margin-bottom: 30px;
+    // margin-bottom: 30px;
     @include spaceChildrenHoriz(10px);
     text-transform: uppercase;
     > div:not(.checkbox) {
@@ -29,7 +29,7 @@
   }
   .chart {
     width: 100%;
-    height: 1625px * 0.683333333333333;
+    height: calc(1800px * 0.683333333333333 + 30px);
     // height: 500px;
     svg {
       // chart title
