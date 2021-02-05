@@ -230,18 +230,18 @@ class D3Sankey extends Chart {
       d3.max(labeledNodes.filter(d => d.type === "ihr"), d => d.name.length),
       maxLenGlobal,
     ]);
-    const left = getChartMargin(
-      labeledNodes.filter(d => d.role === "origin").map(d => d.name),
-      v => this.getName(v, maxLenLeft),
-      params.labelShift
-    );
+    const left =
+      getChartMargin(
+        labeledNodes.filter(d => d.role === "origin").map(d => d.name),
+        v => this.getName(v, maxLenLeft),
+        params.labelShift
+      ) + 45;
     const right = getChartMargin(
       labeledNodes.filter(d => d.type === "ihr").map(d => d.name),
       v => this.getName(v, maxLenRight),
       params.labelShift
     );
-    console.log(`labeledNodes.filter(d => d.type === "ihr").map(d => d.name)`);
-    console.log(labeledNodes.filter(d => d.type === "ihr").map(d => d.name));
+
     // params.setMarginLeft(left);
     // params.setMarginRight(right);
 
@@ -506,6 +506,58 @@ class D3Sankey extends Chart {
       .style("text-anchor", "middle")
       .attr("transform", `translate(${this.width / 2}, -10)`)
       .text(params.xLabel);
+
+    // flag icons
+    const includeFlags = true;
+    if (includeFlags) {
+      chart.selectAll("g.nodeLabel:not(.iconned)").each(function addIcons(d) {
+        const g = d3.select(this).classed("iconned", true);
+
+        // left side: move left
+        if (d.type !== "ihr") g.select("text").attr("x", -45);
+
+        const axisGap = 3;
+        // const axisGap = -7;
+        const iconGroup = g
+          .append("g")
+          .attr("class", "icon")
+          .attr("transform", `translate(${axisGap}, -5)`);
+
+        const badgeHeight = 30;
+        const badgeWidth = badgeHeight * 2;
+        const badgeDim = {
+          width: badgeWidth,
+          height: badgeHeight,
+          x: -badgeWidth + 12,
+          y: -(badgeHeight / 2),
+        };
+
+        const flagUrl = d.flag_url;
+        const showFlag = flagUrl !== null;
+        if (showFlag) {
+          iconGroup
+            .append("image")
+            .attr("href", d.flag_url)
+            .attr("width", badgeDim.width)
+            .attr("height", badgeDim.height)
+            .attr("x", badgeDim.x)
+            .attr("y", badgeDim.y)
+            .on("load", function onError(d) {
+              d3.select(this).style("display", "block");
+            })
+            .on("error", function onError(d) {
+              d3.select(this).attr(
+                "href",
+                "https://flags.talusanalytics.com/64px/org.png"
+              );
+            });
+        } else {
+          // nudge y-axis tick label to right to occupy space where flag
+          // would be
+          g.select("text").attr("x", -10);
+        }
+      });
+    }
 
     ReactTooltip.rebuild();
 

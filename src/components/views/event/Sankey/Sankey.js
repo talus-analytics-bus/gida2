@@ -59,7 +59,7 @@ const Sankey = ({ eventId, curFlowType }) => {
       // chords: Chords({ format: "chord", filters }),
       ccs: NodeSums({
         direction: "origin",
-        format: "table",
+        format: "sankey",
         group_by: "Core_Capacity.name",
         filters: {
           "Flow.flow_type": [curFlowType],
