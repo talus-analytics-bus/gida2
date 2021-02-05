@@ -52,6 +52,7 @@ const Details = ({
   setGhsaOnly,
   setComponent,
   setLoadingSpinnerOn,
+  setPage = () => "",
   ...props
 }) => {
   const direction = entityRole === "funder" ? "origin" : "target";
@@ -129,6 +130,9 @@ const Details = ({
     if (!isGhsaPage) results.nodeData = results.nodesData[id];
     else results.nodeData = { id: -9999, name: "GHSA" };
 
+    // set page based on stakeholder category
+    if (results.nodeData.cat === "organization") setPage("details-org");
+    else setPage("details-country");
     setNodeData(results.nodeData);
     setNodesData(results.nodesData);
     if (!isGhsaPage) setPvs(results.pvs);
