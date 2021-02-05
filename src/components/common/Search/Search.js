@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./search.module.scss";
-import { Stakeholder } from "../../misc/Queries";
+import { SearchResults } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 
 /**
@@ -35,7 +35,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
         "other",
         "sub-organization",
       ];
-      const results = await Stakeholder({
+      const results = await SearchResults({
         search: val,
         limit: limit || 5,
         filters: {
@@ -62,16 +62,22 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   const getResults = results => {
     if (callback === undefined) {
       return results.map(d => {
-        d = { cat: "Stakeholder", ...d };
+        const pheic = d.was_pheic !== undefined;
+        const defaultCat = pheic ? "PHEIC" : "Stakeholder";
+        const url = pheic
+          ? `/events/${d.slug}`
+          : `/details/${d.id}/${d.primary_role}`;
+        d = { cat: defaultCat, ...d };
         let catTmp = d["cat"];
         if (catTmp.startsWith("ngo")) catTmp = "NGO";
         const cat = catTmp.replaceAll("_", " ").trim();
         return (
-          <Link onClick={unset} to={`/details/${d.id}/${d.primary_role}`}>
+          <Link onClick={unset} to={url}>
             <div className={styles.result}>
               <div className={styles.name}>{d.name}</div>
               <div className={styles.type}>
-                {Util.getInitCap(cat)}, mainly {d.primary_role}
+                {Util.getInitCap(cat)}
+                {d.primary_role && <>, mainly {d.primary_role}</>}
               </div>
             </div>
           </Link>

@@ -225,6 +225,28 @@ export const Stakeholder = async function({
 };
 
 /**
+ * Perform search and get results (stakeholders and events)
+ */
+export const SearchResults = async function({ search, limit, filters }) {
+  const params = new URLSearchParams();
+  const toCheck = [["search", search], ["limit", limit]];
+  toCheck.forEach(([k, v]) => {
+    if (![undefined, null, ""].includes(v)) {
+      params.append(k, v);
+    }
+  });
+
+  const res = await axios.post(
+    `${API_URL}/post/search`,
+    { filters },
+    {
+      params,
+    }
+  );
+  return res.data;
+};
+
+/**
  * Get outbreak data from API.
  */
 
