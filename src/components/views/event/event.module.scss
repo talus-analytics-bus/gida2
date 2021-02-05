@@ -22,6 +22,7 @@
   }
   .content {
     z-index: 0;
+    max-width: 1625px !important;
     .title {
       @include title;
       color: white;

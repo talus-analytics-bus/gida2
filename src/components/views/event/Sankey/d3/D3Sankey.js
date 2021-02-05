@@ -78,6 +78,10 @@ class D3Sankey extends Chart {
     }
   }
 
+  getName(s) {
+    return s;
+  }
+
   draw() {
     const getChartMargin = (names, fmt = v => v, padding = 0) => {
       const fakeText = chart
@@ -165,11 +169,20 @@ class D3Sankey extends Chart {
     };
 
     const sortByValue = (a, b) => {
-      if (skipSort(a)) return 0;
-      else if (skipSort(b)) return 0;
-      else if (a.value > b.value) return sortFlag;
+      if (a.value > b.value) return sortFlag;
       else if (a.value < b.value) return -1 * sortFlag;
       else return 0;
+    };
+
+    const sortByIhr = (a, b) => {
+      if (a.name > b.name) return 1;
+      else if (a.name < b.name) return -1;
+      else return 0;
+    };
+
+    const sortByValueOrIhr = (a, b) => {
+      if (a.type === "ihr" && b.type === "ihr") return sortByValue(a, b);
+      else return sortByValue(a, b);
     };
 
     const sortedSide = params.sortFunder === true ? "origin" : "target";
@@ -178,8 +191,8 @@ class D3Sankey extends Chart {
     const generator = sankey
       .sankey()
       .size([width, height])
-      .linkSort(sortByValue)
-      .nodeSort(sortByValue)
+      .linkSort(sortByValueOrIhr)
+      .nodeSort(sortByValueOrIhr)
       .nodeId(nodeId)
       .nodeWidth(10)
       .nodePadding(1)
@@ -192,9 +205,9 @@ class D3Sankey extends Chart {
     // apply `max` to nodes and regenerate node and link properties -- only
     // keep the top [`max`] nodes on the sorted side of the diagram, and only
     // the nodes they are linked to on the unsorted side
-    const dir = params.sortFunder ? "source" : "target";
+    const dir = "source";
     const topSortedNodes = graph.nodes.filter(d => d.role === sortedSide);
-    const otherSideNodes = graph.nodes.filter(d => d.role !== sortedSide);
+    const otherSideNodes = graph.nodes.filter(d => d.type === "ihr");
     topSortedNodes.sort(sortByValue);
     graph.nodes = topSortedNodes.slice(0, params.max).concat(otherSideNodes);
     const topSortedNodesIdx = graph.nodes.map(d => d.index);
@@ -205,25 +218,30 @@ class D3Sankey extends Chart {
     generator();
 
     // const labeledNodes = graph.nodes;
-    const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
+    const labeledNodes = graph.nodes;
+    // const labeledNodes = graph.nodes.filter(d => !getBelowMinNodeHeight(d));
+    const maxLenGlobal = Infinity;
+    // const maxLenGlobal = 20;
     const maxLenLeft = d3.min([
       d3.max(labeledNodes.filter(d => d.role === "origin"), d => d.name.length),
-      20,
+      maxLenGlobal,
     ]);
     const maxLenRight = d3.min([
-      d3.max(labeledNodes.filter(d => d.role === "target"), d => d.name.length),
-      20,
+      d3.max(labeledNodes.filter(d => d.type === "ihr"), d => d.name.length),
+      maxLenGlobal,
     ]);
     const left = getChartMargin(
       labeledNodes.filter(d => d.role === "origin").map(d => d.name),
-      v => this.getShortName(v, maxLenLeft),
+      v => this.getName(v, maxLenLeft),
       params.labelShift
     );
     const right = getChartMargin(
-      labeledNodes.filter(d => d.role === "target").map(d => d.name),
-      v => this.getShortName(v, maxLenRight),
+      labeledNodes.filter(d => d.type === "ihr").map(d => d.name),
+      v => this.getName(v, maxLenRight),
       params.labelShift
     );
+    console.log(`labeledNodes.filter(d => d.type === "ihr").map(d => d.name)`);
+    console.log(labeledNodes.filter(d => d.type === "ihr").map(d => d.name));
     // params.setMarginLeft(left);
     // params.setMarginRight(right);
 
@@ -421,7 +439,7 @@ class D3Sankey extends Chart {
       .join("g")
       .attr("class", d => styles[d.role])
       .classed("nodeLabel", true)
-      .classed(styles.hidden, getBelowMinNodeHeight)
+      // .classed(styles.hidden, getBelowMinNodeHeight)
       .on("mouseover", d => {
         updateTooltip(d, true);
       })
@@ -463,12 +481,14 @@ class D3Sankey extends Chart {
         const xShift =
           params.labelShift * (d.role === "origin" ? -1 : 1) +
           (d.role === "origin" ? 0 : generator.nodeWidth() - 2);
-        return "translate(" + (d.x0 + xShift) + "," + (d.y1 + d.y0) / 2 + ")";
+        return (
+          "translate(" + (d.x0 + xShift) + "," + (d.y1 + d.y0 + 5) / 2 + ")"
+        );
       })
       .append("text")
       .classed(styles.link, d => getIsLink(d))
       .html(d => {
-        const text = this.getShortName(
+        const text = this.getName(
           d.name,
           d.role === "origin" ? maxLenLeft : maxLenRight
         );

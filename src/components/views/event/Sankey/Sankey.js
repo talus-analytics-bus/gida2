@@ -13,10 +13,11 @@ import unsorted from "../../../../assets/images/icons/unsorted.svg";
 // local components
 import { Settings } from "../../../../App";
 import D3Sankey from "./d3/D3Sankey";
-import { execute, Chords } from "../../../misc/Queries";
+import { execute, Chords, NodeSums } from "../../../misc/Queries";
+import { core_capacities as CORE_CAPACITIES } from "../../../misc/Data";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
-import {Checkbox} from "../../../common";
-import {Loading} from "../../../common";
+import { Checkbox } from "../../../common";
+import { Loading } from "../../../common";
 
 const Sankey = ({ eventId, curFlowType }) => {
   // STATE //
@@ -27,7 +28,9 @@ const Sankey = ({ eventId, curFlowType }) => {
   const [sortFunder, setSortFunder] = useState(true);
   const [sortDesc, setSortDesc] = useState(true);
   const [region, setRegion] = useState("");
-  const [max, setMax] = useState(5);
+  // const [max, setMax] = useState(10);
+  const [max, setMax] = useState(15);
+  // const [max, setMax] = useState(Infinity);
   const [tooltipData, setTooltipData] = useState(false);
   const [noData, setNoData] = useState(false);
   const [marginLeft, setMarginLeft] = useState(0);
@@ -53,40 +56,76 @@ const Sankey = ({ eventId, curFlowType }) => {
       else filters[`${stakeholderEntity}.cat`] = ["organization"];
     }
     const queries = {
-      chords: Chords({ format: "chord", filters }),
+      // chords: Chords({ format: "chord", filters }),
+      ccs: NodeSums({
+        direction: "origin",
+        format: "table",
+        group_by: "Core_Capacity.name",
+        filters: {
+          "Flow.flow_type": [curFlowType],
+          "Flow.year": [
+            ["gt_eq", Settings.startYear],
+            ["lt_eq", Settings.endYear],
+          ],
+        },
+      }),
     };
     const results = await execute({ queries });
-    setRawData(results.chords);
+    setRawData(results.ccs);
   };
 
-  const processRawData = () => {
+  const processRawDataCcs = () => {
     // NODES //
     // get node data
     const nodesById = {};
-    const toCheck = ["origin", "target"];
+    const toCheck = ["origin"];
     const links = [];
-    rawData
-      .filter(
-        d =>
-          d[curFlowType] !== 0 &&
-          d[curFlowType] !== null &&
-          d[curFlowType] !== undefined
-      )
-      .forEach(d => {
-        const value = d[curFlowType];
-        const link = {};
-        toCheck.forEach(role => {
-          const nodeId = `${d[role].id.toString()}-${role}`;
-          if (nodesById[nodeId] === undefined) {
-            nodesById[nodeId] = { ...d[role], nodeId, role };
+
+    // filter out data where CCs are all unknown values or no CCs tagged
+    const notUnspecifiedData = rawData.filter(d => {
+      const noCcs =
+        d[curFlowType].Unspecified !== undefined &&
+        d[curFlowType].Unspecified === d[curFlowType]._tot;
+
+      let onlyUnknown = true;
+      for (const [k, v] of Object.entries(d[curFlowType])) {
+        if (k !== "_tot" && k !== "Unspecified") {
+          if (v !== -8888) {
+            onlyUnknown = false;
           }
-          const dir = role === "origin" ? "source" : "target";
-          link[dir] = nodeId;
-          link.value = value;
-        });
-        links.push(link);
-      });
-    const nodes = Object.values(nodesById);
+        }
+      }
+
+      return !noCcs && !onlyUnknown;
+    });
+    const ccsInData = [];
+    notUnspecifiedData.forEach(d => {
+      const values = d[curFlowType];
+      const role = "origin";
+      const nodeInfo = d[role][0];
+      const nodeId = `${nodeInfo.id.toString()}-${role}`;
+      if (nodesById[nodeId] === undefined) {
+        nodesById[nodeId] = { ...nodeInfo, nodeId, role };
+      }
+      const dir = role === "origin" ? "source" : "target";
+      for (const [cc, value] of Object.entries(values)) {
+        if (value != -8888 && cc !== "Unspecified" && cc !== "_tot") {
+          if (!ccsInData.includes(cc)) ccsInData.push(cc);
+          links.push({ source: nodeId, target: cc, value });
+        }
+      }
+    });
+    const nodesCCs = ccsInData.map(d => {
+      const match = CORE_CAPACITIES.find(dd => dd.value === d);
+      return {
+        ...match,
+        nodeId: match.value,
+        name: match.label,
+        role: "target",
+        type: "ihr",
+      };
+    });
+    const nodes = Object.values(nodesById).concat(nodesCCs);
     const graph = { nodes, links };
     setChartData(graph);
   };
@@ -98,8 +137,8 @@ const Sankey = ({ eventId, curFlowType }) => {
   // x-axis label
   const xLabel =
     curFlowType === "disbursed_funds"
-      ? "Disbursed funds (USD)"
-      : "Committed funds (USD)";
+      ? "Disbursed funds (USD), 2014-2021"
+      : "Committed funds (USD), 2014-2021";
 
   // chart params
   const params = {
@@ -152,7 +191,8 @@ const Sankey = ({ eventId, curFlowType }) => {
     if (rawData === null) {
       getData();
     } else if (chartData === null) {
-      processRawData();
+      processRawDataCcs();
+      // processRawData();
     }
   }, [rawData, chartData]);
 
@@ -164,6 +204,8 @@ const Sankey = ({ eventId, curFlowType }) => {
       setNoData(curNoData);
       // if switching from "no data" to "data" be sure to
       if (!switchingFromNoDataToData) {
+        console.log("chartData");
+        console.log(chartData);
         setNoData(curNoData);
         const newChart = new D3Sankey("." + styles.chart, {
           ...params,
@@ -233,8 +275,13 @@ const Sankey = ({ eventId, curFlowType }) => {
           />
         </div>
         <div className={styles.sortButtons}>
-          <Sort {...{ label: "Funder", ...sortParams }} />
-          <Sort {...{ label: "Recipient", ...sortParams }} />
+          <Sort
+            {...{
+              label: `Top ${max} funders of Core Capacities`,
+              ...sortParams,
+            }}
+          />
+          <Sort {...{ label: "Core Capacities funded", ...sortParams }} />
         </div>
         <div
           ref={clickedRef}

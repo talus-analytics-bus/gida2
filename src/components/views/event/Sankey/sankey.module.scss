@@ -1,5 +1,6 @@
 @import "../../../../assets/styles/colors.scss";
 .sankey {
+  width: 100%;
   @include spaceChildrenVert(30px);
   > :empty {
     margin: 0;
@@ -28,12 +29,13 @@
   }
   .chart {
     width: 100%;
-    height: 500px;
+    height: 700px;
+    // height: 500px;
     svg {
       // chart title
       .title {
         font-family: "Open Sans", sans-serif;
-        font-size: 1.4rem;
+        font-size: 1.8rem;
       }
       // nodes and links
       rect,
@@ -84,7 +86,8 @@
         font-family: "open_sanssemibold", sans-serif;
         font-size: 1.6rem;
         a {
-          fill: $outbreak-blue-2;
+          fill: #333;
+          // fill: $outbreak-blue-2;
         }
       }
 
@@ -106,7 +109,8 @@
     align-items: flex-end;
     justify-content: space-between;
     .sortButton {
-      font-size: 1.8rem;
+      font-size: 2.25rem;
+      // font-size: 1.8rem;
       font-weight: 700;
       font-family: "Rawline", serif;
       cursor: pointer;
@@ -114,13 +118,14 @@
         $size: 20px;
         height: $size;
         width: $size;
+        display: none;
       }
-      &.grayed {
-        img {
-          opacity: 0.5;
-        }
-        color: $outbreak-gray-3;
-      }
+      // &.grayed {
+      //   img {
+      //     opacity: 0.5;
+      //   }
+      //   color: $outbreak-gray-3;
+      // }
     }
     .title {
       text-align: center;

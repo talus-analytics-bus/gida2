@@ -26,8 +26,8 @@ const Event = ({ slug, flowTypeInfo }) => {
   const [data, setData] = useState(null);
   const [stakeholders, setStakeholders] = useState({});
   const [countryImpacts, setCountryImpacts] = useState([]);
-  // const [curFlowType, setCurFlowType] = useState("disbursed_funds");
-  const [curFlowType, setCurFlowType] = useState("committed_funds");
+  const [curFlowType, setCurFlowType] = useState("disbursed_funds");
+  // const [curFlowType, setCurFlowType] = useState("committed_funds");
   const [caseData, setCaseData] = useState(null);
   const [deathData, setDeathData] = useState(null);
   const [noFundingData, setNoFundingData] = useState(false);
@@ -76,35 +76,35 @@ const Event = ({ slug, flowTypeInfo }) => {
       return stakeholders[d.iso3].iso2;
     });
 
-  const eventBars = dataLoaded && {
-    header: <h2>Total event funding</h2>,
-    text: (
-      <span>
-        The chart below shows total funding by recipient and by funder.
-        Recipient funding is compared to event impact, by either cases or
-        deaths. Click on the name of a funder or recipient to view their
-        profile.
-      </span>
-    ),
-    content: (
-      <EventBars
-        {...{
-          eventId: data.id,
-          curFlowType,
-          caseData,
-          deathData,
-          stakeholders,
-          setNoData: setNoFundingData,
-        }}
-      />
-    ),
-    noDataContent: (
-      <i>
-        There are no funding data for this event yet.{" "}
-        <Link to={"/about/submit"}>Click here to submit data</Link>.
-      </i>
-    ),
-  };
+  // const eventBars = dataLoaded && {
+  //   header: <h2>Total event funding</h2>,
+  //   text: (
+  //     <span>
+  //       The chart below shows total funding by recipient and by funder.
+  //       Recipient funding is compared to event impact, by either cases or
+  //       deaths. Click on the name of a funder or recipient to view their
+  //       profile.
+  //     </span>
+  //   ),
+  //   content: (
+  //     <EventBars
+  //       {...{
+  //         eventId: data.id,
+  //         curFlowType,
+  //         caseData,
+  //         deathData,
+  //         stakeholders,
+  //         setNoData: setNoFundingData,
+  //       }}
+  //     />
+  //   ),
+  //   noDataContent: (
+  //     <i>
+  //       There are no funding data for this event yet.{" "}
+  //       <Link to={"/about/submit"}>Click here to submit data</Link>.
+  //     </i>
+  //   ),
+  // };
   const sankey = dataLoaded && {
     header: <h2>Flow of funding</h2>,
     text: (
@@ -117,28 +117,28 @@ const Event = ({ slug, flowTypeInfo }) => {
     content: <Sankey {...{ eventId: data.id, curFlowType }} />,
   };
 
-  const eventTable = dataLoaded &&
-    !noFundingData && {
-      header: <h2>Funders for {data.name}</h2>,
-      text: (
-        <span>
-          The table below displays funders in order of amount of funds provided.
-          Click on a funder or recipient to view their profile.
-        </span>
-      ),
-      content: (
-        <EventTable
-          {...{
-            hideName: true,
-            eventId: data.id,
-            curFlowType,
-            curFlowTypeName,
-            setEventTotalsData: () => "",
-            sortByProp: "amount",
-          }}
-        />
-      ),
-    };
+  // const eventTable = dataLoaded &&
+  //   !noFundingData && {
+  //     header: <h2>Funders for {data.name}</h2>,
+  //     text: (
+  //       <span>
+  //         The table below displays funders in order of amount of funds provided.
+  //         Click on a funder or recipient to view their profile.
+  //       </span>
+  //     ),
+  //     content: (
+  //       <EventTable
+  //         {...{
+  //           hideName: true,
+  //           eventId: data.id,
+  //           curFlowType,
+  //           curFlowTypeName,
+  //           setEventTotalsData: () => "",
+  //           sortByProp: "amount",
+  //         }}
+  //       />
+  //     ),
+  //   };
 
   // get crossreferences section dynamic title
   const hasDons = data !== null && data.any_dons;
@@ -148,18 +148,19 @@ const Event = ({ slug, flowTypeInfo }) => {
   if (hasDons) titleArr.push("DONs data");
   const title = titleArr.join(" and ");
 
-  const crossreferences = dataLoaded && {
-    header: <h2>{title}</h2>,
-    text: null,
-    content: <Crossreferences {...{ ...data, hasCaseStudies, hasDons }} />,
-    showSource: false,
-    toggleFlowType: false,
-    hide: !hasCaseStudies && !hasDons,
-  };
+  // const crossreferences = dataLoaded && {
+  //   header: <h2>{title}</h2>,
+  //   text: null,
+  //   content: <Crossreferences {...{ ...data, hasCaseStudies, hasDons }} />,
+  //   showSource: false,
+  //   toggleFlowType: false,
+  //   hide: !hasCaseStudies && !hasDons,
+  // };
 
   // collate subsections
   // const subsections = [eventBars, eventTable, crossreferences].filter(
-  const subsections = [eventBars, sankey, eventTable, crossreferences].filter(
+  const subsections = [sankey].filter(
+    // const subsections = [eventBars, sankey, eventTable, crossreferences].filter(
     d => d.hide !== true && d !== false
   );
   const subsectionsJsx = subsections.map(
@@ -213,53 +214,55 @@ const Event = ({ slug, flowTypeInfo }) => {
               top: "-20px",
             }}
           >
-            <div className={styles.card}>
-              <div className={styles.cols}>
-                <div className={classNames(styles.col, styles.left)}>
-                  {loaded && (
-                    <EventOverview
-                      {...{
-                        ...data,
-                        // assign affected countries from cases data
-                        afterCaseData:
-                          data.case_data_id !== null
-                            ? d => {
-                                const formattedCountryImpacts = d.map(dd => {
-                                  const sh = stakeholders[dd.iso3];
-                                  if (sh === undefined) return {};
-                                  else
-                                    return {
-                                      label: sh.name,
-                                      url: `/details/${sh.id}/${
-                                        sh.primary_role
-                                      }`,
-                                      ...sh,
-                                    };
-                                });
-                                setCountryImpacts(formattedCountryImpacts);
-                              }
-                            : undefined,
-                        caseData,
-                        setCaseData,
-                        deathData,
-                        setDeathData,
-                      }}
-                    />
-                  )}
-                </div>
-                <div className={classNames(styles.col, styles.right)}>
-                  <EventSidebar
-                    {...{
-                      countryImpacts,
-                      isGlobal,
-                      highlighted,
-                      pathogen: data.pathogen,
-                      mcms_during_event: data.mcms_during_event,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+            {
+              // <div className={styles.card}>
+              //   <div className={styles.cols}>
+              //     <div className={classNames(styles.col, styles.left)}>
+              //       {loaded && (
+              //         <EventOverview
+              //           {...{
+              //             ...data,
+              //             // assign affected countries from cases data
+              //             afterCaseData:
+              //               data.case_data_id !== null
+              //                 ? d => {
+              //                     const formattedCountryImpacts = d.map(dd => {
+              //                       const sh = stakeholders[dd.iso3];
+              //                       if (sh === undefined) return {};
+              //                       else
+              //                         return {
+              //                           label: sh.name,
+              //                           url: `/details/${sh.id}/${
+              //                             sh.primary_role
+              //                           }`,
+              //                           ...sh,
+              //                         };
+              //                     });
+              //                     setCountryImpacts(formattedCountryImpacts);
+              //                   }
+              //                 : undefined,
+              //             caseData,
+              //             setCaseData,
+              //             deathData,
+              //             setDeathData,
+              //           }}
+              //         />
+              //       )}
+              //     </div>
+              //     <div className={classNames(styles.col, styles.right)}>
+              //       <EventSidebar
+              //         {...{
+              //           countryImpacts,
+              //           isGlobal,
+              //           highlighted,
+              //           pathogen: data.pathogen,
+              //           mcms_during_event: data.mcms_during_event,
+              //         }}
+              //       />
+              //     </div>
+              //   </div>
+              // </div>
+            }
             <div className={styles.subsections}>{subsectionsJsx}</div>
           </Loading>
         )}

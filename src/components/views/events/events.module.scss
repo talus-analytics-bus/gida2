@@ -1,5 +1,6 @@
 @import "src/assets/styles/colors.scss";
 .events {
+  max-width: 1600px;
   .title {
     @include title;
   }
