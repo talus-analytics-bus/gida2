@@ -1,7 +1,7 @@
 @import "../../../../assets/styles/colors.scss";
 .sankey {
   width: 100%;
-  @include spaceChildrenVert(30px);
+  // @include spaceChildrenVert(30px);
   > :empty {
     margin: 0;
   }
@@ -16,7 +16,7 @@
     form label {
       margin: 0;
     }
-    // margin-bottom: 30px;
+    margin-bottom: 30px;
     @include spaceChildrenHoriz(10px);
     text-transform: uppercase;
     > div:not(.checkbox) {
