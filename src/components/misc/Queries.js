@@ -42,12 +42,22 @@ export const NodeSums = async function({
   return res.data;
 };
 
-export const Chords = async function({ format, filters, group_by, ...props }) {
+export const Chords = async function({
+  format,
+  filters,
+  stackBy,
+  group_by,
+  ...props
+}) {
   // define params
   const params = new URLSearchParams();
   bindParams({
     params,
-    toCheck: [["format", format], ["group_by", group_by]],
+    toCheck: [
+      ["format", format],
+      ["group_by", group_by],
+      ["stack_by", stackBy],
+    ],
   });
 
   // Send request

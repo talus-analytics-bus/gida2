@@ -14,7 +14,7 @@ import { regions } from "../../../misc/Util";
 // local libs
 import D3EventBars from "./d3/D3EventBars";
 import D3ImpactBars from "./d3/D3ImpactBars";
-import { execute, NodeSums } from "../../../misc/Queries";
+import { execute, NodeSums, Chords } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
 import { Loading, Checkbox, Popup, popupStyles } from "../../../common";
 
@@ -54,7 +54,10 @@ const EventBars = ({
     curFlowType,
     impact,
     role: funds.split("_")[0],
-    stack: funds === "recipient_region",
+    stack: true,
+    stackField: funds.includes("region") ? "region_who" : "name", // TODO dynamically
+    noStackField: "No WHO region", // TODO dynamically
+    // stack: funds === "recipient_region",
   };
 
   // add countries with zero funding to main bar chart if they had cases?
@@ -150,8 +153,9 @@ const EventBars = ({
 
     // define queries
     const queries = {};
-    queries.nodeSums = NodeSums({
+    queries.nodeSums = Chords({
       format: "bar_chart",
+      stackBy: direction,
       direction,
       filters,
     });
@@ -199,6 +203,7 @@ const EventBars = ({
       const dataByIso2 = {};
       data[curFlowType].forEach(d => {
         dataByIso2[d.iso2] = d;
+        d.value = d[curFlowType];
       });
       const newCaseDeathDataForChartTmpByIso2 = {};
 

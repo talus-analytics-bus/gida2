@@ -159,15 +159,15 @@ class D3EventBars extends Chart {
         stackData = [];
         const newDataByRegion = {};
         newData.forEach(d => {
-          const region = d.region_who || "No WHO region";
-          if (newDataByRegion[region] === undefined) {
-            newDataByRegion[region] = [d];
+          const stackValue = d[params.stackField] || params.noStackField;
+          if (newDataByRegion[stackValue] === undefined) {
+            newDataByRegion[stackValue] = [d];
           } else if (
             d[sortKey] !== 0 &&
             d[sortKey] !== undefined &&
             d[sortKey] !== null
           ) {
-            newDataByRegion[region].push(d);
+            newDataByRegion[stackValue].push(d);
           }
         });
         for (const [region, children] of Object.entries(newDataByRegion)) {
