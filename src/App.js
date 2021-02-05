@@ -311,6 +311,7 @@ const App = () => {
                         ghsaOnly: ghsaOnly,
                         setGhsaOnly: setGhsaOnly,
                         setLoadingSpinnerOn,
+                        setPage,
                       }}
                     />
                   );

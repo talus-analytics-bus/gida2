@@ -42,13 +42,21 @@ const Nav = ({ page, ...props }) => {
         <div className={styles.links}>
           {/* <GhsaButton {...{ active: page === "ghsa", isDark: props.isDark }} /> */}
           <Link
-            className={page === "explore-map" ? styles.active : ""}
+            className={
+              page === "explore-map" || page === "details-country"
+                ? styles.active
+                : ""
+            }
             to="/explore/map"
           >
             Countries
           </Link>
           <Link
-            className={page === "explore-org" ? styles.active : ""}
+            className={
+              page === "explore-org" || page === "details-org"
+                ? styles.active
+                : ""
+            }
             to="/explore/org"
           >
             Orgs
