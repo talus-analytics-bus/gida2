@@ -275,7 +275,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: data.outbreaks.map(d => {
                       return { value: d.id, label: d.name };
                     }),
-                    placeholder: "Event response",
+                    placeholder: "PHEIC",
                     onChange: setOutbreaks,
                     curValues: outbreaks,
                   }}

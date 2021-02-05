@@ -192,14 +192,14 @@ const Details = ({
         inline={true}
         flowType="disbursed_funds"
         data={eventTotalsData}
-        label={"event response funding"}
+        label={"PHEIC funding"}
       />
       <TotalByFlowType
         key={"c"}
         inline={true}
         flowType="committed_funds"
         data={eventTotalsData}
-        label={"event response funding"}
+        label={"PHEIC funding"}
       />
     </div>
   );
@@ -462,7 +462,7 @@ const Details = ({
         },
         {
           slug: "event",
-          header: "Event response funding",
+          header: "PHEIC funding",
           hide:
             noData ||
             (eventTotalsData !== null && eventTotalsData.length === 0),
@@ -472,7 +472,7 @@ const Details = ({
               header: (
                 <div>
                   <h2>
-                    Recent event response funding projects <br />
+                    Recent PHEIC funding projects <br />
                     {
                       // Time frame
                       // <span>in past 12 months</span>

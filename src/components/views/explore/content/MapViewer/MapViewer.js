@@ -14,15 +14,15 @@ import {
 } from "../../../../misc/Queries";
 import TimeSlider from "../../../../misc/TimeSlider.js";
 import CoreCapacityDropdown from "../../../../misc/CoreCapacityDropdown.js";
-import {FilterDropdown} from "../../../../common";
-import {FilterSelections} from "../../../../common";
+import { FilterDropdown } from "../../../../common";
+import { FilterSelections } from "../../../../common";
 import FlowBundleFocusQuery from "../../../../misc/FlowBundleFocusQuery.js";
 import ScoreQuery from "../../../../misc/ScoreQuery.js";
 import OutbreakQuery from "../../../../misc/OutbreakQuery.js";
 import Tab from "../../../../misc/Tab.js";
 import { core_capacities } from "../../../../misc/Data.js";
-import {SlideToggle} from "../../../../common";
-import {Button} from "../../../../common";
+import { SlideToggle } from "../../../../common";
+import { Button } from "../../../../common";
 
 // Local content components
 import Map from "./content/Map.js";
@@ -169,7 +169,7 @@ const MapViewer = ({
           text.fund = " of GHSA funding";
           break;
         case "event":
-          text.fund = " of event response funding";
+          text.fund = " of PHEIC funding";
           break;
         case "capacity":
           text.fund = " of IHR capacity building funding";
@@ -293,9 +293,9 @@ const MapViewer = ({
       {fundType === "event" && (
         <FilterDropdown
           {...{
-            label: "Event response",
+            label: "PHEIC",
             options: outbreakOptions,
-            placeholder: "Select event response",
+            placeholder: "Select PHEIC",
             onChange: v => setEvents(v.map(d => d.value)),
             curValues: events,
             className: [styles.italic],

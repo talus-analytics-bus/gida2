@@ -111,9 +111,9 @@ const Orgs = ({
       {ghsaOnly === "event" && (
         <FilterDropdown
           {...{
-            label: "Select event responses",
+            label: "Select PHEICs",
             options: outbreakOptions,
-            placeholder: "Select event response",
+            placeholder: "Select PHEIC",
             onChange: v => setEvents(v.map(d => d.value)),
             curValues: events,
             className: [styles.italic],

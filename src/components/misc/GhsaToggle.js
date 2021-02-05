@@ -19,7 +19,7 @@ const GhsaToggle = ({ ghsaOnly, setGhsaOnly, ...props }) => {
         "The Global Health Security Agenda (GHSA) is a partnership of nations, international organizations, and non-governmental stakeholders to help build countries’ capacity to help create a world safe and secure from infectious disease threats. Only resources that have specifically been identified as being committed or disbursed under the GHSA are identified as GHSA financial resources in GIDA."
     },
     {
-      name: "Event response funding only",
+      name: "PHEIC funding only",
       value: "event",
       tooltip: ""
     },
