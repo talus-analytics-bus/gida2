@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./search.module.scss";
@@ -22,11 +22,13 @@ export const searchableSubcats = [
  * @method Search
  */
 const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
-  const [expanded, setExpanded] = React.useState(
-    props.expandedDefault || false
-  );
-  const [showResults, setShowResults] = React.useState(false);
-  const [results, setResults] = React.useState(null);
+  // REFS //
+  const resultsRef = useRef(null);
+
+  // STATE //
+  const [expanded, setExpanded] = useState(props.expandedDefault || false);
+  const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState(null);
 
   const handleInputChange = async e => {
     const val = e.target.value;
@@ -41,7 +43,9 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
         search: val,
         limit: limit || 5,
         filters: {
-          "Stakeholder.subcat": searchableSubcats,
+          "Stakeholder.subcat": [
+            ["neq", ["state_/_department_/_territory", "region"]],
+          ],
           "Stakeholder.slug": [["neq", ["not-reported"]]],
         },
       });
@@ -53,6 +57,34 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
     if (e.keyCode === 27) {
       e.target.value = "";
       setResults(null);
+    } else if (e.keyCode === 40) {
+      e.preventDefault();
+      // down
+      // focus first result if any
+      if (resultsRef.current !== null) {
+        const firstResultEl = resultsRef.current.children[0];
+        if (firstResultEl !== undefined) firstResultEl.focus();
+      }
+    } else if (e.keyCode === 13) {
+      // enter
+      // jump to first result's page if any
+      if (resultsRef.current !== null) {
+        const firstResultEl = resultsRef.current.children[0];
+        if (firstResultEl !== undefined) firstResultEl.click();
+      }
+    }
+  };
+
+  const handleKeyPressResult = e => {
+    if (e.keyCode === 40) {
+      // down
+      e.preventDefault();
+      if (e.target.nextSibling !== null) e.target.nextSibling.focus();
+    } else if (e.keyCode === 38) {
+      // up
+      e.preventDefault();
+      if (e.target.previousSibling !== null) e.target.previousSibling.focus();
+      else document.getElementById("placeSearch-" + name).focus();
     }
   };
 
@@ -101,11 +133,11 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
 
   const inputEl = (
     <input
-      autocomplete={"off"}
+      autoComplete={"chrome-off"}
       className={"dark-bg-allowed"}
       id={"placeSearch-" + name}
       type="text"
-      placeholder="search for a country or organization"
+      placeholder="search for a country, org, or PHEIC"
       onChange={handleInputChange}
       onKeyDown={handleKeyPress}
     />
@@ -143,6 +175,8 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       </div>
       {results !== null && (
         <div
+          ref={resultsRef}
+          onKeyDown={handleKeyPressResult}
           style={{ display: showResults ? "flex" : "none" }}
           className={classNames(styles.results, {
             [styles.dark]: props.isDark,
