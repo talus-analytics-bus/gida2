@@ -315,7 +315,7 @@ const App = () => {
               {
                 <Route
                   exact
-                  path="/events"
+                  path="/events/"
                   render={d => {
                     setPage("events");
                     return (
@@ -330,14 +330,15 @@ const App = () => {
               }
               {
                 <Route
-                  exact
                   path="/events/:slug"
                   render={d => {
                     setPage("event");
+                    const slug = d.match.params.slug;
                     return (
                       <Event
                         {...{
-                          ...d.match.params, // id
+                          key: slug,
+                          slug, // id
                           flowTypeInfo,
                         }}
                       />
@@ -345,6 +346,7 @@ const App = () => {
                   }}
                 />
               }
+
               <Route
                 exact
                 path="/table/:id/:entityRole"
