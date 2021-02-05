@@ -297,23 +297,25 @@ const Sankey = ({ eventId, curFlowType }) => {
             match the selected filters
           </div>
         )}
-        <div className={styles.dropdowns}>
-          <Selectpicker
-            {...{
-              label: null,
-              curSelection: max,
-              setOption: setMax,
-              optionList: [
-                { value: 5, label: "Show top 5" },
-                { value: 10, label: "Show top 10" },
-                {
-                  value: Infinity,
-                  label: "Show all",
-                },
-              ],
-            }}
-          />
-        </div>
+        {
+          // <div className={styles.dropdowns}>
+          //   <Selectpicker
+          //     {...{
+          //       label: null,
+          //       curSelection: max,
+          //       setOption: setMax,
+          //       optionList: [
+          //         { value: 5, label: "Show top 5" },
+          //         { value: 10, label: "Show top 10" },
+          //         {
+          //           value: Infinity,
+          //           label: "Show all",
+          //         },
+          //       ],
+          //     }}
+          //   />
+          // </div>
+        }
       </div>
       {
         // Tooltip for info tooltip icons.
