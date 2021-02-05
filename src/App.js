@@ -296,11 +296,15 @@ const App = () => {
                 exact
                 path="/details/:id/:entityRole"
                 render={d => {
+                  const id = parseInt(d.match.params.id);
+                  const entityRole = d.match.params.entityRole;
                   return (
                     <Details
                       {...{
-                        ...d.match.params,
-                        id: parseInt(d.match.params.id),
+                        key: id,
+                        // key: `${id}_${entityRole}`,
+                        id,
+                        entityRole,
                         loading: loading,
                         setLoading: setLoading,
                         flowTypeInfo: flowTypeInfo,
@@ -425,12 +429,14 @@ const App = () => {
                 exact
                 path="/details/:id"
                 render={d => {
-                  if (d.match.params.id === "ghsa") {
+                  const id = d.match.params.id;
+                  if (id === "ghsa") {
                     setPage("ghsa");
                     return (
                       <Details
                         {...{
-                          ...d.match.params,
+                          key: id,
+                          id,
                           detailsComponent: detailsComponent,
                           setDetailsComponent: setDetailsComponent,
                           loading: loading,
@@ -440,19 +446,8 @@ const App = () => {
                         }}
                       />
                     );
-                    // return renderDetails({
-                    //   ...d.match.params,
-                    //   detailsComponent: detailsComponent,
-                    //   setDetailsComponent: setDetailsComponent,
-                    //   loading: loading,
-                    //   setLoading: setLoading,
-                    //   flowTypeInfo: flowTypeInfo,
-                    //   setLoadingSpinnerOn,
-                    // });
                   } else setPage(undefined);
-                  return (
-                    <Redirect to={`/details/${d.match.params.id}/funder`} />
-                  );
+                  return <Redirect to={`/details/${id}/funder`} />;
                 }}
               />
               <Route
