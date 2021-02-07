@@ -17,7 +17,6 @@ import { execute, Chords } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
 import Checkbox from "../../../common/Checkbox/Checkbox";
 import Loading from "../../../common/Loading/Loading";
-import { ORG_CATS } from "../EventBars/EventBars";
 
 const Sankey = ({ eventId, curFlowType }) => {
   // STATE //
@@ -51,7 +50,7 @@ const Sankey = ({ eventId, curFlowType }) => {
       const stakeholderEntity = sortFunder ? "Stakeholder" : "OtherStakeholder";
       if (region !== "orgs")
         filters[`${stakeholderEntity}.region_who`] = [region];
-      else filters[`${stakeholderEntity}.cat`] = ORG_CATS;
+      else filters[`${stakeholderEntity}.cat`] = ["organization"];
     }
     const queries = {
       chords: Chords({ format: "chord", filters }),

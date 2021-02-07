@@ -105,6 +105,10 @@
       margin-right: 10px;
     }
   }
+  &.disabled {
+    opacity: 0.8;
+    pointer-events: none;
+  }
 }
 .link {
   width: max-content;

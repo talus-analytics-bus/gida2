@@ -19,18 +19,6 @@ import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
 import Loading from "../../../common/Loading/Loading";
 import Checkbox from "../../../common/Checkbox/Checkbox";
 
-const COUNTRY_CATS = ["country", "world"];
-export const ORG_CATS = [
-  "academia",
-  "foundation",
-  "government",
-  "international_organization",
-  "international_organization_",
-  "ngo",
-  "ngo_",
-  "private_sector",
-];
-
 const EventBars = ({
   eventId,
   curFlowType,
@@ -51,7 +39,7 @@ const EventBars = ({
   const [impact, setImpact] = useState("cases");
 
   // "Funds by"
-  const [funds, setFunds] = useState("recipient_country");
+  const [funds, setFunds] = useState("recipient_all");
 
   // "Filter recipients/funders"
   const [region, setRegion] = useState("");
@@ -103,6 +91,14 @@ const EventBars = ({
     funds === "recipient_country" || funds === "funder_country";
 
   // FUNCTIONS //
+  // get flag urls
+  const getFlagUrl = (name, iso2) => {
+    const showFlag =
+      name !== "General Global Benefit" && name !== "Not reported";
+    if (showFlag) {
+      return `https://flags.talusanalytics.com/64px/${iso2}.png`;
+    } else return null;
+  };
 
   // return stakeholder dictionary keeping only those that match region filter
   // if applicable
@@ -117,21 +113,22 @@ const EventBars = ({
     }
   };
 
-  // return stakeholder categories that should be requested based on `funds`
-  // (fund type to show)
-  const getStakeholderSubcats = () => {
-    if (showRegionFilter) return COUNTRY_CATS;
-    else if (funds === "recipient_org" || funds === "funder_org")
-      return ORG_CATS;
-    else {
-      console.error("Unknown `funds` value: " + funds);
-    }
-  };
   const setStakeholderFilter = f => {
-    if (showRegionFilter) f["Stakeholder.subcat"] = COUNTRY_CATS;
-    else if (funds === "recipient_org" || funds === "funder_org") {
-      f["Stakeholder.cat"] = ORG_CATS;
-      f["Stakeholder.subcat"] = [["neq", ["country"]]];
+    const isAll = funds.endsWith("_all");
+    const isCountries = showRegionFilter;
+    const isRegions = funds === "recipient_region";
+    const isOrgs = funds === "recipient_org" || funds === "funder_org";
+    if (isAll) return;
+    else {
+      f["Stakeholder.slug"] = [
+        ["neq", ["not-reported", "general-global-benefit"]],
+      ];
+    }
+    if (isCountries) f["Stakeholder.subcat"] = ["country", "world"];
+    else if (isRegions) {
+      f["Stakeholder.subcat"] = ["country"];
+    } else if (isOrgs) {
+      f["Stakeholder.cat"] = ["organization"];
     } else {
       console.error("Unknown `funds` value: " + funds);
     }
@@ -141,7 +138,6 @@ const EventBars = ({
     // define query filters
     const filters = {
       "Event.id": [eventId],
-      // "Stakeholder.subcat": getStakeholderSubcats(),
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     };
@@ -250,15 +246,17 @@ const EventBars = ({
               const shInfo = filteredStakeholders[iso3];
               let iso2 = (shInfo.iso2 || "none").toLowerCase();
               const name = shInfo.name || d.place_name || d.name;
-              newDataForChart[flowType].push({
+              const newDatumForChart = {
                 value: 0,
                 iso2,
-                flag_url: `https://flags.talusanalytics.com/64px/${iso2}.png`,
                 bar_id: iso2 + "-" + flowType,
                 id: shInfo.id,
                 name,
+                flag_url: getFlagUrl(name, iso2),
                 region_who: shInfo.region_who,
-              });
+              };
+
+              newDataForChart[flowType].push(newDatumForChart);
             }
           });
         }
@@ -334,7 +332,7 @@ const EventBars = ({
   // JSX //
   return (
     <>
-      <Loading {...{ loaded: drawn, position: "absolute" }} />
+      <Loading {...{ loaded: drawn, position: "absolute", right: 0 }} />
       <div className={styles.eventBars}>
         {
           <div
@@ -354,6 +352,10 @@ const EventBars = ({
                     optionGroups: {
                       Recipient: [
                         {
+                          value: "recipient_all",
+                          label: "Recipient (all types)",
+                        },
+                        {
                           value: "recipient_country",
                           label: "Recipient (country)",
                         },
@@ -367,6 +369,10 @@ const EventBars = ({
                         },
                       ],
                       Funder: [
+                        {
+                          value: "funder_all",
+                          label: "Funder (all types)",
+                        },
                         { value: "funder_country", label: "Funder (country)" },
                         { value: "funder_org", label: "Funder (organization)" },
                       ],

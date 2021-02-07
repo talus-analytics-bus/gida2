@@ -12,7 +12,6 @@ import { comma } from "../../../misc/Util";
 import Loading from "../../../common/Loading/Loading";
 
 const ColList = ({ items = [], max = 10, isGlobal = false }) => {
-  console.log(items);
   // STATE //
   const [viewAll, setViewAll] = useState(
     items.length !== 0 && items.length <= max
@@ -53,7 +52,7 @@ const ColList = ({ items = [], max = 10, isGlobal = false }) => {
   const list1 = items.slice(0, Math.ceil(nItems / 2)).map(d => {
     return getListItemJsx(d);
   });
-  const list2 = items.slice(Math.ceil(nItems / 2), nItems + 1).map(d => {
+  const list2 = items.slice(Math.ceil(nItems / 2), nItems).map(d => {
     return getListItemJsx(d);
   });
 

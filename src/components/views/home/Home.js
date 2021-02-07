@@ -6,7 +6,7 @@ import Button from "../../common/Button/Button.js";
 import mapImage from "../../../assets/images/map.png";
 import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 
-// JSX for about page.
+// JSX for home page
 const Home = () => {
   return (
     <div className={classNames(styles.home, "pageContainer")}>

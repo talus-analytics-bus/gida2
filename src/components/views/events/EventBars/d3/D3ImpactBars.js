@@ -109,32 +109,18 @@ class D3ImpactBars extends Chart {
       return -(maxLabelWidth + margin) || -this.margin.left + 10;
     };
 
-    // add y-axis label
-    // const yLabel = chart
-    //   .append("text")
-    //   .attr("transform", "rotate(-90)")
-    //   .attr("y", 0)
-    //   .attr("x", -height / 2)
-    //   .style("font-weight", 600)
-    //   .style("text-anchor", "middle")
-    //   .attr("class", [styles["axis-label"], "y-label-text"].join(" "))
-    //   .text("y-axis label");
-
     this.update = (data, newFlowType = params.curFlowType, params) => {
       const allFundsZero = !data.some(d => d.sort !== 0);
       const sortKey = allFundsZero ? "value" : "sort";
 
       // format stack bar data
       let stackXMax, stackData;
-      // const noRegion = [];
+
       if (params.stack) {
         stackData = [];
         const dataByRegion = {};
         data.forEach(d => {
-          const region = d.region_who || "None";
-          // if (region === "None") {
-          //   noRegion.push(d);
-          // }
+          const region = d.region_who || "No WHO region";
           if (dataByRegion[region] === undefined) {
             dataByRegion[region] = [d];
           } else if (
@@ -145,10 +131,6 @@ class D3ImpactBars extends Chart {
             dataByRegion[region].push(d);
           }
         });
-        // const someNoneFund = data.some(d => d.region_who === undefined);
-        // if (someNoneFund) {
-        //   dataByRegion.None = [];
-        // }
         for (const [region, children] of Object.entries(dataByRegion)) {
           stackData.push({
             name: region,
@@ -156,7 +138,7 @@ class D3ImpactBars extends Chart {
               return d3.descending(a[sortKey], b[sortKey]);
             }),
             value: d3.sum(children, d => d.value),
-            sort: d3.sum(children, d => d.impact),
+            sort: d3.sum(children, d => d.sort),
             bar_id: `${region}-${newFlowType}`,
           });
         }
@@ -237,11 +219,14 @@ class D3ImpactBars extends Chart {
       }
 
       // set axes labels
-      xLabel.text(
-        getInitCap(params.impact) +
-          " by " +
-          (params.stack ? "region" : "country")
-      );
+      // e.g., "Total cases"
+      xLabel.text(`Total ${params.impact}`);
+      // // e.g., "Cases by country"
+      // xLabel.text(
+      //   getInitCap(params.impact) +
+      //     " by " +
+      //     (params.stack ? "region" : "country")
+      // );
 
       chart.select(".y-label-text").attr("x", -newHeight / 2);
 

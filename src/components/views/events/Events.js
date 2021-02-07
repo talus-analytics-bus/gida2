@@ -75,7 +75,7 @@ const Events = ({ slug, flowTypeInfo }) => {
     });
 
   const eventBars = dataLoaded && {
-    header: <h2>Total funding and impact comparison</h2>,
+    header: <h2>Total event funding</h2>,
     text: (
       <span>
         The chart below shows total funding by recipient and by funder.
@@ -109,7 +109,7 @@ const Events = ({ slug, flowTypeInfo }) => {
   };
 
   const eventTable = dataLoaded && {
-    header: <h2>Top funders for {data.name}</h2>,
+    header: <h2>Funders for {data.name}</h2>,
     text: (
       <span>
         The table below displays funders in order of amount of funds provided.
