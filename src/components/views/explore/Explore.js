@@ -34,7 +34,8 @@ const Explore = ({
   const [tabInitialized, setTabInitialized] = useState(false);
 
   // Track entity role selected for the map
-  const [entityRole, setEntityRole] = useState("recipient"); // hi
+  const [entityRole, setEntityRole] = useState("recipient");
+  // const [entityRole, setEntityRole] = useState("funder");
 
   // Track min and max year of data (consistent across tabs)
   const [minYear, setMinYear] = useState(Settings.startYear);
@@ -46,6 +47,7 @@ const Explore = ({
 
   // Track whether user...
   const [supportTypeToSwitchTo, setSupportTypeToSwitchTo] = useState(undefined);
+
   // Track funding type
   const [fundType, setFundType] = useState(
     props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false"
