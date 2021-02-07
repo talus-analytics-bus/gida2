@@ -19,7 +19,7 @@ class D3Sankey extends Chart {
     // Set dimensions
     this.width = this.containerwidth;
     this.height = this.containerheight;
-    this.margin = { top: 25, right: 0, bottom: 0, left: 0 };
+    this.margin = { top: 30, right: 0, bottom: 0, left: 0 };
 
     // Initialize chart
     this.init();
@@ -79,7 +79,10 @@ class D3Sankey extends Chart {
   }
 
   getName(s) {
-    return s;
+    return s
+      .replace("International", "Int'l")
+      .replace("United Nations", "UN")
+      .replace("Norad - Norwegian Agency for Development Cooperation", "Norad");
   }
 
   draw() {
@@ -295,7 +298,8 @@ class D3Sankey extends Chart {
       .append("g")
       .selectAll("rect")
       .data(graph.nodes)
-      .join("rect");
+      .join("rect")
+      .attr("data-ce", d => d.cat);
     nodeRects
       .on("mouseover", d => updateTooltip(d, false))
       .attr("data-tip", true)
@@ -363,7 +367,8 @@ class D3Sankey extends Chart {
       .append("g")
       .selectAll("path")
       .data(graph.links)
-      .join("path");
+      .join("path")
+      .attr("data-ce", d => d.target.cat);
 
     const orderByValue = (a, b) => {
       if (a.value > b.value) return 1;

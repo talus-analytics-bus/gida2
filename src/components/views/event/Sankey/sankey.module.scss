@@ -34,8 +34,12 @@
     svg {
       // chart title
       .title {
-        font-family: "Open Sans", sans-serif;
-        font-size: 1.8rem;
+        font-family: "Rawline";
+        // font-family: "Open Sans", sans-serif;
+        font-size: 2.5rem;
+        font-weight: bold;
+        fill: #303434;
+        // font-size: 1.8rem;
       }
       // nodes and links
       rect,
@@ -55,6 +59,25 @@
         // }
       }
       // links
+      [data-ce="Prevent"] {
+        // fill: #844d68;
+        fill: #082b84;
+        // fill: #0a1a71;
+      }
+      [data-ce="Detect"] {
+        // fill: #d964a4;
+        fill: #ff6d00;
+        // fill: #f1a472;
+        // fill: #0f5571;
+      }
+      [data-ce="Respond"] {
+        fill: #185b18;
+        // fill: #62ac91;
+        // fill: #377eb8;
+      }
+      [data-ce="Other"] {
+        fill: $outbreak-gray-3;
+      }
       g {
         z-index: 0;
         path {
@@ -65,6 +88,7 @@
             fill: $outbreak-blue-3;
             opacity: 0.7;
           }
+
           // &:hover {
           //   stroke: $outbreak-yellow-1;
           //   stroke-width: 1px;
@@ -84,7 +108,7 @@
       }
       text {
         font-family: "open_sanssemibold", sans-serif;
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         a {
           fill: #333;
           // fill: $outbreak-blue-2;
@@ -108,8 +132,9 @@
     flex-flow: row;
     align-items: flex-end;
     justify-content: space-between;
+    margin-bottom: -25px;
     .sortButton {
-      font-size: 2.25rem;
+      font-size: 2.5rem;
       // font-size: 1.8rem;
       font-weight: 700;
       font-family: "Rawline", serif;
