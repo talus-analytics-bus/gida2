@@ -449,8 +449,8 @@ const Details = ({
                     id,
                     curFlowType,
                     otherEntityRole: entityRole,
-                    otherNodeType: otherDirection,
-                    direction: otherDirection,
+                    otherNodeType: direction,
+                    direction: direction,
                     staticStakeholders: nodesData,
                   }}
                 />

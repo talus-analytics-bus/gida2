@@ -419,6 +419,7 @@ const App = () => {
                           loading: loading,
                           setLoading: setLoading,
                           flowTypeInfo: flowTypeInfo,
+                          entityRole: "funder",
                           setLoadingSpinnerOn,
                         }}
                       />
