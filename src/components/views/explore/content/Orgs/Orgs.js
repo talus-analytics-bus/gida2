@@ -57,7 +57,7 @@ const Orgs = ({
   ...props
 }) => {
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = useState("disbursed");
+  const [transactionType, setTransactionType] = useState("committed");
 
   // Track support type selected for the map
   const [supportType, setSupportType] = useState("funds");

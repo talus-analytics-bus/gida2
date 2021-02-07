@@ -179,17 +179,6 @@ const EntityTable = ({
               render: val => Util.formatValue(val, "project_name"),
             },
             {
-              title: `Disbursed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
-              func: d => d.disbursed_funds,
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              prop: "disbursed_funds",
-              render: val => Util.formatValue(val, "disbursed_funds"),
-              defaultContent: "n/a",
-            },
-            {
               title: `Committed funds (${Settings.startYear} - ${
                 Settings.endYear
               })`,
@@ -198,6 +187,17 @@ const EntityTable = ({
               className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "committed_funds",
               render: val => Util.formatValue(val, "committed_funds"),
+              defaultContent: "n/a",
+            },
+            {
+              title: `Disbursed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d => d.disbursed_funds,
+              type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
+              prop: "disbursed_funds",
+              render: val => Util.formatValue(val, "disbursed_funds"),
               defaultContent: "n/a",
             },
           ]}
@@ -216,17 +216,6 @@ const EntityTable = ({
           tableColumns={[
             otherEntityRole === "funder" ? funderCol : recipientCol,
             {
-              title: `Disbursed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
-              func: d => d.disbursed_funds,
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              prop: "disbursed_funds",
-              render: val => Util.formatValue(val, "disbursed_funds"),
-              defaultContent: "n/a",
-            },
-            {
               title: `Committed funds (${Settings.startYear} - ${
                 Settings.endYear
               })`,
@@ -235,6 +224,17 @@ const EntityTable = ({
               className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "committed_funds",
               render: val => Util.formatValue(val, "committed_funds"),
+              defaultContent: "n/a",
+            },
+            {
+              title: `Disbursed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d => d.disbursed_funds,
+              type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
+              prop: "disbursed_funds",
+              render: val => Util.formatValue(val, "disbursed_funds"),
               defaultContent: "n/a",
             },
           ]}
@@ -256,17 +256,6 @@ const EntityTable = ({
           tableColumns={[
             otherEntityRole === "funder" ? recipientCol : funderCol,
             {
-              title: `Disbursed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
-              func: d => d.disbursed_funds,
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              prop: "disbursed_funds",
-              render: val => Util.formatValue(val, "disbursed_funds"),
-              defaultContent: "n/a",
-            },
-            {
               title: `Committed funds (${Settings.startYear} - ${
                 Settings.endYear
               })`,
@@ -275,6 +264,17 @@ const EntityTable = ({
               className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "committed_funds",
               render: val => Util.formatValue(val, "committed_funds"),
+              defaultContent: "n/a",
+            },
+            {
+              title: `Disbursed funds (${Settings.startYear} - ${
+                Settings.endYear
+              })`,
+              func: d => d.disbursed_funds,
+              type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
+              prop: "disbursed_funds",
+              render: val => Util.formatValue(val, "disbursed_funds"),
               defaultContent: "n/a",
             },
           ]}
@@ -372,20 +372,20 @@ const EntityTable = ({
               prop: "name",
             },
             {
-              title: "Total years project provided",
-              func: d => d.provided_inkind,
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              prop: "provided_inkind",
-              render: val => Util.formatValue(val, "inkind"),
-              defaultContent: "n/a",
-            },
-            {
               title: "Total years project committed",
               func: d => d.committed_inkind,
               type: "num",
               className: d => (d > 0 ? "num" : "num-with-text"),
               prop: "committed_inkind",
+              render: val => Util.formatValue(val, "inkind"),
+              defaultContent: "n/a",
+            },
+            {
+              title: "Total years project provided",
+              func: d => d.provided_inkind,
+              type: "num",
+              className: d => (d > 0 ? "num" : "num-with-text"),
+              prop: "provided_inkind",
               render: val => Util.formatValue(val, "inkind"),
               defaultContent: "n/a",
             },
