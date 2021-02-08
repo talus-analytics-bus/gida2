@@ -29,7 +29,7 @@ const TopTable = ({
   const getData = async () => {
     const filters = {
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-      // "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+      "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
       "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
 
