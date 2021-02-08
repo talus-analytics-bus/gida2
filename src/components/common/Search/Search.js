@@ -145,7 +145,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       className={"dark-bg-allowed"}
       id={"placeSearch-" + name}
       type="text"
-      placeholder="search for a country, org, or PHEIC"
+      placeholder="search for a country or organization"
       onChange={handleInputChange}
       onKeyDown={handleKeyPress}
     />
