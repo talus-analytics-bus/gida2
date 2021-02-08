@@ -310,38 +310,50 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   </div>
                   <div>
                     <Button
-                      callback={() => {
-                        setDownloading(true);
-                        getFlowQuery({
-                          curPage,
-                          props: {
-                            funders,
-                            recipients,
-                            coreCapacities,
-                            outbreaks,
-                            supportType,
-                          },
-                          forExport: true,
-                          ...props,
-                        }).then(paramsTmp => {
-                          // URL query params
-                          const params = paramsTmp.params;
+                      url={
+                        showClear
+                          ? undefined
+                          : "https://gida.ghscosting.org/downloads/GHS%20Tracking%20-%20Full%20Data%20Export%202021-01-29.xlsx"
+                      }
+                      sameWindow={true}
+                      callback={
+                        !showClear
+                          ? undefined
+                          : () => {
+                              setDownloading(true);
+                              getFlowQuery({
+                                curPage,
+                                props: {
+                                  funders,
+                                  recipients,
+                                  coreCapacities,
+                                  outbreaks,
+                                  supportType,
+                                },
+                                forExport: true,
+                                ...props,
+                              }).then(paramsTmp => {
+                                // URL query params
+                                const params = paramsTmp.params;
 
-                          // POST body JSON
-                          const data = { filters: paramsTmp.data.filters };
-                          data.cols = cols.filter(d =>
-                            exportCols.includes(d[0])
-                          );
+                                // POST body JSON
+                                const data = {
+                                  filters: paramsTmp.data.filters,
+                                };
+                                data.cols = cols.filter(d =>
+                                  exportCols.includes(d[0])
+                                );
 
-                          Excel({
-                            method: "post",
-                            data,
-                            params,
-                          }).then(() => {
-                            setDownloading(false);
-                          });
-                        });
-                      }}
+                                Excel({
+                                  method: "post",
+                                  data,
+                                  params,
+                                }).then(() => {
+                                  setDownloading(false);
+                                });
+                              });
+                            }
+                      }
                       disabled={downloading}
                       label={
                         <span className={styles.downloadBtn}>
