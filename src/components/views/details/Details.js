@@ -621,7 +621,7 @@ const Details = ({
   // when node data are updated, update flag show/hide
   useLayoutEffect(() => {
     if (!isEmpty(nodeData)) {
-      setShowFlag(nodeData.subcat === "country");
+      setShowFlag(ghsa || nodeData.subcat === "country");
     }
   }, [nodeData]);
 
