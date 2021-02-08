@@ -13,6 +13,7 @@ import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
 import Loading from "../../common/Loading/Loading";
 import { core_capacities } from "../../misc/Data.js";
 import Button from "../../common/Button/Button.js";
+import { searchableSubcats } from "../../common/Search/Search.js";
 import axios from "axios";
 
 // Content components
@@ -250,9 +251,11 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: Object.values(data.stakeholders).map(d => {
-                      return { value: d.id, label: d.name };
-                    }),
+                    options: Object.values(data.stakeholders)
+                      .filter(d => searchableSubcats.includes(d.subcat))
+                      .map(d => {
+                        return { value: d.id, label: d.name };
+                      }),
                     placeholder: "Funder",
                     onChange: setFunders,
                     curValues: funders,
@@ -261,9 +264,11 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: Object.values(data.stakeholders).map(d => {
-                      return { value: d.id, label: d.name };
-                    }),
+                    options: Object.values(data.stakeholders)
+                      .filter(d => searchableSubcats.includes(d.subcat))
+                      .map(d => {
+                        return { value: d.id, label: d.name };
+                      }),
                     placeholder: "Recipient",
                     onChange: setRecipients,
                     curValues: recipients,
@@ -429,7 +434,9 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
   // Define queries for typical Export page.
   const queries = {
     // Information about the entity
-    stakeholders: Stakeholder({ by: "id" }),
+    stakeholders: Stakeholder({
+      by: "id",
+    }),
     outbreaks: Outbreak({}),
   };
 

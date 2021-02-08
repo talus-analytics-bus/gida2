@@ -52,6 +52,7 @@ const StackBar = ({
       "Core_Capacity.name": [["neq", "Unspecified"]],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+      "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
     if (!isGhsaPage) stackBarFilters["OtherStakeholder.id"] = [id];
 

@@ -61,6 +61,7 @@ const Analysis = ({
     const filters = {
       "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
 
     // add assistance type filter
@@ -99,6 +100,7 @@ const Analysis = ({
     const filters = {
       "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
 
     // add assistance type filter

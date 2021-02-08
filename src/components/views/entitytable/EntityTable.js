@@ -667,6 +667,7 @@ const getComponentData = async ({
 
   const nodeSumsFilters = {
     "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+    "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
   };
   const flowFilters = {
     "Project_Constants.min_year": [["gt_eq", Settings.startYear]],

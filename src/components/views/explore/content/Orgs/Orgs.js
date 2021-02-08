@@ -718,6 +718,7 @@ const getComponentData = async ({
 
   const nodeSumsFilters = {
     "Stakeholder.cat": ["organization"],
+    "Stakeholder.subcat": [["neq", ["sub-organization"]]],
     "Stakeholder.slug": [["neq", ["not-reported"]]],
     "Flow.year": [["gt_eq", props.minYear], ["lt_eq", props.maxYear]],
   };

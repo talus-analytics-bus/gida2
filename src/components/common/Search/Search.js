@@ -5,6 +5,17 @@ import styles from "./search.module.scss";
 import { Stakeholder } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 
+export const searchableSubcats = [
+  "country",
+  "government",
+  "organization",
+  // "region",
+  "state_/_department_/_territory",
+  // "agency",
+  "ngo",
+  "other",
+  // "sub-organization",
+];
 /**
  * Generic radio toggle
  * TODO implement tooltip
@@ -25,16 +36,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
     } else {
       // Find country or org matches
       // Return them by setting the country values
-      const searchableSubcats = [
-        "country",
-        "government",
-        "organization",
-        // "region",
-        "state_/_department_/_territory",
-        "agency",
-        "other",
-        "sub-organization",
-      ];
+
       const results = await Stakeholder({
         search: val,
         limit: limit || 5,

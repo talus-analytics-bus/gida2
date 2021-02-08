@@ -727,6 +727,7 @@ const getComponentData = async ({
   const filters = {
     "Stakeholder.cat": ["country", "government"],
     "Flow.year": [["gt_eq", props.minYear], ["lt_eq", props.maxYear]],
+    // "OtherStakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
   };
 
   // CCs
