@@ -335,7 +335,7 @@ const App = () => {
                 exact
                 path="/table/:id/:entityRole"
                 render={d => {
-                  setPage(undefined);
+                  setPage("data");
                   const defaultGhsaOnly =
                     d.match.params.id === "ghsa"
                       ? "false"
