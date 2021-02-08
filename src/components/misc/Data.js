@@ -473,9 +473,9 @@ export const getNodeLinkList = ({
   }
 
   // Do not list URLs unless the node belongs to any of these types
-  const urlTypes = ["country", "organization", "agency"];
+  const urlTypes = ["country", "organization"];
   const nonUrlTypes = ["region", "state_/_department_/_territory"];
-  const nonUrlSubcats = ["region"];
+  const nonUrlSubcats = ["region", "agency", "sub-organization"];
   // const nonUrlTypes = ["region", "state_/_department_/_territory", "other"];
   return nodeList.map((node, i) => {
     const url = urlFunc(node.id);

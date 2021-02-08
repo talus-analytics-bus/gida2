@@ -37,7 +37,7 @@ const Analysis = ({
   ...props
 }) => {
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = useState("disbursed");
+  const [transactionType, setTransactionType] = useState("committed");
   const [chordComponent, setChordComponent] = useState(null);
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [selectedEntityInfo, setSelectedEntityInfo] = useState(null);
@@ -61,6 +61,7 @@ const Analysis = ({
     const filters = {
       "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
 
     // add assistance type filter
@@ -99,6 +100,7 @@ const Analysis = ({
     const filters = {
       "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
 
     // add assistance type filter
@@ -273,15 +275,6 @@ const Analysis = ({
                   }),
               },
               {
-                title: "Disbursed",
-                prop: "disbursed_funds",
-                type: "num",
-                className: d => (d > 0 ? "num" : "num-with-text"),
-                func: d =>
-                  d.disbursed_funds !== undefined ? d.disbursed_funds : "",
-                render: d => Util.formatValue(d, "disbursed_funds"),
-              },
-              {
                 title: "Committed",
                 prop: "committed_funds",
                 type: "num",
@@ -289,6 +282,15 @@ const Analysis = ({
                 func: d =>
                   d.committed_funds !== undefined ? d.committed_funds : "",
                 render: d => Util.formatValue(d, "committed_funds"),
+              },
+              {
+                title: "Disbursed",
+                prop: "disbursed_funds",
+                type: "num",
+                className: d => (d > 0 ? "num" : "num-with-text"),
+                func: d =>
+                  d.disbursed_funds !== undefined ? d.disbursed_funds : "",
+                render: d => Util.formatValue(d, "disbursed_funds"),
               },
             ]}
             tableData={tableData[dataKey]}
@@ -407,12 +409,12 @@ const Analysis = ({
                     curVal={transactionType}
                     choices={[
                       {
-                        name: "Disbursed",
-                        value: "disbursed",
-                      },
-                      {
                         name: "Committed",
                         value: "committed",
+                      },
+                      {
+                        name: "Disbursed",
+                        value: "disbursed",
                       },
                     ]}
                   />

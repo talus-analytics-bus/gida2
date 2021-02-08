@@ -44,7 +44,7 @@ const DetailsSection = ({
       {text && <div className={styles.text}>{text}</div>}
       {toggleFlowType && !noFinancialData && (
         <form>
-          {["disbursed_funds", "committed_funds"].map(flowType => (
+          {["committed_funds", "disbursed_funds"].map(flowType => (
             <label onClick={onChange} for={flowType}>
               <input
                 type="radio"

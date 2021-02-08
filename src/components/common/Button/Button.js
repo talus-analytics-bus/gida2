@@ -39,7 +39,12 @@ const Button = ({ label, url, disabled = false, ...props }) => {
     );
   } else if (url) {
     return (
-      <a style={props.style} className={styles.link} href={url} target="_blank">
+      <a
+        style={props.style}
+        className={styles.link}
+        href={url}
+        target={props.sameWindow !== true ? "_blank" : undefined}
+      >
         {button}
       </a>
     );

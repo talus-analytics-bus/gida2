@@ -52,6 +52,7 @@ const Details = ({
   setGhsaOnly,
   setComponent,
   setLoadingSpinnerOn,
+  setPage = () => "",
   ...props
 }) => {
   const direction = entityRole === "funder" ? "origin" : "target";
@@ -76,7 +77,7 @@ const Details = ({
   const otherNodeType = entityRole === "funder" ? "target" : "origin";
 
   // Track whether viewing committed or disbursed/provided assistance
-  const [curFlowType, setCurFlowType] = useState("disbursed_funds");
+  const [curFlowType, setCurFlowType] = useState("committed_funds");
   const [pvsTooltipData, setPvsTooltipData] = useState(undefined);
 
   // is there any data to show? Inkind only?
@@ -129,6 +130,9 @@ const Details = ({
     if (!isGhsaPage) results.nodeData = results.nodesData[id];
     else results.nodeData = { id: -9999, name: "GHSA" };
 
+    // set page based on stakeholder category
+    if (results.nodeData.cat === "organization") setPage("details-org");
+    else setPage("details-country");
     setNodeData(results.nodeData);
     setNodesData(results.nodesData);
     if (!isGhsaPage) setPvs(results.pvs);
@@ -188,16 +192,16 @@ const Details = ({
   const eventResponseTotals = (
     <div className={styles.totals}>
       <TotalByFlowType
-        key={"d"}
+        key={"c"}
         inline={true}
-        flowType="disbursed_funds"
+        flowType="committed_funds"
         data={eventTotalsData}
         label={"event response funding"}
       />
       <TotalByFlowType
-        key={"c"}
+        key={"d"}
         inline={true}
-        flowType="committed_funds"
+        flowType="disbursed_funds"
         data={eventTotalsData}
         label={"event response funding"}
       />
@@ -449,8 +453,8 @@ const Details = ({
                     id,
                     curFlowType,
                     otherEntityRole: entityRole,
-                    otherNodeType: otherDirection,
-                    direction: otherDirection,
+                    otherNodeType: direction,
+                    direction: direction,
                     staticStakeholders: nodesData,
                   }}
                 />
@@ -621,7 +625,7 @@ const Details = ({
   // when node data are updated, update flag show/hide
   useLayoutEffect(() => {
     if (!isEmpty(nodeData)) {
-      setShowFlag(nodeData.subcat === "country");
+      setShowFlag(ghsa || nodeData.subcat === "country");
     }
   }, [nodeData]);
 

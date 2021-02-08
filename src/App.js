@@ -309,6 +309,7 @@ const App = () => {
                         ghsaOnly: ghsaOnly,
                         setGhsaOnly: setGhsaOnly,
                         setLoadingSpinnerOn,
+                        setPage,
                       }}
                     />
                   );
@@ -334,7 +335,7 @@ const App = () => {
                 exact
                 path="/table/:id/:entityRole"
                 render={d => {
-                  setPage(undefined);
+                  setPage("data");
                   const defaultGhsaOnly =
                     d.match.params.id === "ghsa"
                       ? "false"
@@ -419,6 +420,7 @@ const App = () => {
                           loading: loading,
                           setLoading: setLoading,
                           flowTypeInfo: flowTypeInfo,
+                          entityRole: "funder",
                           setLoadingSpinnerOn,
                         }}
                       />
