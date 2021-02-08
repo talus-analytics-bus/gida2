@@ -18,9 +18,8 @@ export const greens = [
 ];
 
 export const purples = [
-  "#bfd3e6",
-  "#88aac3",
-  // "#757fb6",
+  "#AA9BC3",
+  "#9171C5",
   "#75559d",
   "#713286",
   "#6a1266",
