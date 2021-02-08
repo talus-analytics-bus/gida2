@@ -31,6 +31,9 @@ const DataTable = ({
         <TableInstance
           {...{
             ...props,
+            // prevent sorting if API-driven until implemented
+            // TODO implement API-driven table sorting
+            noColClick: getTableData !== undefined,
             tableData: d.data,
           }}
         />
