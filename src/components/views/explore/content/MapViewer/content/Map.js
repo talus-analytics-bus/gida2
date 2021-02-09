@@ -293,16 +293,7 @@ const Map = ({
       });
       setMapData(newMapData);
     }
-  }, [
-    // minYear,
-    // maxYear,
-    // events,
-    // coreCapacities,
-    // entityRole,
-    data,
-    supportType,
-    flowType,
-  ]);
+  }, [data, supportType, flowType]);
 
   // Get datum for the selected node, if it exists.
   const datumForInfoBox =

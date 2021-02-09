@@ -87,17 +87,7 @@ const D3Map = ({
       );
       setInit(false);
     }
-  }, [
-    mapData,
-    // flowType,
-    // supportType,
-    // entityRole,
-    // minYear,
-    // maxYear,
-    // coreCapacities,
-    // events,
-    // ghsaOnly,
-  ]);
+  }, [mapData]);
 
   return (
     <div
