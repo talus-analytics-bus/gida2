@@ -1,7 +1,7 @@
 @import "../../../../../assets/styles/colors.scss";
 .mapViewer {
   height: 100%;
-  min-height: 81vh !important;
+  min-height: $min-content-height !important;
   .hide {
     display: none;
   }

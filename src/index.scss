@@ -4,7 +4,7 @@ html,
 body,
 #root {
   .placeholder {
-    min-height: 81vh;
+    min-height: $min-content-height;
   }
 
   .normal {
