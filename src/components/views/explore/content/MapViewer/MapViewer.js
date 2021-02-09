@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import styles from "./mapviewer.module.scss";
+import exploreStyles from "../../explore.module.scss";
 import EntityRoleToggle from "../../../../misc/EntityRoleToggle.js";
 import GhsaToggle from "../../../../misc/GhsaToggle.js";
 import RadioToggle from "../../../../misc/RadioToggle.js";
@@ -556,9 +557,15 @@ const MapViewer = ({
   // JSX //
   return (
     <div
-      className={classNames("pageContainer", "wide", styles.mapViewer, {
-        [styles.dark]: isDark,
-      })}
+      className={classNames(
+        "pageContainer",
+        "wide",
+        styles.mapViewer,
+        exploreStyles.map,
+        {
+          [styles.dark]: isDark,
+        }
+      )}
     >
       {!initialized && (
         <div className={styles.instructions}>
@@ -568,34 +575,50 @@ const MapViewer = ({
       <Loading {...{ loaded: initialized, align: "center" }}>
         {initializedData && (
           <>
-            <div className={styles.header}>
-              {// funder / recipient toggle
-              supportType !== "needs_met" && supportType !== "jee" && (
-                <EntityRoleToggle
-                  entityRole={entityRole}
-                  callback={setEntityRole}
-                />
-              )}
-              <div className={styles.darkToggle}>
-                {
-                  // dark mode toggle
-                }
-                <Toggle
-                  checked={isDark}
-                  knobColor="#ccc"
-                  borderWidth="1px"
-                  borderColor="#ccc"
-                  radius="3px"
-                  knobWidth="8px"
-                  backgroundColor={isDark ? "#333" : "white"}
-                  radiusBackground="2px"
-                  knobRadius="2px"
-                  width={"55px"}
-                  name="toggle-1"
-                  onToggle={() => setIsDark(!isDark)}
-                />
-                <div className={classNames({ [styles.dark]: isDark })}>
-                  {isDark ? "Dark" : "Light"}
+            <div className={exploreStyles.header}>
+              <div className={exploreStyles.titles}>
+                <div className={exploreStyles.left}>
+                  {
+                    // main titles and instructions
+                  }
+                  <div className={exploreStyles.title}>{mapTitleData.main}</div>
+                  <span>{mapTitleData.subtitle}</span>
+                </div>
+              </div>
+              <div className={exploreStyles.controls}>
+                <span className={exploreStyles.instructions}>
+                  <i>{mapTitleData.instructions}</i>
+                </span>
+                <div className={exploreStyles.buttons}>
+                  {// funder / recipient toggle
+                  supportType !== "needs_met" && supportType !== "jee" && (
+                    <EntityRoleToggle
+                      entityRole={entityRole}
+                      callback={setEntityRole}
+                    />
+                  )}
+                  <div className={styles.darkToggle}>
+                    {
+                      // dark mode toggle
+                    }
+                    <Toggle
+                      checked={isDark}
+                      knobColor="#ccc"
+                      borderWidth="1px"
+                      borderColor="#ccc"
+                      radius="3px"
+                      knobWidth="8px"
+                      backgroundColor={isDark ? "#333" : "white"}
+                      radiusBackground="2px"
+                      knobRadius="2px"
+                      width={"55px"}
+                      name="toggle-1"
+                      onToggle={() => setIsDark(!isDark)}
+                    />
+                    <div className={classNames({ [styles.dark]: isDark })}>
+                      {isDark ? "Dark" : "Light"}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
