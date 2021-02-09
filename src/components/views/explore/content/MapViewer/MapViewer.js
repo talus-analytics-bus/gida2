@@ -24,6 +24,7 @@ import { core_capacities } from "../../../../misc/Data.js";
 import SlideToggle from "../../../../common/SlideToggle/SlideToggle.js";
 import Loading from "../../../../common/Loading/Loading.js";
 import Button from "../../../../common/Button/Button.js";
+import { Toggle } from "react-toggle-component";
 
 // Local content components
 import Map from "./content/Map.js";
@@ -568,12 +569,35 @@ const MapViewer = ({
         {initializedData && (
           <>
             <div className={styles.header}>
-              {supportType !== "needs_met" && supportType !== "jee" && (
+              {// funder / recipient toggle
+              supportType !== "needs_met" && supportType !== "jee" && (
                 <EntityRoleToggle
                   entityRole={entityRole}
                   callback={setEntityRole}
                 />
               )}
+              <div className={styles.darkToggle}>
+                {
+                  // dark mode toggle
+                }
+                <Toggle
+                  checked={isDark}
+                  knobColor="#ccc"
+                  borderWidth="1px"
+                  borderColor="#ccc"
+                  radius="3px"
+                  knobWidth="8px"
+                  backgroundColor={isDark ? "#333" : "white"}
+                  radiusBackground="2px"
+                  knobRadius="2px"
+                  width={"55px"}
+                  name="toggle-1"
+                  onToggle={() => setIsDark(!isDark)}
+                />
+                <div className={classNames({ [styles.dark]: isDark })}>
+                  {isDark ? "Dark" : "Light"}
+                </div>
+              </div>
             </div>
             <div className={styles.content}>
               <Map

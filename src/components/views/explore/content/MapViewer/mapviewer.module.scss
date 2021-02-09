@@ -12,7 +12,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    margin: 20px 0 10px;
+    margin: 0px 0 10px;
   }
   .header {
     display: flex;
@@ -155,6 +155,31 @@
     }
   }
 
+  .darkToggle {
+    display: flex;
+    flex-flow: row;
+    position: relative;
+    justify-content: center;
+    font-size: 1.4rem;
+    > span {
+      margin-right: 0;
+    }
+    > * {
+      position: relative;
+    }
+    > div {
+      position: absolute;
+      top: 2px;
+      pointer-events: none;
+      &:not(.dark) {
+        right: 10%;
+      }
+      &.dark {
+        left: 15%;
+      }
+    }
+  }
+
   // DARK MODE SETTINGS
   &.dark {
     .content {
@@ -166,6 +191,9 @@
             background-color: transparent !important;
           }
         }
+      }
+      .darkToggle {
+        background-color: $dark-background-color;
       }
     }
   }

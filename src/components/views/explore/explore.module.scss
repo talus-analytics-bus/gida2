@@ -33,33 +33,6 @@
     }
   }
 
-  .darkToggle {
-    display: flex;
-    flex-flow: row;
-    position: relative;
-    justify-content: center;
-    opacity: 0;
-    &.shown {
-      opacity: 1;
-    }
-    > span {
-      margin-right: 0;
-    }
-    > * {
-      position: relative;
-    }
-    > div {
-      position: absolute;
-      top: 2px;
-      pointer-events: none;
-      &:not(.dark) {
-        left: 15%;
-      }
-      &.dark {
-        right: 10%;
-      }
-    }
-  }
   .header {
     display: flex;
     flex-flow: column;
