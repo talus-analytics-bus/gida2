@@ -296,10 +296,12 @@ const MapViewer = ({
       ["", "capacity_for_needs_met"].includes(fundType)
     ) {
       setFundType("false");
+      setSupportType("funds");
 
       // Case B: Tabbed to "Scores" and support type is not a score.
     } else if (curTab === "scores" && !score_data_names.includes(supportType)) {
       setFundType("");
+      setSupportType("jee");
 
       // Case C: Tabbed to "Combined" and and support type is not a combined
       // metric.
@@ -309,6 +311,7 @@ const MapViewer = ({
     ) {
       setFundType("capacity_for_needs_met"); // TODO dynamically
       setEntityRole("recipient");
+      setSupportType("needs_met");
     }
   }, [curTab]);
 
@@ -495,7 +498,8 @@ const MapViewer = ({
                   if (entityRole !== "recipient") setEntityRole("recipient");
                   if (fundType !== "capacity_for_needs_met")
                     setFundType("capacity_for_needs_met");
-                } else setSupportType(v);
+                }
+                setSupportType(v);
               }}
               curVal={supportType}
               choices={combined_toggle_data}
