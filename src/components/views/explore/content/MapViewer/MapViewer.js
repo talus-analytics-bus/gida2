@@ -55,7 +55,10 @@ const MapViewer = ({
   const [coreCapacities, setCoreCapacities] = useState([]);
   const [events, setEvents] = useState([]); // selected event ids
   const [initialized, setInitialized] = useState(false);
+  const [initializedData, setInitializedData] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [loadedData, setLoadedData] = useState(false);
+  const [loadedAux, setLoadedAux] = useState(false);
 
   // Track transaction type selected for the map
   const [transactionType, setTransactionType] = useState("committed");
@@ -136,6 +139,17 @@ const MapViewer = ({
         direction: entityRole === "recipient" ? "target" : "origin",
         filters,
       }),
+    };
+
+    // Get query results.
+    const results = await execute({ queries });
+    setNodeSums(results.nodeSums);
+    setLoadedData(true);
+    if (fundType === "capacity_for_needs_met") setSupportType("needs_met");
+  };
+  const getAuxData = async () => {
+    // Define queries for map page.
+    const queries = {
       jeeScores: Assessment({
         format: "map",
         scoreType: "JEE v1",
@@ -145,30 +159,28 @@ const MapViewer = ({
 
     // Get query results.
     const results = await execute({ queries });
-    setNodeSums(results.nodeSums);
     setJeeScores(results.jeeScores);
     setOutbreaks(results.outbreaks);
-    setLoaded(true);
-    if (fundType === "capacity_for_needs_met") setSupportType("needs_met");
-
-    if (!initialized) setInitialized(true);
+    setLoadedAux(true);
   };
 
   // EFFECT HOOKS //
-  // TODO move all of them to this section
   // load data for map when needed
-  // TODO load certain data separately and once only
   useEffect(() => {
-    if (!loaded) {
-      console.log("useEffect - getData");
-      getData();
-    }
-  }, [loaded]);
+    if (!loadedData) getData();
+    if (!loadedAux && !loadedData) getAuxData();
+  }, [loadedData]);
 
   // when parameters change, refresh the data
   useEffect(() => {
-    setLoaded(false);
+    if (loadedData) setLoadedData(false);
   }, [minYear, maxYear, events, fundType, coreCapacities, entityRole]);
+
+  // when map, data, and aux data loaded, update `initialized` if needed
+  useEffect(() => {
+    if (loadedData && loadedAux && !initializedData) setInitializedData(true);
+    if (loaded && initializedData && !initialized) setInitialized(true);
+  }, [loaded && loadedData, loadedAux]);
 
   /**
    * Given the transaction type and the support type, returns the flow type.
@@ -534,13 +546,13 @@ const MapViewer = ({
   // JSX //
   return (
     <div className={classNames(styles.mapViewer, { [styles.dark]: isDark })}>
-      {!loaded && !initialized && (
+      {!initialized && (
         <div className={styles.instructions}>
           <i>Loading map</i>
         </div>
       )}
-      <Loading {...{ loaded: loaded || initialized, align: "center" }}>
-        {(loaded || initialized) && (
+      <Loading {...{ loaded: initialized, align: "center" }}>
+        {initializedData && (
           <>
             <div className={styles.header}>
               {supportType !== "needs_met" && supportType !== "jee" && (

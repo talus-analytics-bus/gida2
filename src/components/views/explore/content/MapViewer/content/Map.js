@@ -267,7 +267,6 @@ const Map = ({
   ];
   // set map data when params are changed
   useEffect(() => {
-    console.log("setMapData useEffect - Map.js");
     if (supportType !== "jee") {
       // add missing countries as zeros
       const dataArr =
