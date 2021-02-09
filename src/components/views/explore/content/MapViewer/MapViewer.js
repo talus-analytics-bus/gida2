@@ -149,6 +149,8 @@ const MapViewer = ({
     setJeeScores(results.jeeScores);
     setOutbreaks(results.outbreaks);
     setLoaded(true);
+    if (fundType === "capacity_for_needs_met") setSupportType("needs_met");
+
     if (!initialized) setInitialized(true);
   };
 
@@ -158,6 +160,7 @@ const MapViewer = ({
   // TODO load certain data separately and once only
   useEffect(() => {
     if (!loaded) {
+      console.log("useEffect - getData");
       getData();
     }
   }, [loaded]);
@@ -308,9 +311,8 @@ const MapViewer = ({
       curTab === "combined" &&
       !combined_data_names.includes(supportType)
     ) {
-      setFundType("capacity_for_needs_met"); // TODO dynamically
       setEntityRole("recipient");
-      setSupportType("needs_met");
+      setFundType("capacity_for_needs_met"); // TODO dynamically
     }
   }, [curTab]);
 
