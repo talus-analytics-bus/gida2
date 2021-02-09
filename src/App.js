@@ -270,10 +270,8 @@ const App = () => {
                   // Get support type if specified.
                   const urlParams = new URLSearchParams(d.location.search);
                   const supportTypeDefault =
-                    d.match.params.activeTab === "map"
-                      ? urlParams.get("supportType") !== null
-                        ? urlParams.get("supportType")
-                        : undefined
+                    urlParams.get("supportType") !== null
+                      ? urlParams.get("supportType")
                       : undefined;
                   return (
                     <MapViewer

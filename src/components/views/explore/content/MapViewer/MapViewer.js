@@ -54,7 +54,9 @@ const MapViewer = ({
   const [outbreaks, setOutbreaks] = useState(null);
   const [jeeScores, setJeeScores] = useState(null);
   const [entityRole, setEntityRole] = useState("recipient");
-  const [fundType, setFundType] = useState("false");
+  const [fundType, setFundType] = useState(
+    supportTypeDefault !== undefined ? "" : "false"
+  );
   const [minYear, setMinYear] = useState(Settings.startYear);
   const [maxYear, setMaxYear] = useState(Settings.endYear);
   const [coreCapacities, setCoreCapacities] = useState([]);
@@ -90,13 +92,6 @@ const MapViewer = ({
         "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need.",
     },
   ];
-
-  // // Override support type if it doesn't make sense
-  // if (
-  //   (fundType !== "" && supportType === "jee") ||
-  //   (fundType !== "capacity_for_needs_met" && supportType === "needs_met")
-  // )
-  //   setSupportType("funds");
 
   // Track main map title
   const [mapTitle, setMapTitle] = useState("funds");
@@ -325,6 +320,7 @@ const MapViewer = ({
     ) {
       setFundType("false");
       setSupportType("funds");
+      console.log("did it");
 
       // Case B: Tabbed to "Scores" and support type is not a score.
     } else if (curTab === "scores" && !score_data_names.includes(supportType)) {
