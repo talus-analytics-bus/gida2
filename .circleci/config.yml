@@ -33,13 +33,13 @@ jobs:
 
       - run:
           name: Deploy
-          command: yarn run deploy
+          command: yarn run deploy-prod
 
       - run:
           name: Invalidate Cloudfront cache
           command: |
             aws cloudfront create-invalidation \
-            --distribution-id E152A1LOQ63YSI \
+            --distribution-id E1911YV1N9JGAA \
             --paths "/*"
 
   deploy-dev:
