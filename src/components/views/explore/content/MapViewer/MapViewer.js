@@ -113,7 +113,8 @@ const MapViewer = ({
     };
 
     // CCs
-    if (coreCapacities.length > 0) {
+    const filterByCCs = coreCapacities.length > 0 && fundType !== "event";
+    if (filterByCCs) {
       filters["Core_Capacity.name"] = coreCapacities;
     }
 
@@ -122,13 +123,13 @@ const MapViewer = ({
       filters["Flow.is_ghsa"] = [true];
     } else if (fundType === "event") {
       filters["Flow.response_or_capacity"] = ["response"];
+      // add outbreak events filters
+      const filterByEvents = events !== null && events.length > 0;
+      if (filterByEvents) {
+        filters["Event.id"] = events;
+      }
     } else if (fundType === "capacity") {
       filters["Flow.response_or_capacity"] = ["capacity"];
-    }
-
-    // add outbreak events filters
-    if (events !== null && events.length > 0) {
-      filters["Event.id"] = events;
     }
 
     // Define queries for map page.
