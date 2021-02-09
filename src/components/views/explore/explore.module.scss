@@ -1,11 +1,11 @@
 @import "../../../assets/styles/colors.scss";
 .explore {
-  // min-height: 80vh;
+  min-height: $min-content-height !important;
+}
+.explore,
+.map {
   min-height: $min-content-height !important;
 
-  &.map {
-    padding-bottom: 0 !important;
-  }
   .header {
     @include header;
     justify-content: space-between;

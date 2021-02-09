@@ -7,7 +7,7 @@
   .worldMap {
     height: 100%;
     min-height: 70vh;
-    max-height: $min-content-height;
+    max-height: $min-content-height * 0.89;
     &.dark.loaded svg {
       background-color: #333;
     }
