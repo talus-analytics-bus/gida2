@@ -296,12 +296,13 @@ const Map = ({
   }, [data, supportType, flowType]);
 
   // Get datum for the selected node, if it exists.
+  const existsDataForHover = data.length > 0 && data[0][nodeType] !== undefined;
   const datumForInfoBox =
-    nodeData !== undefined
+    nodeData !== undefined && existsDataForHover
       ? data.find(d => d[nodeType].iso3 === nodeData.iso3)
       : undefined;
   const datumForTooltip =
-    tooltipNodeData !== undefined
+    tooltipNodeData !== undefined && existsDataForHover
       ? data.find(d => d[nodeType].iso3 === tooltipNodeData.iso3)
       : undefined;
 
