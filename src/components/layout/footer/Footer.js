@@ -18,11 +18,11 @@ const Footer = ({ versionData, ...props }) => {
     data: versionData,
   });
   const images = [
-    // {
-    //   imgSrc: props.isDark ? ideaDark : idea,
-    //   url: "https://ghssidea.org",
-    //   alt: "International Disease and Events Analysis",
-    // },
+    {
+      imgSrc: props.isDark ? ideaDark : idea,
+      url: "https://ghssidea.org",
+      alt: "International Disease and Events Analysis",
+    },
     {
       imgSrc: props.isDark ? guDark : gu,
       url: "https://ghss.georgetown.edu/",
@@ -46,8 +46,17 @@ const Footer = ({ versionData, ...props }) => {
       <div className={styles.content}>
         <div className={styles.links}>
           {images.map(d => (
-            <a target="_blank" href={d.url}>
+            <a
+              target="_blank"
+              href={d.url}
+              className={
+                d.alt == "Talus Analytics, LLC" ? styles.talusLogo : null
+              }
+            >
               <img src={d.imgSrc} alt={d.alt} />
+              {d.alt == "Talus Analytics, LLC" && (
+                <div className={styles.builtBy}>Built by</div>
+              )}
             </a>
           ))}
         </div>

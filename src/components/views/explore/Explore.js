@@ -9,7 +9,7 @@ import Loading from "../../common/Loading/Loading";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import { Settings } from "../../../App.js";
 import Tab from "../../misc/Tab.js";
-import { renderMapViewer } from "./content/MapViewer/MapViewer.js";
+// import { renderMapViewer } from "./content/MapViewer/MapViewer.js";
 import { renderOrgs } from "./content/Orgs/Orgs.js";
 import { Toggle } from "react-toggle-component";
 
@@ -91,18 +91,6 @@ const Explore = ({
     setMapViewerComponent(null);
     setOrgComponent(null);
     if (activeTab === "map") {
-      renderMapViewer({
-        ...mapProps,
-        versionData,
-        coreCapacities: [],
-        events: [],
-        isDark: true,
-        fundType:
-          props.fundTypeDefault !== undefined ? props.fundTypeDefault : "false",
-        loaded,
-        setLoaded,
-      });
-      if (!loadedMapOnce) setLoadedMapOnce(true);
     } else {
       // Set page header data
       setPageHeaderData({
@@ -184,18 +172,18 @@ const Explore = ({
     if (fundType === "event" && coreCapacities.length > 0) return;
     if (fundType !== "event" && outbreakResponses.length > 0) return;
     if (activeTab === "map" && mapViewerComponent !== null) {
-      renderMapViewer({
-        ...mapProps,
-        isDark: mapViewerComponent === null || props.isDark,
-        supportTypeDefault:
-          supportTypeToSwitchTo !== undefined
-            ? supportTypeToSwitchTo
-            : supportTypeDefault,
-        loaded,
-        setLoaded,
-      });
-      if (supportTypeToSwitchTo !== undefined)
-        setSupportTypeToSwitchTo(undefined);
+      // renderMapViewer({
+      //   ...mapProps,
+      //   isDark: mapViewerComponent === null || props.isDark,
+      //   supportTypeDefault:
+      //     supportTypeToSwitchTo !== undefined
+      //       ? supportTypeToSwitchTo
+      //       : supportTypeDefault,
+      //   loaded,
+      //   setLoaded,
+      // });
+      // if (supportTypeToSwitchTo !== undefined)
+      //   setSupportTypeToSwitchTo(undefined);
     } else if (activeTab !== "map" && orgComponent !== null) {
       renderOrgs({
         ...orgProps,
@@ -210,15 +198,15 @@ const Explore = ({
     entityRole,
   ]);
 
-  useEffect(() => {
-    if (activeTab === "map" && mapViewerComponent !== null)
-      renderMapViewer({
-        isDark: props.isDark,
-        loaded,
-        setLoaded,
-        ...mapProps,
-      });
-  }, [props.isDark]);
+  // useEffect(() => {
+  //   if (activeTab === "map" && mapViewerComponent !== null)
+  //     renderMapViewer({
+  //       isDark: props.isDark,
+  //       loaded,
+  //       setLoaded,
+  //       ...mapProps,
+  //     });
+  // }, [props.isDark]);
 
   // is loading spinner shown?
   const spinnerDone = loaded || !tabInitialized;
