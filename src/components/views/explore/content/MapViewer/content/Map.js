@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
 import styles from "./map.module.scss";
 import tooltipStyles from "../../../../../common/tooltip.module.scss";
@@ -127,47 +127,12 @@ const Map = ({
     entityRole,
   });
 
-  // console.log("colorScale.values");
-  // console.log(colorScale.values);
-  // console.log("colorScale");
-  // console.log(colorScale);
-  // console.log("colorScale.type");
-  // console.log(colorScale.type);
-
-  // Define hatch mark pattern.
-  // const defs = (
-  //   <defs>
-  //     <pattern
-  //       id="pattern-stripe"
-  //       width="4"
-  //       height="4"
-  //       patternUnits="userSpaceOnUse"
-  //       patternTransform="rotate(45)"
-  //     >
-  //       <rect
-  //         width="3.5"
-  //         height="4"
-  //         transform="translate(0,0)"
-  //         fill="lightgray"
-  //       />
-  //     </pattern>
-  //     <mask id="mask-stripe">
-  //       <rect
-  //         x="0"
-  //         y="0"
-  //         width="100%"
-  //         height="100%"
-  //         fill="url(#pattern-stripe)"
-  //       />
-  //     </mask>
-  //   </defs>
-  // );
-
   // Track selected node (i.e., the clicked country whose info box is also
   // visible).
-  const [nodeData, setNodeData] = React.useState(undefined);
-  const [tooltipCountry, setTooltipCountry] = React.useState(undefined);
-  const [tooltipNodeData, setTooltipNodeData] = React.useState(undefined);
+  const [nodeData, setNodeData] = useState(undefined);
+  const [tooltipCountry, setTooltipCountry] = useState(undefined);
+  const [tooltipNodeData, setTooltipNodeData] = useState(undefined);
+  const [mapData, setMapData] = useState(null);
 
   // Define "columns" for map data.
   const d3MapDataFields = [
@@ -300,29 +265,45 @@ const Map = ({
         }),
     },
   ];
-
-  // Get data for d3Map
-  let mapData;
-  if (supportType !== "jee") {
-    // add missing countries as zeros
-    const dataArr =
-      supportType === "needs_met" ? dataNeedsMet : Object.values(data);
-    mapData = getTableRowData({ tableRowDefs: d3MapDataFields, data: dataArr });
-  } else {
-    const jeeScoreData = [];
-    for (let iso3 in jeeScores) {
-      jeeScoreData.push({
-        [nodeType]: {
-          iso3,
-        },
-        value_raw: 5,
+  // set map data when params are changed
+  useEffect(() => {
+    console.log("setMapData useEffect - Map.js");
+    if (supportType !== "jee") {
+      // add missing countries as zeros
+      const dataArr =
+        supportType === "needs_met" ? dataNeedsMet : Object.values(data);
+      const newMapData = getTableRowData({
+        tableRowDefs: d3MapDataFields,
+        data: dataArr,
       });
+      setMapData(newMapData);
+    } else {
+      const jeeScoreData = [];
+      for (let iso3 in jeeScores) {
+        jeeScoreData.push({
+          [nodeType]: {
+            iso3,
+          },
+          value_raw: 5,
+        });
+      }
+      const newMapData = getTableRowData({
+        tableRowDefs: d3MapDataFields,
+        data: jeeScoreData,
+      });
+      setMapData(newMapData);
     }
-    mapData = getTableRowData({
-      tableRowDefs: d3MapDataFields,
-      data: jeeScoreData,
-    });
-  }
+  }, [
+    // minYear,
+    // maxYear,
+    // events,
+    // coreCapacities,
+    // entityRole,
+    data,
+    supportType,
+    flowType,
+  ]);
+
   // Get datum for the selected node, if it exists.
   const datumForInfoBox =
     nodeData !== undefined

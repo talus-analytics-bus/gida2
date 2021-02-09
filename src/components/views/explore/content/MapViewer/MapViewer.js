@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import styles from "./mapviewer.module.scss";
 import EntityRoleToggle from "../../../../misc/EntityRoleToggle.js";
@@ -22,6 +22,7 @@ import OutbreakQuery from "../../../../misc/OutbreakQuery.js";
 import Tab from "../../../../misc/Tab.js";
 import { core_capacities } from "../../../../misc/Data.js";
 import SlideToggle from "../../../../common/SlideToggle/SlideToggle.js";
+import Loading from "../../../../common/Loading/Loading.js";
 import Button from "../../../../common/Button/Button.js";
 
 // Local content components
@@ -29,27 +30,10 @@ import Map from "./content/Map.js";
 
 // FC for MapViewer.
 const MapViewer = ({
-  data,
-  entityRole,
-  setEntityRole,
-  fundType,
-  setFundType,
-  minYear,
-  setMaxYear,
-  setMinYear,
-  maxYear,
-  coreCapacities,
-  setCoreCapacities,
-  events,
-  setEvents,
+  // constants
   flowTypeInfo,
   versionData,
-  isDark,
   supportTypeDefault,
-  setSupportTypeToSwitchTo,
-  setPageHeaderData,
-  loaded,
-  setLoaded,
   ...props
 }) => {
   // CONSTANTS //
@@ -59,14 +43,25 @@ const MapViewer = ({
   });
 
   // STATE //
+  const [isDark, setIsDark] = useState(false);
+  const [data, setData] = useState(null);
+  const [nodeSums, setNodeSums] = useState(null);
+  const [outbreaks, setOutbreaks] = useState(null);
+  const [jeeScores, setJeeScores] = useState(null);
+  const [entityRole, setEntityRole] = useState("recipient");
+  const [fundType, setFundType] = useState("false");
+  const [minYear, setMinYear] = useState(Settings.startYear);
+  const [maxYear, setMaxYear] = useState(Settings.endYear);
+  const [coreCapacities, setCoreCapacities] = useState([]);
+  const [events, setEvents] = useState([]); // selected event ids
+  const [initialized, setInitialized] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = React.useState("committed");
-  // const [transactionType, setTransactionType] = React.useState("disbursed");
+  const [transactionType, setTransactionType] = useState("committed");
 
   // Track support type selected for the map
-  const [supportType, setSupportType] = React.useState(
-    supportTypeDefault || "funds"
-  );
+  const [supportType, setSupportType] = useState(supportTypeDefault || "funds");
 
   // define score toggle options
   const score_toggle_data = [
@@ -96,15 +91,82 @@ const MapViewer = ({
   //   setSupportType("funds");
 
   // Track main map title
-  const [mapTitle, setMapTitle] = React.useState("funds");
+  const [mapTitle, setMapTitle] = useState("funds");
 
   // Track whether to show main menu
-  const [showControls, setShowControls] = React.useState(true);
+  const [showControls, setShowControls] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (supportTypeDefault !== undefined && supportTypeDefault !== null)
       setSupportType(supportTypeDefault);
   }, [supportTypeDefault]);
+
+  // FUNCTIONS //
+  const getData = async () => {
+    // Define filters for node sums query
+    const filters = {
+      "Stakeholder.cat": ["country", "government"],
+      "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
+    };
+
+    // CCs
+    if (coreCapacities.length > 0) {
+      filters["Core_Capacity.name"] = coreCapacities;
+    }
+
+    // add assistance type filter
+    if (fundType === "true") {
+      filters["Flow.is_ghsa"] = [true];
+    } else if (fundType === "event") {
+      filters["Flow.response_or_capacity"] = ["response"];
+    } else if (fundType === "capacity") {
+      filters["Flow.response_or_capacity"] = ["capacity"];
+    }
+
+    // add outbreak events filters
+    if (events !== null && events.length > 0) {
+      filters["Event.id"] = events;
+    }
+
+    // Define queries for map page.
+    const queries = {
+      // Information about the entity
+      nodeSums: NodeSums({
+        format: "map",
+        direction: entityRole === "recipient" ? "target" : "origin",
+        filters,
+      }),
+      jeeScores: Assessment({
+        format: "map",
+        scoreType: "JEE v1",
+      }),
+      outbreaks: Outbreak({}),
+    };
+
+    // Get query results.
+    const results = await execute({ queries });
+    setNodeSums(results.nodeSums);
+    setJeeScores(results.jeeScores);
+    setOutbreaks(results.outbreaks);
+    setLoaded(true);
+    if (!initialized) setInitialized(true);
+  };
+
+  // EFFECT HOOKS //
+  // TODO move all of them to this section
+  // load data for map when needed
+  // TODO load certain data separately and once only
+  useEffect(() => {
+    if (!loaded) {
+      console.log("Getting data.");
+      getData();
+    }
+  }, [loaded]);
+
+  // when parameters change, refresh the data
+  useEffect(() => {
+    setLoaded(false);
+  }, [minYear, maxYear, events, fundType, coreCapacities, entityRole]);
 
   /**
    * Given the transaction type and the support type, returns the flow type.
@@ -217,7 +279,7 @@ const MapViewer = ({
   const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
 
   // Define map menu sections
-  const [curTab, setCurTab] = React.useState(
+  const [curTab, setCurTab] = useState(
     supportTypeDefault === "jee" ? "scores" : "funding"
   );
 
@@ -226,7 +288,7 @@ const MapViewer = ({
   // default (e.g., the first radio option).
   const score_data_names = score_toggle_data.map(d => d.value);
   const combined_data_names = combined_toggle_data.map(d => d.value);
-  React.useEffect(() => {
+  useEffect(() => {
     // Case A: Tabbed to "Funding" and fundType is not defined, so set to
     // 'false' (all).
     if (
@@ -234,12 +296,10 @@ const MapViewer = ({
       ["", "capacity_for_needs_met"].includes(fundType)
     ) {
       setFundType("false");
-      setSupportTypeToSwitchTo("funds");
 
       // Case B: Tabbed to "Scores" and support type is not a score.
     } else if (curTab === "scores" && !score_data_names.includes(supportType)) {
       setFundType("");
-      setSupportTypeToSwitchTo(score_data_names[0]);
 
       // Case C: Tabbed to "Combined" and and support type is not a combined
       // metric.
@@ -249,13 +309,15 @@ const MapViewer = ({
     ) {
       setFundType("capacity_for_needs_met"); // TODO dynamically
       setEntityRole("recipient");
-      setSupportTypeToSwitchTo("needs_met"); // TODO dynamically
     }
   }, [curTab]);
 
-  const outbreakOptions = data.outbreaks.map(d => {
-    return { value: d.id, label: d.name };
-  });
+  const outbreakOptions =
+    outbreaks !== null
+      ? outbreaks.map(d => {
+          return { value: d.id, label: d.name };
+        })
+      : [];
 
   const filterSelections = fundType !== "event" ? coreCapacities : events;
 
@@ -405,7 +467,6 @@ const MapViewer = ({
               label={""}
               callback={v => {
                 setFundType("");
-                setSupportTypeToSwitchTo(v);
               }}
               curVal={supportType}
               choices={score_toggle_data}
@@ -434,7 +495,6 @@ const MapViewer = ({
                   if (entityRole !== "recipient") setEntityRole("recipient");
                   if (fundType !== "capacity_for_needs_met")
                     setFundType("capacity_for_needs_met");
-                  setSupportTypeToSwitchTo(v);
                 } else setSupportType(v);
               }}
               curVal={supportType}
@@ -457,7 +517,6 @@ const MapViewer = ({
         entityRole={entityRole}
         callback={v => {
           setEntityRole(v);
-          setSupportTypeToSwitchTo(supportType);
         }}
       />
     );
@@ -466,337 +525,96 @@ const MapViewer = ({
       <i>Click country to view details.</i>
     </div>
   );
-  setPageHeaderData(mapTitleData);
 
+  // JSX //
   return (
     <div className={classNames(styles.mapViewer, { [styles.dark]: isDark })}>
-      <div className={styles.header}>
-        {
-          //   supportType !== "needs_met" && supportType !== "jee" && (
-          //   <EntityRoleToggle entityRole={entityRole} callback={setEntityRole} />
-          // )
-        }
-      </div>
-      <div className={styles.content}>
-        <Map
-          supportType={supportType}
-          entityRole={entityRole}
-          flowType={flowType}
-          data={data.nodeSums}
-          jeeScores={data.jeeScores}
-          minYear={minYear}
-          maxYear={maxYear}
-          coreCapacities={coreCapacities}
-          events={events}
-          ghsaOnly={fundType}
-          isDark={isDark}
-          loaded={loaded}
-          setLoaded={setLoaded}
-        />
-        <div className={styles.menuContainer}>
-          <SlideToggle
-            {...{
-              label: "controls",
-              show: showControls,
-              setShow: setShowControls,
-            }}
-          />
-          <div
-            style={{ display: showControls ? "" : "none" }}
-            className={styles.menu}
-          >
-            <div>
-              <TimeSlider
-                disabled={supportType === "jee"}
-                minYearDefault={Settings.startYear}
-                maxYearDefault={Settings.endYear}
-                onAfterChange={years => {
-                  setMinYear(years[0]);
-                  setMaxYear(years[1]);
-                }}
-              />
-              <div className={styles.tabSectionHeader}>View map by</div>
-            </div>
-            <div className={styles.tabs}>
-              {sections
-                .filter(s => s.show !== false)
-                .map(s => (
-                  <button
-                    className={classNames(styles.tabToggle, {
-                      [styles.selected]: s.slug === curTab,
-                    })}
-                    onClick={() => setCurTab(s.slug)}
-                  >
-                    {s.header}
-                  </button>
-                ))}
-            </div>
-            <div className={styles.tabContent}>
-              {sections.map(s => (
-                <Tab selected={curTab === s.slug} content={s.content} />
-              ))}
-            </div>
-            {
-              // TODO: add this tooltip for CC dropdown
-              // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-            }
-          </div>
+      {!loaded && !initialized && (
+        <div className={styles.instructions}>
+          <i>Loading map</i>
         </div>
-      </div>
+      )}
+      <Loading {...{ loaded: loaded || initialized, align: "center" }}>
+        {(loaded || initialized) && (
+          <>
+            <div className={styles.header}>
+              {supportType !== "needs_met" && supportType !== "jee" && (
+                <EntityRoleToggle
+                  entityRole={entityRole}
+                  callback={setEntityRole}
+                />
+              )}
+            </div>
+            <div className={styles.content}>
+              <Map
+                supportType={supportType}
+                entityRole={entityRole}
+                flowType={flowType}
+                data={nodeSums}
+                jeeScores={jeeScores}
+                minYear={minYear}
+                maxYear={maxYear}
+                coreCapacities={coreCapacities}
+                events={events}
+                ghsaOnly={fundType}
+                isDark={isDark}
+                loaded={loaded}
+                setLoaded={setLoaded}
+              />
+              <div className={styles.menuContainer}>
+                <SlideToggle
+                  {...{
+                    label: "controls",
+                    show: showControls,
+                    setShow: setShowControls,
+                  }}
+                />
+                <div
+                  style={{ display: showControls ? "" : "none" }}
+                  className={styles.menu}
+                >
+                  <div>
+                    <TimeSlider
+                      disabled={supportType === "jee"}
+                      minYearDefault={Settings.startYear}
+                      maxYearDefault={Settings.endYear}
+                      onAfterChange={years => {
+                        setMinYear(years[0]);
+                        setMaxYear(years[1]);
+                      }}
+                    />
+                    <div className={styles.tabSectionHeader}>View map by</div>
+                  </div>
+                  <div className={styles.tabs}>
+                    {sections
+                      .filter(s => s.show !== false)
+                      .map(s => (
+                        <button
+                          className={classNames(styles.tabToggle, {
+                            [styles.selected]: s.slug === curTab,
+                          })}
+                          onClick={() => setCurTab(s.slug)}
+                        >
+                          {s.header}
+                        </button>
+                      ))}
+                  </div>
+                  <div className={styles.tabContent}>
+                    {sections.map(s => (
+                      <Tab selected={curTab === s.slug} content={s.content} />
+                    ))}
+                  </div>
+                  {
+                    // TODO: add this tooltip for CC dropdown
+                    // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+                  }
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </Loading>
     </div>
-  );
-};
-
-const remountComponent = ({
-  component,
-  minYear,
-  maxYear,
-  props,
-  id,
-  entityRole,
-  fundType,
-  events,
-}) => {
-  const remount =
-    component.props.minYear !== minYear ||
-    component.props.maxYear !== maxYear ||
-    component.props.entityRole !== entityRole ||
-    component.props.fundType !== fundType ||
-    component.props.coreCapacities.toString() !==
-      props.coreCapacities.toString() ||
-    component.props.events.toString() !== events.toString();
-  return remount;
-};
-
-export const renderMapViewer = ({
-  component,
-  setComponent,
-  loading,
-  id,
-  entityRole,
-  setEntityRole,
-  flowTypeInfo,
-  versionData,
-  fundType,
-  setFundType,
-  supportTypeDefault,
-  setSupportTypeToSwitchTo,
-  events,
-  setEvents,
-  setPageHeaderData,
-  loaded,
-  setLoaded,
-  ...props
-}) => {
-  // Set IDs
-  id = parseInt(id);
-
-  // TODO check loading
-  if (loading) {
-    return <div className={"placeholder"} />;
-  } else if (
-    component === null ||
-    (component &&
-      remountComponent({
-        component: component,
-        props: props,
-        id: id,
-        entityRole: entityRole,
-        fundType: fundType,
-        minYear: props.minYear,
-        maxYear: props.maxYear,
-        events,
-      }))
-  ) {
-    getComponentData({
-      setComponent: setComponent,
-      id: id,
-      flowTypeInfo: flowTypeInfo,
-      versionData,
-      fundType: fundType,
-      setFundType: setFundType,
-      entityRole: entityRole,
-      setEntityRole: setEntityRole,
-      supportTypeDefault,
-      setSupportTypeToSwitchTo,
-      events,
-      setEvents,
-      setPageHeaderData,
-      loaded,
-      setLoaded,
-      ...props,
-    });
-
-    return component ? component : <div className={"placeholder"} />;
-  } else if (component.props.isDark !== props.isDark) {
-    setComponent(
-      <MapViewer
-        {...{ ...component.props, isDark: props.isDark, versionData }}
-      />
-    );
-  } else {
-    return component;
-  }
-};
-
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for response funding page
- * @method getComponentData
- * @param  {[type]}       setComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setComponent,
-  id,
-  entityRole,
-  setEntityRole,
-  flowTypeInfo,
-  versionData,
-  fundType,
-  setFundType,
-  setSupportTypeToSwitchTo,
-  setPageHeaderData,
-  loaded,
-  setLoaded,
-  ...props
-}) => {
-  // Define typical base query parameters used in FlowQuery,
-  // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
-  // modified in code below.
-  const nodeType = entityRole === "recipient" ? "target" : "source";
-  const baseQueryParams = {
-    focus_node_ids: null,
-    focus_node_type: nodeType,
-    flow_type_ids: [1, 2, 3, 4],
-    start_date: `${props.minYear}-01-01`, // TODO check these two
-    end_date: `${props.maxYear}-12-31`,
-    by_neighbor: false,
-    filters: { parent_flow_info_filters: [] },
-    summaries: {},
-    include_master_summary: false,
-    // node_category: ["country"]
-    // by_node_categories: ["country", "organization"]
-  };
-
-  // If core capacity filters provided, use those
-  if (props.coreCapacities.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters.push(
-      ["core_capacities"].concat(props.coreCapacities)
-    );
-  }
-
-  // If outbreak response filters provided, use those
-  // TODO
-  if (props.outbreakResponses && props.outbreakResponses.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters.push(
-      ["outbreak_responses"].concat(props.outbreakResponses)
-    );
-  }
-
-  // If GHSA page, then filter by GHSA projects.
-  if (fundType === "true") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "ghsa_funding",
-      "True",
-    ]);
-  } else if (fundType === "event") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "outbreak_id:not",
-      null,
-    ]);
-  } else if (fundType === "capacity" || fundType === "capacity_for_needs_met") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "response_or_capacity:not",
-      "response",
-    ]);
-  }
-
-  // Flow info filters
-  const flowInfoFilters = [["events", "outbreak_id"]];
-  flowInfoFilters.forEach(type => {
-    if (props[type[0]].length > 0) {
-      baseQueryParams.filters.parent_flow_info_filters.push(
-        [type[1]].concat(props[type[0]])
-      );
-    }
-  });
-
-  // Define filters for node sums query
-  const filters = {
-    "Stakeholder.cat": ["country", "government"],
-    "Flow.year": [["gt_eq", props.minYear], ["lt_eq", props.maxYear]],
-    // "OtherStakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
-  };
-
-  // CCs
-  if (props.coreCapacities.length > 0) {
-    filters["Core_Capacity.name"] = props.coreCapacities;
-  }
-
-  // add assistance type filter
-  if (fundType === "true") {
-    filters["Flow.is_ghsa"] = [true];
-  } else if (fundType === "event") {
-    filters["Flow.response_or_capacity"] = ["response"];
-  } else if (fundType === "capacity") {
-    filters["Flow.response_or_capacity"] = ["capacity"];
-  }
-
-  // add outbreak events filters
-  if (props.events && props.events.length > 0) {
-    filters["Event.id"] = props.events;
-  }
-
-  // Define queries for map page.
-  const queries = {
-    // Information about the entity
-    nodeSums: NodeSums({
-      format: "map",
-      direction: entityRole === "recipient" ? "target" : "origin",
-      filters,
-    }),
-    jeeScores: Assessment({
-      format: "map",
-      scoreType: "JEE v1",
-    }),
-    outbreaks: Outbreak({}),
-  };
-
-  // Get query results.
-  setLoaded(false);
-  const results = await execute({ queries });
-  setLoaded(true);
-
-  // Feed results and other data to the details component and mount it.
-  setComponent(
-    <MapViewer
-      id={id}
-      isDark={props.isDark}
-      entityRole={entityRole}
-      setEntityRole={setEntityRole}
-      data={results}
-      flowTypeInfo={flowTypeInfo}
-      versionData={versionData}
-      fundType={fundType}
-      setFundType={setFundType}
-      setComponent={setComponent}
-      activeTab={props.activeTab}
-      minYear={props.minYear}
-      maxYear={props.maxYear}
-      setMinYear={props.setMinYear}
-      setMaxYear={props.setMaxYear}
-      coreCapacities={props.coreCapacities}
-      setCoreCapacities={props.setCoreCapacities}
-      events={props.events}
-      setEvents={props.setEvents}
-      supportTypeDefault={props.supportTypeDefault}
-      setSupportTypeToSwitchTo={setSupportTypeToSwitchTo}
-      setPageHeaderData={setPageHeaderData}
-      loaded={loaded}
-      setLoaded={setLoaded}
-    />
   );
 };
 
