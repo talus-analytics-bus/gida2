@@ -142,10 +142,24 @@ const MapViewer = ({
       }),
     };
 
+    if (!loadedAux) {
+      // Define queries for aux data
+      queries["jeeScores"] = Assessment({
+        format: "map",
+        scoreType: "JEE v1",
+      });
+      queries["outbreaks"] = Outbreak({});
+    }
+
     // Get query results.
     const results = await execute({ queries });
     setNodeSums(results.nodeSums);
     setLoadedData(true);
+    if (!loadedAux) {
+      setJeeScores(results.jeeScores);
+      setOutbreaks(results.outbreaks);
+      setLoadedAux(true);
+    }
     if (fundType === "capacity_for_needs_met") setSupportType("needs_met");
   };
   const getAuxData = async () => {
@@ -169,7 +183,6 @@ const MapViewer = ({
   // load data for map when needed
   useEffect(() => {
     if (!loadedData) getData();
-    if (!loadedAux && !loadedData) getAuxData();
   }, [loadedData]);
 
   // when parameters change, refresh the data
