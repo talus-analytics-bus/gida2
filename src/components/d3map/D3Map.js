@@ -74,7 +74,6 @@ const D3Map = ({
   useEffect(() => {
     if (mapLoaded) {
       setLoaded(true);
-      console.log("worldMap.colorCountries - D3Map.js");
       worldMap.colorCountries(
         mapData.map(dd => {
           return {

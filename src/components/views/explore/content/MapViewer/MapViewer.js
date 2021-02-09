@@ -158,7 +158,6 @@ const MapViewer = ({
   // TODO load certain data separately and once only
   useEffect(() => {
     if (!loaded) {
-      console.log("Getting data.");
       getData();
     }
   }, [loaded]);
