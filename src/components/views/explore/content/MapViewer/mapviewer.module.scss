@@ -1,7 +1,8 @@
-@import "../../../../../assets/styles/colors.scss";
+@import "src/assets/styles/colors.scss";
 .mapViewer {
   height: 100%;
   min-height: $min-content-height !important;
+  padding-bottom: 0 !important;
   .hide {
     display: none;
   }

@@ -34,6 +34,10 @@ const MapViewer = ({
   flowTypeInfo,
   versionData,
   supportTypeDefault,
+
+  // state
+  isDark,
+  setIsDark,
   ...props
 }) => {
   // CONSTANTS //
@@ -43,7 +47,6 @@ const MapViewer = ({
   });
 
   // STATE //
-  const [isDark, setIsDark] = useState(false);
   const [data, setData] = useState(null);
   const [nodeSums, setNodeSums] = useState(null);
   const [outbreaks, setOutbreaks] = useState(null);
@@ -182,6 +185,11 @@ const MapViewer = ({
     if (loadedData && loadedAux && !initializedData) setInitializedData(true);
     if (loaded && initializedData && !initialized) setInitialized(true);
   }, [loaded && loadedData, loadedAux]);
+
+  // toggle dark mode
+  useEffect(() => {
+    if (!isDark) setIsDark(true);
+  }, []);
 
   /**
    * Given the transaction type and the support type, returns the flow type.
@@ -546,7 +554,11 @@ const MapViewer = ({
 
   // JSX //
   return (
-    <div className={classNames(styles.mapViewer, { [styles.dark]: isDark })}>
+    <div
+      className={classNames("pageContainer", "wide", styles.mapViewer, {
+        [styles.dark]: isDark,
+      })}
+    >
       {!initialized && (
         <div className={styles.instructions}>
           <i>Loading map</i>
