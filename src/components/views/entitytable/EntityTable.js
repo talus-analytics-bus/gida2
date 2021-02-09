@@ -424,7 +424,15 @@ const EntityTable = ({
       {otherId === undefined && (
         <div className={styles.header}>
           <div className={styles.upper}>
-            <h1>{data.nodeData.name}</h1>
+            <h1>
+              {data.nodeData.name}{" "}
+              {!data.nodeData.name && (
+                <div className={styles.ghsa}>
+                  <img src={"/flags/ghsa.png"} />
+                  GHSA
+                </div>
+              )}
+            </h1>
             <Button
               type={"secondary"}
               linkTo={
@@ -548,6 +556,7 @@ export const renderEntityTable = ({
       <EntityTable
         {...{
           ...component.props,
+          key: component.props.id,
           getTableDataFuncs: {},
         }}
       />
