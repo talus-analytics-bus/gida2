@@ -398,6 +398,7 @@ const Map = ({
             tooltipData && (
               <InfoBox
                 {...{
+                  key: tooltipNodeData.id,
                   simple: true,
                   entityRole,
                   supportType,
