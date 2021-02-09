@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import styles from "./d3map.module.scss";
 import TableInstance from "../chart/table/TableInstance.js";
@@ -26,14 +26,14 @@ const D3Map = ({
   setLoaded,
   ...props
 }) => {
-  const [mapLoaded, setMapLoaded] = React.useState(false);
-  const [worldMap, setWorldMap] = React.useState(null);
-  const [activeCountry, setActiveCountry] = React.useState(null);
-  const [tooltipCountry, setTooltipCountry] = React.useState(null);
-  const [init, setInit] = React.useState(true);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [worldMap, setWorldMap] = useState(null);
+  const [activeCountry, setActiveCountry] = useState(null);
+  const [tooltipCountry, setTooltipCountry] = useState(null);
+  const [init, setInit] = useState(true);
 
   // Create map the first time it's loaded.
-  React.useEffect(() => {
+  useEffect(() => {
     const worldMapNew = new WorldMap("." + styles.worldMap, {
       setMapLoaded,
       setActiveCountry,
@@ -44,7 +44,7 @@ const D3Map = ({
   }, []);
 
   // Update active country if it changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (worldMap !== null) {
       worldMap.params.activeCountry = activeCountry;
       if (activeCountry !== null) {
@@ -57,8 +57,8 @@ const D3Map = ({
     }
   }, [activeCountry]);
 
-  // Update active country if it changes
-  React.useEffect(() => {
+  // Update tooltip country if it changes
+  useEffect(() => {
     if (worldMap !== null) {
       if (tooltipCountry !== null) {
         Stakeholder({ iso3: tooltipCountry }).then(d => {
@@ -70,8 +70,8 @@ const D3Map = ({
     }
   }, [tooltipCountry]);
 
-  // Update map coloring and tooltips etc. whenever flowtype is updated.
-  React.useEffect(() => {
+  // Update map coloring and tooltips etc. whenever view options are changed
+  useEffect(() => {
     if (mapLoaded) {
       setLoaded(true);
       worldMap.colorCountries(
@@ -86,26 +86,7 @@ const D3Map = ({
       );
       setInit(false);
     }
-  }, [
-    mapLoaded,
-    flowType,
-    supportType,
-    entityRole,
-    minYear,
-    maxYear,
-    coreCapacities,
-    events,
-    ghsaOnly,
-  ]);
-
-  // const placeholderTable = (
-  //   <TableInstance
-  //     useRowDataAsIs={true}
-  //     tableColumns={d3MapDataFields}
-  //     tableData={mapData}
-  //     sortByProp={"value_raw"}
-  //   />
-  // );
+  }, [mapData]);
 
   return (
     <div
@@ -113,9 +94,6 @@ const D3Map = ({
         [styles.loading]: worldMap === null,
       })}
     >
-      {
-        // placeholderTable
-      }
       {
         <div
           className={classNames(styles.worldMap, {
