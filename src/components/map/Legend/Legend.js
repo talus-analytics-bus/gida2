@@ -232,6 +232,19 @@ const Legend = ({
   const legendTitle =
     title || getLegendTitle({ supportType, flowType, entityRole });
 
+  const showInkindHatch =
+    type === LegendType.Choropleth && supportType === "funds_and_inkind";
+  const sides = {
+    center: null,
+    left: null,
+    right: !showInkindHatch
+      ? null
+      : {
+          colors: ["transparent:striped-#848484"],
+          labels: ["In-kind support received"],
+        },
+  };
+
   return (
     <div
       className={classNames(styles.legend, className, {
@@ -245,7 +258,9 @@ const Legend = ({
         style={props.style}
         className={classNames(styles.content, { [styles.show]: show })}
       >
-        <LegendContent {...{ title: legendTitle, type, scale: colorScale }} />
+        <LegendContent
+          {...{ title: legendTitle, type, scale: colorScale, sides }}
+        />
       </div>
     </div>
   );

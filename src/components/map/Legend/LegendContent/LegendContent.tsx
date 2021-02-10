@@ -1,12 +1,19 @@
 import React, { FunctionComponent } from "react";
-import LegendOrdinal, {
-  LegendOrdinalEntries,
-} from "./LegendOrdinal/LegendOrdinal";
-import LegendChoropleth, {
-  LegendChoroplethEntries,
-} from "./LegendChoropleth/LegendChoropleth";
+import LegendOrdinal from "./LegendOrdinal/LegendOrdinal";
+import LegendChoropleth from "./LegendChoropleth/LegendChoropleth";
 import { getLabel } from "./ValueLabel/ValueLabel";
 import styles from "./legendcontent.module.scss";
+
+export type LegendEntries = {
+  colors: string[];
+  labels: string[];
+};
+
+export type LegendSides = {
+  center: LegendEntries | null;
+  left: LegendEntries | null;
+  right: LegendEntries | null;
+};
 
 export enum LegendType {
   Ordinal = "ORDINAL",
@@ -17,6 +24,7 @@ type LegendContentProps = {
   title: { title: string };
   type: { type: LegendType };
   scale: Scale;
+  sides: LegendSides | null;
 };
 
 type Scale = {
@@ -24,9 +32,13 @@ type Scale = {
   values: string[];
 };
 
-const getLegendBody = (legendType: string, scale: Scale) => {
+const getLegendBody = (
+  legendType: string,
+  scale: Scale,
+  sides: LegendSides | null
+) => {
   if (legendType === LegendType.Ordinal) {
-    const center: LegendOrdinalEntries = {
+    const center: LegendEntries = {
       colors: scale.range(),
       labels: scale.values,
     };
@@ -41,9 +53,8 @@ const getLegendBody = (legendType: string, scale: Scale) => {
     );
   } else if (legendType === LegendType.Choropleth) {
     const colorsTmp: string[] = scale.range();
-
     const noNumericValues: boolean = scale.values[0] === undefined;
-    const center: LegendChoroplethEntries | null = noNumericValues
+    const center: LegendEntries | null = noNumericValues
       ? null
       : {
           colors: colorsTmp.slice(1, colorsTmp.length),
@@ -62,7 +73,7 @@ const getLegendBody = (legendType: string, scale: Scale) => {
             ],
           },
           center,
-          right: null,
+          right: sides !== null ? sides.right : null,
         }}
       />
     );
@@ -73,12 +84,15 @@ export const LegendContent: FunctionComponent<LegendContentProps> = ({
   title,
   type,
   scale,
+  sides,
 }) => {
   // JSX //
   return (
     <div className={styles.legendContent}>
       <div className={styles.title}>{title}</div>
-      <div className={styles.body}>{getLegendBody(type.toString(), scale)}</div>
+      <div className={styles.body}>
+        {getLegendBody(type.toString(), scale, sides)}
+      </div>
     </div>
   );
 };

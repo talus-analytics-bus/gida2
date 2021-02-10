@@ -22,14 +22,17 @@
         display: flex;
         margin-top: 5px;
         > div {
-          max-width: 100px;
+          max-width: 120px;
           line-height: 1.2;
         }
       }
     }
 
     &.center {
-      margin-right: 15px;
+      // space away from right border of legend box
+      &:last-child {
+        margin-right: 15px;
+      }
 
       .legendEntry {
         .label {

@@ -25,6 +25,7 @@ const getShapeStyle = (fill: string) => {
       }
       return {
         background: `repeating-linear-gradient(-45deg, ${color}, ${color} 8px, ${patternColor} 8px, ${patternColor} 10px)`,
+        border: `1px solid ${patternColor}`,
       };
     } else {
       console.error("Unknown fill pattern: " + pattern);

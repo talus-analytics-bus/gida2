@@ -2,22 +2,15 @@ import React, { FunctionComponent } from "react";
 import styles from "./legendordinal.module.scss";
 import classNames from "classnames";
 import Shape, { ShapeType } from "../Shape/Shape";
-
-export type LegendOrdinalEntries = {
-  colors: string[];
-  labels: string[];
-};
+import { LegendEntries } from "../LegendContent";
 
 type LegendOrdinalProps = {
-  center: LegendOrdinalEntries;
-  left: LegendOrdinalEntries | null;
-  right: LegendOrdinalEntries | null;
+  center: LegendEntries;
+  left: LegendEntries | null;
+  right: LegendEntries | null;
 };
 
-const getLegendEntriesComponent = (
-  side: string,
-  entries: LegendOrdinalEntries
-) => {
+const getLegendEntriesComponent = (side: string, entries: LegendEntries) => {
   return (
     <div
       style={{ gridTemplateColumns: `repeat(${entries.colors.length}, 1fr)` }}

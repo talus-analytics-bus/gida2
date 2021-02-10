@@ -612,8 +612,8 @@ const MapViewer = ({
           <i>Loading map</i>
         </div>
       )}
-      <Loading {...{ loaded: true, align: "center" }}>
-        {true && (
+      <Loading {...{ loaded: initialized, align: "center" }}>
+        {initializedData && (
           <>
             <div className={exploreStyles.header}>
               <div className={exploreStyles.titles}>

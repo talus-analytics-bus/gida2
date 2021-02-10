@@ -3,22 +3,14 @@ import styles from "./legendchoropleth.module.scss";
 import classNames from "classnames";
 import Shape, { ShapeType } from "../Shape/Shape";
 import ValueLabel from "../ValueLabel/ValueLabel";
-
-export type LegendChoroplethEntries = {
-  colors: string[];
-  labels: string[];
-};
-
+import { LegendEntries } from "../LegendContent";
 type LegendChoroplethProps = {
-  center: LegendChoroplethEntries | null;
-  left: LegendChoroplethEntries | null;
-  right: LegendChoroplethEntries | null;
+  center: LegendEntries | null;
+  left: LegendEntries | null;
+  right: LegendEntries | null;
 };
 
-const getLegendEntriesComponent = (
-  side: string,
-  entries: LegendChoroplethEntries
-) => {
+const getLegendEntriesComponent = (side: string, entries: LegendEntries) => {
   const colSize: string = side === "center" ? "1fr" : "auto";
   return (
     <div
