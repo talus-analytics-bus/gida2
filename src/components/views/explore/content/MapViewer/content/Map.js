@@ -257,24 +257,6 @@ const Map = ({
       title: "Color",
       prop: "color",
       type: "text",
-      // render: d => (
-      //   <svg width="20" height="20">
-      //     <rect
-      //       style={{
-      //         fill:
-      //           supportType === "jee"
-      //             ? colorScale(Util.getScoreShortName(d))
-      //             : colorScale(d),
-      //       }}
-      //       className={classNames(styles.square, {
-      //         [styles.hatch]: d === "yyy" || d === -8888,
-      //       })}
-      //     />
-      //     {
-      //       // defs
-      //     }
-      //   </svg>
-      // ),
       func: d =>
         getMapMetricValue({
           d,
@@ -295,8 +277,6 @@ const Map = ({
         tableRowDefs: d3MapDataFields,
         data: dataArr,
       });
-      console.log("newMapData");
-      console.log(newMapData);
       setMapData(newMapData);
     } else {
       const jeeScoreData = [];
