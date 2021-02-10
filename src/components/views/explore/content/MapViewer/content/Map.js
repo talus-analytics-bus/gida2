@@ -7,7 +7,7 @@ import * as d3 from "d3/dist/d3.min";
 
 // Local content components
 import D3Map from "../../../../../d3map/D3Map.js";
-import Legend from "../../../../../map/Legend.js";
+import Legend from "../../../../../map/Legend/Legend.js";
 import InfoBox from "../../../../../map/InfoBox.js";
 import {
   getMapTooltipLabel,
