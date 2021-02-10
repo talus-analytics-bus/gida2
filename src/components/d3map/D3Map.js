@@ -32,6 +32,16 @@ const D3Map = ({
   const [tooltipCountry, setTooltipCountry] = useState(null);
   const [init, setInit] = useState(true);
 
+  // CONSTANTS //
+  const colors =
+    mapData !== null ? [...new Set(mapData.map(d => colorScale(d.color)))] : [];
+  const colorHash = {};
+  colors.forEach((c, i) => {
+    colorHash[c] = i + 1;
+  });
+  console.log("colorHash");
+  console.log(colorHash);
+
   // Create map the first time it's loaded.
   useEffect(() => {
     const worldMapNew = new WorldMap("." + styles.worldMap, {
@@ -39,6 +49,8 @@ const D3Map = ({
       setActiveCountry,
       activeCountry,
       setTooltipCountry,
+      supportType,
+      colorHash,
     });
     setWorldMap(worldMapNew);
   }, []);
@@ -74,11 +86,11 @@ const D3Map = ({
   useEffect(() => {
     if (mapLoaded) {
       setLoaded(true);
+      worldMap.params.colorHash = colorHash;
       worldMap.colorCountries(
         mapData.map(dd => {
           return {
-            iso3: dd.iso3,
-            value: dd.value,
+            ...dd,
             color: colorScale(dd.color),
           };
         }),
@@ -88,6 +100,17 @@ const D3Map = ({
     }
   }, [mapData]);
 
+  // Update map params when certain state vars. change
+  useEffect(() => {
+    if (mapLoaded) {
+      worldMap.params.supportType = supportType;
+      worldMap.params.colorHash = colorHash;
+    }
+  }, [supportType, colorScale]);
+
+  const stroke = 8;
+
+  // JSX //
   return (
     <div
       className={classNames(styles.d3Map, {
@@ -136,29 +159,28 @@ const D3Map = ({
               </filter>
             </g>
             <g id="hatchDefs">
-              <pattern
-                id="pattern-stripe"
-                width="4"
-                height="4"
-                patternUnits="userSpaceOnUse"
-                patternTransform="rotate(45)"
-              >
-                <rect
-                  width="3.5"
-                  height="4"
-                  transform="translate(0,0)"
-                  fill="lightgray"
-                />
-              </pattern>
-              <mask id="mask-stripe">
-                <rect
-                  x="0"
-                  y="0"
-                  width="100%"
-                  height="100%"
-                  fill="url(#pattern-stripe)"
-                />
-              </mask>
+              {colors.map(c => (
+                <pattern
+                  id={`pattern-stripe-${colorHash[c]}`}
+                  width={stroke}
+                  height="1"
+                  patternUnits="userSpaceOnUse"
+                  patternTransform="rotate(45)"
+                >
+                  <rect
+                    width={stroke}
+                    height={stroke}
+                    transform="rotate(-45)"
+                    fill={c}
+                  />
+                  <rect
+                    width="1"
+                    height={stroke}
+                    transform="translate(0,0)"
+                    fill="#848484"
+                  />
+                </pattern>
+              ))}
             </g>
           </defs>
         </svg>

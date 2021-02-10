@@ -82,7 +82,7 @@ export const getMapMetricValue = ({
   forTooltip = false,
   scores = {},
 }) => {
-  if (["funds", "inkind"].includes(supportType)) {
+  if (["funds", "inkind", "funds_and_inkind"].includes(supportType)) {
     // Get assistance flow values
     return d[flowType];
   } else if (supportType === "jee") {
@@ -156,7 +156,8 @@ export const getMapColorScale = ({
       const noData = v === "zzz" || v === -9999;
       const unknownVal = v === "yyy" || v === -8888;
       if (noData) return "#cccccc";
-      else if (unknownVal) return "#cccccc";
+      else if (unknownVal) return range[0];
+      // else if (unknownVal) return "#cccccc";
       else {
         if (supportType === "jee") {
           if (typeof v === "number") {
@@ -183,6 +184,19 @@ export const getMapColorScale = ({
       range: entityRole === "funder" ? greens : purples,
     });
   } else if (supportType === "funds") {
+    // Get values for use in calculating quantile scales.
+    const values = Object.values(data)
+      .map(d => {
+        return d[flowType] !== undefined ? d[flowType] : null;
+      })
+      .filter(d => d !== null && d !== "unknown");
+
+    return colorScaleMaker({
+      domain: values,
+      range: entityRole === "funder" ? greens : purples,
+      type: "scaleQuantile",
+    });
+  } else if (supportType === "funds_and_inkind") {
     // Get values for use in calculating quantile scales.
     const values = Object.values(data)
       .map(d => {

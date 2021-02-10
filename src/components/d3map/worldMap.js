@@ -38,7 +38,6 @@ class WorldMap extends Chart {
     // Artificially hide Antarctica
     // TODO at dataset level
     this.countryData = this.topoworld.features.filter(
-      // d => d.properties.NAME === "France"
       d => d.properties.NAME !== "Antarctica"
     );
 
@@ -65,6 +64,7 @@ class WorldMap extends Chart {
 
     // Set map as loaded
     params.setMapLoaded(true);
+    this.params = params;
   }
 
   colorCountries(data, init = false) {
@@ -79,6 +79,7 @@ class WorldMap extends Chart {
       .duration(duration)
       .style("fill", "#ccc");
 
+    const params = this.params;
     countryGs
       .transition()
       .delay(duration)
@@ -87,29 +88,20 @@ class WorldMap extends Chart {
         const match = data.find(dd => dd.iso3 === d.properties.iso3);
         if (match !== undefined) {
           // Set hatch if needed
-          d3.select(this).classed(
-            styles.hatched,
-            match.value === "yyy" || match.value === -8888
-          );
+          if (params.supportType === "funds_and_inkind") {
+            // apply hatch of appropriate color
+            if (match.has_inkind) {
+              console.log(
+                `url(#pattern-stripe-${params.colorHash[match.color]})`
+              );
+              return `url(#pattern-stripe-${params.colorHash[match.color]})`;
+            }
+          }
 
           // Return color
           return match.color;
         } else return "";
       });
-  }
-
-  /**
-   * Add hatch definition to display for countries that have made/received
-   * contributions as a group only.
-   */
-  addHatchDefs() {
-    const html = `<pattern id="pattern-stripe" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                    <rect width="3.5" height="4" transform="translate(0,0)" fill="lightgray"></rect>
-                </pattern>
-                <mask id="mask-stripe">
-                    <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-stripe)" />
-                </mask>`;
-    this.svg.append("defs").html(html);
   }
 
   draw() {

@@ -897,6 +897,7 @@ Util.formatValue = (val, cn, units = true, round = false) => {
       case "disbursed_funds":
       case "committed_funds":
       case "funds":
+      case "funds_and_inkind":
       case "needs_met":
         if (val === -9999 || val === "zzz") return undefined;
         else return Util.money(val, units, round);
@@ -905,7 +906,11 @@ Util.formatValue = (val, cn, units = true, round = false) => {
       case "inkind":
         if (val === "unknown") return "Specific amount not reported";
         else if (val === -9999 || val === "zzz") return undefined;
-        else return val || 0;
+        else {
+          const valFmt = val || 0;
+          const noun = valFmt === 1 ? "project" : "projects";
+          return `${Util.comma(valFmt)} ${noun}`;
+        }
       case "total_cases":
         return Util.formatSIInteger(val) + " cases";
       case "total_deaths":

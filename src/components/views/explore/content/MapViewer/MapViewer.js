@@ -71,7 +71,9 @@ const MapViewer = ({
   const [transactionType, setTransactionType] = useState("committed");
 
   // Track support type selected for the map
-  const [supportType, setSupportType] = useState(supportTypeDefault || "funds");
+  const [supportType, setSupportType] = useState(
+    supportTypeDefault || "funds_and_inkind"
+  );
 
   // define score toggle options
   const score_toggle_data = [
@@ -246,7 +248,11 @@ const MapViewer = ({
     minYear === maxYear ? minYear.toString() : `${minYear} - ${maxYear}`;
   const transactionTypeDisplay = Util.getInitCap(transactionType) + " funds";
   const getMapTitle = ({ fundType, supportType, entityRole }) => {
-    if (supportType === "funds" || supportType === "inkind") {
+    if (
+      supportType === "funds" ||
+      supportType === "inkind" ||
+      supportType === "funds_and_inkind"
+    ) {
       const text = {
         role: "",
         fund: "",
@@ -308,11 +314,23 @@ const MapViewer = ({
         main: "Combined financial resources and need by country",
         subtitle: `JEE score data as of May 27, 2020${filterText}`,
       };
+      // } else if (supportType === "funds_and_inkind") {
+      //   const filterText =
+      //     coreCapacities.length > 0
+      //       ? `; for selected IHR core capacities (${coreCapacities.join(", ")})`
+      //       : "";
+      //   return {
+      //     main: "Combined financial and in-kind support by country",
+      //   };
     } else return "[Error] Unknown map metric";
   };
 
   // Get whether metric has transaction type
-  const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
+  const metricHasTransactionType = [
+    "funds",
+    "inkind",
+    "funds_and_inkind",
+  ].includes(supportType);
 
   // Define map menu sections
   const [curTab, setCurTab] = useState(
@@ -454,6 +472,16 @@ const MapViewer = ({
                   curVal={disableRefinements ? "" : supportType}
                   disabled={disableRefinements}
                   choices={[
+                    {
+                      name: (
+                        <>
+                          Financial and
+                          <br />
+                          in-kind support
+                        </>
+                      ),
+                      value: "funds_and_inkind",
+                    },
                     {
                       name: "Financial support",
                       value: "funds",

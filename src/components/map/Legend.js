@@ -21,6 +21,7 @@ const getLegendTitle = ({ supportType, flowType, entityRole }) => {
       return "Funds received relative to need level";
     default:
       return supportType;
+    case "funds_and_inkind":
     case "funds":
     case "inkind":
       switch (flowType) {
@@ -68,7 +69,10 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
   // Is the "needs met" metric the one being plotted? Its legend is a little
   // special.
   const needsMetMetric = supportType === "needs_met";
-  const numericMetric = supportType === "funds" || supportType === "inkind";
+  const numericMetric =
+    supportType === "funds" ||
+    supportType === "inkind" ||
+    supportType === "funds_and_inkind";
   const scoreMetric = supportType === "jee" || supportType === "pvs";
 
   // Define JSX for value labels that are invisible which are used as spacers
