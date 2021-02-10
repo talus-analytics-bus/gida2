@@ -4,6 +4,7 @@ import styles from "./d3map.module.scss";
 import TableInstance from "../chart/table/TableInstance.js";
 import WorldMap from "./worldMap.js";
 import Util from "../misc/Util.js";
+import { purples, greens } from "../map/MapUtil.js";
 import { Stakeholder } from "../misc/Queries";
 import axios from "axios";
 
@@ -40,6 +41,11 @@ const D3Map = ({
     colorHash[c] = i + 1;
   });
 
+  const lightHatchColors = [
+    purples[purples.length - 1],
+    purples[purples.length - 2],
+    greens[greens.length - 1],
+  ];
   // Create map the first time it's loaded.
   useEffect(() => {
     const worldMapNew = new WorldMap("." + styles.worldMap, {
@@ -175,7 +181,7 @@ const D3Map = ({
                     width="1"
                     height={stroke}
                     transform="translate(0,0)"
-                    fill="#848484"
+                    fill={!lightHatchColors.includes(c) ? "#333333" : "#878787"}
                   />
                 </pattern>
               ))}
