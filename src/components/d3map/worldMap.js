@@ -91,13 +91,9 @@ class WorldMap extends Chart {
           if (params.supportType === "funds_and_inkind") {
             // apply hatch of appropriate color
             if (match.has_inkind) {
-              console.log(
-                `url(#pattern-stripe-${params.colorHash[match.color]})`
-              );
               return `url(#pattern-stripe-${params.colorHash[match.color]})`;
             }
           }
-
           // Return color
           return match.color;
         } else return "";

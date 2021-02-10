@@ -39,8 +39,6 @@ const D3Map = ({
   colors.forEach((c, i) => {
     colorHash[c] = i + 1;
   });
-  console.log("colorHash");
-  console.log(colorHash);
 
   // Create map the first time it's loaded.
   useEffect(() => {
