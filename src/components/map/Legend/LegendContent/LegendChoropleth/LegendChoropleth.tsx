@@ -19,12 +19,6 @@ const getLegendEntriesComponent = (
   side: string,
   entries: LegendChoroplethEntries
 ) => {
-  // skip first color in choropleth series since it belongs in 'left'
-  // TODO move this to Legend.js
-  const skipFirstColor = side === "center";
-  if (skipFirstColor) {
-  }
-
   return (
     <div
       style={{
