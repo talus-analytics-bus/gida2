@@ -217,9 +217,18 @@ const Map = ({
       type: "text",
       render: d => d,
       func: d => {
-        return (
-          d.committed_inkind !== undefined || d.provided_inkind !== undefined
+        // return true if inkind assistance for current flow type (disbursed or
+        // committed) is defined, false otherwise
+        const committed = ["committed_funds", "committed_inkind"].includes(
+          flowType
         );
+        if (committed && d.committed_inkind !== undefined) return true;
+        else {
+          const disbursed = ["disbursed_funds", "provided_inkind"].includes(
+            flowType
+          );
+          return disbursed && d.provided_inkind !== undefined;
+        }
       },
     },
     {
