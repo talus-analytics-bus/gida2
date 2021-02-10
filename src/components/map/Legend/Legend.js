@@ -3,6 +3,7 @@ import styles from "./legend.module.scss";
 import classNames from "classnames";
 import Util from "../../misc/Util.js";
 import SlideToggle from "../../common/SlideToggle/SlideToggle.js";
+import LegendContent from "./LegendContent/LegendContent";
 
 /**
  * Given the support type and flow type, returns the correct legend title.
@@ -211,58 +212,59 @@ const Legend = ({
   entityRole,
   ...props
 }) => {
-  // Track whether legend is visible or not
-  const [show, setShow] = React.useState(true);
-
-  return (
-    <div
-      className={classNames(styles.legend, className, {
-        [styles.dark]: isDark,
-      })}
-    >
-      {toggle !== false && (
-        <SlideToggle {...{ label: "legend", show, setShow }} />
-      )}
-      <div
-        style={props.style}
-        className={classNames(styles.content, { [styles.show]: show })}
-      >
-        <div>
-          {title === undefined &&
-            getLegendTitle({ supportType, flowType, entityRole })}
-          {title !== undefined && title}
-        </div>
-        <div className={styles.entries}>
-          {supportType !== "jee" && supportType !== "pvs" && (
-            <div className={classNames(styles.entry, styles.unspec)}>
-              <div className={styles.bucket}>
-                <div
-                  style={{ backgroundColor: "#ccc" }}
-                  className={styles.rect}
-                />
-                <div className={styles.label}>None</div>
-              </div>
-            </div>
-          )}
-          {getMainLegendBuckets({ colorScale, supportType })}
-          {supportType !== "jee" && supportType !== "pvs" && (
-            <div className={classNames(styles.entry, styles.unspec)}>
-              <div className={styles.bucket}>
-                <div
-                  style={{
-                    background:
-                      "repeating-linear-gradient(-45deg, rgb(175, 175, 175), rgb(175, 175, 175) 8px, rgba(255, 255, 255, 0) 8px, rgba(255, 255, 255, 0) 10px)",
-                  }}
-                  className={styles.rect}
-                />
-                <div className={styles.label}>Unspecified</div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  return <div>Legend</div>;
+  // // Track whether legend is visible or not
+  // const [show, setShow] = React.useState(true);
+  //
+  // return (
+  //   <div
+  //     className={classNames(styles.legend, className, {
+  //       [styles.dark]: isDark,
+  //     })}
+  //   >
+  //     {toggle !== false && (
+  //       <SlideToggle {...{ label: "legend", show, setShow }} />
+  //     )}
+  //     <div
+  //       style={props.style}
+  //       className={classNames(styles.content, { [styles.show]: show })}
+  //     >
+  //       <div>
+  //         {title === undefined &&
+  //           getLegendTitle({ supportType, flowType, entityRole })}
+  //         {title !== undefined && title}
+  //       </div>
+  //       <div className={styles.entries}>
+  //         {supportType !== "jee" && supportType !== "pvs" && (
+  //           <div className={classNames(styles.entry, styles.unspec)}>
+  //             <div className={styles.bucket}>
+  //               <div
+  //                 style={{ backgroundColor: "#ccc" }}
+  //                 className={styles.rect}
+  //               />
+  //               <div className={styles.label}>None</div>
+  //             </div>
+  //           </div>
+  //         )}
+  //         {getMainLegendBuckets({ colorScale, supportType })}
+  //         {supportType !== "jee" && supportType !== "pvs" && (
+  //           <div className={classNames(styles.entry, styles.unspec)}>
+  //             <div className={styles.bucket}>
+  //               <div
+  //                 style={{
+  //                   background:
+  //                     "repeating-linear-gradient(-45deg, rgb(175, 175, 175), rgb(175, 175, 175) 8px, rgba(255, 255, 255, 0) 8px, rgba(255, 255, 255, 0) 10px)",
+  //                 }}
+  //                 className={styles.rect}
+  //               />
+  //               <div className={styles.label}>Unspecified</div>
+  //             </div>
+  //           </div>
+  //         )}
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 };
 
 export default Legend;
