@@ -12,7 +12,7 @@ import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
 const Nav = ({ page, ...props }) => {
   const logo = props.isDark ? logoDark : logoLight;
   const [openMenu, setOpenMenu] = React.useState("");
-  const toggleMenu = (name) => {
+  const toggleMenu = name => {
     setOpenMenu(openMenu !== name ? name : "");
   };
 
@@ -24,6 +24,7 @@ const Nav = ({ page, ...props }) => {
         {
           [styles.loading]: props.loadingNav,
           [styles.dark]: props.isDark,
+          [styles.wide]: page === "explore-map",
         },
         styles[page]
       )}
