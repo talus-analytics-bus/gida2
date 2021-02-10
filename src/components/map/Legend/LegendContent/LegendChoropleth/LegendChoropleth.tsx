@@ -10,7 +10,7 @@ export type LegendChoroplethEntries = {
 };
 
 type LegendChoroplethProps = {
-  center: LegendChoroplethEntries;
+  center: LegendChoroplethEntries | null;
   left: LegendChoroplethEntries | null;
   right: LegendChoroplethEntries | null;
 };
@@ -19,10 +19,11 @@ const getLegendEntriesComponent = (
   side: string,
   entries: LegendChoroplethEntries
 ) => {
+  const colSize: string = side === "center" ? "1fr" : "auto";
   return (
     <div
       style={{
-        gridTemplateColumns: `repeat(${entries.colors.length}, 1fr)`,
+        gridTemplateColumns: `repeat(${entries.colors.length}, ${colSize})`,
       }}
       className={classNames(styles.legendEntries, styles[side])}
     >
@@ -30,21 +31,27 @@ const getLegendEntriesComponent = (
         <div className={styles.legendEntry}>
           <Shape {...{ type: ShapeType.Rectangle, color: c }} />
           <div className={styles.label}>
-            <ValueLabel value={entries.labels[i]} />
+            <div>
+              <ValueLabel value={entries.labels[i]} />
+            </div>
           </div>
         </div>
       ))}
-      <div className={styles.legendEntry}>
-        <Shape
-          {...{
-            type: ShapeType.Rectangle,
-            color: "transparent",
-          }}
-        />
-        <div className={styles.label}>
-          <ValueLabel value={"more"} />
+      {side === "center" && (
+        <div className={styles.legendEntry}>
+          <Shape
+            {...{
+              type: ShapeType.Rectangle,
+              color: "transparent",
+            }}
+          />
+          <div className={styles.label}>
+            <div>
+              <ValueLabel value={"more"} />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
@@ -56,7 +63,7 @@ const LegendChoropleth: FunctionComponent<LegendChoroplethProps> = ({
 }) => (
   <div className={styles.legendChoropleth}>
     {left !== null && getLegendEntriesComponent("left", left)}
-    {getLegendEntriesComponent("center", center)}
+    {center !== null && getLegendEntriesComponent("center", center)}
     {right !== null && getLegendEntriesComponent("right", right)}
   </div>
 );

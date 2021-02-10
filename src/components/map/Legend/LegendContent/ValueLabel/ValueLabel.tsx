@@ -8,7 +8,7 @@ type ValueLabelProps = {
   value: string;
 };
 
-const getLabel = (value: string) => {
+export const getLabel = (value: string) => {
   const valueNum: number = parseFloat(value);
   if (isNaN(valueNum)) return value;
   else {
@@ -19,7 +19,7 @@ const getLabel = (value: string) => {
 };
 
 const ValueLabel: FunctionComponent<ValueLabelProps> = ({ value }) => {
-  return <div>{getLabel(value)}</div>;
+  return <>{getLabel(value)}</>;
 };
 
 export default ValueLabel;

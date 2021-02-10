@@ -5,6 +5,7 @@ import LegendOrdinal, {
 import LegendChoropleth, {
   LegendChoroplethEntries,
 } from "./LegendChoropleth/LegendChoropleth";
+import { getLabel } from "./ValueLabel/ValueLabel";
 import styles from "./legendcontent.module.scss";
 
 export enum LegendType {
@@ -40,14 +41,26 @@ const getLegendBody = (legendType: string, scale: Scale) => {
     );
   } else if (legendType === LegendType.Choropleth) {
     const colorsTmp: string[] = scale.range();
-    const center: LegendChoroplethEntries = {
-      colors: colorsTmp.slice(1, colorsTmp.length),
-      labels: scale.values,
-    };
+
+    const noNumericValues: boolean = scale.values[0] === undefined;
+    const center: LegendChoroplethEntries | null = noNumericValues
+      ? null
+      : {
+          colors: colorsTmp.slice(1, colorsTmp.length),
+          labels: scale.values,
+        };
     return (
       <LegendChoropleth
         {...{
-          left: null,
+          left: {
+            colors: ["#b3b3b3", colorsTmp[0]],
+            labels: [
+              "None",
+              noNumericValues
+                ? "Unspecified"
+                : `Under ${getLabel(scale.values[0])} or unspecified`,
+            ],
+          },
           center,
           right: null,
         }}

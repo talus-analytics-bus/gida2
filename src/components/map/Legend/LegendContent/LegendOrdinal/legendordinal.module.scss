@@ -14,7 +14,10 @@
       .icon {
       }
       .label {
-        max-width: 90px;
+        display: flex;
+        margin-top: 5px;
+        max-width: 100px;
+        line-height: 1.2;
       }
     }
   }
