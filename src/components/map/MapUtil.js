@@ -9,7 +9,6 @@ const isUnknownCredit = v => UNKNOWN_CREDIT_VALUES.includes(v);
 
 export const greens = [
   // "#eaeff1",
-  // "#adccbc",
   "#99c2ae",
   "#569778",
   "#3d8662",
