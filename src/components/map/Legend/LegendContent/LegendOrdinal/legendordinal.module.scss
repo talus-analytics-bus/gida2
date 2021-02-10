@@ -2,23 +2,23 @@
 .legendOrdinal {
   display: flex;
   @include spaceChildrenHoriz(40px);
-  .legendEntries {
-    display: grid;
-    grid-gap: 0 20px;
-    .legendEntry {
+}
+.legendEntries {
+  display: grid;
+  grid-gap: 0 20px;
+  .legendEntry {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    text-align: center;
+    font-size: 1.4rem;
+    .icon {
+    }
+    .label {
       display: flex;
-      flex-flow: column;
-      align-items: center;
-      text-align: center;
-      font-size: 1.4rem;
-      .icon {
-      }
-      .label {
-        display: flex;
-        margin-top: 5px;
-        max-width: 100px;
-        line-height: 1.2;
-      }
+      margin-top: 5px;
+      max-width: 100px;
+      line-height: 1.2;
     }
   }
 }

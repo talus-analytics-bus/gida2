@@ -1,7 +1,12 @@
 .shape {
+  $height: 15px;
   &.RECTANGLE {
-    $height: 15px;
     height: $height;
     width: $height * 4;
+  }
+  &.GRADIENT {
+    height: $height;
+    width: 100%;
+    min-width: 250px;
   }
 }

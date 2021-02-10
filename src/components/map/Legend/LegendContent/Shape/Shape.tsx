@@ -4,6 +4,7 @@ import classNames from "classnames";
 
 export enum ShapeType {
   Rectangle = "RECTANGLE",
+  Gradient = "GRADIENT",
 }
 
 type ShapeProps = {
@@ -26,6 +27,20 @@ const getShapeStyle = (fill: string) => {
       return {
         background: `repeating-linear-gradient(-45deg, ${color}, ${color} 8px, ${patternColor} 8px, ${patternColor} 10px)`,
         border: `1px solid ${patternColor}`,
+      };
+    } else if (pattern.startsWith("gradient")) {
+      let patternColors: string[] = ["", ""];
+      try {
+        patternColors = pattern.split("-").slice(1, 3);
+      } catch {
+        console.error(
+          'No pattern color provided, must provide as "blue:gradient-green-red", etc.'
+        );
+      }
+      return {
+        background: `linear-gradient(90deg, ${patternColors[0]}, ${
+          patternColors[1]
+        })`,
       };
     } else {
       console.error("Unknown fill pattern: " + pattern);

@@ -901,6 +901,9 @@ export const formatValue = (val, cn, units = true, round = false) => {
       case "needs_met":
         if (val === -9999 || val === "zzz") return undefined;
         else return Util.money(val, units, round);
+      case "needs_met_legend":
+        if (val === 0) return "Needs met";
+        else return "Needs unmet";
       case "provided_inkind":
       case "committed_inkind":
       case "inkind":

@@ -215,16 +215,12 @@ const Legend = ({
   // STATE //
   // Track whether legend is visible or not
   const [show, setShow] = React.useState(true);
-  // console.log("\ncolorScale");
-  // console.log(colorScale.domain());
-  // console.log(colorScale.range());
-  console.log("colorScale");
-  console.log(colorScale.values);
-  console.log(colorScale.range());
 
   let type;
   if (supportType === "jee") {
     type = LegendType.Ordinal;
+  } else if (supportType === "needs_met") {
+    type = LegendType.Continuous;
   } else {
     type = LegendType.Choropleth;
   }
@@ -265,40 +261,5 @@ const Legend = ({
     </div>
   );
 };
-
-// // Old legend contents
-// <div>
-//   {title === undefined &&
-//     getLegendTitle({ supportType, flowType, entityRole })}
-//   {title !== undefined && title}
-// </div>
-// <div className={styles.entries}>
-//   {supportType !== "jee" && supportType !== "pvs" && (
-//     <div className={classNames(styles.entry, styles.unspec)}>
-//       <div className={styles.bucket}>
-//         <div
-//           style={{ backgroundColor: "#ccc" }}
-//           className={styles.rect}
-//         />
-//         <div className={styles.label}>None</div>
-//       </div>
-//     </div>
-//   )}
-//   {getMainLegendBuckets({ colorScale, supportType })}
-//   {supportType !== "jee" && supportType !== "pvs" && (
-//     <div className={classNames(styles.entry, styles.unspec)}>
-//       <div className={styles.bucket}>
-//         <div
-//           style={{
-//             background:
-//               "repeating-linear-gradient(-45deg, rgb(175, 175, 175), rgb(175, 175, 175) 8px, rgba(255, 255, 255, 0) 8px, rgba(255, 255, 255, 0) 10px)",
-//           }}
-//           className={styles.rect}
-//         />
-//         <div className={styles.label}>Unspecified</div>
-//       </div>
-//     </div>
-//   )}
-// </div>
 
 export default Legend;

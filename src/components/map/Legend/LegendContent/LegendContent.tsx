@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from "react";
 import LegendOrdinal from "./LegendOrdinal/LegendOrdinal";
 import LegendChoropleth from "./LegendChoropleth/LegendChoropleth";
+import LegendContinuous from "./LegendContinuous/LegendContinuous";
 import { getLabel } from "./ValueLabel/ValueLabel";
 import styles from "./legendcontent.module.scss";
 
@@ -18,6 +19,7 @@ export type LegendSides = {
 export enum LegendType {
   Ordinal = "ORDINAL",
   Choropleth = "CHOROPLETH",
+  Continuous = "CONTINUOUS",
 }
 
 type LegendContentProps = {
@@ -30,6 +32,7 @@ type LegendContentProps = {
 type Scale = {
   range: Function;
   values: string[];
+  supportType: string;
 };
 
 const getLegendBody = (
@@ -71,6 +74,26 @@ const getLegendBody = (
                 ? "Unspecified"
                 : `Under ${getLabel(scale.values[0])} or unspecified`,
             ],
+          },
+          center,
+          right: sides !== null ? sides.right : null,
+        }}
+      />
+    );
+  } else if (legendType === LegendType.Continuous) {
+    const center: LegendEntries = {
+      colors: scale.range(),
+      labels:
+        scale.supportType !== "needs_met"
+          ? scale.values
+          : ["Needs met", "Needs unmet"],
+    };
+    return (
+      <LegendContinuous
+        {...{
+          left: {
+            colors: ["#b3b3b3"],
+            labels: ["None"],
           },
           center,
           right: sides !== null ? sides.right : null,

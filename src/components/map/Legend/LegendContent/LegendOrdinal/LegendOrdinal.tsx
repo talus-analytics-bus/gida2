@@ -10,7 +10,10 @@ type LegendOrdinalProps = {
   right: LegendEntries | null;
 };
 
-const getLegendEntriesComponent = (side: string, entries: LegendEntries) => {
+export const getLegendEntriesComponent = (
+  side: string,
+  entries: LegendEntries
+) => {
   return (
     <div
       style={{ gridTemplateColumns: `repeat(${entries.colors.length}, 1fr)` }}

@@ -173,6 +173,7 @@ export const getMapColorScale = ({
       type === "scaleQuantile" ? baseScale.quantiles() : baseScale.domain();
     colorScale.domain = () => baseScale.domain();
     colorScale.range = () => baseScale.range();
+    colorScale.supportType = supportType;
     return colorScale;
   };
 
