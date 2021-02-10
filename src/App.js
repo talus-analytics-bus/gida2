@@ -291,6 +291,7 @@ const App = () => {
                         fundTypeDefault:
                           supportTypeDefault !== undefined ? "" : "false",
                         setLoadingSpinnerOn,
+                        setPage,
                       }}
                     />
                   );

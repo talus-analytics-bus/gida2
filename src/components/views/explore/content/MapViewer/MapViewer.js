@@ -40,6 +40,7 @@ const MapViewer = ({
   // state
   isDark,
   setIsDark,
+  setPage,
   ...props
 }) => {
   // CONSTANTS //
@@ -203,6 +204,7 @@ const MapViewer = ({
     if (!isDark) setIsDark(true);
     return function restoreLight() {
       setIsDark(false);
+      setPage(undefined);
     };
   }, []);
 
