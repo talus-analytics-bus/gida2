@@ -1,0 +1,7 @@
+.shape {
+  &.RECTANGLE {
+    $height: 15px;
+    height: $height;
+    width: $height * 4;
+  }
+}

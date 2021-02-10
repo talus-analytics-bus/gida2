@@ -215,6 +215,12 @@ const Legend = ({
   // STATE //
   // Track whether legend is visible or not
   const [show, setShow] = React.useState(true);
+  // console.log("\ncolorScale");
+  // console.log(colorScale.domain());
+  // console.log(colorScale.range());
+  console.log("colorScale");
+  console.log(colorScale.domain);
+  console.log(colorScale.range);
 
   // CONSTANTS //
   const legendTitle =
@@ -233,7 +239,7 @@ const Legend = ({
         style={props.style}
         className={classNames(styles.content, { [styles.show]: show })}
       >
-        <LegendContent {...{ title: legendTitle }} />
+        <LegendContent {...{ title: legendTitle, scale: colorScale }} />
       </div>
     </div>
   );
