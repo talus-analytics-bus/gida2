@@ -50,9 +50,9 @@ const MapViewer = ({
 
   // STATE //
   const [data, setData] = useState(null);
-  const [nodeSums, setNodeSums] = useState(null);
-  const [outbreaks, setOutbreaks] = useState(null);
-  const [jeeScores, setJeeScores] = useState(null);
+  const [nodeSums, setNodeSums] = useState([]);
+  const [outbreaks, setOutbreaks] = useState([]);
+  const [jeeScores, setJeeScores] = useState([]);
   const [entityRole, setEntityRole] = useState("recipient");
   const [fundType, setFundType] = useState(
     supportTypeDefault !== undefined ? "" : "false"
@@ -612,8 +612,8 @@ const MapViewer = ({
           <i>Loading map</i>
         </div>
       )}
-      <Loading {...{ loaded: initialized, align: "center" }}>
-        {initializedData && (
+      <Loading {...{ loaded: true, align: "center" }}>
+        {true && (
           <>
             <div className={exploreStyles.header}>
               <div className={exploreStyles.titles}>

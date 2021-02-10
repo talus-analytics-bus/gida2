@@ -1,0 +1,10 @@
+.legendContent {
+  flex-flow: column;
+  align-items: center;
+  position: relative;
+  opacity: 0.95;
+  > div:first-child {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+  }
+}

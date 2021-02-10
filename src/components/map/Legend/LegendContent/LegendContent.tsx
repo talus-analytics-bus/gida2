@@ -1,19 +1,17 @@
 import React, { FunctionComponent } from "react";
 import LegendOrdinal from "./LegendOrdinal/LegendOrdinal";
+import styles from "./legendcontent.module.scss";
 
 type LegendContentProps = {
   title: string;
-  paragraph: string;
 };
 
 export const LegendContent: FunctionComponent<LegendContentProps> = ({
   title,
-  paragraph,
 }) => (
-  <aside>
-    <h2>{title}</h2>
-    <p>{paragraph}</p>
-  </aside>
+  <div className={styles.legendContent}>
+    <div className={styles.title}>{title}</div>
+  </div>
 );
 
 export default LegendContent;
