@@ -1,0 +1,34 @@
+@import "src/assets/styles/colors.scss";
+.legendChoropleth {
+  display: flex;
+  @include spaceChildrenHoriz(40px);
+  .legendEntries {
+    display: grid;
+    position: relative;
+    .legendEntry {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      text-align: center;
+      font-size: 1.4rem;
+      .icon {
+      }
+      .label {
+        display: flex;
+        max-width: 60px;
+        > div {
+          left: -30px;
+          text-align: center;
+          position: relative;
+        }
+      }
+      &:last-child {
+        position: absolute;
+        right: 0;
+        .label > div {
+          left: 30px;
+        }
+      }
+    }
+  }
+}

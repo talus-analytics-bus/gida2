@@ -3,7 +3,7 @@ import styles from "./legend.module.scss";
 import classNames from "classnames";
 import Util from "../../misc/Util.js";
 import SlideToggle from "../../common/SlideToggle/SlideToggle.js";
-import LegendContent from "./LegendContent/LegendContent";
+import LegendContent, { LegendType } from "./LegendContent/LegendContent";
 
 /**
  * Given the support type and flow type, returns the correct legend title.
@@ -219,9 +219,15 @@ const Legend = ({
   // console.log(colorScale.domain());
   // console.log(colorScale.range());
   console.log("colorScale");
-  console.log(colorScale.domain);
-  console.log(colorScale.range);
+  console.log(colorScale.values);
+  console.log(colorScale.range());
 
+  let type;
+  if (supportType === "jee") {
+    type = LegendType.Ordinal;
+  } else {
+    type = LegendType.Choropleth;
+  }
   // CONSTANTS //
   const legendTitle =
     title || getLegendTitle({ supportType, flowType, entityRole });
@@ -239,7 +245,7 @@ const Legend = ({
         style={props.style}
         className={classNames(styles.content, { [styles.show]: show })}
       >
-        <LegendContent {...{ title: legendTitle, scale: colorScale }} />
+        <LegendContent {...{ title: legendTitle, type, scale: colorScale }} />
       </div>
     </div>
   );

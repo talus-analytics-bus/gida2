@@ -884,7 +884,7 @@ Util.getScoreShortName = score => {
 };
 
 // Formats value based on column name
-Util.formatValue = (val, cn, units = true, round = false) => {
+export const formatValue = (val, cn, units = true, round = false) => {
   if (val === -8888 || val === "yyy") return "Specific amount not reported";
   if (val === "n/a" || val === "Unavailable") return val;
   if (val === undefined || val === null) val = 0;
@@ -924,15 +924,17 @@ Util.formatValue = (val, cn, units = true, round = false) => {
     }
   }
 };
+Util.formatValue = formatValue;
 
 // Format money as comma number with USD suffix
-Util.money = (val, units = true, round = false) => {
+export const money = (val, units = true, round = false) => {
   if (val === "unknown") return "Specific amount not reported";
   else if (val === 0) return "0" + (units ? " USD" : "");
   else if (round) {
     return `${Util.formatSIInteger(val)}${units ? " USD" : ""}`;
   } else return `${Util.formatSI(val)}${units ? " USD" : ""}`;
 };
+Util.money = money;
 
 export const regions = [
   { value: "", label: "All regions" },
