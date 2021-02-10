@@ -96,7 +96,8 @@ class WorldMap extends Chart {
           }
           // Return color
           return match.color;
-        } else return "";
+        }
+        return "#b3b3b3";
       });
   }
 

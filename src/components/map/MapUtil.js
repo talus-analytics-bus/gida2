@@ -155,9 +155,8 @@ export const getMapColorScale = ({
         return baseScale(domainForScale[1]);
       const noData = v === "zzz" || v === -9999;
       const unknownVal = v === "yyy" || v === -8888;
-      if (noData) return "#cccccc";
+      if (noData) return "#b3b3b3";
       else if (unknownVal) return range[0];
-      // else if (unknownVal) return "#cccccc";
       else {
         if (supportType === "jee") {
           if (typeof v === "number") {
