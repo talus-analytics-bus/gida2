@@ -151,6 +151,7 @@ class WorldMap extends Chart {
 
   addCountries() {
     const chart = this;
+    chart.clicked = false;
     const countryGroup = this.newGroup(styles.countries)
       .selectAll("g")
       .data(this.countryData)
@@ -168,18 +169,45 @@ class WorldMap extends Chart {
         //   </div>
         // );
       })
+
+      .on("dblclick", function(d) {
+        d3.event.stopPropagation();
+      })
       .on("click", function(d) {
-        const country = d3.select(this);
-        if (chart.params.activeCountry !== d.properties.iso3) {
-          chart.params.setActiveCountry(d.properties.iso3);
-          chart.zoomTo(d);
-          chart[styles.countries].selectAll("g").classed(styles.active, false);
-          country.classed(styles.active, true);
-          chart.activeCountry = country;
-          country.raise();
+        d3.event.stopPropagation();
+        // check click timeout to determine if this is a click, dblclick, or
+        // first click
+        if (chart.clicked === false) {
+          chart.clicked = true;
+          chart.timeout = setTimeout(() => {
+            // do single click event
+            console.log("click");
+            // if (chart.params.activeCountry !== d.properties.iso3) {
+            //   chart.params.setActiveCountry(d.properties.iso3);
+            //   chart[styles.countries]
+            //     .selectAll("g")
+            //     .classed(styles.active, false);
+            //   country.classed(styles.active, true);
+            //   chart.activeCountry = country;
+            //   country.raise();
+            // } else {
+            //   // country.classed(styles.active, false);
+            //   // chart.reset();
+            // }
+            //
+            // set clicked to false again
+            chart.clicked = false;
+          }, 1000); // DEBUG
         } else {
-          country.classed(styles.active, false);
-          chart.reset();
+          clearTimeout(chart.timeout);
+          chart.clicked = false;
+          const zoomIn = chart.zoomedTo !== d.properties.iso3;
+          if (zoomIn) {
+            chart.zoomTo(d);
+            chart.zoomedTo = d.properties.iso3;
+          } else {
+            chart.reset();
+          }
         }
       });
 
@@ -236,6 +264,7 @@ class WorldMap extends Chart {
     // $(this.parentNode).append(this);
 
     // call zoom
+    console.log("Zooming to!");
     const bounds = this.path.bounds(d);
     const dx = bounds[1][0] - bounds[0][0];
     const dy = bounds[1][1] - bounds[0][1];
@@ -256,6 +285,7 @@ class WorldMap extends Chart {
   }
 
   reset() {
+    this.zoomedTo = undefined;
     if (this.activeCountry !== undefined) {
       this.activeCountry.classed(styles.active, false);
       this.activeCountry = undefined;
