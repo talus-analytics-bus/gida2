@@ -73,7 +73,8 @@ class WorldMap extends Chart {
       .selectAll("." + styles.country)
       .classed(styles.hatched, false);
 
-    const duration = init ? 0 : 500;
+    const duration = 0;
+    // const duration = init ? 0 : 500;
     countryGs
       .transition()
       .duration(duration)
@@ -83,7 +84,7 @@ class WorldMap extends Chart {
     countryGs
       .transition()
       .delay(duration)
-      .duration(1000)
+      .duration(duration * 2)
       .style("fill", function(d) {
         const match = data.find(dd => dd.iso3 === d.properties.iso3);
         if (match !== undefined) {
