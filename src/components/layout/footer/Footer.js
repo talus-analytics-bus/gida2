@@ -18,11 +18,11 @@ const Footer = ({ versionData, ...props }) => {
     data: versionData,
   });
   const images = [
-    // {
-    //   imgSrc: props.isDark ? ideaDark : idea,
-    //   url: "https://ghssidea.org",
-    //   alt: "International Disease and Events Analysis",
-    // },
+    {
+      imgSrc: props.isDark ? ideaDark : idea,
+      url: "https://ghssidea.org",
+      alt: "International Disease and Events Analysis",
+    },
     {
       imgSrc: props.isDark ? guDark : gu,
       url: "https://ghss.georgetown.edu/",
