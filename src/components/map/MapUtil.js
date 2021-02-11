@@ -17,8 +17,8 @@ export const greens = [
 ];
 
 export const purples = [
-  "#AA9BC3",
-  "#9171C5",
+  "#aa9bc3",
+  "#9171c5",
   "#75559d",
   "#713286",
   "#6a1266",
@@ -32,10 +32,10 @@ export const lightHatchColors = [
 ];
 
 export const pvsColors = [
-  "#B879BC",
+  "#b879bc",
   "#974299",
   "#721277",
-  "#5B045B",
+  "#5b045b",
   "#440042",
 ];
 export const pvsCats = [

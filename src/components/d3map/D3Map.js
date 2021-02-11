@@ -4,7 +4,8 @@ import styles from "./d3map.module.scss";
 import TableInstance from "../chart/table/TableInstance.js";
 import WorldMap from "./worldMap.js";
 import Util from "../misc/Util.js";
-import { lightHatchColors } from "../map/MapUtil.js";
+import { noDataGray } from "../../assets/styles/colors.scss";
+import { purples, greens, lightHatchColors } from "../map/MapUtil.js";
 import { Stakeholder } from "../misc/Queries";
 import axios from "axios";
 
@@ -32,13 +33,15 @@ const D3Map = ({
   const [activeCountry, setActiveCountry] = useState(null);
   const [tooltipCountry, setTooltipCountry] = useState(null);
   const [init, setInit] = useState(true);
+  const [colorSeries, setColorSeries] = useState(
+    entityRole === "funder" ? greens : purples
+  );
 
   // CONSTANTS //
-  const colors =
-    mapData !== null ? [...new Set(mapData.map(d => colorScale(d.color)))] : [];
+  const colors = greens.concat(purples).concat([noDataGray]);
   const colorHash = {};
   colors.forEach((c, i) => {
-    colorHash[c] = i + 1;
+    colorHash[c.toLowerCase() + entityRole] = i + 1;
   });
 
   // Create map the first time it's loaded.
@@ -50,6 +53,7 @@ const D3Map = ({
       setTooltipCountry,
       supportType,
       colorHash,
+      entityRole,
     });
     setWorldMap(worldMapNew);
   }, []);
@@ -85,7 +89,10 @@ const D3Map = ({
   useEffect(() => {
     if (mapLoaded) {
       setLoaded(true);
+      worldMap.params.entityRole = entityRole;
       worldMap.params.colorHash = colorHash;
+      if (entityRole === "funder") setColorSeries(greens);
+      else setColorSeries(purples);
       worldMap.colorCountries(
         mapData.map(dd => {
           return {
@@ -98,6 +105,12 @@ const D3Map = ({
       setInit(false);
     }
   }, [mapData]);
+
+  // // When entity role changes, update color series used
+  // useEffect(() => {
+  //   if (entityRole === "funder") setColorSeries(greens);
+  //   else setColorSeries(purples);
+  // }, [entityRole]);
 
   // Update map params when certain state vars. change
   useEffect(() => {
@@ -145,11 +158,11 @@ const D3Map = ({
                   in="blur"
                   result="matrixOut"
                   values="
-							0 0 0 0 0
-							0 0 0 0 0
-							0 0 0 0 0
-							0 0 0 1 0
-						"
+            0 0 0 0 0
+            0 0 0 0 0
+            0 0 0 0 0
+            0 0 0 1 0
+          "
                 />
                 <feMerge>
                   <feMergeNode in="matrixOut" />
@@ -160,7 +173,9 @@ const D3Map = ({
             <g id="hatchDefs">
               {colors.map(c => (
                 <pattern
-                  id={`pattern-stripe-${colorHash[c]}`}
+                  id={`pattern-stripe-${
+                    colorHash[c.toLowerCase() + entityRole]
+                  }`}
                   width={stroke}
                   height="1"
                   patternUnits="userSpaceOnUse"
@@ -176,7 +191,11 @@ const D3Map = ({
                     width="1"
                     height={stroke}
                     transform="translate(0,0)"
-                    fill={!lightHatchColors.includes(c) ? "#333333" : "#878787"}
+                    fill={
+                      !lightHatchColors.includes(c.toLowerCase())
+                        ? "#333333"
+                        : "#878787"
+                    }
                   />
                 </pattern>
               ))}

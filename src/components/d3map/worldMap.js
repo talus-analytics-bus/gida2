@@ -78,7 +78,7 @@ class WorldMap extends Chart {
     countryGs
       .transition()
       .duration(duration)
-      .style("fill", "#ccc");
+      .style("fill", "#b3b3b3");
 
     const params = this.params;
     countryGs
@@ -92,7 +92,9 @@ class WorldMap extends Chart {
           if (params.supportType === "funds_and_inkind") {
             // apply hatch of appropriate color
             if (match.has_inkind) {
-              return `url(#pattern-stripe-${params.colorHash[match.color]})`;
+              return `url(#pattern-stripe-${
+                params.colorHash[match.color.toLowerCase() + params.entityRole]
+              })`;
             }
           }
           // Return color

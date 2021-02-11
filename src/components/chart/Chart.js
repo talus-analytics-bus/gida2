@@ -81,9 +81,9 @@ class Chart {
       .append("text")
       .style("font-size", "20px")
       .style("text-anchor", "middle")
-      .style("fill", "#ccc")
+      .style("fill", "#b3b3b3")
       .style("stroke", "none")
-      .text("No Data Available");
+      .text("No data available");
   }
 
   /* API METHODS */
