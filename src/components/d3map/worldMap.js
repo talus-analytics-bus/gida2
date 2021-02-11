@@ -202,9 +202,10 @@ class WorldMap extends Chart {
           chart.clicked = false;
           const zoomIn = chart.zoomedTo !== d.properties.iso3;
           if (zoomIn) {
-            chart.zoomTo(d);
-            chart.zoomedTo = d.properties.iso3;
-            onClick(d, true);
+            chart.zoomTo(d, () => {
+              onClick(d, true);
+              chart.zoomedTo = d.properties.iso3;
+            });
           } else {
             chart.reset();
           }
@@ -250,6 +251,8 @@ class WorldMap extends Chart {
     this[styles.countries].attr("transform", d3.event.transform);
 
     this.toggleResetButton();
+    this.closePopups();
+    this.zoomedTo = undefined;
   }
 
   zoomIncrementally(value) {
@@ -259,7 +262,7 @@ class WorldMap extends Chart {
       .call(this.zoom.scaleBy, value);
   }
 
-  zoomTo(d) {
+  zoomTo(d, afterZoom = undefined) {
     // move country to top of layer
     // $(this.parentNode).append(this);
 
@@ -277,18 +280,22 @@ class WorldMap extends Chart {
     return this.svg
       .transition()
       .duration(750)
-      .call(
-        this.zoom.transform,
-        d3.zoomIdentity.translate(t[0], t[1]).scale(s)
-      );
+      .call(this.zoom.transform, d3.zoomIdentity.translate(t[0], t[1]).scale(s))
+      .on("end", () => {
+        if (afterZoom) afterZoom();
+      });
   }
 
-  reset(resetView = true) {
+  closePopups() {
     if (this.activeCountry !== undefined) {
       this.activeCountry.classed(styles.active, false);
       this.activeCountry = undefined;
     }
     this.params.setActiveCountry(null);
+  }
+
+  reset(resetView = true) {
+    this.closePopups();
     this.zoomedTo = undefined;
     if (resetView) {
       this.svg
