@@ -225,10 +225,14 @@ export const getInfoBoxData = ({
       default:
         break;
     }
+
+    // if showing `funds_and_inkind`, mark whether in-kind support applies
+    if (supportType === "funds_and_inkind") {
+      infoBoxData.has_inkind = nodeMapData.has_inkind;
+    }
+    infoBoxData.flowType = flowType;
   }
 
-  // If showing jee score, set color value to the score.
-  // if (supportType === "jee") infoBoxData.colorValue = infoBoxData.scoreOfNode;
   return infoBoxData;
 };
 

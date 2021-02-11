@@ -12,6 +12,10 @@
   &.show {
     display: flex;
   }
+  .inkind {
+    margin-top: 10px;
+    font-size: 1.6rem;
+  }
   .header {
     display: flex;
     flex-flow: row;
@@ -42,7 +46,7 @@
       margin-bottom: 10px;
     }
     .unknownValuesMessage {
-      line-height: 1.1;
+      line-height: 1.4;
       div:last-child {
         font-size: 0.7em;
         margin-top: 10px;

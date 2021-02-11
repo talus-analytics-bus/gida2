@@ -25,6 +25,12 @@ export const purples = [
   "#3c003a",
 ];
 
+export const lightHatchColors = [
+  purples[purples.length - 1],
+  purples[purples.length - 2],
+  greens[greens.length - 1],
+];
+
 export const pvsColors = [
   "#B879BC",
   "#974299",
