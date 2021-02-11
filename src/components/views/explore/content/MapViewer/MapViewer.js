@@ -631,6 +631,8 @@ const MapViewer = ({
                   <i>{mapTitleData.instructions}</i>
                 </span>
                 <div className={exploreStyles.buttons}>
+                  <Loading {...{ loaded: loadedData, small: true }} />
+
                   {// funder / recipient toggle
                   supportType !== "needs_met" && supportType !== "jee" && (
                     <EntityRoleToggle

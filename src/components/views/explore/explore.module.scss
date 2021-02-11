@@ -52,6 +52,7 @@
         flex-flow: row;
         margin-left: auto;
         align-items: center;
+        min-height: 35px;
         > :not(:last-child) {
           margin-right: 10px;
         }
