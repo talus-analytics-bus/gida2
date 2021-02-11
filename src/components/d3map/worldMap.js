@@ -152,6 +152,23 @@ class WorldMap extends Chart {
   addCountries() {
     const chart = this;
     chart.clicked = false;
+    const onClick = function(d, activate) {
+      const sCountry = d3.select(this);
+      if (
+        activate === true ||
+        chart.params.activeCountry !== d.properties.iso3
+      ) {
+        chart.params.setActiveCountry(d.properties.iso3);
+        chart[styles.countries].selectAll("g").classed(styles.active, false);
+
+        sCountry.classed(styles.active, true);
+        chart.activeCountry = sCountry;
+        sCountry.raise();
+      } else {
+        sCountry.classed(styles.active, false);
+        chart.reset(false);
+      }
+    };
     const countryGroup = this.newGroup(styles.countries)
       .selectAll("g")
       .data(this.countryData)
@@ -162,12 +179,6 @@ class WorldMap extends Chart {
         d3.select(this).raise();
         if (chart.activeCountry) chart.activeCountry.raise();
         chart.params.setTooltipCountry(d.properties.iso3);
-        // Tooltip
-        // chart.params.setTooltipContent(
-        //   <div>
-        //     <div>{d.properties.NAME}</div>
-        //   </div>
-        // );
       })
 
       .on("dblclick", function(d) {
@@ -181,23 +192,11 @@ class WorldMap extends Chart {
           chart.clicked = true;
           chart.timeout = setTimeout(() => {
             // do single click event
-            console.log("click");
-            // if (chart.params.activeCountry !== d.properties.iso3) {
-            //   chart.params.setActiveCountry(d.properties.iso3);
-            //   chart[styles.countries]
-            //     .selectAll("g")
-            //     .classed(styles.active, false);
-            //   country.classed(styles.active, true);
-            //   chart.activeCountry = country;
-            //   country.raise();
-            // } else {
-            //   // country.classed(styles.active, false);
-            //   // chart.reset();
-            // }
-            //
+            onClick(d);
+
             // set clicked to false again
             chart.clicked = false;
-          }, 1000); // DEBUG
+          }, 250); // DEBUG
         } else {
           clearTimeout(chart.timeout);
           chart.clicked = false;
@@ -205,6 +204,7 @@ class WorldMap extends Chart {
           if (zoomIn) {
             chart.zoomTo(d);
             chart.zoomedTo = d.properties.iso3;
+            onClick(d, true);
           } else {
             chart.reset();
           }
@@ -264,7 +264,6 @@ class WorldMap extends Chart {
     // $(this.parentNode).append(this);
 
     // call zoom
-    console.log("Zooming to!");
     const bounds = this.path.bounds(d);
     const dx = bounds[1][0] - bounds[0][0];
     const dy = bounds[1][1] - bounds[0][1];
@@ -284,17 +283,19 @@ class WorldMap extends Chart {
       );
   }
 
-  reset() {
-    this.zoomedTo = undefined;
+  reset(resetView = true) {
     if (this.activeCountry !== undefined) {
       this.activeCountry.classed(styles.active, false);
       this.activeCountry = undefined;
     }
     this.params.setActiveCountry(null);
-    this.svg
-      .transition()
-      .duration(750)
-      .call(this.zoom.transform, d3.zoomIdentity);
+    if (resetView) {
+      this.zoomedTo = undefined;
+      this.svg
+        .transition()
+        .duration(750)
+        .call(this.zoom.transform, d3.zoomIdentity);
+    }
   }
 
   update(data) {
