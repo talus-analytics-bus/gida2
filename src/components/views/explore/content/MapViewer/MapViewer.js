@@ -352,8 +352,7 @@ const MapViewer = ({
       ["", "capacity_for_needs_met"].includes(fundType)
     ) {
       setFundType("false");
-      setSupportType("funds");
-      console.log("did it");
+      setSupportType("funds_and_inkind");
 
       // Case B: Tabbed to "Scores" and support type is not a score.
     } else if (curTab === "scores" && !score_data_names.includes(supportType)) {
