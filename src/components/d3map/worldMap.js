@@ -289,8 +289,8 @@ class WorldMap extends Chart {
       this.activeCountry = undefined;
     }
     this.params.setActiveCountry(null);
+    this.zoomedTo = undefined;
     if (resetView) {
-      this.zoomedTo = undefined;
       this.svg
         .transition()
         .duration(750)
