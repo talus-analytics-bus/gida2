@@ -237,7 +237,7 @@ const Legend = ({
       ? null
       : {
           colors: ["transparent:striped-#848484"],
-          labels: ["In-kind support received"],
+          labels: ["In-kind support " + flowType.split("_")[0]],
         },
   };
 
