@@ -366,7 +366,7 @@ class WorldMap extends Chart {
     const height = 50;
 
     this.buttons.zoomButtons
-      .attr("transform", `translate(5, ${this.height - height - 36})`)
+      .attr("transform", `translate(0, ${this.height - height - 36})`)
       .style("cursor", "pointer");
 
     this.buttons.zoomButtons
