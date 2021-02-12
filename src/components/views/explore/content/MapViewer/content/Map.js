@@ -340,8 +340,11 @@ const Map = ({
         )
       : undefined;
 
-  const infoBoxNodeData =
+  const infoBoxNodeDataTmp =
     datumForInfoBox !== undefined ? datumForInfoBox[nodeType] : {};
+  const infoBoxNodeData = !isEmpty(infoBoxNodeDataTmp)
+    ? infoBoxNodeDataTmp
+    : tooltipNodeData;
 
   const infoBoxData = getInfoBoxData({
     nodeDataToCheck: tooltipNodeData,
@@ -375,6 +378,10 @@ const Map = ({
           simple: true,
         })
       : undefined;
+  console.log("tooltipNodeData");
+  console.log(tooltipNodeData);
+  console.log("infoBoxNodeData");
+  console.log(infoBoxNodeData);
   const pinnedTipInfoBoxData =
     tooltipNodeData !== undefined
       ? getInfoBoxData({
@@ -451,6 +458,7 @@ const Map = ({
           type="light"
           className={classNames(
             tooltipStyles.tooltip,
+            tooltipStyles.map,
             tooltipStyles.simple,
             "floating",
             {
@@ -495,6 +503,7 @@ const Map = ({
             tooltipStyles.tooltip,
             "pinned",
             tooltipStyles.simple,
+            tooltipStyles.map,
             {
               [tooltipStyles.dark]: isDark,
               // [tooltipStyles.noEvents]: !showPinTip,
