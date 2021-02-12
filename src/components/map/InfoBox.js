@@ -162,7 +162,7 @@ const InfoBox = ({
               Click for more info, double-click to zoom
             </div>
           )}
-          {!simple && (
+          {!simple && nodeData.id !== undefined && (
             <Button
               linkTo={`/details/${nodeData.id}/${entityRole}`}
               label={"View funding details"}
