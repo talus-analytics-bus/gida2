@@ -353,20 +353,20 @@ const App = () => {
                 }}
               />
               {
-                <Route
-                  exact
-                  path="/events/:slug"
-                  render={d => {
-                    return (
-                      <Events
-                        {...{
-                          ...d.match.params, // id
-                          flowTypeInfo,
-                        }}
-                      />
-                    );
-                  }}
-                />
+                // <Route
+                //   exact
+                //   path="/events/:slug"
+                //   render={d => {
+                //     return (
+                //       <Events
+                //         {...{
+                //           ...d.match.params, // id
+                //           flowTypeInfo,
+                //         }}
+                //       />
+                //     );
+                //   }}
+                // />
               }
               <Route
                 exact
