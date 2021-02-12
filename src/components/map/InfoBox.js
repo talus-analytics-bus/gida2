@@ -99,79 +99,80 @@ const InfoBox = ({
   // TODO slide up somehow
   else
     return (
-      <div
-        key={key}
-        style={props.style}
-        className={classNames(styles.infoBox, {
-          [styles.show]: show,
-          [styles.dark]: isDark,
-          [styles.simple]: simple,
-          [styles.revealed]: revealed !== false || revealed === undefined,
-        })}
-      >
+      show && (
         <div
-          style={headerStyle.style}
-          className={classNames(styles.header, {
-            [styles.darkFont]: Util.isLightColor(headerColor),
+          key={key}
+          style={props.style}
+          className={classNames(styles.infoBox, {
+            [styles.show]: show,
+            [styles.dark]: isDark,
+            [styles.simple]: simple,
+            [styles.revealed]: revealed !== false || revealed === undefined,
           })}
         >
-          <div className={styles.name}>{nodeData.name}</div>
-          {!simple && (
-            <div className={styles.close}>
-              <Button
-                callback={() => {
-                  setShow(false);
-                  setNodeData(undefined);
-                  if (onClose) onClose();
-                }}
-                type={"close"}
-              />
-            </div>
-          )}
-        </div>
-        <div className={styles.content}>
-          <div className={styles.score}>
-            {infoBoxData.scoreOfNode !== undefined &&
-              Util.getScoreName(infoBoxData.scoreOfNode)}
-            {missingScore && <div>No score data available</div>}
-          </div>
-          <div>
-            {supportType !== "jee" &&
-              !missingScore &&
-              flowValuesKnown &&
-              infoBoxData.flowValues.map(d => (
-                <div className={styles.flowValues}>
-                  <div>{d.value}</div>
-                  <div>{d.label()}</div>
-                </div>
-              ))}
-            {!flowValuesKnown && (
-              <div className={styles.unknownValuesMessage}>
-                <div>{infoBoxData.unknownValueExplanation}</div>
-                <div>Specific amounts not indicated.</div>
+          <div
+            style={headerStyle.style}
+            className={classNames(styles.header, {
+              [styles.darkFont]: Util.isLightColor(headerColor),
+            })}
+          >
+            <div className={styles.name}>{nodeData.name}</div>
+            {!simple && (
+              <div className={styles.close}>
+                <Button
+                  callback={() => {
+                    setShow(false);
+                    if (onClose) onClose();
+                  }}
+                  type={"close"}
+                />
               </div>
             )}
           </div>
-          {infoBoxData.has_inkind === true && (
-            <div className={styles.inkind}>
-              Some in-kind support {infoBoxData.flowType.split("_")[0]}
+          <div className={styles.content}>
+            <div className={styles.score}>
+              {infoBoxData.scoreOfNode !== undefined &&
+                Util.getScoreName(infoBoxData.scoreOfNode)}
+              {missingScore && <div>No score data available</div>}
             </div>
-          )}
-          {simple && (
-            <div className={styles.instructions}>
-              Click for more info, double-click to zoom
+            <div>
+              {supportType !== "jee" &&
+                !missingScore &&
+                flowValuesKnown &&
+                infoBoxData.flowValues.map(d => (
+                  <div className={styles.flowValues}>
+                    <div>{d.value}</div>
+                    <div>{d.label()}</div>
+                  </div>
+                ))}
+              {!flowValuesKnown && (
+                <div className={styles.unknownValuesMessage}>
+                  <div>{infoBoxData.unknownValueExplanation}</div>
+                  <div>Specific amounts not indicated.</div>
+                </div>
+              )}
             </div>
-          )}
-          {!simple && nodeData.id !== undefined && (
-            <Button
-              linkTo={`/details/${nodeData.id}/${entityRole}`}
-              label={"View funding details"}
-              type={"primary"}
-              sameWindow={false}
-            />
-          )}
+            {infoBoxData.has_inkind === true && (
+              <div className={styles.inkind}>
+                Some in-kind support {infoBoxData.flowType.split("_")[0]}
+              </div>
+            )}
+            {simple && (
+              <div className={styles.instructions}>
+                Click for more info, double-click to zoom
+              </div>
+            )}
+            {!simple && nodeData.id !== undefined && (
+              <Button
+                linkTo={`/details/${nodeData.id}/${entityRole}`}
+                label={"View funding details"}
+                type={"primary"}
+                sameWindow={false}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      )
     );
 };
 
