@@ -2,6 +2,9 @@
 
 .nav {
   border-bottom: 1px $black solid;
+  &.wide {
+    padding: 20px;
+  }
   &.dark {
     border-bottom: 1px solid #999999;
   }

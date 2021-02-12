@@ -11,6 +11,7 @@ export const searchableSubcats = [
   "organization",
   // "region",
   "state_/_department_/_territory",
+  "overseas_department",
   // "agency",
   "ngo",
   "other",

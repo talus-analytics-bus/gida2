@@ -1,0 +1,55 @@
+@import "src/assets/styles/colors.scss";
+.legendChoropleth {
+  display: flex;
+  justify-content: center;
+  @include spaceChildrenHoriz(40px);
+  .legendEntries {
+    display: grid;
+    position: relative;
+
+    &:not(.center) {
+      grid-gap: 0 20px;
+    }
+    .legendEntry {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      text-align: center;
+      font-size: 1.4rem;
+      .icon {
+      }
+      .label {
+        display: flex;
+        margin-top: 5px;
+        > div {
+          max-width: 120px;
+          line-height: 1.2;
+        }
+      }
+    }
+
+    &.center {
+      // space away from right border of legend box
+      &:last-child {
+        margin-right: 15px;
+      }
+
+      .legendEntry {
+        .label {
+          > div {
+            left: -30px;
+            text-align: center;
+            position: relative;
+          }
+        }
+        &:last-child {
+          position: absolute;
+          right: 0;
+          .label > div {
+            left: 30px;
+          }
+        }
+      }
+    }
+  }
+}
