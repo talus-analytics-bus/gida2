@@ -242,8 +242,9 @@ const MapViewer = ({
   });
 
   // Get pretty name for flow type
-  const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
-    .display_name;
+  const flowTypeDisplayName = flowTypeInfo
+    .find(ft => ft.name === flowType)
+    .display_name.replace("projects", "in-kind support");
 
   // Get year range to use in title
   const yearRange =
@@ -261,6 +262,13 @@ const MapViewer = ({
         filters: "",
       };
 
+      // suffix
+      let suffix = "";
+      if (supportType === "funds") suffix = " (financial)";
+      else if (supportType === "inkind") suffix = " (in-kind)";
+      else if (supportType === "funds_and_inkind")
+        suffix = " (financial and in-kind)";
+
       // Role text
       if (entityRole === "recipient") {
         text.role = "Recipients";
@@ -273,30 +281,39 @@ const MapViewer = ({
         default:
           break;
         case "true":
-          text.fund = " of GHSA funding";
+          text.fund =
+            " of GHSA" + (entityRole === "recipient" ? " funding" : "");
           break;
         case "event":
-          text.fund = " of event response funding";
+          text.fund =
+            " of event response" +
+            (entityRole === "recipient" ? " funding" : "s");
           break;
         case "capacity":
-          text.fund = " of IHR capacity building funding";
+          text.fund =
+            " of capacity building (IHR)" +
+            (entityRole === "recipient" ? " funding" : "");
           break;
       }
 
       // Filters text
-      if (coreCapacities.length > 0) {
+      if (coreCapacities.length > 0 && fundType !== "event") {
         text.filters = ` for selected IHR core capacities (${coreCapacities.join(
           ", "
         )})`;
-      } else if (events.length > 0) {
+      } else if (events.length > 0 && fundType === "event") {
         text.filters = " for selected event responses";
       }
 
       // Return composite
+      let fundsAndInkind =
+        supportType === "funds_and_inkind" ? "and in-kind support " : "";
       return {
         detailed: `${text.role}${text.fund}`,
-        subtitle: `${flowTypeDisplayName} (${yearRange})${text.filters}`,
-        main: `${text.role}${text.fund} by country`,
+        subtitle: `${flowTypeDisplayName} ${fundsAndInkind}(${yearRange})${
+          text.filters
+        }`,
+        main: `${text.role}${text.fund} by country `,
       };
     } else if (supportType === "jee") {
       const filterText =
@@ -304,7 +321,7 @@ const MapViewer = ({
           ? `; for selected IHR core capacities (${coreCapacities.join(", ")})`
           : "";
       return {
-        main: "JEE score by country",
+        main: "JEE score averages by country",
         subtitle: `JEE score data as of ${jeeLastUpdatedDateStr}${filterText}`,
       };
     } else if (supportType === "needs_met") {
@@ -623,7 +640,9 @@ const MapViewer = ({
                     // main titles and instructions
                   }
                   <div className={exploreStyles.title}>{mapTitleData.main}</div>
-                  <span>{mapTitleData.subtitle}</span>
+                  <span className={styles.subtitle}>
+                    {mapTitleData.subtitle}
+                  </span>
                 </div>
               </div>
               <div className={exploreStyles.controls}>

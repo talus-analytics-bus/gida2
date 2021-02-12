@@ -3,6 +3,9 @@
   height: 100%;
   min-height: $min-content-height !important;
   padding-bottom: 0 !important;
+  .subtitle {
+    font-size: 2rem !important;
+  }
   .hide {
     display: none;
   }
