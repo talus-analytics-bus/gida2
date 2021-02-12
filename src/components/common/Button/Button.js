@@ -33,7 +33,12 @@ const Button = ({ label, url, disabled = false, ...props }) => {
   );
   if (props.linkTo) {
     return (
-      <Link style={props.style} className={styles.link} to={props.linkTo}>
+      <Link
+        style={props.style}
+        className={styles.link}
+        to={props.linkTo}
+        target={props.sameWindow === false ? "_blank" : undefined}
+      >
         {button}
       </Link>
     );
@@ -43,7 +48,7 @@ const Button = ({ label, url, disabled = false, ...props }) => {
         style={props.style}
         className={styles.link}
         href={url}
-        target={props.sameWindow !== true ? "_blank" : undefined}
+        target={props.sameWindow === false ? "_blank" : undefined}
       >
         {button}
       </a>

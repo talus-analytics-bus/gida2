@@ -26,6 +26,7 @@ const Nav = ({ page, ...props }) => {
         {
           [styles.loading]: props.loadingNav,
           [styles.dark]: props.isDark,
+          [styles.wide]: page === "explore-map",
         },
         styles[page]
       )}

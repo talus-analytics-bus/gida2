@@ -1,8 +1,9 @@
 import React from "react";
 import styles from "./legend.module.scss";
 import classNames from "classnames";
-import Util from "../misc/Util.js";
-import SlideToggle from "../common/SlideToggle/SlideToggle.js";
+import Util from "../../misc/Util.js";
+import SlideToggle from "../../common/SlideToggle/SlideToggle.js";
+import LegendContent, { LegendType } from "./LegendContent/LegendContent";
 
 /**
  * Given the support type and flow type, returns the correct legend title.
@@ -21,6 +22,7 @@ const getLegendTitle = ({ supportType, flowType, entityRole }) => {
       return "Funds received relative to need level";
     default:
       return supportType;
+    case "funds_and_inkind":
     case "funds":
     case "inkind":
       switch (flowType) {
@@ -68,7 +70,10 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
   // Is the "needs met" metric the one being plotted? Its legend is a little
   // special.
   const needsMetMetric = supportType === "needs_met";
-  const numericMetric = supportType === "funds" || supportType === "inkind";
+  const numericMetric =
+    supportType === "funds" ||
+    supportType === "inkind" ||
+    supportType === "funds_and_inkind";
   const scoreMetric = supportType === "jee" || supportType === "pvs";
 
   // Define JSX for value labels that are invisible which are used as spacers
@@ -207,8 +212,34 @@ const Legend = ({
   entityRole,
   ...props
 }) => {
+  // STATE //
   // Track whether legend is visible or not
   const [show, setShow] = React.useState(true);
+
+  let type;
+  if (supportType === "jee") {
+    type = LegendType.Ordinal;
+  } else if (supportType === "needs_met") {
+    type = LegendType.Continuous;
+  } else {
+    type = LegendType.Choropleth;
+  }
+  // CONSTANTS //
+  const legendTitle =
+    title || getLegendTitle({ supportType, flowType, entityRole });
+
+  const showInkindHatch =
+    type === LegendType.Choropleth && supportType === "funds_and_inkind";
+  const sides = {
+    center: null,
+    left: null,
+    right: !showInkindHatch
+      ? null
+      : {
+          colors: ["transparent:striped-#848484"],
+          labels: ["In-kind support " + flowType.split("_")[0]],
+        },
+  };
 
   return (
     <div
@@ -223,39 +254,9 @@ const Legend = ({
         style={props.style}
         className={classNames(styles.content, { [styles.show]: show })}
       >
-        <div>
-          {title === undefined &&
-            getLegendTitle({ supportType, flowType, entityRole })}
-          {title !== undefined && title}
-        </div>
-        <div className={styles.entries}>
-          {supportType !== "jee" && supportType !== "pvs" && (
-            <div className={classNames(styles.entry, styles.unspec)}>
-              <div className={styles.bucket}>
-                <div
-                  style={{ backgroundColor: "#ccc" }}
-                  className={styles.rect}
-                />
-                <div className={styles.label}>None</div>
-              </div>
-            </div>
-          )}
-          {getMainLegendBuckets({ colorScale, supportType })}
-          {supportType !== "jee" && supportType !== "pvs" && (
-            <div className={classNames(styles.entry, styles.unspec)}>
-              <div className={styles.bucket}>
-                <div
-                  style={{
-                    background:
-                      "repeating-linear-gradient(-45deg, rgb(175, 175, 175), rgb(175, 175, 175) 8px, rgba(255, 255, 255, 0) 8px, rgba(255, 255, 255, 0) 10px)",
-                  }}
-                  className={styles.rect}
-                />
-                <div className={styles.label}>Unspecified</div>
-              </div>
-            </div>
-          )}
-        </div>
+        <LegendContent
+          {...{ title: legendTitle, type, scale: colorScale, sides }}
+        />
       </div>
     </div>
   );

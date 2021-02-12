@@ -93,9 +93,10 @@ body,
     width: 100%;
     max-width: 1170px;
     &.wide {
-      max-width: 1366px;
+      max-width: unset;
       height: 100%;
       min-height: unset;
+      padding: 20px;
     }
     margin: 0 auto;
     &.noPadding {

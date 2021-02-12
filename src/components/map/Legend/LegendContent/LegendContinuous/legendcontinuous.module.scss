@@ -1,0 +1,30 @@
+@import "src/assets/styles/colors.scss";
+.legendContinuous {
+  display: flex;
+  @include spaceChildrenHoriz(40px);
+  width: 100%;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  .legendEntries {
+    .legendEntry {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      text-align: center;
+      font-size: 1.4rem;
+      .icon {
+      }
+      .labels {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        .label {
+          display: flex;
+          margin-top: 5px;
+          max-width: 100px;
+          line-height: 1.2;
+        }
+      }
+    }
+  }
+}

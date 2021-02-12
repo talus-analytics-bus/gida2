@@ -7,7 +7,7 @@ import * as d3 from "d3/dist/d3.min";
 
 // Local content components
 import D3Map from "../../../../../d3map/D3Map.js";
-import Legend from "../../../../../map/Legend.js";
+import Legend from "../../../../../map/Legend/Legend.js";
 import InfoBox from "../../../../../map/InfoBox.js";
 import {
   getMapTooltipLabel,
@@ -22,7 +22,7 @@ import {
   calculateNeedsMet,
   getFlowValues,
 } from "../../../../../misc/Data.js";
-import Util from "../../../../../misc/Util.js";
+import Util, { isEmpty } from "../../../../../misc/Util.js";
 import { getJeeScores, getNodeLinkList } from "../../../../../misc/Data.js";
 
 // FC for Map.
@@ -133,6 +133,9 @@ const Map = ({
   const [tooltipCountry, setTooltipCountry] = useState(undefined);
   const [tooltipNodeData, setTooltipNodeData] = useState(undefined);
   const [mapData, setMapData] = useState(null);
+  const [showFloatTip, setShowFloatTip] = useState(false);
+  const [showPinTip, setShowPinTip] = useState(false);
+  const [activeCountry, setActiveCountry] = useState(null);
 
   // Define "columns" for map data.
   const d3MapDataFields = [
@@ -212,6 +215,26 @@ const Map = ({
         }),
     },
     {
+      title: "Any in-kind support?",
+      prop: "has_inkind",
+      type: "text",
+      render: d => d,
+      func: d => {
+        // return true if inkind assistance for current flow type (disbursed or
+        // committed) is defined, false otherwise
+        const committed = ["committed_funds", "committed_inkind"].includes(
+          flowType
+        );
+        if (committed && d.committed_inkind !== undefined) return true;
+        else {
+          const disbursed = ["disbursed_funds", "provided_inkind"].includes(
+            flowType
+          );
+          return disbursed && d.provided_inkind !== undefined;
+        }
+      },
+    },
+    {
       title: "Map tooltip label",
       prop: "tooltip_label",
       type: "text",
@@ -237,24 +260,6 @@ const Map = ({
       title: "Color",
       prop: "color",
       type: "text",
-      render: d => (
-        <svg width="20" height="20">
-          <rect
-            style={{
-              fill:
-                supportType === "jee"
-                  ? colorScale(Util.getScoreShortName(d))
-                  : colorScale(d),
-            }}
-            className={classNames(styles.square, {
-              [styles.hatch]: d === "yyy" || d === -8888,
-            })}
-          />
-          {
-            // defs
-          }
-        </svg>
-      ),
       func: d =>
         getMapMetricValue({
           d,
@@ -265,6 +270,25 @@ const Map = ({
         }),
     },
   ];
+
+  // when active country is set update which popups can be shown
+  useEffect(() => {
+    const pinned = activeCountry !== null;
+    setShowFloatTip(!pinned);
+    setShowPinTip(pinned);
+    ReactTooltip.rebuild();
+    const elsHidden = document.getElementsByClassName(
+      pinned ? "floating" : "pinned"
+    );
+    if (elsHidden[0] !== undefined)
+      elsHidden[0].style.setProperty("pointer-events", "none");
+    const elsShown = document.getElementsByClassName(
+      !pinned ? "floating" : "pinned"
+    );
+    if (elsShown[0] !== undefined)
+      elsShown[0].style.setProperty("pointer-events", null);
+  }, [activeCountry]);
+
   // set map data when params are changed
   useEffect(() => {
     if (supportType !== "jee") {
@@ -296,17 +320,34 @@ const Map = ({
 
   // Get datum for the selected node, if it exists.
   const existsDataForHover = data.length > 0 && data[0][nodeType] !== undefined;
-  const datumForInfoBox =
-    nodeData !== undefined && existsDataForHover
-      ? data.find(d => d[nodeType].iso3 === nodeData.iso3)
-      : undefined;
+  // const datumForInfoBox =
+  //   nodeData !== undefined && existsDataForHover
+  //     ? data.find(d => d[nodeType].iso3 === nodeData.iso3)
+  //     : undefined;
   const datumForTooltip =
     tooltipNodeData !== undefined && existsDataForHover
-      ? data.find(d => d[nodeType].iso3 === tooltipNodeData.iso3)
+      ? data.find(
+          d =>
+            d[nodeType].iso3 !== null &&
+            d[nodeType].iso3 === tooltipNodeData.iso3
+        )
       : undefined;
 
+  const datumForInfoBox =
+    tooltipNodeData !== undefined && existsDataForHover
+      ? data.find(
+          d => d[nodeType].iso3 !== null && d[nodeType].iso3 === activeCountry
+        )
+      : undefined;
+
+  const infoBoxNodeDataTmp =
+    datumForInfoBox !== undefined ? datumForInfoBox[nodeType] : {};
+  const infoBoxNodeData = !isEmpty(infoBoxNodeDataTmp)
+    ? infoBoxNodeDataTmp
+    : tooltipNodeData;
+
   const infoBoxData = getInfoBoxData({
-    nodeDataToCheck: nodeData,
+    nodeDataToCheck: tooltipNodeData,
     mapData,
     datum: datumForInfoBox,
     supportType,
@@ -337,6 +378,23 @@ const Map = ({
           simple: true,
         })
       : undefined;
+  const pinnedTipInfoBoxData =
+    tooltipNodeData !== undefined
+      ? getInfoBoxData({
+          nodeDataToCheck: infoBoxNodeData,
+          mapData,
+          datum: datumForInfoBox,
+          supportType,
+          jeeScores,
+          coreCapacities,
+          colorScale,
+          entityRole,
+          minYear,
+          maxYear,
+          flowType,
+          simple: false,
+        })
+      : undefined;
   return (
     <div className={classNames(styles.map, { [styles.dark]: isDark })}>
       <D3Map
@@ -356,6 +414,8 @@ const Map = ({
           setNodeData,
           setLoaded,
           isDark,
+          activeCountry,
+          setActiveCountry,
         }}
       />
       <div className={styles.legend}>
@@ -370,43 +430,106 @@ const Map = ({
           }}
         />
       </div>
-      <div className={styles.infoBox}>
-        <InfoBox
-          {...{
-            entityRole,
-            supportType,
-            nodeData,
-            setNodeData,
-            infoBoxData,
-            isDark,
-            style: { border: "1px solid #ccc" },
-          }}
-        />
-      </div>
+      {
+        // <div className={styles.infoBox}>
+        //   <InfoBox
+        //     {...{
+        //       key: "staticInfoBox",
+        //       entityRole,
+        //       supportType,
+        //       nodeData,
+        //       setNodeData,
+        //       infoBoxData,
+        //       isDark,
+        //       style: { border: "1px solid #ccc" },
+        //     }}
+        //   />
+        // </div>
+      }
       {
         // Tooltip for info tooltip icons.
         <ReactTooltip
+          key={"floatTip"}
           id={"mapTooltip"}
           type="light"
-          className={classNames(tooltipStyles.tooltip, tooltipStyles.simple, {
-            [tooltipStyles.dark]: isDark,
-          })}
+          className={classNames(
+            tooltipStyles.tooltip,
+            tooltipStyles.map,
+            tooltipStyles.simple,
+            "floating",
+            {
+              [tooltipStyles.dark]: isDark,
+              // [tooltipStyles.noEvents]: !showFloatTip,
+            }
+          )}
           place="top"
           effect="float"
+          isCapture={true}
+          event={undefined}
           getContent={() =>
             tooltipData && (
-              <InfoBox
-                {...{
-                  key: tooltipNodeData.id,
-                  simple: true,
-                  entityRole,
-                  supportType,
-                  nodeData: tooltipNodeData,
-                  setNodeData,
-                  infoBoxData: tooltipData,
-                  isDark,
-                }}
-              />
+              <div
+                key={"staticInfoBoxContainerFloat" + tooltipNodeData.id}
+                className={classNames({ [tooltipStyles.hide]: !showFloatTip })}
+              >
+                <InfoBox
+                  {...{
+                    key: tooltipNodeData.id + "float",
+                    simple: true,
+                    entityRole,
+                    supportType,
+                    nodeData: tooltipNodeData,
+                    setNodeData,
+                    infoBoxData: tooltipData,
+                    isDark,
+                  }}
+                />
+              </div>
+            )
+          }
+        />
+      }
+      {
+        // Tooltip for info tooltip icons.
+        <ReactTooltip
+          key={"pinTip"}
+          id={"mapTooltip"}
+          type="light"
+          className={classNames(
+            tooltipStyles.tooltip,
+            "pinned",
+            tooltipStyles.simple,
+            tooltipStyles.map,
+            {
+              [tooltipStyles.dark]: isDark,
+              // [tooltipStyles.noEvents]: !showPinTip,
+            }
+          )}
+          place="top"
+          effect="float"
+          event={"click"}
+          clickable={true}
+          isCapture={true}
+          getContent={() =>
+            tooltipData && (
+              <div
+                key={"staticInfoBoxContainerPin" + infoBoxNodeData.id}
+                className={classNames({ [tooltipStyles.hide]: !showPinTip })}
+              >
+                <InfoBox
+                  {...{
+                    key: infoBoxNodeData.id + "pin",
+                    entityRole,
+                    supportType,
+                    nodeData: infoBoxNodeData,
+                    setNodeData,
+                    infoBoxData: pinnedTipInfoBoxData,
+                    isDark,
+                    onClose: () => setActiveCountry(null),
+                    style: { border: "1px solid #ccc" },
+                  }}
+                />
+              </div>
             )
           }
         />

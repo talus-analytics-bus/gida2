@@ -1,0 +1,16 @@
+@import "src/assets/styles/colors.scss";
+.legendContent {
+  flex-flow: column;
+  align-items: center;
+  position: relative;
+  opacity: 0.95;
+  &,
+  * {
+    font-size: 1.4rem;
+  }
+  > .title {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}

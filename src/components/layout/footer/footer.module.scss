@@ -67,7 +67,8 @@ $phone-narrow: "screen and (max-width : 550px)";
     }
   }
   &.wide .content {
-    max-width: 1366px;
+    max-width: unset;
+    padding: 20px;
   }
   &.dark {
     background-color: $dark-background-color;
