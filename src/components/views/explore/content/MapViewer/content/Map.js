@@ -378,10 +378,6 @@ const Map = ({
           simple: true,
         })
       : undefined;
-  console.log("tooltipNodeData");
-  console.log(tooltipNodeData);
-  console.log("infoBoxNodeData");
-  console.log(infoBoxNodeData);
   const pinnedTipInfoBoxData =
     tooltipNodeData !== undefined
       ? getInfoBoxData({
