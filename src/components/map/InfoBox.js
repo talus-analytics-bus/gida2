@@ -12,6 +12,7 @@ import Button from "../common/Button/Button.js";
  * @method InfoBox
  */
 const InfoBox = ({
+  key,
   simple = false,
   nodeData,
   setNodeData,
@@ -21,6 +22,7 @@ const InfoBox = ({
   isDark,
   entityRole = "funder", // For link button to details page
   infoBoxData = null,
+  onClose,
   revealed,
 
   ...props
@@ -98,6 +100,7 @@ const InfoBox = ({
   else
     return (
       <div
+        key={key}
         style={props.style}
         className={classNames(styles.infoBox, {
           [styles.show]: show,
@@ -119,6 +122,7 @@ const InfoBox = ({
                 callback={() => {
                   setShow(false);
                   setNodeData(undefined);
+                  if (onClose) onClose();
                 }}
                 type={"close"}
               />
@@ -158,6 +162,7 @@ const InfoBox = ({
               linkTo={`/details/${nodeData.id}/${entityRole}`}
               label={"View funding details"}
               type={"primary"}
+              sameWindow={false}
             />
           )}
         </div>

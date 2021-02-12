@@ -2,7 +2,11 @@
 
 .tooltip {
   opacity: 1 !important;
-
+  pointer-events: visible !important;
+  background-color: transparent !important;
+  &::after {
+    display: none;
+  }
   .header {
     background-color: rgb(232, 232, 232);
     display: flex;
@@ -41,12 +45,12 @@
     margin: 0;
     max-width: 300px;
   }
-  box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
-  -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
-  &.dark {
-    box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
-    -webkit-box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
-  }
+  // box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+  // -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+  // &.dark {
+  //   box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
+  //   -webkit-box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
+  // }
   &.fullTable {
     table {
       width: 100%;
@@ -87,4 +91,19 @@
     }
   }
   max-width: 500px;
+}
+
+.hide,
+.tooltip.hide {
+  opacity: 0 !important;
+  &,
+  * {
+    pointer-events: visible !important;
+  }
+  background-color: transparent !important;
+  // visibility: hidden !important;
+  // display: none !important;
+  * {
+    color: red !important;
+  }
 }

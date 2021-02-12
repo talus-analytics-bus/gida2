@@ -26,11 +26,12 @@ const D3Map = ({
   setTooltipNodeData,
   isDark,
   setLoaded,
+  activeCountry,
+  setActiveCountry,
   ...props
 }) => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [worldMap, setWorldMap] = useState(null);
-  const [activeCountry, setActiveCountry] = useState(null);
   const [tooltipCountry, setTooltipCountry] = useState(null);
   const [init, setInit] = useState(true);
   const [colorSeries, setColorSeries] = useState(

@@ -154,15 +154,15 @@ class WorldMap extends Chart {
     chart.clicked = false;
     const onClick = function(d, activate) {
       const sCountry = d3.select(this);
+      console.log(d);
       if (
         activate === true ||
         chart.params.activeCountry !== d.properties.iso3
       ) {
         chart.params.setActiveCountry(d.properties.iso3);
         chart[styles.countries].selectAll("g").classed(styles.active, false);
-
         sCountry.classed(styles.active, true);
-        chart.activeCountry = sCountry;
+        chart.sActiveCountry = sCountry;
         sCountry.raise();
       } else {
         sCountry.classed(styles.active, false);
@@ -177,7 +177,7 @@ class WorldMap extends Chart {
       .on("mouseover", function(d) {
         // Highlight
         d3.select(this).raise();
-        if (chart.activeCountry) chart.activeCountry.raise();
+        if (chart.sActiveCountry) chart.sActiveCountry.raise();
         chart.params.setTooltipCountry(d.properties.iso3);
       })
 
@@ -287,9 +287,9 @@ class WorldMap extends Chart {
   }
 
   closePopups() {
-    if (this.activeCountry !== undefined) {
-      this.activeCountry.classed(styles.active, false);
-      this.activeCountry = undefined;
+    if (this.sActiveCountry !== undefined) {
+      this.sActiveCountry.classed(styles.active, false);
+      this.sActiveCountry = undefined;
     }
     this.params.setActiveCountry(null);
   }
