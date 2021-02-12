@@ -277,6 +277,16 @@ const Map = ({
     setShowFloatTip(!pinned);
     setShowPinTip(pinned);
     ReactTooltip.rebuild();
+    const elsHidden = document.getElementsByClassName(
+      pinned ? "floating" : "pinned"
+    );
+    if (elsHidden[0] !== undefined)
+      elsHidden[0].style.setProperty("pointer-events", "none");
+    const elsShown = document.getElementsByClassName(
+      !pinned ? "floating" : "pinned"
+    );
+    if (elsShown[0] !== undefined)
+      elsShown[0].style.setProperty("pointer-events", null);
   }, [activeCountry]);
 
   // set map data when params are changed
@@ -316,12 +326,18 @@ const Map = ({
   //     : undefined;
   const datumForTooltip =
     tooltipNodeData !== undefined && existsDataForHover
-      ? data.find(d => d[nodeType].iso3 === tooltipNodeData.iso3)
+      ? data.find(
+          d =>
+            d[nodeType].iso3 !== null &&
+            d[nodeType].iso3 === tooltipNodeData.iso3
+        )
       : undefined;
 
   const datumForInfoBox =
     tooltipNodeData !== undefined && existsDataForHover
-      ? data.find(d => d[nodeType].iso3 === activeCountry)
+      ? data.find(
+          d => d[nodeType].iso3 !== null && d[nodeType].iso3 === activeCountry
+        )
       : undefined;
 
   const infoBoxNodeData =
@@ -359,7 +375,7 @@ const Map = ({
           simple: true,
         })
       : undefined;
-  const mvmTest =
+  const pinnedTipInfoBoxData =
     tooltipNodeData !== undefined
       ? getInfoBoxData({
           nodeDataToCheck: infoBoxNodeData,
@@ -376,7 +392,6 @@ const Map = ({
           simple: false,
         })
       : undefined;
-
   return (
     <div className={classNames(styles.map, { [styles.dark]: isDark })}>
       <D3Map
@@ -434,10 +449,15 @@ const Map = ({
           key={"floatTip"}
           id={"mapTooltip"}
           type="light"
-          className={classNames(tooltipStyles.tooltip, tooltipStyles.simple, {
-            [tooltipStyles.dark]: isDark,
-            // [tooltipStyles.hide]: !showFloatTip,
-          })}
+          className={classNames(
+            tooltipStyles.tooltip,
+            tooltipStyles.simple,
+            "floating",
+            {
+              [tooltipStyles.dark]: isDark,
+              // [tooltipStyles.noEvents]: !showFloatTip,
+            }
+          )}
           place="top"
           effect="float"
           isCapture={true}
@@ -473,11 +493,11 @@ const Map = ({
           type="light"
           className={classNames(
             tooltipStyles.tooltip,
-            tooltipStyles.pinned,
+            "pinned",
             tooltipStyles.simple,
             {
               [tooltipStyles.dark]: isDark,
-              // [tooltipStyles.hide]: !showPinTip,
+              // [tooltipStyles.noEvents]: !showPinTip,
             }
           )}
           place="top"
@@ -498,7 +518,7 @@ const Map = ({
                     supportType,
                     nodeData: infoBoxNodeData,
                     setNodeData,
-                    infoBoxData: mvmTest,
+                    infoBoxData: pinnedTipInfoBoxData,
                     isDark,
                     onClose: () => setActiveCountry(null),
                     style: { border: "1px solid #ccc" },

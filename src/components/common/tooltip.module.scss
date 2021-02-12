@@ -2,11 +2,16 @@
 
 .tooltip {
   opacity: 1 !important;
-  pointer-events: visible !important;
   background-color: transparent !important;
   &::after {
     display: none;
   }
+  // &.noEvents {
+  //   &,
+  //   * {
+  //     pointer-events: none !important;
+  //   }
+  // }
   .header {
     background-color: rgb(232, 232, 232);
     display: flex;
@@ -96,13 +101,7 @@
 .hide,
 .tooltip.hide {
   opacity: 0 !important;
-  &,
-  * {
-    pointer-events: visible !important;
-  }
   background-color: transparent !important;
-  // visibility: hidden !important;
-  // display: none !important;
   * {
     color: red !important;
   }
