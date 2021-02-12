@@ -46,7 +46,11 @@ class WorldMap extends Chart {
 
     // Set class of SVG to include "map"
     // TODO check this
-    this.svg.classed("map, true");
+    this.svg
+      .on("click", () => {
+        this.closePopups();
+      })
+      .classed("map", true);
 
     // When the chart is clicked, set stopped to true.
     this.chart.on("click", this.stopped, true);
@@ -154,7 +158,6 @@ class WorldMap extends Chart {
     chart.clicked = false;
     const onClick = function(d, activate) {
       const sCountry = d3.select(this);
-      console.log(d);
       if (
         activate === true ||
         chart.params.activeCountry !== d.properties.iso3
@@ -196,15 +199,20 @@ class WorldMap extends Chart {
 
             // set clicked to false again
             chart.clicked = false;
-          }, 250); // DEBUG
+          }, 250);
         } else {
+          // double click events
+          chart.closePopups();
           clearTimeout(chart.timeout);
           chart.clicked = false;
           const zoomIn = chart.zoomedTo !== d.properties.iso3;
           if (zoomIn) {
             chart.zoomTo(d, () => {
-              onClick(d, true);
               chart.zoomedTo = d.properties.iso3;
+              // // onClick(d, true);
+              // setTimeout(() => {
+              //   d3.select(this).dispatch("click");
+              // }, [1000]);
             });
           } else {
             chart.reset();
@@ -251,7 +259,7 @@ class WorldMap extends Chart {
     this[styles.countries].attr("transform", d3.event.transform);
 
     this.toggleResetButton();
-    this.closePopups();
+    // this.closePopups();
     this.zoomedTo = undefined;
   }
 

@@ -157,6 +157,11 @@ const InfoBox = ({
               Some in-kind support {infoBoxData.flowType.split("_")[0]}
             </div>
           )}
+          {simple && (
+            <div className={styles.instructions}>
+              Click for more info, double-click to zoom
+            </div>
+          )}
           {!simple && (
             <Button
               linkTo={`/details/${nodeData.id}/${entityRole}`}

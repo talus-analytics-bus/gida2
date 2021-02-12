@@ -16,6 +16,11 @@
     margin-top: 10px;
     font-size: 1.6rem;
   }
+  .instructions {
+    margin-top: 10px;
+    font-size: 1.4rem;
+    font-style: italic;
+  }
   .header {
     display: flex;
     flex-flow: row;
@@ -68,6 +73,8 @@
           font-family: "rawline", serif;
           margin-bottom: 10px;
           line-height: 1;
+          font-weight: bold;
+          font-size: 2rem;
         }
         div:last-child {
           font-size: 0.7em;
