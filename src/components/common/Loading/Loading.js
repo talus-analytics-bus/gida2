@@ -1,8 +1,8 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import classNames from "classnames";
-import styles from "./loading.module.scss";
-import spinnerImg from "../../../assets/images/loading.gif";
+import React from "react"
+import { Link } from "react-router-dom"
+import classNames from "classnames"
+import styles from "./loading.module.scss"
+import spinnerImg from "../../../assets/images/loading.gif"
 // import spinnerImg from "../../../assets/images/spinner.svg";
 
 const Loading = ({
@@ -10,6 +10,7 @@ const Loading = ({
   small = false,
   slideUp = false,
   align = "left", // or 'center'
+  message = null, // text to show while loading
   children,
 
   // custom styles
@@ -30,20 +31,23 @@ const Loading = ({
           })}
         >
           <div className={styles.imgContainer}>
-            <img src={spinnerImg} />
+            {message && <div className={styles.message}>{message}</div>}
+            <img alt="Loading spinner" src={spinnerImg} />
           </div>
         </div>
       )}
-      <div
-        className={classNames(styles.content, {
-          [styles.shown]: loaded,
-          [styles.up]: loaded && slideUp,
-          [styles.down]: !loaded && slideUp,
-        })}
-      >
-        {children}
-      </div>
+      {children && (
+        <div
+          className={classNames(styles.content, {
+            [styles.shown]: loaded,
+            [styles.up]: loaded && slideUp,
+            [styles.down]: !loaded && slideUp,
+          })}
+        >
+          {children}
+        </div>
+      )}
     </>
-  );
-};
-export default Loading;
+  )
+}
+export default Loading

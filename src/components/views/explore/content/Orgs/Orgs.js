@@ -1,40 +1,37 @@
-import React, { useEffect, useState } from "react";
-import ReactTooltip from "react-tooltip";
-import classNames from "classnames";
-import styles from "./orgs.module.scss";
-import tooltipStyles from "../../../../common/tooltip.module.scss";
-import GhsaToggle from "../../../../misc/GhsaToggle.js";
-import RadioToggle from "../../../../misc/RadioToggle.js";
-import { Settings } from "../../../../../App.js";
-import Util from "../../../../misc/Util.js";
-import TimeSlider from "../../../../misc/TimeSlider.js";
-import TableInstance from "../../../../chart/table/TableInstance.js";
-import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js";
-import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js";
-import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js";
-import Loading from "../../../../common/Loading/Loading";
-import Chevron from "../../../../common/Chevron/Chevron.js";
-import Drawer from "../../../../common/Drawer/Drawer.js";
+import React, { useEffect, useState, useCallback } from "react"
+import ReactTooltip from "react-tooltip"
+import classNames from "classnames"
+import styles from "./orgs.module.scss"
+import tooltipStyles from "../../../../common/tooltip.module.scss"
+import GhsaToggle from "../../../../misc/GhsaToggle.js"
+import RadioToggle from "../../../../misc/RadioToggle.js"
+import { Settings } from "../../../../../App.js"
+import Util from "../../../../misc/Util.js"
+import TimeSlider from "../../../../misc/TimeSlider.js"
+import TableInstance from "../../../../chart/table/TableInstance.js"
+import { core_capacities, getInfoBoxData } from "../../../../misc/Data.js"
+import FilterDropdown from "../../../../common/FilterDropdown/FilterDropdown.js"
+import FilterSelections from "../../../../common/FilterSelections/FilterSelections.js"
+import Loading from "../../../../common/Loading/Loading"
+import Chevron from "../../../../common/Chevron/Chevron.js"
+import Drawer from "../../../../common/Drawer/Drawer.js"
 import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
-  getMapColorScale,
   getMapMetricValue,
   greens,
   purples,
-} from "../../../../map/MapUtil.js";
+} from "../../../../map/MapUtil.js"
 import {
   execute,
   NodeSums,
   FlowType,
   Outbreak,
   Stakeholder,
-} from "../../../../misc/Queries";
-import { getNodeData, getTableRowData } from "../../../../misc/Data.js";
-import { getNodeLinkList } from "../../../../misc/Data.js";
-import SourceText from "../../../../common/SourceText/SourceText.js";
-import InfoBox from "../../../../map/InfoBox.js";
-import { appContext } from "../../../../misc/ContextProvider";
+} from "../../../../misc/Queries"
+import { getNodeLinkList } from "../../../../misc/Data.js"
+import SourceText from "../../../../common/SourceText/SourceText.js"
+import InfoBox from "../../../../map/InfoBox.js"
 
 // FC for Orgs.
 const Orgs = ({
@@ -43,48 +40,88 @@ const Orgs = ({
   setEntityRole,
   ghsaOnly,
   setGhsaOnly,
-  minYear,
-  setMaxYear,
-  setMinYear,
-  maxYear,
-  coreCapacities,
-  setCoreCapacities,
   flowTypeInfo,
-  events,
-  setEvents,
-  loaded,
-  setLoaded,
   ...props
 }) => {
-  // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = useState("committed");
+  // Track transaction type selected
+  // committed or disbursed
+  const [transactionType, setTransactionType] = useState("committed")
 
-  // Track support type selected for the map
-  const [supportType, setSupportType] = useState("funds");
+  // Track support type selected
+  // inkind or financial
+  const [supportType, setSupportType] = useState("funds")
 
-  // Track main map title
-  const [mapTitle, setMapTitle] = useState("funds");
+  // Track main data
+  const [loaded, setLoaded] = useState(false)
+  const [didFirstLoad, setDidFirstLoad] = useState(false)
+  const [tooltipData, setTooltipData] = useState(undefined)
+  const [revealed, setRevealed] = useState(false)
+  const [tooltipNodeData, setTooltipNodeData] = useState(undefined)
+  const [, setHoveredEntity] = useState(undefined)
+  const [outbreaks, setOutbreaks] = useState([])
+  const [minYear, setMinYear] = useState(Settings.startYear)
+  const [maxYear, setMaxYear] = useState(Settings.endYear)
+  const [coreCapacities, setCoreCapacities] = useState([])
+  const [events, setEvents] = useState([]) // selected event ids
+  const [stakeholders, setStakeholders] = useState({})
+  const [nodeSumsOrigin, setNodeSumsOrigin] = useState([])
+  const [nodeSumsTarget, setNodeSumsTarget] = useState([])
 
-  const [tooltipData, setTooltipData] = useState(undefined);
-  const [revealed, setRevealed] = useState(false);
-  const [tooltipNodeData, setTooltipNodeData] = useState(undefined);
-  const [hoveredEntity, setHoveredEntity] = useState(undefined);
-  // if (revealed) {
-  //   console.log("\ntooltipData");
-  //   console.log(tooltipData);
-  //   console.log("tooltipNodeData");
-  //   console.log(tooltipNodeData);
-  //   console.log("revealed");
-  //   console.log(revealed);
-  //   console.log("hoveredEntity");
-  //   console.log(hoveredEntity);
-  // }
+  // FUNCTIONS //
+  const getData = useCallback(async () => {
+    const nodeSumsFilters = {
+      "Stakeholder.cat": ["organization"],
+      "Stakeholder.subcat": [["neq", ["sub-organization"]]],
+      "Stakeholder.slug": [["neq", ["not-reported"]]],
+      "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
+    }
+
+    // add assistance type filter
+    if (ghsaOnly === "true") {
+      nodeSumsFilters["Flow.is_ghsa"] = [true]
+    } else if (ghsaOnly === "event") {
+      nodeSumsFilters["Flow.response_or_capacity"] = ["response"]
+    } else if (ghsaOnly === "capacity") {
+      nodeSumsFilters["Flow.response_or_capacity"] = ["capacity"]
+    }
+
+    // add outbreak events filters
+    if (events.length > 0) {
+      nodeSumsFilters["Event.id"] = events
+    }
+    if (coreCapacities.length > 0) {
+      nodeSumsFilters["Core_Capacity.name"] = coreCapacities
+    }
+
+    const queries = {
+      nodeSumsOrigin: NodeSums({
+        direction: "origin",
+        filters: nodeSumsFilters,
+      }),
+      nodeSumsTarget: NodeSums({
+        direction: "target",
+        filters: nodeSumsFilters,
+      }),
+      flowTypeInfo: FlowType({}),
+      outbreaks: Outbreak({}),
+      stakeholders: Stakeholder({ by: "id" }),
+    }
+
+    // Get query results.
+    const results = await execute({ queries })
+    setOutbreaks(results.outbreaks)
+    setStakeholders(results.stakeholders)
+    setNodeSumsOrigin(results.nodeSumsOrigin)
+    setNodeSumsTarget(results.nodeSumsTarget)
+    setLoaded(true)
+    setDidFirstLoad(true)
+  }, [ghsaOnly, minYear, maxYear, coreCapacities, events])
 
   // Define filter content
-  const outbreakOptions = data.outbreaks.map(d => {
-    return { value: d.id, label: d.name };
-  });
-  const filterSelections = ghsaOnly !== "event" ? coreCapacities : events;
+  const outbreakOptions = outbreaks.map(d => {
+    return { value: d.id, label: d.name }
+  })
+  const filterSelections = ghsaOnly !== "event" ? coreCapacities : events
 
   const filterSelectionBadges = filterSelections.length > 0 && (
     <div>
@@ -114,7 +151,7 @@ const Orgs = ({
         )}
       </div>
     </div>
-  );
+  )
 
   const filters = (
     <div className={styles.filterContainer}>
@@ -150,10 +187,10 @@ const Orgs = ({
       )}
       {filterSelectionBadges}
     </div>
-  );
+  )
 
   const yearRange =
-    minYear === maxYear ? `${minYear}` : `${minYear} - ${maxYear}`;
+    minYear === maxYear ? `${minYear}` : `${minYear} - ${maxYear}`
 
   /**
    * Given the transaction type and the support type, returns the flow type.
@@ -166,46 +203,46 @@ const Orgs = ({
     if (transactionType === "disbursed") {
       switch (supportType) {
         case "inkind":
-          return "provided_inkind";
+          return "provided_inkind"
         case "funds":
         default:
-          return "disbursed_funds";
+          return "disbursed_funds"
       }
     } else if (transactionType === "committed") {
       switch (supportType) {
         case "inkind":
-          return "committed_inkind";
+          return "committed_inkind"
         case "funds":
         default:
-          return "committed_funds";
+          return "committed_funds"
       }
     }
-  };
+  }
 
   // Get flow type
   const flowType = getFlowTypeFromArgs({
     transactionType: transactionType,
     supportType: supportType,
-  });
+  })
 
   // Get pretty name for flow type
   const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
-    .display_name;
+    .display_name
 
   const getMapTitle = ({ supportType, entityRole }) => {
     if (supportType === "funds" || supportType === "inkind") {
       if (entityRole === "recipient") {
-        return "Recipients by country";
-      } else return "Funders by country";
+        return "Recipients by country"
+      } else return "Funders by country"
     } else if (supportType === "jee") {
-      return "JEE score by country";
+      return "JEE score by country"
     } else if (supportType === "needs_met") {
-      return "Combined financial resources and need metric";
-    } else return "[Error] Unknown map metric";
-  };
+      return "Combined financial resources and need metric"
+    } else return "[Error] Unknown map metric"
+  }
 
   // Get whether metric has transaction type
-  const metricHasTransactionType = ["funds", "inkind"].includes(supportType);
+  const metricHasTransactionType = ["funds", "inkind"].includes(supportType)
 
   // Get data for tables and tooltips.
   // Define "columns" for map data.
@@ -302,8 +339,8 @@ const Orgs = ({
             coreCapacities,
           }),
       },
-    ];
-  };
+    ]
+  }
 
   // // get table data
   // const tableData = [];
@@ -312,7 +349,7 @@ const Orgs = ({
   // }
 
   // Get top funder table and top recipient table
-  const tableInstances = [];
+  const tableInstances = []
 
   const tables = [
     [
@@ -327,7 +364,7 @@ const Orgs = ({
       </div>,
       "Funder",
       "origin",
-      "nodeSumsOrigin",
+      nodeSumsOrigin,
     ],
     [
       <div className={styles.subtitle}>
@@ -341,21 +378,14 @@ const Orgs = ({
       </div>,
       "Recipient",
       "target",
-      "nodeSumsTarget",
+      nodeSumsTarget,
     ],
-  ];
-  // getNodeLinkList({
-  //   urlType: "details",
-  //   nodeList: JSON.parse(d),
-  //   entityRole: table[1].toLowerCase(),
-  //   id: undefined,
-  //   otherId: undefined,
-  // }),
-  tables.forEach(([subtitleJsx, role, roleSlug, dataKey]) => {
-    const orgTableData = [];
-    for (const [k, v] of Object.entries(data[dataKey])) {
+  ]
+  tables.forEach(([subtitleJsx, role, roleSlug, data]) => {
+    const orgTableData = []
+    for (const [k, v] of Object.entries(data)) {
       if (v[flowType] !== undefined) {
-        const stakeholderInfo = data.stakeholders[k];
+        const stakeholderInfo = stakeholders[k]
         orgTableData.push({
           [roleSlug]: getNodeLinkList({
             urlType: "details",
@@ -368,14 +398,14 @@ const Orgs = ({
           value: v[flowType],
           shID: k,
           stakeholderName: stakeholderInfo.name,
-        });
+        })
       }
     }
 
-    const tableRowDefs = getTableColDefs(roleSlug, role.toLowerCase()); // target, recipient
+    const tableRowDefs = getTableColDefs(roleSlug, role.toLowerCase()) // target, recipient
 
-    const updateTooltipData = ({ d, nodeType, dataKey, mapData }) => {
-      const datum = data[dataKey][d.id];
+    const updateTooltipData = ({ d, nodeType, data, mapData }) => {
+      const datum = data[d.id]
 
       // Get tooltip data on hover
       const tooltipData =
@@ -388,8 +418,8 @@ const Orgs = ({
               jeeScores: [],
               coreCapacities: [],
               colorScale: () => {
-                if (nodeType === "origin") return greens[greens.length - 1];
-                else return purples[purples.length - 1];
+                if (nodeType === "origin") return greens[greens.length - 1]
+                else return purples[purples.length - 1]
               },
               entityRole: nodeType === "origin" ? "funder" : "recipient",
               minYear,
@@ -397,13 +427,13 @@ const Orgs = ({
               flowType,
               simple: false,
             })
-          : undefined;
+          : undefined
       if (tooltipData && tooltipData.colorValue === undefined)
-        tooltipData.colorValue = 1;
-      setHoveredEntity(d.id);
-      setTooltipNodeData(d);
-      setTooltipData(tooltipData);
-    };
+        tooltipData.colorValue = 1
+      setHoveredEntity(d.id)
+      setTooltipNodeData(d)
+      setTooltipData(tooltipData)
+    }
     const tableColumns = [
       {
         title: role,
@@ -432,7 +462,7 @@ const Orgs = ({
         type: "text",
         hide: true,
       },
-    ];
+    ]
     tableInstances.push(
       <div>
         <h2>{subtitleJsx}</h2>
@@ -445,14 +475,14 @@ const Orgs = ({
               "data-for": "orgTooltip",
               onMouseEnter: () => {
                 updateTooltipData({
-                  d: data.stakeholders[d.shID],
+                  d: stakeholders[d.shID],
                   nodeType: roleSlug,
-                  dataKey,
+                  data,
                   mapData: [d],
-                });
-                ReactTooltip.rebuild();
+                })
+                ReactTooltip.rebuild()
               },
-            };
+            }
           }}
           paging={true}
           noNativeSorting={true}
@@ -460,330 +490,158 @@ const Orgs = ({
           tableData={orgTableData}
           sortByProp={"value"}
         />
-      </div>
-    );
-  });
+      </div>,
+    )
+  })
 
-  useEffect(ReactTooltip.rebuild, []);
+  // get data on page render or when options changed
+  useEffect(() => {
+    if (!loaded) getData()
+  }, [getData, loaded])
 
+  // reload data if parameters are changed
+  useEffect(() => {
+    setLoaded(false)
+  }, [ghsaOnly, minYear, maxYear, coreCapacities, events])
+
+  // rebind tooltips on page render
+  useEffect(ReactTooltip.rebuild, [])
+
+  // JSX //
   return (
-    <div className={styles.orgs}>
-      <Drawer
+    <div className={classNames(styles.orgs, "pageContainer")}>
+      {
+        // HEADER
+        <div className={styles.header}>
+          <div className={styles.title}>Funders and recipients</div>
+          {
+            // MINI LOADING SPINNER
+            <Loading
+              {...{
+                loaded: loaded || !didFirstLoad,
+                small: true,
+              }}
+            />
+          }
+        </div>
+      }
+      <Loading
         {...{
-          openDefault: false,
-          label: "Options",
-          contentSections: [
-            <div className={styles.menu}>
-              <div className={styles.menuContent}>
-                <GhsaToggle
-                  label={"Select data"}
-                  ghsaOnly={ghsaOnly}
-                  setGhsaOnly={setGhsaOnly}
-                />
-                <RadioToggle
-                  label={"Select support type"}
-                  callback={setSupportType}
-                  curVal={supportType}
-                  choices={[
-                    {
-                      name: "Financial support",
-                      value: "funds",
-                    },
-                    {
-                      name: "In-kind support",
-                      value: "inkind",
-                      tooltip:
-                        "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages.",
-                    },
-                  ]}
-                />
-                {metricHasTransactionType && (
+          loaded: didFirstLoad,
+          align: "center",
+          message: "Loading tables",
+        }}
+      >
+        {
+          // SUBTITLE
+          <div className={styles.instructions}>
+            Click stakeholder name in table to view details.
+          </div>
+        }
+        <Drawer
+          {...{
+            openDefault: true,
+            label: "Options",
+            contentSections: [
+              <div className={styles.menu}>
+                <div className={styles.menuContent}>
+                  <GhsaToggle
+                    label={"Select data"}
+                    ghsaOnly={ghsaOnly}
+                    setGhsaOnly={setGhsaOnly}
+                  />
                   <RadioToggle
-                    label={"Select funding type"}
-                    callback={setTransactionType}
-                    curVal={transactionType}
+                    label={"Select support type"}
+                    callback={setSupportType}
+                    curVal={supportType}
                     choices={[
                       {
-                        name: "Disbursed",
-                        value: "disbursed",
+                        name: "Financial support",
+                        value: "funds",
                       },
                       {
-                        name: "Committed",
-                        value: "committed",
+                        name: "In-kind support",
+                        value: "inkind",
+                        tooltip:
+                          "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages.",
                       },
                     ]}
                   />
-                )}
-                {filters}
-                <TimeSlider
-                  side={"left"}
-                  hide={supportType === "jee"}
-                  minYearDefault={Settings.startYear}
-                  maxYearDefault={Settings.endYear}
-                  onAfterChange={years => {
-                    setMinYear(years[0]);
-                    setMaxYear(years[1]);
+                  {metricHasTransactionType && (
+                    <RadioToggle
+                      label={"Select funding type"}
+                      callback={setTransactionType}
+                      curVal={transactionType}
+                      choices={[
+                        {
+                          name: "Committed",
+                          value: "committed",
+                        },
+                        {
+                          name: "Disbursed",
+                          value: "disbursed",
+                        },
+                      ]}
+                    />
+                  )}
+                  {filters}
+                  <TimeSlider
+                    side={"left"}
+                    hide={supportType === "jee"}
+                    minYearDefault={Settings.startYear}
+                    maxYearDefault={Settings.endYear}
+                    onAfterChange={years => {
+                      setMinYear(years[0])
+                      setMaxYear(years[1])
+                    }}
+                  />
+                </div>
+              </div>,
+            ],
+          }}
+        />
+        <div className={styles.content}>
+          <div className={styles.tables}>{tableInstances.map(d => d)}</div>
+          {<SourceText />}
+        </div>
+        {
+          // Tooltip for info tooltip icons.
+          <ReactTooltip
+            id={"orgTooltip"}
+            type="light"
+            className={classNames(tooltipStyles.tooltip, tooltipStyles.simple)}
+            place="top"
+            delayShow={500}
+            offset={{ top: 5 }}
+            effect="float"
+            clickable={true}
+            afterShow={function(e) {
+              setRevealed(true)
+            }}
+            afterHide={function(e) {
+              setRevealed(false)
+            }}
+            eventOff={null}
+            getContent={() =>
+              tooltipData && (
+                <InfoBox
+                  {...{
+                    simple: false,
+                    entityRole,
+                    supportType,
+                    nodeData: tooltipNodeData,
+                    infoBoxData: tooltipData,
+                    setNodeData: setTooltipNodeData,
+                    revealed,
                   }}
                 />
-              </div>
-            </div>,
-          ],
-        }}
-      />
-      <div className={styles.content}>
-        <div className={styles.tables}>{tableInstances.map(d => d)}</div>
-        {<SourceText />}
-      </div>
-      {
-        // Tooltip for info tooltip icons.
-        <ReactTooltip
-          id={"orgTooltip"}
-          type="light"
-          className={classNames(tooltipStyles.tooltip, tooltipStyles.simple)}
-          place="top"
-          delayShow={500}
-          offset={{ top: 5 }}
-          effect="float"
-          clickable={true}
-          afterShow={function(e) {
-            setRevealed(true);
-          }}
-          afterHide={function(e) {
-            setRevealed(false);
-          }}
-          eventOff={null}
-          getContent={() =>
-            tooltipData && (
-              <InfoBox
-                {...{
-                  simple: false,
-                  entityRole,
-                  supportType,
-                  nodeData: tooltipNodeData,
-                  infoBoxData: tooltipData,
-                  setNodeData: setTooltipNodeData,
-                  revealed,
-                }}
-              />
-            )
-          }
-        />
-      }
+              )
+            }
+          />
+        }
+      </Loading>
     </div>
-  );
-};
+  )
+}
 
-const remountComponent = ({
-  component,
-  minYear,
-  maxYear,
-  props,
-  id,
-  entityRole,
-  ghsaOnly,
-  events,
-}) => {
-  const remount =
-    component.props.minYear !== minYear ||
-    component.props.maxYear !== maxYear ||
-    component.props.entityRole !== entityRole ||
-    component.props.ghsaOnly !== ghsaOnly ||
-    component.props.coreCapacities.toString() !==
-      props.coreCapacities.toString() ||
-    component.props.events.toString() !== events.toString();
-  return remount;
-};
-
-export const renderOrgs = ({
-  component,
-  setComponent,
-  loading,
-  id,
-  entityRole,
-  setEntityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
-  events,
-  setEvents,
-  ...props
-}) => {
-  // Set IDs
-  id = parseInt(id);
-
-  if (loading) {
-    return <div className={"placeholder"} />;
-  } else if (
-    component === null ||
-    (component &&
-      remountComponent({
-        component: component,
-        props: props,
-        id: id,
-        entityRole: entityRole,
-        ghsaOnly: ghsaOnly,
-        minYear: props.minYear,
-        maxYear: props.maxYear,
-        events,
-      }))
-  ) {
-    getComponentData({
-      setComponent: setComponent,
-      id: id,
-      flowTypeInfo: flowTypeInfo,
-      ghsaOnly: ghsaOnly,
-      setGhsaOnly: setGhsaOnly,
-      entityRole: entityRole,
-      setEntityRole: setEntityRole,
-      setEvents,
-      events,
-      ...props,
-    });
-
-    return component ? component : <div className={"placeholder"} />;
-  } else {
-    return component;
-  }
-};
-
-/**
- * Returns data for the details page given the entity type and id.
- * TODO make this work for response funding page
- * @method getComponentData
- * @param  {[type]}       setComponent [description]
- * @param  {[type]}       id                  [description]
- * @param  {[type]}       entityRole          [description]
- */
-const getComponentData = async ({
-  setComponent,
-  id,
-  entityRole,
-  setEntityRole,
-  flowTypeInfo,
-  ghsaOnly,
-  setGhsaOnly,
-  setEvents,
-  loaded,
-  setLoaded,
-  ...props
-}) => {
-  // Define typical base query parameters used in FlowQuery,
-  // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
-  // modified in code below.
-  const baseQueryParams = {
-    focus_node_ids: null,
-    flow_type_ids: [1, 2, 3, 4],
-    start_date: `${props.minYear}-01-01`, // TODO check these two
-    end_date: `${props.maxYear}-12-31`,
-    by_neighbor: false,
-    filters: { parent_flow_info_filters: [] },
-    summaries: {},
-    include_master_summary: false,
-    node_category: ["organization"],
-    // by_node_categories: ["country", "organization"]
-  };
-
-  // If core capacity filters provided, use those
-  if (props.coreCapacities.length > 0) {
-    baseQueryParams.filters.parent_flow_info_filters.push(
-      ["core_capacities"].concat(props.coreCapacities)
-    );
-  }
-
-  // // If outbreak response filters provided, use those
-  // // TODO
-  // if (props.events && props.events.length > 0) {
-  //   baseQueryParams.filters.parent_flow_info_filters.push(
-  //     ["outbreak_id"].concat(props.events)
-  //   );
-  // }
-
-  // If GHSA page, then filter by GHSA projects.
-  if (ghsaOnly === "true")
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "ghsa_funding",
-      "True",
-    ]);
-  else if (ghsaOnly === "event") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "outbreak_id:not",
-      null,
-    ]);
-  } else if (ghsaOnly === "capacity") {
-    baseQueryParams.filters.parent_flow_info_filters.push([
-      "response_or_capacity:not",
-      "response",
-    ]);
-  }
-
-  const nodeSumsFilters = {
-    "Stakeholder.cat": ["organization"],
-    "Stakeholder.subcat": [["neq", ["sub-organization"]]],
-    "Stakeholder.slug": [["neq", ["not-reported"]]],
-    "Flow.year": [["gt_eq", props.minYear], ["lt_eq", props.maxYear]],
-  };
-
-  // add assistance type filter
-  if (ghsaOnly === "true") {
-    nodeSumsFilters["Flow.is_ghsa"] = [true];
-  } else if (ghsaOnly === "event") {
-    nodeSumsFilters["Flow.response_or_capacity"] = ["response"];
-  } else if (ghsaOnly === "capacity") {
-    nodeSumsFilters["Flow.response_or_capacity"] = ["capacity"];
-  }
-
-  // add outbreak events filters
-  if (props.events && props.events.length > 0) {
-    nodeSumsFilters["Event.id"] = props.events;
-  }
-  if (props.coreCapacities.length > 0) {
-    nodeSumsFilters["Core_Capacity.name"] = props.coreCapacities;
-  }
-
-  // // CONTEXT
-  // const context = useContext(appContext) || defaultContext;
-
-  const queries = {
-    nodeSumsOrigin: NodeSums({
-      direction: "origin",
-      filters: nodeSumsFilters,
-    }),
-    nodeSumsTarget: NodeSums({
-      direction: "target",
-      filters: nodeSumsFilters,
-    }),
-    flowTypeInfo: FlowType({}),
-    outbreaks: Outbreak({}),
-    stakeholders: Stakeholder({ by: "id" }),
-  };
-
-  // Get query results.
-  setLoaded(false);
-  const results = await execute({ queries });
-  setLoaded(true);
-
-  // Feed results and other data to the details component and mount it.
-  setComponent(
-    <Orgs
-      id={id}
-      entityRole={entityRole}
-      setEntityRole={setEntityRole}
-      data={results}
-      flowTypeInfo={results.flowTypeInfo}
-      ghsaOnly={ghsaOnly}
-      setGhsaOnly={setGhsaOnly}
-      setComponent={setComponent}
-      activeTab={props.activeTab}
-      minYear={props.minYear}
-      maxYear={props.maxYear}
-      setMinYear={props.setMinYear}
-      setMaxYear={props.setMaxYear}
-      coreCapacities={props.coreCapacities}
-      setCoreCapacities={props.setCoreCapacities}
-      events={props.events}
-      setEvents={setEvents}
-    />
-  );
-};
-
-export default Orgs;
+export default Orgs
