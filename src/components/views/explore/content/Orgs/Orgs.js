@@ -15,13 +15,7 @@ import FilterSelections from "../../../../common/FilterSelections/FilterSelectio
 import Loading from "../../../../common/Loading/Loading"
 import Chevron from "../../../../common/Chevron/Chevron.js"
 import Drawer from "../../../../common/Drawer/Drawer.js"
-import {
-  getMapTooltipLabel,
-  getUnknownValueExplanation,
-  getMapMetricValue,
-  greens,
-  purples,
-} from "../../../../map/MapUtil.js"
+import { greens, purples } from "../../../../map/MapUtil.js"
 import {
   execute,
   NodeSums,
@@ -294,124 +288,8 @@ const Orgs = ({
   const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
     .display_name
 
-  const getMapTitle = ({ supportType, entityRole }) => {
-    if (supportType === "funds" || supportType === "inkind") {
-      if (entityRole === "recipient") {
-        return "Recipients by country"
-      } else return "Funders by country"
-    } else if (supportType === "jee") {
-      return "JEE score by country"
-    } else if (supportType === "needs_met") {
-      return "Combined financial resources and need metric"
-    } else return "[Error] Unknown map metric"
-  }
-
   // Get whether metric has transaction type
   const metricHasTransactionType = ["funds", "inkind"].includes(supportType)
-
-  // Get data for tables and tooltips.
-  // Define "columns" for map data.
-  const getTableColDefs = (nodeTypeForColDef, entityRoleForColDef) => {
-    return [
-      {
-        title: "Organization",
-        prop: nodeTypeForColDef,
-        type: "text",
-        func: d => JSON.stringify(d[nodeTypeForColDef]),
-        render: d =>
-          getNodeLinkList({
-            urlType: "details",
-            nodeList: JSON.parse(d),
-            entityRole: entityRoleForColDef,
-            id: undefined,
-            otherId: undefined,
-          }),
-      },
-      {
-        title: "Map metric raw value",
-        prop: "value_raw",
-        type: "num",
-        func: d =>
-          getMapMetricValue({
-            d,
-            supportType,
-            flowType,
-            coreCapacities,
-            forTooltip: false,
-          }),
-      },
-      {
-        title: "Map metric display value",
-        prop: "value",
-        type: "num",
-        render: d => Util.formatValue(d, supportType),
-        func: d =>
-          getMapMetricValue({
-            d,
-            supportType,
-            flowType,
-            coreCapacities,
-            forTooltip: true,
-          }),
-      },
-      {
-        title: "Unknown value explanation (if applicable)",
-        prop: "unknown_explanation",
-        type: "text",
-        render: d => Util.formatValue(d, "text"),
-        func: d =>
-          getUnknownValueExplanation({
-            datum: d,
-            value: getMapMetricValue({
-              d,
-              supportType,
-              flowType,
-              coreCapacities,
-            }),
-            entityRole: entityRoleForColDef,
-          }),
-      },
-      {
-        title: "Stakeholder ID",
-        prop: "shID",
-        type: "text",
-        render: d => d,
-      },
-      {
-        title: "Stakeholder name",
-        prop: "stakeholderName",
-        type: "text",
-        render: d => d,
-      },
-      {
-        title: "Map tooltip label",
-        prop: "tooltip_label",
-        type: "text",
-        render: d =>
-          getMapTooltipLabel({
-            val: d,
-            supportType,
-            flowType,
-            minYear,
-            maxYear,
-            entityRoleForColDef,
-          }),
-        func: d =>
-          getMapMetricValue({
-            d,
-            supportType,
-            flowType,
-            coreCapacities,
-          }),
-      },
-    ]
-  }
-
-  // // get table data
-  // const tableData = [];
-  // for (const [k, v] of Object.entries(data.nodeSumsOrigin)) {
-  //   tableData.push;
-  // }
 
   // Get top funder table and top recipient table
   const tableInstances = []
@@ -466,8 +344,6 @@ const Orgs = ({
         })
       }
     }
-
-    const tableRowDefs = getTableColDefs(roleSlug, role.toLowerCase()) // target, recipient
 
     const updateTooltipData = ({ d, nodeType, data, mapData }) => {
       const datum = data[d.id]

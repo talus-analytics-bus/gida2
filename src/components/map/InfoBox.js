@@ -1,9 +1,7 @@
 import React from "react"
-import { Link } from "react-router-dom"
 import styles from "./infobox.module.scss"
 import classNames from "classnames"
 import Util from "../misc/Util.js"
-import { lightHatchColors } from "./MapUtil"
 import Button from "../common/Button/Button.js"
 // import * as d3 from "d3/dist/d3.min";
 
