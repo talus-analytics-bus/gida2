@@ -64,12 +64,16 @@ const Nav = ({ page, ...props }) => {
           >
             Funders and recipients
           </Link>
-          <Link
-            className={page === "analysis" ? styles.active : ""}
-            to="/analysis"
-          >
-            Analysis
-          </Link>
+          {
+            // Analysis page commented out until more content is developed,
+            // e.g., a Sankey diagram
+            // <Link
+            //   className={page === "analysis" ? styles.active : ""}
+            //   to="/analysis"
+            // >
+            //   Analysis
+            // </Link>
+          }
           <Link className={page === "data" ? styles.active : ""} to="/data">
             Data
           </Link>
