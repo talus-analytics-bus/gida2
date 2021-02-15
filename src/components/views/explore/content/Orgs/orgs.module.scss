@@ -16,6 +16,23 @@
   }
   .subtitle {
     @include subtitle;
+    svg {
+      top: unset;
+    }
+  }
+  .introduction {
+    margin-bottom: 20px;
+    max-width: 850px;
+    font-size: 1.6rem;
+    line-height: 1.4;
+    > span {
+      background-color: #e0e0e0;
+      padding: 1px 6px;
+      > span {
+        margin-left: 10px;
+        color: $caret-blue;
+      }
+    }
   }
   .instructions {
     font-style: italic;
@@ -34,6 +51,7 @@
   }
   .filterContainer {
     width: 400px;
+    @include spaceChildrenVert(20px);
   }
   .tables {
     display: flex;
@@ -76,7 +94,7 @@
     padding: 0 20px 20px;
     .filterBadges {
       font-weight: bold;
-      margin: 20px 0 5px;
+      margin: 0 0 5px;
     }
     .subtitle {
       margin-top: 0;

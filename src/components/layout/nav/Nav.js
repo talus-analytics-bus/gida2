@@ -1,22 +1,22 @@
-import React from "react";
-import classNames from "classnames";
-import { Link } from "react-router-dom";
-import styles from "./nav.module.scss";
-import logoLight from "../../../assets/images/tracking.png";
+import React from "react"
+import classNames from "classnames"
+import { Link } from "react-router-dom"
+import styles from "./nav.module.scss"
+import logoLight from "../../../assets/images/tracking.png"
 // import logoLight from "../../../assets/images/logo-light.png";
-import logoDark from "../../../assets/images/tracking-dark-mode.png";
+import logoDark from "../../../assets/images/tracking-dark-mode.png"
 // import logoDark from "../../../assets/images/logo-dark.png"; // TODO add dark version of logo
-import ReactTooltip from "react-tooltip";
-import Menu from "./content/Menu/Menu.js";
-import Search from "../../common/Search/Search.js";
-import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
+import ReactTooltip from "react-tooltip"
+import Menu from "./content/Menu/Menu.js"
+import Search from "../../common/Search/Search.js"
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js"
 
 const Nav = ({ page, ...props }) => {
-  const logo = props.isDark ? logoDark : logoLight;
-  const [openMenu, setOpenMenu] = React.useState("");
+  const logo = props.isDark ? logoDark : logoLight
+  const [openMenu, setOpenMenu] = React.useState("")
   const toggleMenu = name => {
-    setOpenMenu(openMenu !== name ? name : "");
-  };
+    setOpenMenu(openMenu !== name ? name : "")
+  }
 
   return (
     <div
@@ -28,7 +28,7 @@ const Nav = ({ page, ...props }) => {
           [styles.dark]: props.isDark,
           [styles.wide]: page === "explore-map",
         },
-        styles[page]
+        styles[page],
       )}
     >
       <div
@@ -36,7 +36,7 @@ const Nav = ({ page, ...props }) => {
           styles.content,
           { wide: page === "explore-map" },
           "pageContainer",
-          "noPadding"
+          "noPadding",
         )}
       >
         <Link to="/">
@@ -62,7 +62,7 @@ const Nav = ({ page, ...props }) => {
             }
             to="/explore/org"
           >
-            Orgs
+            Funders and recipients
           </Link>
           <Link
             className={page === "analysis" ? styles.active : ""}
@@ -102,7 +102,7 @@ const Nav = ({ page, ...props }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Nav;
+export default Nav

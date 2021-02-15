@@ -34,6 +34,21 @@ import SourceText from "../../../../common/SourceText/SourceText.js"
 import InfoBox from "../../../../map/InfoBox.js"
 
 // FC for Orgs.
+/**
+ * Render tables of stakeholders and the amount of assistance they
+ * have provided or received.
+ *
+ * @param {*} {
+ *   data,
+ *   entityRole,
+ *   setEntityRole,
+ *   ghsaOnly,
+ *   setGhsaOnly,
+ *   flowTypeInfo,
+ *   ...props
+ * }
+ * @return {*}
+ */
 const Orgs = ({
   data,
   entityRole,
@@ -66,15 +81,48 @@ const Orgs = ({
   const [stakeholders, setStakeholders] = useState({})
   const [nodeSumsOrigin, setNodeSumsOrigin] = useState([])
   const [nodeSumsTarget, setNodeSumsTarget] = useState([])
+  const [stakeholderCats, setStakeholderCats] = useState("all")
 
   // FUNCTIONS //
+  /**
+   * Set correct `cat` field filters based on currently selected
+   * stakeholder category
+   *
+   * @param {*} { stakeholderCats, filters }
+   */
+  const setFiltersFromCats = ({ stakeholderCats, filters }) => {
+    switch (stakeholderCats) {
+      case "all":
+      default:
+        filters["Stakeholder.cat"] = undefined
+        return
+      case "governments":
+        filters["Stakeholder.cat"] = ["government"]
+        return
+      case "organizations":
+        filters["Stakeholder.cat"] = ["organization"]
+        return
+    }
+  }
+
+  /**
+   * Returns noun to use as suffix for "funders" and "recipients"
+   * based on currently selected stakeholder category
+   *
+   * @param {*} { stakeholderCats }
+   * @return {*}
+   */
+  const getNounFromCats = ({ stakeholderCats }) => {
+    if (stakeholderCats === "all") return ""
+    else return stakeholderCats
+  }
   const getData = useCallback(async () => {
     const nodeSumsFilters = {
-      "Stakeholder.cat": ["organization"],
-      "Stakeholder.subcat": [["neq", ["sub-organization"]]],
+      "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
       "Stakeholder.slug": [["neq", ["not-reported"]]],
       "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
     }
+    setFiltersFromCats({ stakeholderCats, filters: nodeSumsFilters })
 
     // add assistance type filter
     if (ghsaOnly === "true") {
@@ -115,7 +163,14 @@ const Orgs = ({
     setNodeSumsTarget(results.nodeSumsTarget)
     setLoaded(true)
     setDidFirstLoad(true)
-  }, [ghsaOnly, minYear, maxYear, coreCapacities, events])
+  }, [ghsaOnly, minYear, maxYear, coreCapacities, events, stakeholderCats])
+
+  // CONSTANTS //
+  const titleSuffix = getNounFromCats({ stakeholderCats })
+  const title =
+    titleSuffix !== ""
+      ? `Funders and recipients (${titleSuffix})`
+      : "Funders and recipients"
 
   // Define filter content
   const outbreakOptions = outbreaks.map(d => {
@@ -186,6 +241,16 @@ const Orgs = ({
         />
       )}
       {filterSelectionBadges}
+      <TimeSlider
+        side={"left"}
+        hide={supportType === "jee"}
+        minYearDefault={Settings.startYear}
+        maxYearDefault={Settings.endYear}
+        onAfterChange={years => {
+          setMinYear(years[0])
+          setMaxYear(years[1])
+        }}
+      />
     </div>
   )
 
@@ -356,10 +421,10 @@ const Orgs = ({
       <div className={styles.subtitle}>
         <div className={"flexrow"}>
           <Chevron type={"funder"} />
-          <div>Top organizational funders ({yearRange})</div>
-        </div>
-        <div class={"normal"}>
-          <i>Countries and government agencies not shown</i>
+          <div>
+            Top funders ({titleSuffix !== "" ? `${titleSuffix}, ` : ""}
+            {yearRange})
+          </div>
         </div>
       </div>,
       "Funder",
@@ -370,10 +435,10 @@ const Orgs = ({
       <div className={styles.subtitle}>
         <div className={"flexrow"}>
           <Chevron type={"recipient"} />
-          <div>Top organizational recipients ({yearRange})</div>
-        </div>
-        <div class={"normal"}>
-          <i>Countries and government agencies not shown</i>
+          <div>
+            Top recipients ({titleSuffix !== "" ? `${titleSuffix}, ` : ""}
+            {yearRange})
+          </div>
         </div>
       </div>,
       "Recipient",
@@ -489,6 +554,7 @@ const Orgs = ({
           tableColumns={tableColumns}
           tableData={orgTableData}
           sortByProp={"value"}
+          noColClick={true}
         />
       </div>,
     )
@@ -502,7 +568,7 @@ const Orgs = ({
   // reload data if parameters are changed
   useEffect(() => {
     setLoaded(false)
-  }, [ghsaOnly, minYear, maxYear, coreCapacities, events])
+  }, [stakeholderCats, ghsaOnly, minYear, maxYear, coreCapacities, events])
 
   // rebind tooltips on page render
   useEffect(ReactTooltip.rebuild, [])
@@ -513,7 +579,7 @@ const Orgs = ({
       {
         // HEADER
         <div className={styles.header}>
-          <div className={styles.title}>Funders and recipients</div>
+          <div className={styles.title}>{title}</div>
           {
             // MINI LOADING SPINNER
             <Loading
@@ -533,14 +599,32 @@ const Orgs = ({
         }}
       >
         {
-          // SUBTITLE
-          <div className={styles.instructions}>
-            Click stakeholder name in table to view details.
-          </div>
+          // SUBTITLE and INSTRUCTIONS
+          <>
+            <p className={styles.introduction}>
+              The tables below list funders and recipients ordered by the amount
+              of assistance they contribute or receive. Click on any stakeholder
+              name in the tables for additional detail on their funding. Use the
+              filters in{" "}
+              <span>
+                Options
+                <span
+                  style={{ transform: "rotate(180deg)" }}
+                  className={"glyphicon glyphicon-chevron-up"}
+                />
+              </span>{" "}
+              to change what is shown.
+            </p>
+            {
+              // <div className={styles.instructions}>
+              //   Click stakeholder name in table to view details.
+              // </div>
+            }
+          </>
         }
         <Drawer
           {...{
-            openDefault: true,
+            openDefault: false,
             label: "Options",
             contentSections: [
               <div className={styles.menu}>
@@ -549,6 +633,25 @@ const Orgs = ({
                     label={"Select data"}
                     ghsaOnly={ghsaOnly}
                     setGhsaOnly={setGhsaOnly}
+                  />
+                  <RadioToggle
+                    label={"Select stakeholder category"}
+                    callback={setStakeholderCats}
+                    curVal={stakeholderCats}
+                    choices={[
+                      {
+                        name: "All stakeholders",
+                        value: "all",
+                      },
+                      {
+                        name: "Governments only",
+                        value: "governments",
+                      },
+                      {
+                        name: "Organizations only",
+                        value: "organizations",
+                      },
+                    ]}
                   />
                   <RadioToggle
                     label={"Select support type"}
@@ -585,16 +688,6 @@ const Orgs = ({
                     />
                   )}
                   {filters}
-                  <TimeSlider
-                    side={"left"}
-                    hide={supportType === "jee"}
-                    minYearDefault={Settings.startYear}
-                    maxYearDefault={Settings.endYear}
-                    onAfterChange={years => {
-                      setMinYear(years[0])
-                      setMaxYear(years[1])
-                    }}
-                  />
                 </div>
               </div>,
             ],
