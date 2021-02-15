@@ -46,17 +46,17 @@ const Nav = ({ page, ...props }) => {
                 ? styles.active
                 : ""
             }
-            to="/explore/map"
+            to="/map"
           >
             Map
           </Link>
           <Link
             className={
-              page === "explore-org" || page === "details-org"
+              page === "funders-and-recipients" || page === "details"
                 ? styles.active
                 : ""
             }
-            to="/explore/org"
+            to="funders-and-recipients"
           >
             Funders and recipients
           </Link>

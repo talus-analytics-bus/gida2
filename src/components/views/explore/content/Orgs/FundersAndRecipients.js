@@ -43,7 +43,7 @@ import InfoBox from "../../../../map/InfoBox.js"
  * }
  * @return {*}
  */
-const Orgs = ({
+const FundersAndRecipients = ({
   data,
   entityRole,
   setEntityRole,
@@ -613,4 +613,4 @@ const Orgs = ({
   )
 }
 
-export default Orgs
+export default FundersAndRecipients
