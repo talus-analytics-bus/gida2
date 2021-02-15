@@ -1,10 +1,10 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import styles from "./infobox.module.scss";
-import classNames from "classnames";
-import Util from "../misc/Util.js";
-import { lightHatchColors } from "./MapUtil";
-import Button from "../common/Button/Button.js";
+import React from "react"
+import { Link } from "react-router-dom"
+import styles from "./infobox.module.scss"
+import classNames from "classnames"
+import Util from "../misc/Util.js"
+import { lightHatchColors } from "./MapUtil"
+import Button from "../common/Button/Button.js"
 // import * as d3 from "d3/dist/d3.min";
 
 /**
@@ -28,14 +28,14 @@ const InfoBox = ({
   ...props
 }) => {
   // Track whether info box is visible or not
-  const [show, setShow] = React.useState(nodeData !== undefined);
+  const [show, setShow] = React.useState(nodeData !== undefined)
 
-  React.useEffect(() => setShow(nodeData !== undefined), [nodeData]);
+  React.useEffect(() => setShow(nodeData !== undefined), [nodeData])
   // Define whether the flow values are known or not (defined or not).
   // If they're not defined, will display a message explaining.
   const flowValuesKnown =
     infoBoxData.unknownValueExplanation === undefined &&
-    infoBoxData.flowValues !== undefined;
+    infoBoxData.flowValues !== undefined
 
   // Define header color -- use JEE color if JEE is view, otherwise use
   // color scale of selected metric.
@@ -44,17 +44,17 @@ const InfoBox = ({
       infoBoxData.colorValue === undefined ||
       infoBoxData.colorScale === undefined
         ? "#ccc"
-        : infoBoxData.colorScale(infoBoxData.colorValue);
+        : infoBoxData.colorScale(infoBoxData.colorValue)
     if (supportType === "jee" && infoBoxData.scoreOfNode !== undefined) {
       const baseColor = infoBoxData.colorScale(
-        Util.getScoreShortName(infoBoxData.scoreOfNode)
-      );
+        Util.getScoreShortName(infoBoxData.scoreOfNode),
+      )
       return {
         baseColor: baseColor,
         style: {
           backgroundColor: baseColor,
         },
-      };
+      }
     } else if (
       infoBoxData.colorValue === undefined ||
       infoBoxData.colorValue === -9999
@@ -64,7 +64,7 @@ const InfoBox = ({
         style: {
           backgroundColor: "#ccc",
         },
-      };
+      }
     }
     // else if (infoBoxData.colorValue === -8888) {
     //   const patternColor = !lightHatchColors.includes(baseColor)
@@ -83,19 +83,19 @@ const InfoBox = ({
         style: {
           backgroundColor: baseColor,
         },
-      };
+      }
     }
-  };
+  }
 
-  const headerStyle = getHeaderStyle({ infoBoxData, supportType });
-  const headerColor = headerStyle.baseColor;
+  const headerStyle = getHeaderStyle({ infoBoxData, supportType })
+  const headerColor = headerStyle.baseColor
   const missingScore =
     (supportType === "jee" ||
       supportType === "pvs" ||
       supportType === "needs_met") &&
-    infoBoxData.scoreOfNode === undefined;
+    infoBoxData.scoreOfNode === undefined
 
-  if (nodeData === undefined) return "";
+  if (nodeData === undefined) return ""
   // TODO slide up somehow
   else
     return (
@@ -121,8 +121,8 @@ const InfoBox = ({
               <div className={styles.close}>
                 <Button
                   callback={() => {
-                    setShow(false);
-                    if (onClose) onClose();
+                    setShow(false)
+                    if (onClose) onClose()
                   }}
                   type={"close"}
                 />
@@ -162,18 +162,20 @@ const InfoBox = ({
                 Click for more info, double-click to zoom
               </div>
             )}
-            {!simple && nodeData.id !== undefined && (
-              <Button
-                linkTo={`/details/${nodeData.id}/${entityRole}`}
-                label={"View funding details"}
-                type={"primary"}
-                sameWindow={false}
-              />
-            )}
+            {!simple &&
+              nodeData.id !== undefined &&
+              nodeData.subcat !== "region" && (
+                <Button
+                  linkTo={`/details/${nodeData.id}/${entityRole}`}
+                  label={"View funding details"}
+                  type={"primary"}
+                  sameWindow={false}
+                />
+              )}
           </div>
         </div>
       )
-    );
-};
+    )
+}
 
-export default InfoBox;
+export default InfoBox
