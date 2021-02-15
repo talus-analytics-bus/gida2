@@ -56,7 +56,7 @@ const Nav = ({ page, ...props }) => {
                 ? styles.active
                 : ""
             }
-            to="funders-and-recipients"
+            to="/funders-and-recipients"
           >
             Funders and recipients
           </Link>
