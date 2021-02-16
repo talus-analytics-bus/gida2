@@ -1,47 +1,47 @@
-import React, { useState } from "react";
-import classNames from "classnames";
-import styles from "./export.module.scss";
-import { Settings } from "../../../App.js";
-import Util from "../../misc/Util.js";
-import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries";
-import FlowQuery from "../../misc/FlowQuery.js";
-import NodeQuery from "../../misc/NodeQuery.js";
-import OutbreakQuery from "../../misc/OutbreakQuery.js";
-import Drawer from "../../common/Drawer/Drawer.js";
-import Checkbox from "../../common/Checkbox/Checkbox.js";
-import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
-import Loading from "../../common/Loading/Loading";
-import { core_capacities } from "../../misc/Data.js";
-import Button from "../../common/Button/Button.js";
-import { searchableSubcats } from "../../common/Search/Search.js";
-import axios from "axios";
+import React, { useState } from "react"
+import classNames from "classnames"
+import styles from "./export.module.scss"
+import { Settings } from "../../../App.js"
+import Util from "../../misc/Util.js"
+import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries"
+import FlowQuery from "../../misc/FlowQuery.js"
+import NodeQuery from "../../misc/NodeQuery.js"
+import OutbreakQuery from "../../misc/OutbreakQuery.js"
+import Drawer from "../../common/Drawer/Drawer.js"
+import Checkbox from "../../common/Checkbox/Checkbox.js"
+import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js"
+import Loading from "../../common/Loading/Loading"
+import { core_capacities } from "../../misc/Data.js"
+import Button from "../../common/Button/Button.js"
+import { searchableSubcats } from "../../common/Search/Search.js"
+import axios from "axios"
 
 // Content components
-import ExportTable, { getFlowQuery } from "./ExportTable.js";
+import ExportTable, { getFlowQuery } from "./ExportTable.js"
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
-  const [coreCapacities, setCoreCapacities] = useState([]);
-  const [supportType, setSupportType] = useState([]);
-  const [funders, setFunders] = useState([]);
-  const [recipients, setRecipients] = useState([]);
-  const [outbreaks, setOutbreaks] = useState([]);
-  const [exportTable, setExportTable] = useState(null);
-  const [nRecords, setNRecords] = useState(0);
-  const [curPage, setCurPage] = useState(1);
-  const [exportAction, setExportAction] = useState(undefined);
-  const [exportBody, setExportBody] = useState(undefined);
-  const [downloading, setDownloading] = useState(false);
+  const [coreCapacities, setCoreCapacities] = useState([])
+  const [supportType, setSupportType] = useState([])
+  const [funders, setFunders] = useState([])
+  const [recipients, setRecipients] = useState([])
+  const [outbreaks, setOutbreaks] = useState([])
+  const [exportTable, setExportTable] = useState(null)
+  const [nRecords, setNRecords] = useState(0)
+  const [curPage, setCurPage] = useState(1)
+  const [exportAction, setExportAction] = useState(undefined)
+  const [exportBody, setExportBody] = useState(undefined)
+  const [downloading, setDownloading] = useState(false)
 
   // if page is changed, show pagination loading
-  const [pageLoading, setPageLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false)
 
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
     funders.length > 0 ||
     outbreaks.length > 0 ||
-    recipients.length > 0;
+    recipients.length > 0
 
   const cols = [
     ["name", "Project name", true],
@@ -62,34 +62,36 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       `Amount disbursed`,
       // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
     ],
-  ];
+  ]
 
-  const [exportCols, setExportCols] = useState(cols.map(d => d[0]));
+  const [exportCols, setExportCols] = useState(cols.map(d => d[0]))
   const remove = (arr, aTmp) => {
-    const a = aTmp;
+    const a = aTmp
     let what,
       L = a.length,
-      ax;
+      ax
     while (L > 1 && arr.length) {
-      what = a[--L];
+      what = a[--L]
       while ((ax = arr.indexOf(what)) !== -1) {
-        arr.splice(ax, 1);
+        arr.splice(ax, 1)
       }
     }
-    return arr;
-  };
+    return arr
+  }
 
   const updateExportCols = value => {
-    const shouldRemove = exportCols.includes(value);
-    const editableExportCols = [...exportCols];
+    const shouldRemove = exportCols.includes(value)
+    const editableExportCols = [...exportCols]
 
-    if (shouldRemove)
-      setExportCols(editableExportCols.filter(d => d !== value));
+    if (shouldRemove) setExportCols(editableExportCols.filter(d => d !== value))
     else {
-      editableExportCols.push(value);
-      setExportCols(editableExportCols.sort());
+      editableExportCols.push(value)
+      setExportCols(editableExportCols.sort())
     }
-  };
+  }
+
+  console.log("funders")
+  console.log(funders)
 
   const dataTable = (
     <ExportTable
@@ -110,7 +112,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         setPageLoading,
       }}
     />
-  );
+  )
 
   const filterTest = (
     <FilterDropdown
@@ -121,19 +123,19 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         onChange: setCoreCapacities,
       }}
     />
-  );
+  )
 
   const clearSelections = () => {
-    setCoreCapacities([]);
-    setSupportType([]);
-    setFunders([]);
-    setRecipients([]);
-    setOutbreaks([]);
-  };
+    setCoreCapacities([])
+    setSupportType([])
+    setFunders([])
+    setRecipients([])
+    setOutbreaks([])
+  }
 
   const download = () => {
     // Erase download cookie.
-    Util.createCookie("download_completed", "no");
+    Util.createCookie("download_completed", "no")
     getFlowQuery({
       curPage,
       props: {
@@ -147,17 +149,17 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       ...props,
     }).then(paramsTmp => {
       // URL query params
-      const params = paramsTmp.params;
+      const params = paramsTmp.params
 
       // POST body JSON
-      const data = paramsTmp.data;
-      data.cols = cols.filter(d => exportCols.includes(d[0]));
+      const data = paramsTmp.data
+      data.cols = cols.filter(d => exportCols.includes(d[0]))
 
-      const queryString = params.toString();
+      const queryString = params.toString()
 
-      const exportBodyRows = [];
+      const exportBodyRows = []
       for (let key in data) {
-        const d = data[key];
+        const d = data[key]
         exportBodyRows.push(
           <div>
             <input
@@ -167,16 +169,16 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 value: JSON.stringify(d),
               }}
             />
-          </div>
-        );
+          </div>,
+        )
       }
-      const exportBody = exportBodyRows;
+      const exportBody = exportBodyRows
       setExportAction(
-        process.env.REACT_APP_API_URL + "/post/export?" + queryString
-      );
-      setExportBody(exportBody);
-    });
-  };
+        process.env.REACT_APP_API_URL + "/post/export?" + queryString,
+      )
+      setExportBody(exportBody)
+    })
+  }
 
   const exportFlowJsx = (
     <form action={exportAction} method="POST">
@@ -186,23 +188,23 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       </div>
       //{" "}
     </form>
-  );
+  )
 
   // When download data button is pressed, and form data are updated,
   // perform the POST request.
   React.useEffect(() => {
     if (exportAction !== undefined && exportBody !== undefined) {
-      const el = document.getElementById("download");
+      const el = document.getElementById("download")
       if (el) {
-        el.click();
+        el.click()
         const downloadCompletedCheck = setInterval(() => {
           if (Util.readCookie("download_completed") === "yes") {
-            clearInterval(downloadCompletedCheck);
+            clearInterval(downloadCompletedCheck)
           }
-        }, 500);
+        }, 500)
       }
     }
-  }, [exportAction, exportBody]);
+  }, [exportAction, exportBody])
 
   // Return JSX
   return (
@@ -254,7 +256,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: Object.values(data.stakeholders)
                       .filter(d => searchableSubcats.includes(d.subcat))
                       .map(d => {
-                        return { value: d.id, label: d.name };
+                        return { value: d.id, label: d.name }
                       }),
                     placeholder: "Funder",
                     onChange: setFunders,
@@ -267,7 +269,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: Object.values(data.stakeholders)
                       .filter(d => searchableSubcats.includes(d.subcat))
                       .map(d => {
-                        return { value: d.id, label: d.name };
+                        return { value: d.id, label: d.name }
                       }),
                     placeholder: "Recipient",
                     onChange: setRecipients,
@@ -278,7 +280,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   {...{
                     label: "",
                     options: data.outbreaks.map(d => {
-                      return { value: d.id, label: d.name };
+                      return { value: d.id, label: d.name }
                     }),
                     placeholder: "Event response",
                     onChange: setOutbreaks,
@@ -305,7 +307,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                               callback: updateExportCols,
                             }}
                           />
-                        )
+                        ),
                     )}
                   </div>
                   <div>
@@ -319,40 +321,18 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                       callback={
                         !showClear
                           ? undefined
-                          : () => {
-                              setDownloading(true);
-                              getFlowQuery({
-                                curPage,
-                                props: {
-                                  funders,
-                                  recipients,
-                                  coreCapacities,
-                                  outbreaks,
-                                  supportType,
-                                },
-                                forExport: true,
-                                ...props,
-                              }).then(paramsTmp => {
-                                // URL query params
-                                const params = paramsTmp.params;
-
-                                // POST body JSON
-                                const data = {
-                                  filters: paramsTmp.data.filters,
-                                };
-                                data.cols = cols.filter(d =>
-                                  exportCols.includes(d[0])
-                                );
-
-                                Excel({
-                                  method: "post",
-                                  data,
-                                  params,
-                                }).then(() => {
-                                  setDownloading(false);
-                                });
-                              });
-                            }
+                          : onDownloadClick(
+                              setDownloading,
+                              curPage,
+                              funders,
+                              recipients,
+                              coreCapacities,
+                              outbreaks,
+                              supportType,
+                              props,
+                              cols,
+                              exportCols,
+                            )
                       }
                       disabled={downloading}
                       label={
@@ -372,7 +352,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                           {!downloading && (
                             <span
                               className={classNames(
-                                "glyphicon glyphicon-download-alt"
+                                "glyphicon glyphicon-download-alt",
                               )}
                             />
                           )}
@@ -410,8 +390,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       />
       {dataTable}
     </div>
-  );
-};
+  )
+}
 
 export const renderExport = ({
   component,
@@ -421,18 +401,18 @@ export const renderExport = ({
 }) => {
   // Get data
   if (loading) {
-    return <div className={"placeholder"} />;
+    return <div className={"placeholder"} />
   } else if (component === null) {
     getComponentData({
       setComponent: setComponent,
       setLoadingSpinnerOn,
-    });
+    })
 
-    return component ? component : <div className={"placeholder"} />;
+    return component ? component : <div className={"placeholder"} />
   } else {
-    return component;
+    return component
   }
-};
+}
 
 /**
  * Returns data for the details page given the entity type and id.
@@ -450,15 +430,68 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
       by: "id",
     }),
     outbreaks: Outbreak({}),
-  };
+  }
 
   // Get results in parallel
-  const results = await execute({ queries });
+  const results = await execute({ queries })
 
   // Set the component
   setComponent(
-    <Export data={results} setLoadingSpinnerOn={setLoadingSpinnerOn} />
-  );
-};
+    <Export data={results} setLoadingSpinnerOn={setLoadingSpinnerOn} />,
+  )
+}
 
-export default Export;
+export default Export
+function onDownloadClick(
+  setDownloading,
+  curPage,
+  funders,
+  recipients,
+  coreCapacities,
+  outbreaks,
+  supportType,
+  props,
+  cols,
+  exportCols,
+) {
+  return () => {
+    setDownloading(true)
+    getFlowQuery({
+      curPage,
+      props: {
+        funders,
+        recipients,
+        coreCapacities,
+        outbreaks,
+        supportType,
+      },
+      forExport: true,
+      ...props,
+    }).then(paramsTmp => {
+      // URL query params
+      const params = paramsTmp.params
+
+      // POST body JSON
+      const data = {
+        filters: paramsTmp.data.filters,
+      }
+      console.log(paramsTmp)
+      data.cols = cols.filter(d => exportCols.includes(d[0]))
+
+      Excel({
+        method: "post",
+        data,
+        params,
+      })
+        .then(() => {
+          setDownloading(false)
+        })
+        .catch(e => {
+          console.error(e)
+        })
+        .finally(() => {
+          setDownloading(false)
+        })
+    })
+  }
+}
