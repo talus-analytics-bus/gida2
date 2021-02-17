@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react"
 import classNames from "classnames"
 import styles from "./exporttable.module.scss"
-import { Settings } from "../../../App.js"
 import { execute, Flow } from "../../misc/Queries"
 import Util from "../../misc/Util.js"
-import FlowQuery from "../../misc/FlowQuery.js"
 import Chevron from "../../common/Chevron/Chevron.js"
 import Loading from "../../common/Loading/Loading.js"
 import Pagination from "../../common/Pagination/Pagination.js"
@@ -160,6 +158,7 @@ const ExportTable = ({
       noNativeSorting={true}
       tableColumns={cols}
       tableData={data.flows.data}
+      noColClick={true}
     />
   )
 
