@@ -183,7 +183,7 @@ const Details = ({
   const showTabs = true
   // const showTabs = !noData && !unknownDataOnly && !noFinancialData;
 
-  // For event response funding: get totals.
+  // For PHEIC funding: get totals.
   // TODO move into EventTable
   const eventResponseTotals = (
     <div className={styles.totals}>
@@ -192,14 +192,14 @@ const Details = ({
         inline={true}
         flowType="committed_funds"
         data={eventTotalsData}
-        label={"event response funding"}
+        label={"PHEIC funding"}
       />
       <TotalByFlowType
         key={"d"}
         inline={true}
         flowType="disbursed_funds"
         data={eventTotalsData}
-        label={"event response funding"}
+        label={"PHEIC funding"}
       />
     </div>
   )
@@ -462,7 +462,7 @@ const Details = ({
         },
         {
           slug: "event",
-          header: "Event response funding",
+          header: "PHEIC funding",
           hide:
             noData ||
             (eventTotalsData !== null && eventTotalsData.length === 0),
@@ -472,7 +472,7 @@ const Details = ({
               header: (
                 <div>
                   <h2>
-                    Recent event response funding projects <br />
+                    Recent PHEIC funding projects <br />
                     {
                       // Time frame
                       // <span>in past 12 months</span>
@@ -501,7 +501,7 @@ const Details = ({
               text: (
                 <div>
                   <p>
-                    This tab shows recent event response funding projects where{" "}
+                    This tab shows recent PHEIC funding projects where{" "}
                     {nodeData.name} or an associated region/group was a{" "}
                     {entityRole}. Note that all values listed here may not apply
                     specifically to {nodeData.name}.
@@ -608,7 +608,7 @@ const Details = ({
     setEventTotalsData(null)
   }, [entityRole])
 
-  // if no event response data then set current tab to IHR
+  // if no PHEIC data then set current tab to IHR
   useEffect(() => {
     if (eventTotalsData !== null && eventTotalsData.length === 0)
       setCurTab("ihr")

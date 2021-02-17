@@ -271,20 +271,20 @@ const App = () => {
                 }}
               />
               {
-                // <Route
-                //   exact
-                //   path="/events/:slug"
-                //   render={d => {
-                //     return (
-                //       <Events
-                //         {...{
-                //           ...d.match.params, // id
-                //           flowTypeInfo,
-                //         }}
-                //       />
-                //     );
-                //   }}
-                // />
+                <Route
+                  exact
+                  path="/events/:slug"
+                  render={d => {
+                    return (
+                      <Events
+                        {...{
+                          ...d.match.params, // id
+                          flowTypeInfo,
+                        }}
+                      />
+                    )
+                  }}
+                />
               }
               <Route
                 exact
@@ -459,7 +459,7 @@ const App = () => {
 
 export const Settings = {
   startYear: 2014,
-  endYear: 2020,
+  endYear: 2021,
 }
 
 export default App

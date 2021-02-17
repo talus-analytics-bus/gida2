@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import classNames from "classnames";
-import styles from "./exporttable.module.scss";
-import { Settings } from "../../../App.js";
-import { execute, Flow } from "../../misc/Queries";
-import Util from "../../misc/Util.js";
-import FlowQuery from "../../misc/FlowQuery.js";
-import Chevron from "../../common/Chevron/Chevron.js";
-import Loading from "../../common/Loading/Loading.js";
-import Pagination from "../../common/Pagination/Pagination.js";
+import React, { useState, useEffect } from "react"
+import classNames from "classnames"
+import styles from "./exporttable.module.scss"
+import { Settings } from "../../../App.js"
+import { execute, Flow } from "../../misc/Queries"
+import Util from "../../misc/Util.js"
+import FlowQuery from "../../misc/FlowQuery.js"
+import Chevron from "../../common/Chevron/Chevron.js"
+import Loading from "../../common/Loading/Loading.js"
+import Pagination from "../../common/Pagination/Pagination.js"
 
 // Content components
-import TableInstance from "../../chart/table/TableInstance.js";
+import TableInstance from "../../chart/table/TableInstance.js"
 
 // FC for ExportTable.
 const ExportTable = ({
@@ -21,6 +21,7 @@ const ExportTable = ({
   pageLoading,
   setPageLoading,
   outbreaks,
+  allOutbreaks,
   coreCapacities,
   supportType,
   funders,
@@ -28,31 +29,31 @@ const ExportTable = ({
   ...props
 }) => {
   // Currently unused, will be used for dynamic page size selection.
-  const [curPageSize, setCurPageSize] = useState(5);
+  const [curPageSize, setCurPageSize] = useState(5)
 
   // define data
   const [data, setData] = useState({
     flows: { data: [], paging: { n_records: null } },
-  });
+  })
   // Set n records
-  props.setNRecords(data.flows.paging.n_records);
+  props.setNRecords(data.flows.paging.n_records)
 
   // track where data initially loaded
-  const [initLoaded, setInitLoaded] = useState(false);
+  const [initLoaded, setInitLoaded] = useState(false)
 
   useEffect(() => {
-    if (curPage !== 1) setCurPage(1);
+    if (curPage !== 1) setCurPage(1)
     else {
-      setInitLoaded(false);
-      getData();
+      setInitLoaded(false)
+      getData()
     }
-  }, [coreCapacities, funders, recipients, outbreaks, supportType]);
+  }, [coreCapacities, funders, recipients, outbreaks, supportType])
 
   // TODO call when filters change
   useEffect(() => {
-    if (initLoaded) setPageLoading(true);
-    getData();
-  }, [curPage, curPageSize]);
+    if (initLoaded) setPageLoading(true)
+    getData()
+  }, [curPage, curPageSize])
 
   const cols = [
     {
@@ -81,6 +82,21 @@ const ExportTable = ({
       prop: "ccs",
       type: "text",
       func: d => (d.ccs ? d.ccs.join("; ") : ""),
+    },
+    {
+      title: "PHEIC(s)",
+      prop: "events",
+      type: "text",
+      func: d => {
+        return d.events
+          .map(dd => {
+            const match = allOutbreaks.find(ddd => ddd.id === dd)
+            console.log(match)
+            if (match) return match.name
+            else return undefined
+          })
+          .join("; ")
+      },
     },
     {
       title: "Transaction year range",
@@ -115,8 +131,8 @@ const ExportTable = ({
       prop: "assistance_type",
       type: "text",
       func: d => {
-        if (!d.is_inkind) return "Financial assistance";
-        else return "In-kind support";
+        if (!d.is_inkind) return "Financial assistance"
+        else return "In-kind support"
       },
     },
     {
@@ -135,7 +151,7 @@ const ExportTable = ({
       func: d => (d.disbursed_funds !== null ? d.disbursed_funds : ""),
       render: d => Util.formatValue(d, "disbursed_funds"),
     },
-  ].filter(d => exportCols.includes(d.prop));
+  ].filter(d => exportCols.includes(d.prop))
 
   const dataTable = (
     <TableInstance
@@ -145,25 +161,25 @@ const ExportTable = ({
       tableColumns={cols}
       tableData={data.flows.data}
     />
-  );
+  )
 
   const getData = async () => {
     const flowQuery = getFlowQuery({
       props: { outbreaks, coreCapacities, supportType, funders, recipients },
       curPage,
-    });
+    })
 
     const queries = {
       // Information about the entity
       flows: flowQuery,
-    };
+    }
 
     // Get results in parallel
-    const results = await execute({ queries });
-    setData(results);
-    setPageLoading(false);
-    setInitLoaded(true);
-  };
+    const results = await execute({ queries })
+    setData(results)
+    setPageLoading(false)
+    setInitLoaded(true)
+  }
 
   // Return JSX
   return (
@@ -186,32 +202,32 @@ const ExportTable = ({
       }
       <Loading loaded={initLoaded}>{dataTable}</Loading>
     </div>
-  );
-};
+  )
+}
 
 export const getFlowQuery = ({ props, curPage, forExport = false }) => {
   // Define queries for typical ExportTable page.
-  const flowFilters = {};
+  const flowFilters = {}
 
   // CCs
   if (props.coreCapacities.length > 0) {
     flowFilters["Project_Constants.core_capacities"] = [
       ["any", props.coreCapacities.map(d => d.value)],
-    ];
+    ]
   }
 
   // assistance type
   if (props.supportType.length === 1) {
     flowFilters["Project_Constants.is_inkind"] = [
       props.supportType[0].value === "inkind",
-    ];
+    ]
   }
 
   // outbreak events
   if (props.outbreaks.length > 0) {
     flowFilters["Project.events"] = [
       ["any", "Event.id", props.outbreaks.map(d => d.value)],
-    ];
+    ]
   }
   const standardProps = {
     filters: flowFilters,
@@ -219,17 +235,17 @@ export const getFlowQuery = ({ props, curPage, forExport = false }) => {
     targetIds: props.recipients.map(d => d.value),
     pagesize: 10,
     page: curPage,
-  };
+  }
   if (!forExport)
     return Flow({
       ...standardProps,
       forExport: false,
-    });
+    })
   else
     return Flow({
       ...standardProps,
       forExport: true,
-    });
-};
+    })
+}
 
-export default ExportTable;
+export default ExportTable

@@ -316,7 +316,6 @@ export const Excel = async function({
     if (data === null) {
       console.error("Error: `data` is required for method POST.")
     }
-
     req = axios({
       url: `${API_URL}/post/${route}`,
       method: "POST",

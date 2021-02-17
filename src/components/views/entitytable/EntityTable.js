@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from "react";
-import classNames from "classnames";
-import { Link } from "react-router-dom";
-import styles from "./entitytable.module.scss";
-import { Settings } from "../../../App.js";
+import React, { useState, useEffect } from "react"
+import classNames from "classnames"
+import { Link } from "react-router-dom"
+import styles from "./entitytable.module.scss"
+import { Settings } from "../../../App.js"
 import {
   getWeightsBySummaryAttribute,
   getNodeLinkList,
-} from "../../misc/Data.js";
-import Util from "../../misc/Util.js";
-import { execute, Stakeholder, NodeSums, Flow } from "../../misc/Queries";
-import FlowQuery from "../../misc/FlowQuery.js";
-import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
-import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
+} from "../../misc/Data.js"
+import Util from "../../misc/Util.js"
+import { execute, Stakeholder, NodeSums, Flow } from "../../misc/Queries"
+import FlowQuery from "../../misc/FlowQuery.js"
+import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js"
+import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js"
 
 // Content components
-import TableInstance from "../../chart/table/TableInstance.js";
-import Tab from "../../misc/Tab.js";
-import GhsaToggle from "../../misc/GhsaToggle.js";
-import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
-import Loading from "../../common/Loading/Loading.js";
-import SourceText from "../../common/SourceText/SourceText.js";
-import Button from "../../common/Button/Button.js";
-import DataTable from "../../chart/table/DataTable/DataTable.js";
+import TableInstance from "../../chart/table/TableInstance.js"
+import Tab from "../../misc/Tab.js"
+import GhsaToggle from "../../misc/GhsaToggle.js"
+import EntityRoleToggle from "../../misc/EntityRoleToggle.js"
+import Loading from "../../common/Loading/Loading.js"
+import SourceText from "../../common/SourceText/SourceText.js"
+import Button from "../../common/Button/Button.js"
+import DataTable from "../../chart/table/DataTable/DataTable.js"
 
 // FC for EntityTable.
 const EntityTable = ({
@@ -38,13 +38,13 @@ const EntityTable = ({
   ...props
 }) => {
   // Get page type from id
-  let pageType;
-  if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
-  else pageType = "entity";
+  let pageType
+  if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa"
+  else pageType = "entity"
 
   // If allowing pair tables, use correct pair table slug for routing.
-  const ENABLE_PAIR_TABLES = false;
-  const pairTableSlug = ENABLE_PAIR_TABLES ? "pair-table" : "table";
+  const ENABLE_PAIR_TABLES = false
+  const pairTableSlug = ENABLE_PAIR_TABLES ? "pair-table" : "table"
 
   // List of all flow types
   const allFlowTypes = [
@@ -52,7 +52,7 @@ const EntityTable = ({
     "committed_funds",
     "provided_inkind",
     "committed_inkind",
-  ];
+  ]
 
   /**
    * Returns column definitions for all assistance types for use in
@@ -63,7 +63,7 @@ const EntityTable = ({
    */
   const getAssistanceTableCols = flowTypeInfo => {
     return allFlowTypes.map(ft => {
-      const match = flowTypeInfo.find(d => d.name === ft);
+      const match = flowTypeInfo.find(d => d.name === ft)
       return {
         title: `${match.display_name} (${Settings.startYear} - ${
           Settings.endYear
@@ -73,12 +73,12 @@ const EntityTable = ({
         type: "num",
         className: d => (d > 0 ? "num" : "num-with-text"),
         func: d => d[ft] || undefined,
-      };
-    });
-  };
+      }
+    })
+  }
 
   // Define other entity role, which is used in certain charts
-  const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
+  const otherEntityRole = entityRole === "funder" ? "recipient" : "funder"
 
   // Define funder/recipient columns to be displayed as appropriate.
   const funderCol = {
@@ -97,7 +97,7 @@ const EntityTable = ({
         id: id,
         otherId: otherId,
       }),
-  };
+  }
 
   const recipientCol = {
     title: "Recipient",
@@ -115,10 +115,10 @@ const EntityTable = ({
         id: id,
         otherId: otherId,
       }),
-  };
+  }
 
-  const [inkindCount, setInkindCount] = useState(null);
-  const [financialCount, setFinancialCount] = useState(null);
+  const [inkindCount, setInkindCount] = useState(null)
+  const [financialCount, setFinancialCount] = useState(null)
 
   // tableData={data.flows.flows.filter(f =>
   //   f.flow_info.assistance_type.toLowerCase().includes("financial")
@@ -240,7 +240,8 @@ const EntityTable = ({
           ]}
           tableData={data.fundsByOther.filter(
             f =>
-              f.committed_funds !== undefined || f.disbursed_funds !== undefined
+              f.committed_funds !== undefined ||
+              f.disbursed_funds !== undefined,
           )}
         />
       ),
@@ -280,7 +281,8 @@ const EntityTable = ({
           ]}
           tableData={data.fundsBySame.filter(
             f =>
-              f.committed_funds !== undefined || f.disbursed_funds !== undefined
+              f.committed_funds !== undefined ||
+              f.disbursed_funds !== undefined,
           )}
         />
       ),
@@ -395,16 +397,16 @@ const EntityTable = ({
         />
       ),
     },
-  ];
+  ]
 
   // Track currently visible tab
-  const [curTab, setCurTab] = useState(sections[0].slug);
+  const [curTab, setCurTab] = useState(sections[0].slug)
 
   // clear counts when id or type changes
   useEffect(() => {
-    setInkindCount(null);
-    setFinancialCount(null);
-  }, [id, ghsaOnly]);
+    setInkindCount(null)
+    setFinancialCount(null)
+  }, [id, ghsaOnly])
 
   // update tab when stakeholder changes if needed
   useEffect(() => {
@@ -413,10 +415,10 @@ const EntityTable = ({
         inkindCount.props["data-count"] === 0 ||
         financialCount.props["data-count"] !== 0
           ? 0
-          : sections.length - 1;
-      setCurTab(sections[newInitTabIdx].slug);
+          : sections.length - 1
+      setCurTab(sections[newInitTabIdx].slug)
     }
-  }, [inkindCount, financialCount]);
+  }, [inkindCount, financialCount])
 
   // Return JSX
   return (
@@ -511,8 +513,8 @@ const EntityTable = ({
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const renderEntityTable = ({
   component,
@@ -527,12 +529,12 @@ export const renderEntityTable = ({
   setLoadingSpinnerOn,
 }) => {
   // Set ID values to correct types
-  if (id !== "ghsa" && id !== undefined) id = parseInt(id);
-  if (otherId !== undefined) otherId = parseInt(otherId);
+  if (id !== "ghsa" && id !== undefined) id = parseInt(id)
+  if (otherId !== undefined) otherId = parseInt(otherId)
 
   // Get data
   if (loading) {
-    return <div className={"placeholder"} />;
+    return <div className={"placeholder"} />
   } else if (
     component === null ||
     (component &&
@@ -550,7 +552,7 @@ export const renderEntityTable = ({
       ghsaOnly: ghsaOnly,
       setGhsaOnly: setGhsaOnly,
       setLoadingSpinnerOn,
-    });
+    })
 
     return component ? (
       <EntityTable
@@ -564,12 +566,12 @@ export const renderEntityTable = ({
       <Loading margin={20}>
         <div className={"placeholder"} />
       </Loading>
-    );
+    )
     // return component ? component : <div className={"placeholder"}/>;
   } else {
-    return component;
+    return component
   }
-};
+}
 
 /**
  * Returns data for the details page given the entity type and id.
@@ -590,24 +592,24 @@ const getComponentData = async ({
   setLoadingSpinnerOn,
 }) => {
   // Set base query params for FlowBundleFocusQuery and FlowBundleGeneralQuery
-  let nodeType;
+  let nodeType
   if (entityRole === undefined) {
     if (id === "ghsa") {
-      nodeType = "target";
+      nodeType = "target"
     } else if (otherId !== undefined) {
-      nodeType = "origin";
+      nodeType = "origin"
     } else {
-      console.error("[ERROR] Node type is undefined in EntityTable.js");
+      console.error("[ERROR] Node type is undefined in EntityTable.js")
     }
   } else {
-    nodeType = entityRole === "funder" ? "origin" : "target";
+    nodeType = entityRole === "funder" ? "origin" : "target"
   }
 
-  const otherNodeType = nodeType === "target" ? "origin" : "target";
-  const filterNodeType = nodeType + "s";
-  const filterNodeTypeOther = otherNodeType + "s";
+  const otherNodeType = nodeType === "target" ? "origin" : "target"
+  const filterNodeType = nodeType + "s"
+  const filterNodeTypeOther = otherNodeType + "s"
 
-  if (isNaN(otherId)) otherId = undefined;
+  if (isNaN(otherId)) otherId = undefined
   const baseQueryParams = {
     focus_node_ids: id !== "ghsa" ? [id] : null,
     focus_node_type: id !== "ghsa" ? nodeType : otherNodeType,
@@ -635,85 +637,85 @@ const getComponentData = async ({
       datetime_summary: ["year"],
     },
     include_master_summary: true,
-  };
+  }
 
   // If GHSA page, then filter by GHSA.
-  baseQueryParams.filters.parent_flow_info_filters = [];
+  baseQueryParams.filters.parent_flow_info_filters = []
   if (id === "ghsa" || ghsaOnly === "true") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "ghsa_funding",
       "True",
-    ]);
+    ])
   } else if (ghsaOnly === "event") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "outbreak_id:not",
       null,
-    ]);
+    ])
   } else if (ghsaOnly === "capacity") {
     baseQueryParams.filters.parent_flow_info_filters.push([
       "response_or_capacity:not",
       "response",
-    ]);
+    ])
   }
 
   // Set base query params for FlowQuery
   const baseFlowQueryParams = {
     financial: JSON.parse(JSON.stringify(baseQueryParams)),
     inkind: JSON.parse(JSON.stringify(baseQueryParams)),
-  };
-  baseFlowQueryParams.financial.filters.flow_info_filters = [];
-  baseFlowQueryParams.inkind.filters.flow_info_filters = [];
+  }
+  baseFlowQueryParams.financial.filters.flow_info_filters = []
+  baseFlowQueryParams.inkind.filters.flow_info_filters = []
 
   baseFlowQueryParams.financial.filters.flow_info_filters.push([
     "assistance_type",
     "financial",
-  ]);
+  ])
   baseFlowQueryParams.inkind.filters.flow_info_filters.push([
     "assistance_type",
     "inkind",
-  ]);
-  const isGhsaPage = id === "ghsa";
+  ])
+  const isGhsaPage = id === "ghsa"
 
   const nodeSumsFilters = {
     "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
-  };
+  }
   const flowFilters = {
     "Project_Constants.min_year": [["gt_eq", Settings.startYear]],
-  };
+  }
 
   if (isGhsaPage) {
-    flowFilters["Project_Constants.is_ghsa"] = [true];
-    nodeSumsFilters["Flow.is_ghsa"] = [true];
+    flowFilters["Project_Constants.is_ghsa"] = [true]
+    nodeSumsFilters["Flow.is_ghsa"] = [true]
   }
 
   // add assistance type filter
   if (ghsaOnly === "true") {
-    nodeSumsFilters["Flow.is_ghsa"] = [true];
-    flowFilters["Project_Constants.is_ghsa"] = [true];
+    nodeSumsFilters["Flow.is_ghsa"] = [true]
+    flowFilters["Project_Constants.is_ghsa"] = [true]
   } else if (ghsaOnly === "event") {
-    nodeSumsFilters["Flow.response_or_capacity"] = ["response"];
-    flowFilters["Project_Constants.response_or_capacity"] = ["response"];
+    nodeSumsFilters["Flow.response_or_capacity"] = ["response"]
+    flowFilters["Project_Constants.response_or_capacity"] = ["response"]
   } else if (ghsaOnly === "capacity") {
-    nodeSumsFilters["Flow.response_or_capacity"] = ["capacity"];
-    flowFilters["Project_Constants.response_or_capacity"] = ["capacity"];
+    nodeSumsFilters["Flow.response_or_capacity"] = ["capacity"]
+    flowFilters["Project_Constants.response_or_capacity"] = ["capacity"]
   }
 
   // Define queries for typical entityTable page.
-  const direction = entityRole === "funder" ? "origin" : "target";
-  const otherDirection = entityRole === "funder" ? "target" : "origin";
+  const direction = entityRole === "funder" ? "origin" : "target"
+  const otherDirection = entityRole === "funder" ? "target" : "origin"
 
   // if GHSA page, then alter filters accordingly
   const nodeSumsFiltersDirection = {
     [direction]: { ...nodeSumsFilters },
     [otherDirection]: { ...nodeSumsFilters },
-  };
+  }
   if (!isGhsaPage) {
-    nodeSumsFiltersDirection[direction]["Stakeholder.id"] = [id];
-    nodeSumsFiltersDirection[otherDirection]["OtherStakeholder.id"] = [id];
+    nodeSumsFiltersDirection[direction]["Stakeholder.id"] = [id]
+    nodeSumsFiltersDirection[otherDirection]["OtherStakeholder.id"] = [id]
   } else {
-    nodeSumsFiltersDirection[direction]["Flow.is_ghsa"] = [true];
-    nodeSumsFiltersDirection[otherDirection]["Flow.is_ghsa"] = [true];
+    nodeSumsFiltersDirection[direction]["Flow.is_ghsa"] = [true]
+    nodeSumsFiltersDirection[otherDirection]["Flow.is_ghsa"] = [true]
   }
 
   const queries = {
@@ -738,14 +740,14 @@ const getComponentData = async ({
       direction,
       filters: nodeSumsFiltersDirection[direction],
     }),
-  };
+  }
 
   if (isGhsaPage) {
     queries.fundsBySame = NodeSums({
       format: "table",
       direction,
       filters: nodeSumsFiltersDirection[direction],
-    });
+    })
   }
 
   const getTableDataFuncs = {
@@ -759,7 +761,7 @@ const getComponentData = async ({
           ...flowFilters,
           "Project_Constants.is_inkind": [false],
         },
-      });
+      })
     },
     flowsInkind: (page, pagesize) => {
       return Flow({
@@ -771,22 +773,22 @@ const getComponentData = async ({
           ...flowFilters,
           "Project_Constants.is_inkind": [true],
         },
-      });
+      })
     },
-  };
+  }
 
   // If "other ID" specified, get its node data as well.
   if (otherId !== undefined) {
-    queries["nodeDataOther"] = Stakeholder({ id: otherId });
+    queries["nodeDataOther"] = Stakeholder({ id: otherId })
   }
 
   // TODO implement GHSA version of page
 
   // Get results in parallel
   // setLoadingSpinnerOn(true);
-  const results = await execute({ queries });
+  const results = await execute({ queries })
 
-  results.nodeData = results.nodeData.length > 0 ? results.nodeData[0] : {};
+  results.nodeData = results.nodeData.length > 0 ? results.nodeData[0] : {}
 
   // Set the component
   setComponent(
@@ -801,8 +803,8 @@ const getComponentData = async ({
       setComponent={setComponent}
       setLoadingSpinnerOn={setLoadingSpinnerOn}
       getTableDataFuncs={getTableDataFuncs}
-    />
-  );
-};
+    />,
+  )
+}
 
-export default EntityTable;
+export default EntityTable

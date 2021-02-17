@@ -48,6 +48,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     ["desc", "Project description"],
     ["sources", "Data source"],
     ["ccs", "Core capacities"],
+    ["events", "PHEIC(s)"],
     ["origins", "Funder"],
     ["targets", "Recipient"],
     ["assistance_type", "Support type"],
@@ -65,20 +66,6 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   ]
 
   const [exportCols, setExportCols] = useState(cols.map(d => d[0]))
-  const remove = (arr, aTmp) => {
-    const a = aTmp
-    let what,
-      L = a.length,
-      ax
-    while (L > 1 && arr.length) {
-      what = a[--L]
-      while ((ax = arr.indexOf(what)) !== -1) {
-        arr.splice(ax, 1)
-      }
-    }
-    return arr
-  }
-
   const updateExportCols = value => {
     const shouldRemove = exportCols.includes(value)
     const editableExportCols = [...exportCols]
@@ -90,13 +77,11 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     }
   }
 
-  console.log("funders")
-  console.log(funders)
-
   const dataTable = (
     <ExportTable
       {...{
         outbreaks,
+        allOutbreaks: data.outbreaks,
         coreCapacities,
         supportType,
         funders,
@@ -132,63 +117,6 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     setRecipients([])
     setOutbreaks([])
   }
-
-  const download = () => {
-    // Erase download cookie.
-    Util.createCookie("download_completed", "no")
-    getFlowQuery({
-      curPage,
-      props: {
-        funders,
-        recipients,
-        coreCapacities,
-        outbreaks,
-        supportType,
-      },
-      forExport: true,
-      ...props,
-    }).then(paramsTmp => {
-      // URL query params
-      const params = paramsTmp.params
-
-      // POST body JSON
-      const data = paramsTmp.data
-      data.cols = cols.filter(d => exportCols.includes(d[0]))
-
-      const queryString = params.toString()
-
-      const exportBodyRows = []
-      for (let key in data) {
-        const d = data[key]
-        exportBodyRows.push(
-          <div>
-            <input
-              {...{
-                name: key,
-                id: key,
-                value: JSON.stringify(d),
-              }}
-            />
-          </div>,
-        )
-      }
-      const exportBody = exportBodyRows
-      setExportAction(
-        process.env.REACT_APP_API_URL + "/post/export?" + queryString,
-      )
-      setExportBody(exportBody)
-    })
-  }
-
-  const exportFlowJsx = (
-    <form action={exportAction} method="POST">
-      {exportBody}
-      <div>
-        <button id={"download"}>Send request to POST</button>
-      </div>
-      //{" "}
-    </form>
-  )
 
   // When download data button is pressed, and form data are updated,
   // perform the POST request.
@@ -282,7 +210,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: data.outbreaks.map(d => {
                       return { value: d.id, label: d.name }
                     }),
-                    placeholder: "Event response",
+                    placeholder: "PHEIC",
                     onChange: setOutbreaks,
                     curValues: outbreaks,
                   }}
