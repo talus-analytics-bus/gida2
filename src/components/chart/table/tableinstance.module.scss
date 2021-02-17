@@ -71,4 +71,12 @@
       display: none;
     }
   }
+  &.origin th {
+    background-color: $funder-green;
+    color: white;
+  }
+  &.target th {
+    background-color: $recipient-purple;
+    color: white;
+  }
 }

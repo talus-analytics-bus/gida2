@@ -1,10 +1,8 @@
 import * as d3 from "d3/dist/d3.min"
 import React, { useState, useEffect } from "react"
-import ReactTooltip from "react-tooltip"
 import classNames from "classnames"
 import { DataTable } from "react-data-components"
 import { getTableRowData } from "../../misc/Data.js"
-import Util from "../../misc/Util.js"
 import styles from "./tableinstance.module.scss"
 
 /**
@@ -19,6 +17,7 @@ const TableInstance = ({
   updateVar = [tableData, tableColumns],
   filterFcn = d => true,
   noColClick = false,
+  customClassNames = [],
   ...props
 }) => {
   // define table `component` to return as table instance when data updated
@@ -60,16 +59,21 @@ const TableInstance = ({
       initialData = initialData.slice(0, props.limit)
     return (
       <div
-        className={classNames("tableInstance", styles.tableInstance, {
-          noPaging: props.paging !== true,
-          [styles.noColClick]: noColClick === true,
-          [styles.noNativePaging]: props.noNativePaging === true,
-          [styles.noNativeSearch]: props.noNativePaging === true,
-          [styles.noNativeSorting]: props.noNativeSorting === true,
-          [styles.noNativePageSizeSelect]:
-            props.noNativePageSizeSelect === true ||
-            props.noNativePageSizeSelect === undefined,
-        })}
+        className={classNames(
+          "tableInstance",
+          ...customClassNames.map(d => styles[d]),
+          styles.tableInstance,
+          {
+            noPaging: props.paging !== true,
+            [styles.noColClick]: noColClick === true,
+            [styles.noNativePaging]: props.noNativePaging === true,
+            [styles.noNativeSearch]: props.noNativePaging === true,
+            [styles.noNativeSorting]: props.noNativeSorting === true,
+            [styles.noNativePageSizeSelect]:
+              props.noNativePageSizeSelect === true ||
+              props.noNativePageSizeSelect === undefined,
+          },
+        )}
       >
         <DataTable
           key={updateCount}

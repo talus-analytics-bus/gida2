@@ -404,6 +404,7 @@ const FundersAndRecipients = ({
         hide: true,
       },
     ]
+    console.log(roleSlug)
     tableInstances.push(
       <div>
         <h2>{subtitleJsx}</h2>
@@ -431,6 +432,7 @@ const FundersAndRecipients = ({
           tableData={orgTableData}
           sortByProp={"value"}
           noColClick={true}
+          customClassNames={[roleSlug]}
         />
       </div>,
     )
