@@ -77,9 +77,8 @@
         }
       }
       .flagAndName {
-        display: grid;
-        // grid-template-columns: 30px 1fr;
-        grid-gap: 0 5px;
+        @include spaceChildrenHoriz(5px);
+        display: flex;
         align-items: center;
       }
     }
