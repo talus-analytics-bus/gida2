@@ -328,27 +328,29 @@ const FundersAndRecipients = ({
 
   tables.forEach(([subtitleJsx, role, roleSlug, data]) => {
     const orgTableData = []
+    const fancyByOrgId = {}
     for (const [k, v] of Object.entries(data)) {
       if (v[flowType] !== undefined) {
         const stakeholderInfo = stakeholders[k]
+        fancyByOrgId[stakeholderInfo.id.toString()] = (
+          <div className={styles.flagAndName}>
+            <Flag
+              {...{
+                filename: stakeholderInfo.slug + ".png",
+                show: stakeholderCats !== "organizations",
+              }}
+            />
+            {getNodeLinkList({
+              urlType: "details",
+              nodeList: [stakeholderInfo],
+              entityRole: role.toLowerCase(),
+              id: undefined,
+              otherId: undefined,
+            })}
+          </div>
+        )
+
         orgTableData.push({
-          [roleSlug]: (
-            <div className={styles.flagAndName}>
-              <Flag
-                {...{
-                  filename: stakeholderInfo.slug + ".png",
-                  show: stakeholderCats !== "organizations",
-                }}
-              />
-              {getNodeLinkList({
-                urlType: "details",
-                nodeList: [stakeholderInfo],
-                entityRole: role.toLowerCase(),
-                id: undefined,
-                otherId: undefined,
-              })}
-            </div>
-          ),
           value_raw: v[flowType],
           value: v[flowType],
           shID: k,
@@ -356,7 +358,6 @@ const FundersAndRecipients = ({
         })
       }
     }
-
     const updateTooltipData = ({ d, nodeType, data, mapData }) => {
       const datum = data[d.id]
 
@@ -387,13 +388,17 @@ const FundersAndRecipients = ({
       setTooltipNodeData(d)
       setTooltipData(tooltipData)
     }
+
     const tableColumns = [
       {
         title: role,
         prop: roleSlug,
         type: "text",
-        func: d => d[roleSlug],
-        render: d => d,
+        func: d => d.stakeholderName,
+        render: (v, d) => {
+          const flagAndName = fancyByOrgId[d.shID]
+          return flagAndName
+        },
       },
       {
         title: flowTypeDisplayName,
@@ -438,11 +443,9 @@ const FundersAndRecipients = ({
             }
           }}
           paging={true}
-          noNativeSorting={true}
           tableColumns={tableColumns}
           tableData={orgTableData}
           sortByProp={"value"}
-          noColClick={true}
           customClassNames={[roleSlug]}
         />
       </div>,
