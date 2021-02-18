@@ -26,6 +26,7 @@ import {
 import { getNodeLinkList } from "../../../../misc/Data.js"
 import SourceText from "../../../../common/SourceText/SourceText.js"
 import InfoBox from "../../../../map/InfoBox.js"
+import { Flag } from "./Flag"
 
 // FC for Orgs.
 /**
@@ -324,19 +325,30 @@ const FundersAndRecipients = ({
       nodeSumsTarget,
     ],
   ]
+
   tables.forEach(([subtitleJsx, role, roleSlug, data]) => {
     const orgTableData = []
     for (const [k, v] of Object.entries(data)) {
       if (v[flowType] !== undefined) {
         const stakeholderInfo = stakeholders[k]
         orgTableData.push({
-          [roleSlug]: getNodeLinkList({
-            urlType: "details",
-            nodeList: [stakeholderInfo],
-            entityRole: role.toLowerCase(),
-            id: undefined,
-            otherId: undefined,
-          }),
+          [roleSlug]: (
+            <div className={styles.flagAndName}>
+              <Flag
+                {...{
+                  filename: stakeholderInfo.slug + ".png",
+                  show: stakeholderCats !== "organizations",
+                }}
+              />
+              {getNodeLinkList({
+                urlType: "details",
+                nodeList: [stakeholderInfo],
+                entityRole: role.toLowerCase(),
+                id: undefined,
+                otherId: undefined,
+              })}
+            </div>
+          ),
           value_raw: v[flowType],
           value: v[flowType],
           shID: k,
@@ -404,7 +416,6 @@ const FundersAndRecipients = ({
         hide: true,
       },
     ]
-    console.log(roleSlug)
     tableInstances.push(
       <div>
         <h2>{subtitleJsx}</h2>
@@ -502,7 +513,7 @@ const FundersAndRecipients = ({
         }
         <Drawer
           {...{
-            openDefault: false,
+            openDefault: true,
             label: "Options",
             contentSections: [
               <div className={styles.menu}>

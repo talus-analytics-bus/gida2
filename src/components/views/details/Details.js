@@ -554,6 +554,7 @@ const Details = ({
   const flag =
     !isEmpty(nodeData) && (showFlag || ghsa) ? (
       <img
+        alt={"Flag of " + flagId}
         key={flagId}
         onError={e => addDefaultSrc(e)}
         className={classNames({ [styles.small]: ghsa })}

@@ -76,6 +76,11 @@
           }
         }
       }
+      .flagAndName {
+        @include spaceChildrenHoriz(5px);
+        display: flex;
+        align-items: center;
+      }
     }
     > div {
       margin: 0 10px;
