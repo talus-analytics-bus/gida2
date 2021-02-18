@@ -500,11 +500,8 @@ const FundersAndRecipients = ({
               name in the tables for additional detail on their funding. Use the
               filters in{" "}
               <span>
-                Options
-                <span
-                  style={{ transform: "rotate(180deg)" }}
-                  className={"glyphicon glyphicon-chevron-up"}
-                />
+                Select filters
+                <span className={"glyphicon glyphicon-chevron-up"} />
               </span>{" "}
               to change what is shown.
             </p>
@@ -518,7 +515,7 @@ const FundersAndRecipients = ({
         <Drawer
           {...{
             openDefault: true,
-            label: "Options",
+            label: "Select filters",
             contentSections: [
               <div className={styles.menu}>
                 <div className={styles.menuContent}>
