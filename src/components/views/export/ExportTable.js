@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import classNames from "classnames"
 import styles from "./exporttable.module.scss"
 import { execute, Flow } from "../../misc/Queries"
+import ShowMore from "../../common/ShowMore/ShowMore"
 import Util from "../../misc/Util.js"
 import Chevron from "../../common/Chevron/Chevron.js"
 import Loading from "../../common/Loading/Loading.js"
@@ -59,12 +60,14 @@ const ExportTable = ({
       prop: "name",
       type: "text",
       func: d => d.name,
+      render: d => getLimitedText(d),
     },
     {
       title: "Project description",
       prop: "desc",
       type: "text",
       func: d => d.desc,
+      render: d => getLimitedText(d),
     },
     {
       title: "Data source",
@@ -112,6 +115,7 @@ const ExportTable = ({
       prop: "origins",
       type: "text",
       func: d => d.origins.map(dd => stakeholders[dd].name).join("; "),
+      render: d => getLimitedText(d),
     },
     {
       title: (
@@ -123,6 +127,7 @@ const ExportTable = ({
       prop: "targets",
       type: "text",
       func: d => d.targets.map(dd => stakeholders[dd].name).join("; "),
+      render: d => getLimitedText(d),
     },
     {
       title: "Support type",
@@ -248,3 +253,6 @@ export const getFlowQuery = ({ props, curPage, forExport = false }) => {
 }
 
 export default ExportTable
+function getLimitedText(d) {
+  return <ShowMore {...{ text: d, charLimit: 90 }} />
+}

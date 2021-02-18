@@ -18,6 +18,7 @@ const TableInstance = ({
   filterFcn = d => true,
   noColClick = false,
   customClassNames = [],
+  verticalBorders = true,
   ...props
 }) => {
   // define table `component` to return as table instance when data updated
@@ -69,6 +70,7 @@ const TableInstance = ({
             [styles.noNativePaging]: props.noNativePaging === true,
             [styles.noNativeSearch]: props.noNativePaging === true,
             [styles.noNativeSorting]: props.noNativeSorting === true,
+            [styles.noVerticalBorders]: verticalBorders !== true,
             [styles.noNativePageSizeSelect]:
               props.noNativePageSizeSelect === true ||
               props.noNativePageSizeSelect === undefined,

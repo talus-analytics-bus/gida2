@@ -401,7 +401,7 @@ const FundersAndRecipients = ({
         },
       },
       {
-        title: flowTypeDisplayName,
+        title: <span data-type="num">{flowTypeDisplayName}</span>,
         prop: "value",
         type: "num",
         className: d => (d > 0 ? "num" : "num-with-text"),
@@ -447,6 +447,7 @@ const FundersAndRecipients = ({
           tableData={orgTableData}
           sortByProp={"value"}
           customClassNames={[roleSlug]}
+          verticalBorders={false}
         />
       </div>,
     )

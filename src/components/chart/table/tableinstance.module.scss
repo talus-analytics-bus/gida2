@@ -1,8 +1,8 @@
 @import "../../../assets/styles/colors.scss";
 
 .tableInstance {
-  overflow-y: auto;
-  overflow-x: hidden;
+  // overflow-y: auto;
+  // overflow-x: hidden;
 
   table {
     -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
@@ -13,7 +13,9 @@
   td,
   th {
     background-color: white;
+    vertical-align: middle !important;
   }
+
   th {
     text-align: left;
     vertical-align: middle;
@@ -78,5 +80,14 @@
   &.target th {
     background-color: $recipient-purple;
     color: white;
+  }
+
+  &.noVerticalBorders {
+    table {
+      th,
+      td {
+        border-width: 0 0 1px 0 !important;
+      }
+    }
   }
 }
