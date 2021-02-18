@@ -236,16 +236,6 @@ const FundersAndRecipients = ({
         />
       )}
       {filterSelectionBadges}
-      <TimeSlider
-        side={"left"}
-        hide={supportType === "jee"}
-        minYearDefault={Settings.startYear}
-        maxYearDefault={Settings.endYear}
-        onAfterChange={years => {
-          setMinYear(years[0])
-          setMaxYear(years[1])
-        }}
-      />
     </div>
   )
 
@@ -593,6 +583,16 @@ const FundersAndRecipients = ({
                     />
                   )}
                   {filters}
+                  <TimeSlider
+                    side={"left"}
+                    hide={supportType === "jee"}
+                    minYearDefault={Settings.startYear}
+                    maxYearDefault={Settings.endYear}
+                    onAfterChange={years => {
+                      setMinYear(years[0])
+                      setMaxYear(years[1])
+                    }}
+                  />
                 </div>
               </div>,
             ],
