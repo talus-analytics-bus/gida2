@@ -404,6 +404,7 @@ const FundersAndRecipients = ({
         title: <span data-type="num">{flowTypeDisplayName}</span>,
         prop: "value",
         type: "num",
+        width: 150,
         className: d => (d > 0 ? "num" : "num-with-text"),
         func: d => d.value_raw,
         render: d => Util.formatValue(d, flowType),
