@@ -1,23 +1,22 @@
-import React from "react";
-import classNames from "classnames";
-import styles from "./filterdropdown.module.scss";
-import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes";
-import Util from "../../misc/Util.js";
-import Button from "../../common/Button/Button.js";
+import React from "react"
+import classNames from "classnames"
+import styles from "./filterdropdown.module.scss"
+import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes"
+import Util from "../../misc/Util.js"
 
 /**
  * @method FilterDropdown
  * Options should have value and label keys.
  */
 const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
-  const nOptions = Util.comma(options.length);
-  let value = [];
+  const nOptions = Util.comma(options.length)
+  let value = []
 
   if (props.curValues && props.curValues.length > 0) {
-    if (typeof props.curValues[0] === "object") value = props.curValues;
-    else value = options.filter(d => props.curValues.includes(d.value));
+    if (typeof props.curValues[0] === "object") value = props.curValues
+    else value = options.filter(d => props.curValues.includes(d.value))
   }
-  if (className) className.push(styles.label);
+  if (className) className.push(styles.label)
 
   // Define custom styles
   const customStyles = {
@@ -25,9 +24,9 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
       return {
         ...provided,
         color: state.isSelected ? "#333 !important" : "inherit",
-      };
+      }
     },
-  };
+  }
 
   return (
     <div
@@ -38,7 +37,7 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
     >
       <div
         className={classNames(
-          className !== undefined ? className : styles.label
+          className !== undefined ? className : styles.label,
         )}
       >
         {label}
@@ -50,16 +49,16 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
         onChange={onChange}
         getDropdownButtonLabel={({ placeholderButtonLabel, value }) => {
           if (value === undefined || value.length === 0)
-            return `${placeholderButtonLabel} (all)`;
+            return `${placeholderButtonLabel} (all)`
           else
             return `${placeholderButtonLabel} (${Util.comma(
-              value.length
-            )} of ${nOptions})`;
+              value.length,
+            )} of ${nOptions})`
         }}
         value={value}
       />
     </div>
-  );
-};
+  )
+}
 
-export default FilterDropdown;
+export default FilterDropdown
