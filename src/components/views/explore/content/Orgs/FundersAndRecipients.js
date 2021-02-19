@@ -385,7 +385,6 @@ const FundersAndRecipients = ({
         title: role,
         prop: roleSlug,
         type: "text",
-        width: "40%",
         func: d => d.stakeholderName,
         render: (v, d) => {
           const flagAndName = flagAndNameByOrgId[d.shID]
@@ -396,10 +395,9 @@ const FundersAndRecipients = ({
         title: getFlowTypeTitleForTable(flowTypeDisplayName),
         prop: "value",
         type: "num",
-        width: 150,
         className: d => (d > 0 ? "num" : "num-with-text"),
         func: d => d.valueRaw,
-        render: d => Util.formatValue(d, flowType),
+        render: formatSupportAmount(flowType),
       },
       {
         title: <span data-type="num">{inKindFlowTypeDisplayName}</span>,
@@ -408,6 +406,7 @@ const FundersAndRecipients = ({
         className: d => (d > 0 ? "num" : "num-with-text"),
         func: d => d.valueInkind,
         render: d => Util.formatValue(d, inKindFlowType),
+        hide: true,
       },
       {
         title: "Stakeholder slug (for data binding)",
@@ -598,7 +597,10 @@ const FundersAndRecipients = ({
         />
         <div className={styles.content}>
           <div className={styles.tables}>{tableInstances.map(d => d)}</div>
-          {<SourceText />}
+          <div className={styles.tableFooter}>
+            {<SymbolDefs />}
+            {<SourceText />}
+          </div>
         </div>
         {
           // Tooltip for info tooltip icons.
@@ -642,6 +644,86 @@ const FundersAndRecipients = ({
 
 export default FundersAndRecipients
 
+function SymbolDefs() {
+  return (
+    <div className={styles.symbolDefs}>
+      <div className={styles.symbolDef}>
+        * In-kind support also provided/received
+      </div>
+      <div className={styles.symbolDef}>
+        ✝ In-kind support may have been provided/received, but specific amount
+        unknown
+      </div>
+    </div>
+  )
+}
+
+function formatSupportAmount(flowType) {
+  // add asterisk if in-kind support was provided
+  // add dagger if in-kind support may have been provided but
+  // specific amount unknown
+
+  return (financialAmount, row) => {
+    // if has definite inkind, use asterisk
+    // else if has indeterminate inkind, use dagger
+    // else if has no or undefined inkind, use empty string
+    const inKindSymbol = getInKindSymbol(row)
+
+    const hasNoFinancial =
+      financialAmount === undefined || financialAmount === -9999
+    if (hasNoFinancial) {
+      const showInKindSymbol = inKindSymbol === "✝"
+      return (
+        <span>
+          In-kind support only
+          {
+            <span
+              style={{ visibility: showInKindSymbol ? "visible" : "hidden" }}
+              className={styles.inKindSymbol}
+            >
+              ✝
+            </span>
+          }
+        </span>
+      )
+      // return "In-kind support only" + (inKindSymbol === "✝" ? inKindSymbol : "")
+    } else {
+      const formattedFinancialAmount = Util.formatValue(
+        financialAmount,
+        flowType,
+      )
+      const showInKindSymbol = inKindSymbol !== "x"
+      return (
+        <span>
+          {formattedFinancialAmount}
+          <span
+            style={{ visibility: showInKindSymbol ? "visible" : "hidden" }}
+            className={styles.inKindSymbol}
+          >
+            {inKindSymbol}
+          </span>
+        </span>
+      )
+    }
+  }
+
+  function getInKindSymbol(row) {
+    const hasInKind =
+      row.valueInkind !== undefined &&
+      row.valueInkind !== 0 &&
+      row.valueInkind !== -9999
+    let symbol = "x"
+    if (hasInKind) {
+      const hasDefiniteInKind = row.valueInkind > 0
+      const hasIndeterminateInKind = row.valueInkind === -8888
+      if (hasDefiniteInKind) {
+        symbol = "*"
+      } else if (hasIndeterminateInKind) symbol = "✝"
+    }
+    return symbol
+  }
+}
+
 function getFlagAndName(showFlag, stakeholderInfo, role) {
   return (
     <div
@@ -662,9 +744,8 @@ function getFlagAndName(showFlag, stakeholderInfo, role) {
 function getFlowTypeTitleForTable(flowTypeDisplayName) {
   const flowTypeDisplayNameArr = flowTypeDisplayName.split(" ")
   const flowTypeTitle = (
-    <span data-type="num">
-      {[flowTypeDisplayNameArr[0], <br />, flowTypeDisplayNameArr[1]]}
-    </span>
+    <span data-type="num">{[flowTypeDisplayNameArr[0] + " funds"]}</span>
+    // <span data-type="num">{[flowTypeDisplayNameArr[0], <br />, "funds"]}</span>
   )
   return flowTypeTitle
 }
