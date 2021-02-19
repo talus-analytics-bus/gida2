@@ -11,13 +11,15 @@ export function Flag({ filename = "unspecified.png", show }) {
     }
     const flagSrc = `https://flags.talusanalytics.com/1000px/${filename}`
     const flag = (
-      <img
-        alt={"Flag of " + filename}
-        key={filename}
-        onError={e => addDefaultSrc(e)}
-        className={classNames(styles.flag, { [styles.small]: false })}
-        src={flagSrc}
-      />
+      <div className={styles.flag}>
+        <img
+          alt={"Flag of " + filename}
+          key={filename}
+          onError={e => addDefaultSrc(e)}
+          className={classNames(styles.flagImg, { [styles.small]: false })}
+          src={flagSrc}
+        />
+      </div>
     )
     return flag
   }

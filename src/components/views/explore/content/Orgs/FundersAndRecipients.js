@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react"
 import ReactTooltip from "react-tooltip"
 import classNames from "classnames"
-import styles from "./orgs.module.scss"
+import styles from "./fundersandrecipients.module.scss"
 import tooltipStyles from "../../../../common/tooltip.module.scss"
 import GhsaToggle from "../../../../misc/GhsaToggle.js"
 import RadioToggle from "../../../../misc/RadioToggle.js"
@@ -59,7 +59,7 @@ const FundersAndRecipients = ({
 
   // Track support type selected
   // inkind or financial
-  const [supportType, setSupportType] = useState("funds")
+  const [supportType] = useState("funds")
 
   // Track main data
   const [loaded, setLoaded] = useState(false)
@@ -236,16 +236,6 @@ const FundersAndRecipients = ({
         />
       )}
       {filterSelectionBadges}
-      <TimeSlider
-        side={"left"}
-        hide={supportType === "jee"}
-        minYearDefault={Settings.startYear}
-        maxYearDefault={Settings.endYear}
-        onAfterChange={years => {
-          setMinYear(years[0])
-          setMaxYear(years[1])
-        }}
-      />
     </div>
   )
 
@@ -285,9 +275,21 @@ const FundersAndRecipients = ({
     supportType: supportType,
   })
 
+  // Get in-kind support version of flow type
+  const inKindFlowType =
+    flowType === "disbursed_funds" ? "provided_inkind" : "committed_inkind"
+
   // Get pretty name for flow type
   const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
     .display_name
+
+  const inKindFlowTypeDisplayName = [
+    flowTypeInfo
+      .find(ft => ft.name === inKindFlowType)
+      .display_name.split(" ")[0],
+    <br />,
+    " in-kind support",
+  ]
 
   // Get whether metric has transaction type
   const metricHasTransactionType = ["funds", "inkind"].includes(supportType)
@@ -328,31 +330,20 @@ const FundersAndRecipients = ({
 
   tables.forEach(([subtitleJsx, role, roleSlug, data]) => {
     const orgTableData = []
-    const fancyByOrgId = {}
+    const flagAndNameByOrgId = {}
     for (const [k, v] of Object.entries(data)) {
-      if (v[flowType] !== undefined) {
+      if (v[flowType] !== undefined || v[inKindFlowType] !== undefined) {
         const stakeholderInfo = stakeholders[k]
-        fancyByOrgId[stakeholderInfo.id.toString()] = (
-          <div className={styles.flagAndName}>
-            <Flag
-              {...{
-                filename: stakeholderInfo.slug + ".png",
-                show: stakeholderCats !== "organizations",
-              }}
-            />
-            {getNodeLinkList({
-              urlType: "details",
-              nodeList: [stakeholderInfo],
-              entityRole: role.toLowerCase(),
-              id: undefined,
-              otherId: undefined,
-            })}
-          </div>
+        const showFlag = stakeholderCats !== "organizations"
+        flagAndNameByOrgId[stakeholderInfo.id.toString()] = getFlagAndName(
+          showFlag,
+          stakeholderInfo,
+          role,
         )
-
         orgTableData.push({
-          value_raw: v[flowType],
+          valueRaw: v[flowType],
           value: v[flowType],
+          valueInkind: v[inKindFlowType],
           shID: k,
           stakeholderName: stakeholderInfo.name,
         })
@@ -394,20 +385,29 @@ const FundersAndRecipients = ({
         title: role,
         prop: roleSlug,
         type: "text",
+        width: "40%",
         func: d => d.stakeholderName,
         render: (v, d) => {
-          const flagAndName = fancyByOrgId[d.shID]
+          const flagAndName = flagAndNameByOrgId[d.shID]
           return flagAndName
         },
       },
       {
-        title: <span data-type="num">{flowTypeDisplayName}</span>,
+        title: getFlowTypeTitleForTable(flowTypeDisplayName),
         prop: "value",
         type: "num",
         width: 150,
         className: d => (d > 0 ? "num" : "num-with-text"),
-        func: d => d.value_raw,
+        func: d => d.valueRaw,
         render: d => Util.formatValue(d, flowType),
+      },
+      {
+        title: <span data-type="num">{inKindFlowTypeDisplayName}</span>,
+        prop: "valueInkind",
+        type: "num",
+        className: d => (d > 0 ? "num" : "num-with-text"),
+        func: d => d.valueInkind,
+        render: d => Util.formatValue(d, inKindFlowType),
       },
       {
         title: "Stakeholder slug (for data binding)",
@@ -544,23 +544,25 @@ const FundersAndRecipients = ({
                       },
                     ]}
                   />
-                  <RadioToggle
-                    label={"Select support type"}
-                    callback={setSupportType}
-                    curVal={supportType}
-                    choices={[
-                      {
-                        name: "Financial support",
-                        value: "funds",
-                      },
-                      {
-                        name: "In-kind support",
-                        value: "inkind",
-                        tooltip:
-                          "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages.",
-                      },
-                    ]}
-                  />
+                  {
+                    // <RadioToggle
+                    //   label={"Select support type"}
+                    //   callback={setSupportType}
+                    //   curVal={supportType}
+                    //   choices={[
+                    //     {
+                    //       name: "Financial support",
+                    //       value: "funds",
+                    //     },
+                    //     {
+                    //       name: "In-kind support",
+                    //       value: "inkind",
+                    //       tooltip:
+                    //         "In-kind support is the contribution of goods or services to a recipient. Examples of in-kind support include providing technical expertise or programming support, or supporting GHSA action packages.",
+                    //     },
+                    //   ]}
+                    // />
+                  }
                   {metricHasTransactionType && (
                     <RadioToggle
                       label={"Select funding type"}
@@ -579,6 +581,16 @@ const FundersAndRecipients = ({
                     />
                   )}
                   {filters}
+                  <TimeSlider
+                    side={"left"}
+                    hide={supportType === "jee"}
+                    minYearDefault={Settings.startYear}
+                    maxYearDefault={Settings.endYear}
+                    onAfterChange={years => {
+                      setMinYear(years[0])
+                      setMaxYear(years[1])
+                    }}
+                  />
                 </div>
               </div>,
             ],
@@ -629,3 +641,40 @@ const FundersAndRecipients = ({
 }
 
 export default FundersAndRecipients
+
+function getFlagAndName(showFlag, stakeholderInfo, role) {
+  return (
+    <div
+      style={{ gridTemplateColumns: showFlag ? "30px 1fr" : undefined }}
+      className={styles.flagAndName}
+    >
+      <Flag
+        {...{
+          filename: stakeholderInfo.slug + ".png",
+          show: showFlag,
+        }}
+      />
+      {getHyperlinkedName(stakeholderInfo, role)}
+    </div>
+  )
+}
+
+function getFlowTypeTitleForTable(flowTypeDisplayName) {
+  const flowTypeDisplayNameArr = flowTypeDisplayName.split(" ")
+  const flowTypeTitle = (
+    <span data-type="num">
+      {[flowTypeDisplayNameArr[0], <br />, flowTypeDisplayNameArr[1]]}
+    </span>
+  )
+  return flowTypeTitle
+}
+
+function getHyperlinkedName(stakeholderInfo, role) {
+  return getNodeLinkList({
+    urlType: "details",
+    nodeList: [stakeholderInfo],
+    entityRole: role.toLowerCase(),
+    id: undefined,
+    otherId: undefined,
+  })
+}
