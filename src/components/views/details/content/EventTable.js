@@ -1,14 +1,5 @@
 import React, { useState, useLayoutEffect } from "react"
-import styles from "../details.module.scss"
-import classNames from "classnames"
-import { Settings } from "../../../../App.js"
-import {
-  getNodeLinkList,
-  getWeightsBySummaryAttributeSimple,
-  getSummaryAttributeWeightsByNode,
-  isUnknownDataOnly,
-  parseIdsAsNames,
-} from "../../../misc/Data.js"
+import { getNodeLinkList } from "../../../misc/Data.js"
 import Util from "../../../misc/Util.js"
 import Loading from "../../../common/Loading/Loading"
 
@@ -186,7 +177,7 @@ const EventTable = ({
             },
             render: d =>
               d === -7777
-                ? Util.formatValue("In-kind support", "inkind")
+                ? "In-kind support"
                 : Util.formatValue(d, curFlowType),
           },
         ]}
@@ -195,8 +186,6 @@ const EventTable = ({
       />
     </Loading>
   )
-
-  return <div />
 }
 
 export default EventTable
