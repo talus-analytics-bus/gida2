@@ -30,9 +30,6 @@ import styles from "./App.module.scss"
 import "./components/views/details/details.module.scss"
 // import "material-design-icons/iconfont/material-icons.css";
 
-// testing components
-import SimpleTable from "./components/chart/table/SimpleTable.js"
-
 // Misc
 import Modal from "reactjs-popup"
 
