@@ -47,6 +47,7 @@
   },
   "scripts": {
     "start": "REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_METRICS_API_URL=http://localhost:5002 REACT_APP_AMP_METRICS_API_URL=http://amp-metric-api.us-west-1.elasticbeanstalk.com/ REACT_APP_API_URL=http://localhost:8000 react-scripts start",
+    "start-debug": "REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_METRICS_API_URL=http://localhost:5002 REACT_APP_AMP_METRICS_API_URL=http://amp-metric-api.us-west-1.elasticbeanstalk.com/ REACT_APP_API_URL=https://ghs-tracking-api-prod.ghscosting.org react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
