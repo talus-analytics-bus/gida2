@@ -291,6 +291,7 @@ const App = () => {
                         fundTypeDefault:
                           supportTypeDefault !== undefined ? "" : "false",
                         setLoadingSpinnerOn,
+                        setPage,
                       }}
                     />
                   );
@@ -300,7 +301,7 @@ const App = () => {
                 exact
                 path="/explore/org"
                 render={d => {
-                  setPage("explore-" + d.match.params.activeTab);
+                  setPage("explore-org");
                   setExploreComponent(null);
                   // Get support type if specified.
                   const urlParams = new URLSearchParams(d.location.search);

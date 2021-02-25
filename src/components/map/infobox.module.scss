@@ -1,8 +1,8 @@
-@import "../../assets/styles/colors.scss";
+@import "src/assets/styles/colors.scss";
 .infoBox {
   display: none;
   flex-flow: column;
-  // border: 1px solid #ccc;
+  border: 1px solid #ccc;
   width: 100%;
   opacity: 0;
   &.revealed {
@@ -11,6 +11,15 @@
   }
   &.show {
     display: flex;
+  }
+  .inkind {
+    margin-top: 10px;
+    font-size: 1.6rem;
+  }
+  .instructions {
+    margin-top: 10px;
+    font-size: 1.4rem;
+    font-style: italic;
   }
   .header {
     display: flex;
@@ -42,7 +51,7 @@
       margin-bottom: 10px;
     }
     .unknownValuesMessage {
-      line-height: 1.1;
+      line-height: 1.4;
       div:last-child {
         font-size: 0.7em;
         margin-top: 10px;
@@ -64,6 +73,8 @@
           font-family: "rawline", serif;
           margin-bottom: 10px;
           line-height: 1;
+          font-weight: bold;
+          font-size: 2rem;
         }
         div:last-child {
           font-size: 0.7em;

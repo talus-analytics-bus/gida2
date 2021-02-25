@@ -8,3 +8,7 @@ build/*
 # Environment variables
 .env
 *.sh
+
+# shell script folder
+sh
+sh/*

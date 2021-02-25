@@ -38,7 +38,6 @@ class WorldMap extends Chart {
     // Artificially hide Antarctica
     // TODO at dataset level
     this.countryData = this.topoworld.features.filter(
-      // d => d.properties.NAME === "France"
       d => d.properties.NAME !== "Antarctica"
     );
 
@@ -47,7 +46,11 @@ class WorldMap extends Chart {
 
     // Set class of SVG to include "map"
     // TODO check this
-    this.svg.classed("map, true");
+    this.svg
+      .on("click", () => {
+        this.closePopups();
+      })
+      .classed("map", true);
 
     // When the chart is clicked, set stopped to true.
     this.chart.on("click", this.stopped, true);
@@ -65,6 +68,7 @@ class WorldMap extends Chart {
 
     // Set map as loaded
     params.setMapLoaded(true);
+    this.params = params;
   }
 
   colorCountries(data, init = false) {
@@ -73,43 +77,35 @@ class WorldMap extends Chart {
       .selectAll("." + styles.country)
       .classed(styles.hatched, false);
 
-    const duration = init ? 0 : 500;
+    const duration = 0;
+    // const duration = init ? 0 : 500;
     countryGs
       .transition()
       .duration(duration)
-      .style("fill", "#ccc");
+      .style("fill", "#b3b3b3");
 
+    const params = this.params;
     countryGs
       .transition()
       .delay(duration)
-      .duration(1000)
+      .duration(duration * 2)
       .style("fill", function(d) {
         const match = data.find(dd => dd.iso3 === d.properties.iso3);
         if (match !== undefined) {
           // Set hatch if needed
-          d3.select(this).classed(
-            styles.hatched,
-            match.value === "yyy" || match.value === -8888
-          );
-
+          if (params.supportType === "funds_and_inkind") {
+            // apply hatch of appropriate color
+            if (match.has_inkind) {
+              return `url(#pattern-stripe-${
+                params.colorHash[match.color.toLowerCase() + params.entityRole]
+              })`;
+            }
+          }
           // Return color
           return match.color;
-        } else return "";
+        }
+        return "#b3b3b3";
       });
-  }
-
-  /**
-   * Add hatch definition to display for countries that have made/received
-   * contributions as a group only.
-   */
-  addHatchDefs() {
-    const html = `<pattern id="pattern-stripe" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                    <rect width="3.5" height="4" transform="translate(0,0)" fill="lightgray"></rect>
-                </pattern>
-                <mask id="mask-stripe">
-                    <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-stripe)" />
-                </mask>`;
-    this.svg.append("defs").html(html);
   }
 
   draw() {
@@ -159,6 +155,23 @@ class WorldMap extends Chart {
 
   addCountries() {
     const chart = this;
+    chart.clicked = false;
+    const onClick = function(d, activate) {
+      const sCountry = d3.select(this);
+      if (
+        activate === true ||
+        chart.params.activeCountry !== d.properties.iso3
+      ) {
+        chart.params.setActiveCountry(d.properties.iso3);
+        chart[styles.countries].selectAll("g").classed(styles.active, false);
+        sCountry.classed(styles.active, true);
+        chart.sActiveCountry = sCountry;
+        sCountry.raise();
+      } else {
+        sCountry.classed(styles.active, false);
+        chart.reset(false);
+      }
+    };
     const countryGroup = this.newGroup(styles.countries)
       .selectAll("g")
       .data(this.countryData)
@@ -167,27 +180,43 @@ class WorldMap extends Chart {
       .on("mouseover", function(d) {
         // Highlight
         d3.select(this).raise();
-        if (chart.activeCountry) chart.activeCountry.raise();
+        if (chart.sActiveCountry) chart.sActiveCountry.raise();
         chart.params.setTooltipCountry(d.properties.iso3);
-        // Tooltip
-        // chart.params.setTooltipContent(
-        //   <div>
-        //     <div>{d.properties.NAME}</div>
-        //   </div>
-        // );
+      })
+
+      .on("dblclick", function(d) {
+        d3.event.stopPropagation();
       })
       .on("click", function(d) {
-        const country = d3.select(this);
-        if (chart.params.activeCountry !== d.properties.iso3) {
-          chart.params.setActiveCountry(d.properties.iso3);
-          chart.zoomTo(d);
-          chart[styles.countries].selectAll("g").classed(styles.active, false);
-          country.classed(styles.active, true);
-          chart.activeCountry = country;
-          country.raise();
+        d3.event.stopPropagation();
+        // check click timeout to determine if this is a click, dblclick, or
+        // first click
+        if (chart.clicked === false) {
+          chart.clicked = true;
+          chart.timeout = setTimeout(() => {
+            // do single click event
+            onClick(d);
+
+            // set clicked to false again
+            chart.clicked = false;
+          }, 250);
         } else {
-          country.classed(styles.active, false);
-          chart.reset();
+          // double click events
+          chart.closePopups();
+          clearTimeout(chart.timeout);
+          chart.clicked = false;
+          const zoomIn = chart.zoomedTo !== d.properties.iso3;
+          if (zoomIn) {
+            chart.zoomTo(d, () => {
+              chart.zoomedTo = d.properties.iso3;
+              // // onClick(d, true);
+              // setTimeout(() => {
+              //   d3.select(this).dispatch("click");
+              // }, [1000]);
+            });
+          } else {
+            chart.reset();
+          }
         }
       });
 
@@ -230,6 +259,8 @@ class WorldMap extends Chart {
     this[styles.countries].attr("transform", d3.event.transform);
 
     this.toggleResetButton();
+    // this.closePopups();
+    this.zoomedTo = undefined;
   }
 
   zoomIncrementally(value) {
@@ -239,7 +270,7 @@ class WorldMap extends Chart {
       .call(this.zoom.scaleBy, value);
   }
 
-  zoomTo(d) {
+  zoomTo(d, afterZoom = undefined) {
     // move country to top of layer
     // $(this.parentNode).append(this);
 
@@ -257,22 +288,29 @@ class WorldMap extends Chart {
     return this.svg
       .transition()
       .duration(750)
-      .call(
-        this.zoom.transform,
-        d3.zoomIdentity.translate(t[0], t[1]).scale(s)
-      );
+      .call(this.zoom.transform, d3.zoomIdentity.translate(t[0], t[1]).scale(s))
+      .on("end", () => {
+        if (afterZoom) afterZoom();
+      });
   }
 
-  reset() {
-    if (this.activeCountry !== undefined) {
-      this.activeCountry.classed(styles.active, false);
-      this.activeCountry = undefined;
+  closePopups() {
+    if (this.sActiveCountry !== undefined) {
+      this.sActiveCountry.classed(styles.active, false);
+      this.sActiveCountry = undefined;
     }
     this.params.setActiveCountry(null);
-    this.svg
-      .transition()
-      .duration(750)
-      .call(this.zoom.transform, d3.zoomIdentity);
+  }
+
+  reset(resetView = true) {
+    this.closePopups();
+    this.zoomedTo = undefined;
+    if (resetView) {
+      this.svg
+        .transition()
+        .duration(750)
+        .call(this.zoom.transform, d3.zoomIdentity);
+    }
   }
 
   update(data) {
@@ -343,7 +381,7 @@ class WorldMap extends Chart {
     const height = 50;
 
     this.buttons.zoomButtons
-      .attr("transform", `translate(5, ${this.height - height - 36})`)
+      .attr("transform", `translate(0, ${this.height - height - 36})`)
       .style("cursor", "pointer");
 
     this.buttons.zoomButtons

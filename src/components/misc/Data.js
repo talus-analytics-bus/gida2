@@ -30,10 +30,9 @@ const getFlowValues = ({
   coreCapacities,
 }) => {
   // Define the flows that should be used to get the flow values.
-  const flowsTmp =
-    supportTypeForValues === "funds"
-      ? ["disbursed_funds", "committed_funds"]
-      : ["provided_inkind", "committed_inkind"];
+  const flowsTmp = ["funds", "funds_and_inkind"].includes(supportTypeForValues)
+    ? ["disbursed_funds", "committed_funds"]
+    : ["provided_inkind", "committed_inkind"];
 
   let flows;
   if (transactionType !== undefined) {
@@ -184,6 +183,7 @@ export const getInfoBoxData = ({
     switch (supportType) {
       // Funding data: show amount committed/disbursed
       case "funds":
+      case "funds_and_inkind": // TODO inkind mention for this mode
         infoBoxData.flowValues = getFlowValues({
           supportTypeForValues: "funds",
           datum,
@@ -225,10 +225,14 @@ export const getInfoBoxData = ({
       default:
         break;
     }
+
+    // if showing `funds_and_inkind`, mark whether in-kind support applies
+    if (supportType === "funds_and_inkind") {
+      infoBoxData.has_inkind = nodeMapData.has_inkind;
+    }
+    infoBoxData.flowType = flowType;
   }
 
-  // If showing jee score, set color value to the score.
-  // if (supportType === "jee") infoBoxData.colorValue = infoBoxData.scoreOfNode;
   return infoBoxData;
 };
 

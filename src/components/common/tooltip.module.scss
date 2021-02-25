@@ -1,8 +1,24 @@
-@import "../../assets/styles/colors.scss";
+@import "src/assets/styles/colors.scss";
 
 .tooltip {
   opacity: 1 !important;
+  &.map {
+    background-color: transparent !important;
+    &::after {
+      display: none;
+    }
+  }
+  &:not(.map) {
+    box-shadow: $layout-box-shadow;
+    -webkit-box-shadow: $layout-box-shadow;
+  }
 
+  // &.noEvents {
+  //   &,
+  //   * {
+  //     pointer-events: none !important;
+  //   }
+  // }
   .header {
     background-color: rgb(232, 232, 232);
     display: flex;
@@ -41,12 +57,12 @@
     margin: 0;
     max-width: 300px;
   }
-  box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
-  -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
-  &.dark {
-    box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
-    -webkit-box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
-  }
+  // box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+  // -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+  // &.dark {
+  //   box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
+  //   -webkit-box-shadow: 5px 5px 10px 0 rgba(255, 255, 255, 0.29);
+  // }
   &.fullTable {
     table {
       width: 100%;
@@ -87,4 +103,13 @@
     }
   }
   max-width: 500px;
+}
+
+.hide,
+.tooltip.hide {
+  opacity: 0 !important;
+  background-color: transparent !important;
+  * {
+    color: red !important;
+  }
 }
