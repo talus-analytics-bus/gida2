@@ -43,7 +43,7 @@
     "redux": "^4.0.4",
     "styled-components": "^5.0.0",
     "topojson-client": "^3.1.0",
-    "typescript": "3.5.1"
+    "typescript": "3.8"
   },
   "scripts": {
     "start": "REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_METRICS_API_URL=http://localhost:5002 REACT_APP_AMP_METRICS_API_URL=http://amp-metric-api.us-west-1.elasticbeanstalk.com/ REACT_APP_API_URL=http://localhost:8000 react-scripts start",
