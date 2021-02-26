@@ -1,10 +1,10 @@
-import React from "react";
-import classNames from "classnames";
-import Search from "../../common/Search/Search.js";
-import styles from "./home.module.scss";
-import Button from "../../common/Button/Button.js";
-import mapImage from "../../../assets/images/map.png";
-import GhsaButton from "../../common/GhsaButton/GhsaButton.js";
+import React from "react"
+import classNames from "classnames"
+import Search from "../../common/Search/Search.js"
+import styles from "./home.module.scss"
+import Button from "../../common/Button/Button.js"
+import mapImage from "../../../assets/images/map.png"
+import GhsaButton from "../../common/GhsaButton/GhsaButton.js"
 
 // JSX for home page
 const Home = () => {
@@ -53,12 +53,12 @@ const Home = () => {
         <div className={styles.content}>
           <div className={styles.buttons}>
             <Button
-              linkTo={"/explore/map"}
+              linkTo={"/map"}
               type={"primary"}
               label={"View funding map"}
             />
             <Button
-              linkTo={"/explore/map?supportType=jee"}
+              linkTo={"/map?supportType=jee"}
               type={"primary"}
               label={"View JEE score map"}
             />
@@ -69,7 +69,7 @@ const Home = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
