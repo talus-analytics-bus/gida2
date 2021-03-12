@@ -132,15 +132,15 @@ const EventTable = ({
       className: d => (d > 0 ? "num" : "num-with-text"),
       func: d => {
         // Check whether the monetary amount is available
-        const ft = d[curFlowType];
+        const ft = d["response_" + curFlowType];
         const financial = !d.is_inkind;
         if (financial) return ft;
         else {
           // If no financial, check for inkind
           const inkindField =
             curFlowType === "disbursed_funds"
-              ? "provided_inkind"
-              : "committed_inkind";
+              ? "response_provided_inkind"
+              : "response_committed_inkind";
           const inkind = d[inkindField] !== null;
           if (inkind) return -7777;
           else return -9999;
@@ -170,7 +170,7 @@ const EventTable = ({
 
     // define filters
     const flowFilters = {
-      "Project_Constants.response_or_capacity": ["response"],
+      "Project_Constants.response_or_capacity": ["both", "response"],
     };
     // Add event ID filter if defined
     if (eventId !== undefined)
