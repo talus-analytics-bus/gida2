@@ -86,17 +86,18 @@
     <script src="js/cookieconsent.min.js"></script>
     <script>
       window.addEventListener("load", function() {
-        window.cookieconsent.initialise({
-          palette: {
-            popup: {
-              background: "#CCCCCC",
-              text: "#000000",
+        if (window !== undefined && window.cookieconsent !== undefined)
+          window.cookieconsent.initialise({
+            palette: {
+              popup: {
+                background: "#CCCCCC",
+                text: "#000000",
+              },
+              button: {
+                background: "#5781ab",
+              },
             },
-            button: {
-              background: "#5781ab",
-            },
-          },
-          position: "bottom-right",
+            position: "bottom-right",
         });
       });
     </script>
