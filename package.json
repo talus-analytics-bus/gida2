@@ -43,7 +43,7 @@
     "redux": "^4.0.4",
     "styled-components": "^5.0.0",
     "topojson-client": "^3.1.0",
-    "typescript": "3.5.1"
+    "typescript": "3.8"
   },
   "scripts": {
     "start": "REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_METRICS_API_URL=http://localhost:5002 REACT_APP_AMP_METRICS_API_URL=http://amp-metric-api.us-west-1.elasticbeanstalk.com/ REACT_APP_API_URL=http://localhost:8000 react-scripts start",
@@ -52,7 +52,8 @@
     "eject": "react-scripts eject",
     "tslint": "./node_modules/.bin/tslint",
     "deploy-prod": "CI=false REACT_APP_GOAL_URL=https://goal.ghscosting.org REACT_APP_ENV_NAME=prod REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-prod.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-prod  --acl public-read --delete",
-    "deploy-dev": "CI=false REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete"
+    "deploy-dev": "CI=false REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete",
+    "deploy-dev2": "CI=false REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev2  --acl public-read --delete"
   },
   "eslintConfig": {
     "extends": "react-app"
