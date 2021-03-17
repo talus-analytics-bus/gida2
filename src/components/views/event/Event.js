@@ -93,7 +93,7 @@ const Event = ({ slug, flowTypeInfo }) => {
           caseData,
           deathData,
           stakeholders,
-          setNoData: setNoFundingData,
+          // setNoData: setNoFundingData,
         }}
       />
     ),

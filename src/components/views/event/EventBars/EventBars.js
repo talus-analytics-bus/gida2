@@ -8,9 +8,6 @@ import { Settings } from "../../../../App";
 import styles from "./eventbars.module.scss";
 import classNames from "classnames";
 
-// utility
-import { regions } from "../../../misc/Util";
-
 // local libs
 import D3EventBars from "./d3/D3EventBars";
 import D3ImpactBars from "./d3/D3ImpactBars";
@@ -24,7 +21,6 @@ const EventBars = ({
   caseData,
   deathData,
   stakeholders,
-  setNoData,
 }) => {
   // STATE //
   const [chart, setChart] = useState(null);
@@ -34,6 +30,7 @@ const EventBars = ({
   const [caseDeathDataForChart, setCaseDeathDataForChart] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [tooltipData, setTooltipData] = useState(false);
+  const [noFilteredData, setNoFilteredData] = useState(false);
 
   // "Event impact by"
   const [impact, setImpact] = useState("cases");
@@ -87,9 +84,10 @@ const EventBars = ({
   // max number of bar chart bars to show
   const max = top10Only ? 10 : 1e6;
 
-  // no data? shows a message to that effect
-  const noData =
-    dataForChart !== null && dataForChart[curFlowType].length === 0;
+  // // no data? shows a message to that effect
+  // setNoFilteredData(
+  //   dataForChart !== null && dataForChart[curFlowType].length === 0
+  // );
 
   // countries?
   const showRegionFilter =
@@ -118,22 +116,22 @@ const EventBars = ({
     }
   };
 
-  const setStakeholderFilter = f => {
+  const setStakeholderFilter = (f, shEntity) => {
     const isAll = funds.endsWith("_all");
     const isCountries = showRegionFilter;
     const isRegions = funds === "recipient_region";
     const isOrgs = funds === "recipient_org" || funds === "funder_org";
     if (isAll) return;
     else {
-      f["Stakeholder.slug"] = [
+      f[shEntity + ".slug"] = [
         ["neq", ["not-reported", "general-global-benefit"]],
       ];
     }
     if (isCountries) f["Stakeholder.subcat"] = ["country", "world"];
     else if (isRegions) {
-      f["Stakeholder.subcat"] = ["country"];
+      f[shEntity + ".subcat"] = ["country"];
     } else if (isOrgs) {
-      f["Stakeholder.cat"] = ["organization"];
+      f[shEntity + ".cat"] = ["organization"];
     } else {
       console.error("Unknown `funds` value: " + funds);
     }
@@ -146,11 +144,13 @@ const EventBars = ({
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     };
-    setStakeholderFilter(filters);
+    const shEntity =
+      direction === "target" ? "OtherStakeholder" : "Stakeholder";
+    setStakeholderFilter(filters, shEntity);
 
     // add region filter
     if (showRegionFilter && region !== "") {
-      filters["Stakeholder.region_who"] = [region];
+      filters[shEntity + ".region_who"] = [region];
     }
 
     // define queries
@@ -165,7 +165,9 @@ const EventBars = ({
 
     // add values that appear in case date but not funding
     setData(results.nodeSums);
-    setNoData(!Object.values(results.nodeSums).some(d => d.length !== 0));
+    setNoFilteredData(
+      !Object.values(results.nodeSums).some(d => d.length !== 0)
+    );
   };
 
   // EFFECT HOOKS //
@@ -432,7 +434,7 @@ const EventBars = ({
                   )}
               </div>
               <div
-                className={classNames(styles.bars, { [styles.hidden]: noData })}
+                className={classNames(styles.bars, { [styles.hidden]: false })}
               />
             </div>
             <div className={styles.chart}>
@@ -453,7 +455,7 @@ const EventBars = ({
                   </div>
                   <div
                     className={classNames(styles.impacts, {
-                      [styles.hidden]: noData,
+                      [styles.hidden]: noFilteredData,
                     })}
                   />
                 </>
@@ -461,7 +463,7 @@ const EventBars = ({
             </div>
           </div>
         }
-        {noData && (
+        {noFilteredData && (
           <div className={styles.noData}>
             No data match the selected filters
           </div>
