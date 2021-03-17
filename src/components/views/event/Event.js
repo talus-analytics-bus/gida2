@@ -5,14 +5,13 @@ import { Link } from "react-router-dom";
 // styles, colors, and assets
 import styles from "./event.module.scss";
 import classNames from "classnames";
-import { purples } from "../../map/MapUtil.js";
 
 // local components
 import {
   EventOverview,
   EventSidebar,
   EventBars,
-  Sankey,
+  // Sankey,
   Crossreferences,
 } from ".";
 import { Outbreak, Stakeholder, execute } from "../../misc/Queries";
@@ -105,17 +104,17 @@ const Event = ({ slug, flowTypeInfo }) => {
       </i>
     ),
   };
-  const sankey = dataLoaded && {
-    header: <h2>Flow of funding</h2>,
-    text: (
-      <span>
-        The chart below shows who funded whom. Click on a funder or recipient's
-        name to view their profile. Click on a rectangle to pin/unpin
-        highlights.
-      </span>
-    ),
-    content: <Sankey {...{ eventId: data.id, curFlowType }} />,
-  };
+  // const sankey = dataLoaded && {
+  //   header: <h2>Flow of funding</h2>,
+  //   text: (
+  //     <span>
+  //       The chart below shows who funded whom. Click on a funder or recipient's
+  //       name to view their profile. Click on a rectangle to pin/unpin
+  //       highlights.
+  //     </span>
+  //   ),
+  //   content: <Sankey {...{ eventId: data.id, curFlowType }} />,
+  // };
 
   const eventTable = dataLoaded &&
     !noFundingData && {
@@ -159,7 +158,7 @@ const Event = ({ slug, flowTypeInfo }) => {
 
   // collate subsections
   // const subsections = [eventBars, eventTable, crossreferences].filter(
-  const subsections = [eventBars, sankey, eventTable, crossreferences].filter(
+  const subsections = [eventBars, eventTable, crossreferences].filter(
     d => d.hide !== true && d !== false
   );
   const subsectionsJsx = subsections.map(
