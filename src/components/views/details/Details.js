@@ -77,7 +77,7 @@ const Details = ({
   const otherNodeType = entityRole === "funder" ? "target" : "origin";
 
   // Track whether viewing committed or disbursed/provided assistance
-  const [curFlowType, setCurFlowType] = useState("disbursed_funds");
+  const [curFlowType, setCurFlowType] = useState("committed_funds");
   const [pvsTooltipData, setPvsTooltipData] = useState(undefined);
 
   // is there any data to show? Inkind only?
@@ -192,16 +192,16 @@ const Details = ({
   const eventResponseTotals = (
     <div className={styles.totals}>
       <TotalByFlowType
-        key={"d"}
+        key={"c"}
         inline={true}
-        flowType="disbursed_funds"
+        flowType="committed_funds"
         data={eventTotalsData}
         label={"PHEIC funding"}
       />
       <TotalByFlowType
-        key={"c"}
+        key={"d"}
         inline={true}
-        flowType="committed_funds"
+        flowType="disbursed_funds"
         data={eventTotalsData}
         label={"PHEIC funding"}
       />
@@ -453,8 +453,8 @@ const Details = ({
                     id,
                     curFlowType,
                     otherEntityRole: entityRole,
-                    otherNodeType: otherDirection,
-                    direction: otherDirection,
+                    otherNodeType: direction,
+                    direction: direction,
                     staticStakeholders: nodesData,
                   }}
                 />
@@ -625,7 +625,7 @@ const Details = ({
   // when node data are updated, update flag show/hide
   useLayoutEffect(() => {
     if (!isEmpty(nodeData)) {
-      setShowFlag(nodeData.subcat === "country");
+      setShowFlag(ghsa || nodeData.subcat === "country");
     }
   }, [nodeData]);
 

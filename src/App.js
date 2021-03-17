@@ -18,6 +18,7 @@ import {
 // views
 import Home from "./components/views/home/Home.js";
 import { renderExplore } from "./components/views/explore/Explore.js";
+import MapViewer from "./components/views/explore/content/MapViewer/MapViewer.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
 import { renderExport } from "./components/views/export/Export.js";
 import AnalysisData from "./components/views/analysis/AnalysisData.js";
@@ -260,9 +261,45 @@ const App = () => {
             <div>
               <Route
                 exact
-                path="/explore/:activeTab"
+                path="/explore/map"
                 render={d => {
-                  setPage("explore-" + d.match.params.activeTab);
+                  setPage("explore-map");
+                  setExploreComponent(null);
+                  // Get support type if specified.
+                  const urlParams = new URLSearchParams(d.location.search);
+                  const supportTypeDefault =
+                    urlParams.get("supportType") !== null
+                      ? urlParams.get("supportType")
+                      : undefined;
+                  return (
+                    <MapViewer
+                      {...{
+                        ...d.match.params,
+                        versionData,
+                        component: exploreComponent,
+                        setComponent: setExploreComponent,
+                        loading: loading,
+                        setLoading: setLoading,
+                        flowTypeInfo,
+                        ghsaOnly: ghsaOnly,
+                        setGhsaOnly: setGhsaOnly,
+                        isDark: isDark,
+                        setIsDark: setIsDark,
+                        supportTypeDefault: supportTypeDefault,
+                        fundTypeDefault:
+                          supportTypeDefault !== undefined ? "" : "false",
+                        setLoadingSpinnerOn,
+                        setPage,
+                      }}
+                    />
+                  );
+                }}
+              />
+              <Route
+                exact
+                path="/explore/org"
+                render={d => {
+                  setPage("explore-org");
                   setExploreComponent(null);
                   // Get support type if specified.
                   const urlParams = new URLSearchParams(d.location.search);
@@ -356,7 +393,7 @@ const App = () => {
                 exact
                 path="/table/:id/:entityRole"
                 render={d => {
-                  setPage(undefined);
+                  setPage("data");
                   const defaultGhsaOnly =
                     d.match.params.id === "ghsa"
                       ? "false"
@@ -443,6 +480,7 @@ const App = () => {
                           loading: loading,
                           setLoading: setLoading,
                           flowTypeInfo: flowTypeInfo,
+                          entityRole: "funder",
                           setLoadingSpinnerOn,
                         }}
                       />

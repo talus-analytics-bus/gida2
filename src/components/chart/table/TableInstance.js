@@ -18,6 +18,7 @@ const TableInstance = ({
   useRowDataAsIs,
   updateVar = [tableData, tableColumns],
   filterFcn = d => true,
+  noColClick = false,
   ...props
 }) => {
   // define table `component` to return as table instance when data updated
@@ -61,6 +62,7 @@ const TableInstance = ({
       <div
         className={classNames("tableInstance", styles.tableInstance, {
           noPaging: props.paging !== true,
+          [styles.noColClick]: noColClick === true,
           [styles.noNativePaging]: props.noNativePaging === true,
           [styles.noNativeSearch]: props.noNativePaging === true,
           [styles.noNativeSorting]: props.noNativeSorting === true,

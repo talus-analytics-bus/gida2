@@ -3,7 +3,9 @@ import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./nav.module.scss";
 import logoLight from "../../../assets/images/tracking.png";
+// import logoLight from "../../../assets/images/logo-light.png";
 import logoDark from "../../../assets/images/tracking-dark-mode.png";
+// import logoDark from "../../../assets/images/logo-dark.png"; // TODO add dark version of logo
 import ReactTooltip from "react-tooltip";
 import Menu from "./content/Menu/Menu.js";
 import { Search } from "../../common";
@@ -24,6 +26,7 @@ const Nav = ({ page, ...props }) => {
         {
           [styles.loading]: props.loadingNav,
           [styles.dark]: props.isDark,
+          [styles.wide]: page === "explore-map",
         },
         styles[page]
       )}

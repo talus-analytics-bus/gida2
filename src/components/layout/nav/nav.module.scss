@@ -2,9 +2,13 @@
 
 .nav {
   border-bottom: 1px $black solid;
+  &.wide {
+    padding: 20px;
+  }
   &.dark {
     border-bottom: 1px solid #999999;
   }
+  // padding: 15px 5px;
   padding: 20px 5px;
   position: sticky;
   top: 0;
@@ -18,6 +22,7 @@
     align-items: center;
     justify-content: space-between;
     img.logo {
+      // height: 70px;
       height: 50px;
     }
     .links {

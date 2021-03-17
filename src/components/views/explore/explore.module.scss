@@ -1,11 +1,11 @@
 @import "../../../assets/styles/colors.scss";
 .explore {
-  // min-height: 80vh;
-  min-height: 81vh !important;
+  min-height: $min-content-height !important;
+}
+.explore,
+.map {
+  min-height: $min-content-height !important;
 
-  &.map {
-    padding-bottom: 0 !important;
-  }
   .header {
     @include header;
     justify-content: space-between;
@@ -21,7 +21,7 @@
           @include title;
         }
         span {
-          font-size: 16px !important;
+          font-size: 1.6rem;
         }
         div:last-child {
           margin-top: 20px;
@@ -33,33 +33,6 @@
     }
   }
 
-  .darkToggle {
-    display: flex;
-    flex-flow: row;
-    position: relative;
-    justify-content: center;
-    opacity: 0;
-    &.shown {
-      opacity: 1;
-    }
-    > span {
-      margin-right: 0;
-    }
-    > * {
-      position: relative;
-    }
-    > div {
-      position: absolute;
-      top: 2px;
-      pointer-events: none;
-      &:not(.dark) {
-        left: 15%;
-      }
-      &.dark {
-        right: 10%;
-      }
-    }
-  }
   .header {
     display: flex;
     flex-flow: column;
@@ -79,6 +52,7 @@
         flex-flow: row;
         margin-left: auto;
         align-items: center;
+        min-height: 35px;
         > :not(:last-child) {
           margin-right: 10px;
         }

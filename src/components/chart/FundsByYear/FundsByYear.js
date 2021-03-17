@@ -140,13 +140,14 @@ const FundsByYear = ({
                     }}
                   />
                   <TotalByFlowType
-                    flowType="disbursed_funds"
-                    data={data.totals}
-                  />
-                  <TotalByFlowType
                     flowType="committed_funds"
                     data={data.totals}
                   />
+                  <TotalByFlowType
+                    flowType="disbursed_funds"
+                    data={data.totals}
+                  />
+
                   {linkToEntityTable}
                 </div>
                 <div className={styles.areaLine}>

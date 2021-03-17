@@ -1,7 +1,7 @@
 @import "../../../assets/styles/colors.scss";
 
 .about {
-  min-height: 81vh;
+  min-height: $min-content-height;
   display: flex;
   flex-direction: column;
   align-items: center;

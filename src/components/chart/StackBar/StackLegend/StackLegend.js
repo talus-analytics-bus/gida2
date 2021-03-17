@@ -1,8 +1,8 @@
 import React from "react";
-import styles from "./legend.module.scss";
+import styles from "./stacklegend.module.scss";
 import classNames from "classnames";
-import Util from "../misc/Util.js";
-import {SlideToggle} from "../common";
+import Util from "../../../misc/Util.js";
+import { SlideToggle } from "../../../common";
 
 /**
  * Given the support type and flow type, returns the correct legend title.
@@ -21,6 +21,7 @@ const getLegendTitle = ({ supportType, flowType, entityRole }) => {
       return "Funds received relative to need level";
     default:
       return supportType;
+    case "funds_and_inkind":
     case "funds":
     case "inkind":
       switch (flowType) {
@@ -68,7 +69,10 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
   // Is the "needs met" metric the one being plotted? Its legend is a little
   // special.
   const needsMetMetric = supportType === "needs_met";
-  const numericMetric = supportType === "funds" || supportType === "inkind";
+  const numericMetric =
+    supportType === "funds" ||
+    supportType === "inkind" ||
+    supportType === "funds_and_inkind";
   const scoreMetric = supportType === "jee" || supportType === "pvs";
 
   // Define JSX for value labels that are invisible which are used as spacers
@@ -191,12 +195,12 @@ const getMainLegendBuckets = ({ colorScale, supportType }) => {
 
 /**
  * Create the legend for the map
- * @method Legend
+ * @method StackLegend
  * @param  {[type]} colorScale  [description]
  * @param  {[type]} supportType [description]
  * @param  {[type]} flowType    [description]
  */
-const Legend = ({
+const StackLegend = ({
   colorScale,
   supportType,
   flowType,
@@ -261,4 +265,4 @@ const Legend = ({
   );
 };
 
-export default Legend;
+export default StackLegend;

@@ -1,3 +1,7 @@
+// sizes
+$min-content-height: 81vh;
+
+// colors
 $white: #fff;
 $light-grey: #c8c8ce;
 $light-grey-2: #e6e6e6;
@@ -247,6 +251,7 @@ $phone-width-narrow: 375px;
 
 // make colors available to JS
 :export {
+  noDataGray: $no-data-gray;
   outbreakBlue2: $outbreak-blue-2;
   outbreakBlue3: $outbreak-blue-3;
   outbreakBlue4: $outbreak-blue-4;

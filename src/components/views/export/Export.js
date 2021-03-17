@@ -1,19 +1,15 @@
 import React, { useState } from "react";
 import classNames from "classnames";
 import styles from "./export.module.scss";
-import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
 import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries";
-import FlowQuery from "../../misc/FlowQuery.js";
-import NodeQuery from "../../misc/NodeQuery.js";
-import OutbreakQuery from "../../misc/OutbreakQuery.js";
 import { Drawer } from "../../common";
 import { Checkbox } from "../../common";
 import { FilterDropdown } from "../../common";
 import { Loading } from "../../common";
 import { core_capacities } from "../../misc/Data.js";
 import { Button } from "../../common";
-import axios from "axios";
+import { searchableSubcats } from "../../common/Search/Search";
 
 // Content components
 import ExportTable, { getFlowQuery } from "./ExportTable.js";
@@ -250,9 +246,11 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: Object.values(data.stakeholders).map(d => {
-                      return { value: d.id, label: d.name };
-                    }),
+                    options: Object.values(data.stakeholders)
+                      .filter(d => searchableSubcats.includes(d.subcat))
+                      .map(d => {
+                        return { value: d.id, label: d.name };
+                      }),
                     placeholder: "Funder",
                     onChange: setFunders,
                     curValues: funders,
@@ -261,9 +259,11 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: Object.values(data.stakeholders).map(d => {
-                      return { value: d.id, label: d.name };
-                    }),
+                    options: Object.values(data.stakeholders)
+                      .filter(d => searchableSubcats.includes(d.subcat))
+                      .map(d => {
+                        return { value: d.id, label: d.name };
+                      }),
                     placeholder: "Recipient",
                     onChange: setRecipients,
                     curValues: recipients,
@@ -305,38 +305,50 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   </div>
                   <div>
                     <Button
-                      callback={() => {
-                        setDownloading(true);
-                        getFlowQuery({
-                          curPage,
-                          props: {
-                            funders,
-                            recipients,
-                            coreCapacities,
-                            outbreaks,
-                            supportType,
-                          },
-                          forExport: true,
-                          ...props,
-                        }).then(paramsTmp => {
-                          // URL query params
-                          const params = paramsTmp.params;
+                      url={
+                        showClear
+                          ? undefined
+                          : "https://gida.ghscosting.org/downloads/GHS%20Tracking%20-%20Full%20Data%20Export%202021-01-29.xlsx"
+                      }
+                      sameWindow={true}
+                      callback={
+                        !showClear
+                          ? undefined
+                          : () => {
+                              setDownloading(true);
+                              getFlowQuery({
+                                curPage,
+                                props: {
+                                  funders,
+                                  recipients,
+                                  coreCapacities,
+                                  outbreaks,
+                                  supportType,
+                                },
+                                forExport: true,
+                                ...props,
+                              }).then(paramsTmp => {
+                                // URL query params
+                                const params = paramsTmp.params;
 
-                          // POST body JSON
-                          const data = { filters: paramsTmp.data.filters };
-                          data.cols = cols.filter(d =>
-                            exportCols.includes(d[0])
-                          );
+                                // POST body JSON
+                                const data = {
+                                  filters: paramsTmp.data.filters,
+                                };
+                                data.cols = cols.filter(d =>
+                                  exportCols.includes(d[0])
+                                );
 
-                          Excel({
-                            method: "post",
-                            data,
-                            params,
-                          }).then(() => {
-                            setDownloading(false);
-                          });
-                        });
-                      }}
+                                Excel({
+                                  method: "post",
+                                  data,
+                                  params,
+                                }).then(() => {
+                                  setDownloading(false);
+                                });
+                              });
+                            }
+                      }
                       disabled={downloading}
                       label={
                         <span className={styles.downloadBtn}>
@@ -429,7 +441,9 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
   // Define queries for typical Export page.
   const queries = {
     // Information about the entity
-    stakeholders: Stakeholder({ by: "id" }),
+    stakeholders: Stakeholder({
+      by: "id",
+    }),
     outbreaks: Outbreak({}),
   };
 

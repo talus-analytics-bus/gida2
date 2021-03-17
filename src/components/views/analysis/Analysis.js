@@ -37,7 +37,7 @@ const Analysis = ({
   ...props
 }) => {
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = useState("disbursed");
+  const [transactionType, setTransactionType] = useState("committed");
   const [chordComponent, setChordComponent] = useState(null);
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [selectedEntityInfo, setSelectedEntityInfo] = useState(null);
@@ -45,51 +45,52 @@ const Analysis = ({
   const [showInfo, setShowInfo] = useState(false);
 
   // Data
-  const [chordData, setChordData] = useState(null);
+  // const [chordData, setChordData] = useState(null);
   const [tableData, setTableData] = useState(null);
   const [initialized, setInitialized] = useState(false);
   const [chordGettingData, setChordGettingData] = useState(true);
 
   // FUNCTIONS //
-  const getChordData = async () => {
-    // Define typical base query parameters used in FlowQuery,
-    // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
-    // modified in code below.
-    setChordGettingData(true);
-    const nodeType = entityRole === "recipient" ? "target" : "origin";
-
-    const filters = {
-      "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
-      "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-    };
-
-    // add assistance type filter
-    if (ghsaOnly === "true") {
-      filters["Flow.is_ghsa"] = [true];
-    } else if (ghsaOnly === "event") {
-      filters["Flow.response_or_capacity"] = ["response"];
-    } else if (ghsaOnly === "capacity") {
-      filters["Flow.response_or_capacity"] = ["capacity"];
-    }
-
-    // add outbreak events filters
-    if (props.events && props.events.length > 0) {
-      filters["Event.id"] = props.events;
-    }
-    if (coreCapacities.length > 0) {
-      filters["Core_Capacity.name"] = coreCapacities;
-    }
-
-    // Define queries for analysis page.
-    const queries = {
-      chords: Chords({ format: "chord", filters }),
-    };
-
-    // Get query results.
-    const results = await Util.getQueryResults(queries);
-    setChordData(results.chords);
-    setChordGettingData(false);
-  };
+  // const getChordData = async () => {
+  //   // Define typical base query parameters used in FlowQuery,
+  //   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
+  //   // modified in code below.
+  //   setChordGettingData(true);
+  //   const nodeType = entityRole === "recipient" ? "target" : "origin";
+  //
+  //   const filters = {
+  //     "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
+  //     "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+  //     "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
+  //   };
+  //
+  //   // add assistance type filter
+  //   if (ghsaOnly === "true") {
+  //     filters["Flow.is_ghsa"] = [true];
+  //   } else if (ghsaOnly === "event") {
+  //     filters["Flow.response_or_capacity"] = ["response"];
+  //   } else if (ghsaOnly === "capacity") {
+  //     filters["Flow.response_or_capacity"] = ["capacity"];
+  //   }
+  //
+  //   // add outbreak events filters
+  //   if (props.events && props.events.length > 0) {
+  //     filters["Event.id"] = props.events;
+  //   }
+  //   if (coreCapacities.length > 0) {
+  //     filters["Core_Capacity.name"] = coreCapacities;
+  //   }
+  //
+  //   // Define queries for analysis page.
+  //   const queries = {
+  //     chords: Chords({ format: "chord", filters }),
+  //   };
+  //
+  //   // Get query results.
+  //   const results = await Util.getQueryResults(queries);
+  //   setChordData(results.chords);
+  //   setChordGettingData(false);
+  // };
   const getTableData = async () => {
     // Define typical base query parameters used in FlowQuery,
     // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
@@ -99,6 +100,7 @@ const Analysis = ({
     const filters = {
       "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+      "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
 
     // add assistance type filter
@@ -184,17 +186,17 @@ const Analysis = ({
 
   // load data initially
   useEffect(() => {
-    if (chordData === null) getChordData();
-    else if (tableData !== null) setInitialized(true);
-  }, [chordData]);
-  useEffect(() => {
     if (tableData === null) getTableData();
   }, [tableData]);
+  // useEffect(() => {
+  //   if (chordData === null) getChordData();
+  //   else if (tableData !== null) setInitialized(true);
+  // }, [chordData]);
 
-  // reload data if params changed
-  useEffect(() => {
-    if (chordData !== null) getChordData();
-  }, [transactionType, ghsaOnly, coreCapacities, minYear, maxYear]);
+  // // reload chord data if params changed
+  // useEffect(() => {
+  //   if (chordData !== null) getChordData();
+  // }, [transactionType, ghsaOnly, coreCapacities, minYear, maxYear]);
 
   const transactionTypeNoun =
     transactionType === "committed" ? "commitments" : "disbursements";
@@ -273,15 +275,6 @@ const Analysis = ({
                   }),
               },
               {
-                title: "Disbursed",
-                prop: "disbursed_funds",
-                type: "num",
-                className: d => (d > 0 ? "num" : "num-with-text"),
-                func: d =>
-                  d.disbursed_funds !== undefined ? d.disbursed_funds : "",
-                render: d => Util.formatValue(d, "disbursed_funds"),
-              },
-              {
                 title: "Committed",
                 prop: "committed_funds",
                 type: "num",
@@ -289,6 +282,15 @@ const Analysis = ({
                 func: d =>
                   d.committed_funds !== undefined ? d.committed_funds : "",
                 render: d => Util.formatValue(d, "committed_funds"),
+              },
+              {
+                title: "Disbursed",
+                prop: "disbursed_funds",
+                type: "num",
+                className: d => (d > 0 ? "num" : "num-with-text"),
+                func: d =>
+                  d.disbursed_funds !== undefined ? d.disbursed_funds : "",
+                render: d => Util.formatValue(d, "disbursed_funds"),
               },
             ]}
             tableData={tableData[dataKey]}
@@ -302,35 +304,35 @@ const Analysis = ({
       );
     });
 
-  const chordContent =
-    chordData !== null ? (
-      <Chord
-        chordData={chordData}
-        flowTypeInfo={flowTypeInfo}
-        ghsaOnly={ghsaOnly}
-        setGhsaOnly={setGhsaOnly}
-        activeTab={props.activeTab}
-        outbreakResponses={props.outbreakResponses}
-        coreCapacities={coreCapacities}
-        minYear={props.minYear}
-        maxYear={props.maxYear}
-        transactionType={transactionType}
-        selectedEntity={selectedEntity}
-        setSelectedEntity={setSelectedEntity}
-        setEntityArcInfo={setEntityArcInfo}
-        setShowInfo={setShowInfo}
-      />
-    ) : null;
-
-  const chordLegend = (
-    <div className={styles.legend}>
-      <div className={styles.rect} />
-      <div className={styles.labels}>
-        <div>Funds more</div>
-        <div>Receives more</div>
-      </div>
-    </div>
-  );
+  // const chordContent =
+  //   chordData !== null ? (
+  //     <Chord
+  //       chordData={chordData}
+  //       flowTypeInfo={flowTypeInfo}
+  //       ghsaOnly={ghsaOnly}
+  //       setGhsaOnly={setGhsaOnly}
+  //       activeTab={props.activeTab}
+  //       outbreakResponses={props.outbreakResponses}
+  //       coreCapacities={coreCapacities}
+  //       minYear={props.minYear}
+  //       maxYear={props.maxYear}
+  //       transactionType={transactionType}
+  //       selectedEntity={selectedEntity}
+  //       setSelectedEntity={setSelectedEntity}
+  //       setEntityArcInfo={setEntityArcInfo}
+  //       setShowInfo={setShowInfo}
+  //     />
+  //   ) : null;
+  //
+  // const chordLegend = (
+  //   <div className={styles.legend}>
+  //     <div className={styles.rect} />
+  //     <div className={styles.labels}>
+  //       <div>Funds more</div>
+  //       <div>Receives more</div>
+  //     </div>
+  //   </div>
+  // );
 
   // legend (maybe part of map?)
   return (
@@ -352,103 +354,107 @@ const Analysis = ({
           {...{
             loaded: initialized || tableData !== null,
             margin: "20px 0 0 0",
+            align: "center",
           }}
         >
           {<div className={styles.tables}>{tableInstances.map(d => d)}</div>}
           {<SourceText />}
         </Loading>
       </div>
-      <div className={styles.header}>
-        <div className={styles.title}>International funding network</div>
-      </div>
-      <div className={styles.content}>
-        <p>
-          The figure below illustrates the flow of funds from funder to
-          recipient. Countries and non-country funders are grouped along the
-          outside of the circle, and lines through the center of the circle
-          correspond to the transfer of funds from funder to recipient. Thicker
-          lines represent larger amounts of funding commitments or
-          disbursements. Hover over any line to see additional details on the
-          funding amount or funders and recipients involved. Totals shown here
-          may differ from those shown elsewhere in this site because
-          transactions with multiple funders or recipients are not included.
-        </p>
-        <Loading
-          {...{
-            loaded: initialized || chordData !== null,
-            margin: "20px 0 0 0",
-          }}
-        >
-          {
-            <div className={styles.chordDiagram}>
-              <div className={styles.chordContainer}>
-                {chordContent}
-                {chordLegend}
-              </div>
-              <div className={styles.menuContainer}>
-                <div className={styles.menu}>
-                  <Search
-                    name={"analysis"}
-                    callback={setSelectedEntity}
-                    expandedDefault={true}
-                  />
-                  <TimeSlider
-                    minYearDefault={Settings.startYear}
-                    maxYearDefault={Settings.endYear}
-                    onAfterChange={years => {
-                      setMinYear(years[0]);
-                      setMaxYear(years[1]);
-                    }}
-                  />
-                  <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
-                  <RadioToggle
-                    label={"Choose"}
-                    callback={setTransactionType}
-                    curVal={transactionType}
-                    choices={[
-                      {
-                        name: "Disbursed",
-                        value: "disbursed",
-                      },
-                      {
-                        name: "Committed",
-                        value: "committed",
-                      },
-                    ]}
-                  />
-                  {
-                    // TODO: add this tooltip for CC dropdown
-                    // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
-                  }
-                  <FilterDropdown
-                    {...{
-                      className: [styles.italic],
-                      label: "IHR core capacities",
-                      openDirection: "down",
-                      options: core_capacities,
-                      placeholder: "Select core capacities",
-                      onChange: v => setCoreCapacities(v.map(d => d.value)),
-                      curValues: coreCapacities,
-                    }}
-                  />
-                  {info}
-                  <Loading
-                    {...{
-                      loaded: !chordGettingData,
-                      small: true,
-                      position: "absolute",
-                      margin: 0,
-                      right: 20,
-                      top: 20,
-                    }}
-                  />
-                </div>
-                {<SourceText />}
-              </div>
-            </div>
-          }
-        </Loading>
-      </div>
+
+      {
+        // <div className={styles.header}>
+        //   <div className={styles.title}>International funding network</div>
+        // </div>
+        // <div className={styles.content}>
+        //   <p>
+        //     The figure below illustrates the flow of funds from funder to
+        //     recipient. Countries and non-country funders are grouped along the
+        //     outside of the circle, and lines through the center of the circle
+        //     correspond to the transfer of funds from funder to recipient. Thicker
+        //     lines represent larger amounts of funding commitments or
+        //     disbursements. Hover over any line to see additional details on the
+        //     funding amount or funders and recipients involved. Totals shown here
+        //     may differ from those shown elsewhere in this site because
+        //     transactions with multiple funders or recipients are not included.
+        //   </p>
+        // <Loading
+        //   {...{
+        //     loaded: initialized || chordData !== null,
+        //     margin: "20px 0 0 0",
+        //   }}
+        // >
+        //   {
+        //     <div className={styles.chordDiagram}>
+        //       <div className={styles.chordContainer}>
+        //         {chordContent}
+        //         {chordLegend}
+        //       </div>
+        //       <div className={styles.menuContainer}>
+        //         <div className={styles.menu}>
+        //           <Search
+        //             name={"analysis"}
+        //             callback={setSelectedEntity}
+        //             expandedDefault={true}
+        //           />
+        //           <TimeSlider
+        //             minYearDefault={Settings.startYear}
+        //             maxYearDefault={Settings.endYear}
+        //             onAfterChange={years => {
+        //               setMinYear(years[0]);
+        //               setMaxYear(years[1]);
+        //             }}
+        //           />
+        //           <GhsaToggle ghsaOnly={ghsaOnly} setGhsaOnly={setGhsaOnly} />
+        //           <RadioToggle
+        //             label={"Choose"}
+        //             callback={setTransactionType}
+        //             curVal={transactionType}
+        //             choices={[
+        //               {
+        //                 name: "Committed",
+        //                 value: "committed",
+        //               },
+        //               {
+        //                 name: "Disbursed",
+        //                 value: "disbursed",
+        //               },
+        //             ]}
+        //           />
+        //           {
+        //             // TODO: add this tooltip for CC dropdown
+        //             // Core capacities were tagged based on names and descriptions of commitments and disbursements. A single commitment or disbursement may support more than one core capacity. Additional information on how core capacities were tagged can be found on the data definitions page.
+        //           }
+        //           <FilterDropdown
+        //             {...{
+        //               className: [styles.italic],
+        //               label: "IHR core capacities",
+        //               openDirection: "down",
+        //               options: core_capacities,
+        //               placeholder: "Select core capacities",
+        //               onChange: v => setCoreCapacities(v.map(d => d.value)),
+        //               curValues: coreCapacities,
+        //             }}
+        //           />
+        //           {info}
+        //           <Loading
+        //             {...{
+        //               loaded: !chordGettingData,
+        //               small: true,
+        //               position: "absolute",
+        //               margin: 0,
+        //               right: 20,
+        //               top: 20,
+        //             }}
+        //           />
+        //         </div>
+        //         {<SourceText />}
+        //       </div>
+        //     </div>
+        //   }
+        // </Loading>
+        // </div>
+      }
     </div>
   );
 };

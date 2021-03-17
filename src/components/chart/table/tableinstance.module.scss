@@ -20,6 +20,9 @@
     margin: auto 0;
     background-color: #f2f2f2;
   }
+  &.noColClick th {
+    pointer-events: none;
+  }
 
   // Pagination styling
   li,

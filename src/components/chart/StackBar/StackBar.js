@@ -9,7 +9,7 @@ import * as d3 from "d3/dist/d3.min";
 import D3StackBar from "./D3StackBar.js";
 import RadioToggle from "../../misc/RadioToggle.js";
 import { execute, Stakeholder, Assessment, NodeSums } from "../../misc/Queries";
-import Legend from "../../map/Legend.js";
+import StackLegend from "./StackLegend/StackLegend.js";
 import { getMapColorScale } from "../../map/MapUtil.js";
 
 // TEMP components
@@ -52,6 +52,7 @@ const StackBar = ({
       "Core_Capacity.name": [["neq", "Unspecified"]],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+      "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
     if (!isGhsaPage) stackBarFilters["OtherStakeholder.id"] = [id];
 
@@ -98,7 +99,7 @@ const StackBar = ({
 
   const legend =
     id !== "ghsa" && display && showJee ? (
-      <Legend
+      <StackLegend
         className={styles.legend}
         colorScale={jeeColorScale}
         supportType={"jee"}
