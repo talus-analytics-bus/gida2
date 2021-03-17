@@ -57,8 +57,10 @@ const EventBars = ({
     stack: true,
     stackField: funds.includes("region") ? "region_who" : "name", // TODO dynamically
     noStackField: "No WHO region", // TODO dynamically
-    // stack: funds === "recipient_region",
   };
+  params.direction = params.role === "recipient" ? "target" : "origin";
+  params.otherRole = params.role === "recipient" ? "funder" : "recipient";
+  params.otherDirection = params.direction === "origin" ? "target" : "origin";
 
   // add countries with zero funding to main bar chart if they had cases?
   const addUnfundedCountriesWithCases =

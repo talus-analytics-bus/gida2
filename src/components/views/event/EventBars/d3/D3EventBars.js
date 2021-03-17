@@ -133,7 +133,7 @@ class D3EventBars extends Chart {
       return maxLabelWidth + padding;
     };
 
-    function getRunningValues(data, sortKey) {
+    function setRunningValues(data, sortKey) {
       data
         .map(d => {
           let runningValue = 0;
@@ -157,20 +157,20 @@ class D3EventBars extends Chart {
       let stackXMax, stackData;
       if (params.stack) {
         stackData = [];
-        const newDataByRegion = {};
+        const newDataByBarLabel = {};
         newData.forEach(d => {
-          const stackValue = d[params.stackField] || params.noStackField;
-          if (newDataByRegion[stackValue] === undefined) {
-            newDataByRegion[stackValue] = [d];
+          const barLabel = d[params.stackField] || params.noStackField;
+          if (newDataByBarLabel[barLabel] === undefined) {
+            newDataByBarLabel[barLabel] = [d];
           } else if (
             d[sortKey] !== 0 &&
             d[sortKey] !== undefined &&
             d[sortKey] !== null
           ) {
-            newDataByRegion[stackValue].push(d);
+            newDataByBarLabel[barLabel].push(d);
           }
         });
-        for (const [region, children] of Object.entries(newDataByRegion)) {
+        for (const [region, children] of Object.entries(newDataByBarLabel)) {
           children.forEach(d => {
             d.region = region;
           });
@@ -184,7 +184,7 @@ class D3EventBars extends Chart {
             bar_id: `${region}-${newFlowType}`,
           });
         }
-        getRunningValues(stackData, sortKey);
+        setRunningValues(stackData, sortKey);
         stackXMax = d3.max(stackData, d => d.value);
         newData = stackData;
       }
@@ -211,64 +211,81 @@ class D3EventBars extends Chart {
       x.range([0, this.width]);
 
       // get flag URLs and other data by name of stakeholder
+      const dataByFirstAndSecondSh = {};
+      const dataByRegionAndStakeholder = {};
       const dataByName = {};
+      // TODO confirm this for all cases
       newData.forEach(d => {
         if (params.stack) {
-          if (dataByName[d.name] === undefined) {
-            dataByName[d.name] = {};
-            d.children.forEach(dd => {
-              dataByName[d.name][dd.name] = dd;
-            });
+          if (params.stackField == "region_who") {
+            if (dataByRegionAndStakeholder[d.name] === undefined) {
+              dataByRegionAndStakeholder[d.name] = {};
+              d.children.forEach(dd => {
+                dataByRegionAndStakeholder[d.name][dd.name] = dd;
+              });
+            }
+          } else {
+            if (dataByFirstAndSecondSh[d.name] === undefined) {
+              dataByFirstAndSecondSh[d.name] = {};
+              d.children.forEach(dd => {
+                dataByFirstAndSecondSh[d.name][
+                  dd[params.otherDirection].name
+                ] = dd;
+              });
+            }
           }
         } else {
           dataByName[d.name] = d;
         }
       });
 
-      function updateTooltip(dTmp, region) {
+      function updateTooltip(dTmp, primarySh) {
         const d = typeof dTmp === "object" ? dTmp.name : dTmp;
         if (params.stack) {
-          const isBarSegment = dataByName[region] !== undefined;
-          const isBarLabel = !isBarSegment;
-          if (isBarSegment) {
-            const title = dataByName[region][d].name;
-            const tooltipData = {
-              header: { title, label: params.role },
-              body: [
-                // {
-                //   field: "Name",
-                //   value: title,
-                // },
-                {
-                  field: xLabel.text().replace(" (USD)", ""),
-                  value: Util.money(dataByName[region][d].value),
-                },
-              ],
-            };
-            params.setTooltipData(tooltipData);
-          } else if (isBarLabel) {
-            const title = formatRegion(d);
-            const tooltipData = {
-              header: { title, label: params.role },
-              body: [
-                // {
-                //   field: "Name",
-                //   value: title,
-                // },
-                {
-                  field: xLabel.text().replace(" (USD)", ""),
-                  value: Util.money(
-                    d3.sum(Object.values(dataByName[d]), dd => dd.value)
-                  ),
-                },
-              ],
-            };
-            params.setTooltipData(tooltipData);
+          if (params.stackField == "region_who") {
+            // TODO
+          } else {
+            const isBarSegment =
+              dataByFirstAndSecondSh[primarySh] !== undefined;
+            const isBarLabel = !isBarSegment;
+            if (isBarSegment) {
+              const otherSh = dTmp[params.otherDirection];
+              const title = otherSh.name;
+              const tooltipData = {
+                header: { title, label: params.otherRole },
+                body: [
+                  {
+                    field: xLabel.text().replace(" (USD)", ""),
+                    value: Util.money(
+                      dataByFirstAndSecondSh[primarySh][title].value
+                    ),
+                  },
+                ],
+              };
+              params.setTooltipData(tooltipData);
+            } else if (isBarLabel) {
+              const title = formatRegion(d);
+              const tooltipData = {
+                header: { title, label: params.role },
+                body: [
+                  {
+                    field: xLabel.text().replace(" (USD)", ""),
+                    value: Util.money(
+                      d3.sum(
+                        Object.values(dataByFirstAndSecondSh[d]),
+                        dd => dd.value
+                      )
+                    ),
+                  },
+                ],
+              };
+              params.setTooltipData(tooltipData);
+            }
           }
         } else {
           const title = dataByName[d].name;
           const tooltipData = {
-            header: { title, label: params.role },
+            header: { title, label: params.direction },
             body: [
               // {
               //   field: "Name",
