@@ -1,33 +1,17 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import { Link } from "react-router-dom";
 import styles from "./details.module.scss";
 import classNames from "classnames";
 import { Settings } from "../../../App.js";
-import {
-  getNodeLinkList,
-  getWeightsBySummaryAttributeSimple,
-  getSummaryAttributeWeightsByNode,
-  isUnknownDataOnly,
-  parseIdsAsNames,
-} from "../../misc/Data.js";
 import Util, { isEmpty } from "../../misc/Util.js";
 
 // queries
-import {
-  execute,
-  Stakeholder,
-  Assessment,
-  Flow,
-  NodeSums,
-  Outbreak,
-} from "../../misc/Queries";
+import { execute, Stakeholder, Assessment } from "../../misc/Queries";
 
-import { purples, greens, pvsCats, pvsColors } from "../../map/MapUtil.js";
+import { pvsCats, pvsColors } from "../../map/MapUtil.js";
 
 // Content components
 import DetailsSection from "../../views/details/content/DetailsSection.js";
 import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
-import Donuts from "../../chart/Donuts/Donuts.js";
 import StackBar from "../../chart/StackBar/StackBar.js";
 import TableInstance from "../../chart/table/TableInstance.js";
 import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
@@ -86,11 +70,6 @@ const Details = ({
 
   // track flows used to calc. total event funding
   const [eventTotalsData, setEventTotalsData] = useState(null);
-
-  // is there any event funding?
-  const noEventFunding =
-    eventTotalsData === null || eventTotalsData.length === 0;
-
   const [nodeData, setNodeData] = useState({});
   const [nodesData, setNodesData] = useState({});
   const defaultPvs = { eds: [], data: [], loading: true };
@@ -100,7 +79,6 @@ const Details = ({
   const getData = async () => {
     // define directions for queries
     const direction = entityRole === "funder" ? "origin" : "target";
-    const otherDirection = direction === "origin" ? "target" : "origin";
 
     // define common filters for most queries
     const commonFilters = {};
