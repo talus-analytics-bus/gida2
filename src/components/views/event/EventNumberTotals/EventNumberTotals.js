@@ -10,8 +10,11 @@ import personSvg from "./svg/person.svg";
 // local components
 import { SourceText } from "../../../common";
 import TotalByFlowType from "../../../infographic/TotalByFlowType/TotalByFlowType";
-import { execute, CumulativeCasesOrDeaths, Flow } from "../../../misc/Queries";
-import { NONE_VALS } from "../../../misc/Util";
+import {
+  execute,
+  CumulativeCasesOrDeaths,
+  NodeSums,
+} from "../../../misc/Queries";
 
 const EventNumberTotals = ({
   type,
@@ -26,6 +29,7 @@ const EventNumberTotals = ({
   // data arrays from which totals are calculated.
   // arrays should contain one el. per country with cumu. totals
   const [fundData, setFundData] = useState(null);
+
   // FUNCTIONS //
   // get icon to show
   const getIcon = type => {
@@ -37,14 +41,20 @@ const EventNumberTotals = ({
   const getDataFunc = type => {
     if (type.endsWith("_funds")) {
       return async () => {
-        const newFundData = await Flow({
-          filters: {
-            "Project_Constants.events": [["has", [eventData.id]]],
-          },
-        });
-
-        setFundData(newFundData.data);
-        // setFundData([{ disbursed_funds: 9999 }]);
+        const queries = {
+          byYear: NodeSums({
+            format: "line_chart",
+            direction: "target",
+            group_by: "Flow.year",
+            filters: {
+              "Flow.events": [["has", [eventData.id]]],
+              "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+              "Flow.response_or_capacity": ["response", "both"],
+            },
+          }),
+        };
+        const results = await execute({ queries });
+        setFundData(results.byYear.totals);
       };
     } else if (type === "total_cases") {
       return async () => {
