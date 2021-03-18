@@ -205,8 +205,10 @@ const EventBars = ({
   useEffect(() => {
     if (data !== null && impactData !== null) {
       const dataByIso2 = {};
+      const dataByIso3 = {};
       data[curFlowType].forEach(d => {
-        dataByIso2[d.iso2] = d;
+        dataByIso2[d[params.direction].iso2.toLowerCase()] = d;
+        dataByIso3[d[params.direction].iso3.toLowerCase()] = d;
         d.value = d[curFlowType];
       });
       const newCaseDeathDataForChartTmpByIso2 = {};
@@ -250,8 +252,11 @@ const EventBars = ({
             // dataset, skip it, otherwise if it doesn't appear in the funding
             // dataset, add it with zero value
             let iso2 = (d.place_iso || d.iso2 || "none").toLowerCase();
-            if (dataByIso2[iso2] === undefined) {
-              const iso3 = d.place_iso3 || d.iso3;
+            const iso3 = (d.place_iso3 || d.iso3 || "none").toLowerCase();
+            if (
+              dataByIso2[iso2] === undefined &&
+              dataByIso3[iso3] === undefined
+            ) {
               if (filteredStakeholders[iso3] === undefined) return;
               const shInfo = filteredStakeholders[iso3];
               let iso2 = (shInfo.iso2 || "none").toLowerCase();
@@ -283,23 +288,26 @@ const EventBars = ({
       // if case/death data are not available for a place that is in the
       // funding dataset, add it as null
       const newCaseDeathDataForChart = [];
-      newDataForChart[curFlowType].forEach(({ name, iso2, value, region }) => {
-        if (newCaseDeathDataForChartTmpByIso2[iso2] === undefined) {
-          newCaseDeathDataForChart.push({
-            iso2,
-            value: null,
-            sort: value,
-            name,
-            bar_id: `${iso2}-${curFlowType}-${impact}`,
-            region,
-          });
-        } else {
-          newCaseDeathDataForChart.push({
-            ...newCaseDeathDataForChartTmpByIso2[iso2],
-            sort: value,
-          });
+      newDataForChart[curFlowType].forEach(
+        ({ name, target, value, region }) => {
+          const iso2 = target.iso2.toLowerCase();
+          if (newCaseDeathDataForChartTmpByIso2[iso2] === undefined) {
+            newCaseDeathDataForChart.push({
+              iso2,
+              value: null,
+              sort: value,
+              name,
+              bar_id: `${iso2}-${curFlowType}-${impact}`,
+              region,
+            });
+          } else {
+            newCaseDeathDataForChart.push({
+              ...newCaseDeathDataForChartTmpByIso2[iso2],
+              sort: value,
+            });
+          }
         }
-      });
+      );
       setCaseDeathDataForChart(newCaseDeathDataForChart);
     }
   }, [data, impactData, curFlowType]);

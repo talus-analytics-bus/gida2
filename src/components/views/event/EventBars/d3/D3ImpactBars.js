@@ -121,13 +121,13 @@ class D3ImpactBars extends Chart {
         dataTmp.forEach(d => {
           const barLabel = d[params.stackField] || params.noStackField;
           if (newDataByBarLabel[barLabel] === undefined) {
-            newDataByBarLabel[barLabel] = [{...d}];
+            newDataByBarLabel[barLabel] = [{ ...d }];
           } else if (
             d[sortKey] !== 0 &&
             d[sortKey] !== undefined &&
             d[sortKey] !== null
           ) {
-            newDataByBarLabel[barLabel].push({...d});
+            newDataByBarLabel[barLabel].push({ ...d });
           }
         });
         for (const [region, children] of Object.entries(newDataByBarLabel)) {
@@ -139,8 +139,8 @@ class D3ImpactBars extends Chart {
             children: children.sort((a, b) => {
               return d3.descending(a[sortKey], b[sortKey]);
             }),
-            value: d3.sum(children, d => d.value),
-            impact: d3.sum(children, d => d.impact),
+            value: children[0].value,
+            sort: d3.sum(children, d => d.sort),
             bar_id: `${region}-${newFlowType}`,
           });
         }
