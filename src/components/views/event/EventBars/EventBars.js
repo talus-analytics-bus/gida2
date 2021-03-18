@@ -127,7 +127,7 @@ const EventBars = ({
         ["neq", ["not-reported", "general-global-benefit"]],
       ];
     }
-    if (isCountries) f["Stakeholder.subcat"] = ["country", "world"];
+    if (isCountries) f[shEntity + ".subcat"] = ["country", "world"];
     else if (isRegions) {
       f[shEntity + ".subcat"] = ["country"];
     } else if (isOrgs) {
