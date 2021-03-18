@@ -157,12 +157,14 @@ class D3ImpactBars extends Chart {
       function updateTooltip(dTmp) {
         const d = typeof dTmp === "object" ? dTmp.name : dTmp;
         const tooltipData = {
-          header: {
-            title: params.stack
-              ? formatRegion(dataByName[d].name)
-              : dataByName[d].name,
-            label: params.impact,
-          },
+          header: [
+            {
+              title: params.stack
+                ? formatRegion(dataByName[d].name)
+                : dataByName[d].name,
+              label: params.impact,
+            },
+          ],
           body: [
             {
               field: xLabel.text(),
