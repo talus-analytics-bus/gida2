@@ -221,7 +221,9 @@ class D3EventBars extends Chart {
             if (dataByRegionAndStakeholder[d.name] === undefined) {
               dataByRegionAndStakeholder[d.name] = {};
               d.children.forEach(dd => {
-                dataByRegionAndStakeholder[d.name][dd.name] = dd;
+                dataByRegionAndStakeholder[d.name][
+                  dd[params.otherDirection].name
+                ] = dd;
               });
             }
           } else {
@@ -241,56 +243,51 @@ class D3EventBars extends Chart {
 
       function updateTooltip(dTmp, primarySh) {
         const d = typeof dTmp === "object" ? dTmp.name : dTmp;
+        let lookupTable;
         if (params.stack) {
-          if (params.stackField == "region_who") {
-            // TODO
+          const byRegion = params.stackField == "region_who";
+          if (byRegion) {
+            lookupTable = dataByRegionAndStakeholder;
           } else {
-            const isBarSegment =
-              dataByFirstAndSecondSh[primarySh] !== undefined;
-            const isBarLabel = !isBarSegment;
-            if (isBarSegment) {
-              const otherSh = dTmp[params.otherDirection];
-              const title = otherSh.name;
-              const tooltipData = {
-                header: { title, label: params.otherRole },
-                body: [
-                  {
-                    field: xLabel.text().replace(" (USD)", ""),
-                    value: Util.money(
-                      dataByFirstAndSecondSh[primarySh][title].value
-                    ),
-                  },
-                ],
-              };
-              params.setTooltipData(tooltipData);
-            } else if (isBarLabel) {
-              const title = formatRegion(d);
-              const tooltipData = {
-                header: { title, label: params.role },
-                body: [
-                  {
-                    field: xLabel.text().replace(" (USD)", ""),
-                    value: Util.money(
-                      d3.sum(
-                        Object.values(dataByFirstAndSecondSh[d]),
-                        dd => dd.value
-                      )
-                    ),
-                  },
-                ],
-              };
-              params.setTooltipData(tooltipData);
-            }
+            lookupTable = dataByFirstAndSecondSh;
+          }
+          const isBarSegment = lookupTable[primarySh] !== undefined;
+          const isBarLabel = !isBarSegment;
+          if (isBarSegment) {
+            const otherSh = dTmp[params.otherDirection];
+            const title = otherSh.name;
+            const header = [{ title, label: params.otherRole }];
+            if (byRegion) header.push({ title: dTmp.name, label: params.role });
+            const tooltipData = {
+              header,
+              body: [
+                {
+                  field: xLabel.text().replace(" (USD)", ""),
+                  value: Util.money(lookupTable[primarySh][title].value),
+                },
+              ],
+            };
+            params.setTooltipData(tooltipData);
+          } else if (isBarLabel) {
+            const title = formatRegion(d);
+            const tooltipData = {
+              header: [{ title, label: params.role }],
+              body: [
+                {
+                  field: xLabel.text().replace(" (USD)", ""),
+                  value: Util.money(
+                    d3.sum(Object.values(lookupTable[d]), dd => dd.value)
+                  ),
+                },
+              ],
+            };
+            params.setTooltipData(tooltipData);
           }
         } else {
           const title = dataByName[d].name;
           const tooltipData = {
-            header: { title, label: params.direction },
+            header: [{ title, label: params.direction }],
             body: [
-              // {
-              //   field: "Name",
-              //   value: title,
-              // },
               {
                 field: xLabel.text().replace(" (USD)", ""),
                 value: Util.money(dataByName[d].value),

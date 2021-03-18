@@ -19,7 +19,7 @@ const Dot = ({ left, date, desc = "" }) => {
     <Popup
       {...{
         body: [{ field: "Date", value: dateStr }],
-        header: { title: desc, label: "calendar" },
+        header: [{ title: desc, label: "calendar" }],
         style: { gridTemplateColumns: "40px auto" },
         popupStyle: { minWidth: "unset" },
       }}

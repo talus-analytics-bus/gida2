@@ -15,7 +15,7 @@ import calendarSvg from "./svg/calendar.svg";
  */
 const Popup = ({
   body,
-  header = { title: "Germany", label: "funder" },
+  header = [{ title: "Germany", label: "funder" }],
   popupStyle,
   style,
   align = "center",
@@ -28,7 +28,7 @@ const Popup = ({
         style={popupStyle}
         className={classNames(styles.popup, styles[align])}
       >
-        <Header {...{ ...header, style }} />
+        <Header {...{ header, style }} />
         <Body {...{ data: body, style }} />
       </div>
     );
@@ -56,23 +56,26 @@ const getIcon = label => {
   }
 };
 
-const Header = ({ label, title, style }) => {
-  const isRole = ["funder", "recipient"].includes(label);
-
-  const icon = getIcon(label, isRole);
-
-  return (
-    <div style={style} className={styles.header}>
-      <div
-        className={classNames(styles.label, styles[label], {
-          [styles.isRole]: isRole,
-        })}
-      >
-        {icon || label}
+const Header = ({ header, style }) => {
+  const headerRows = [];
+  header.forEach(({ title, label }) => {
+    const isRole = ["funder", "recipient"].includes(label);
+    const icon = getIcon(label, isRole);
+    headerRows.push(
+      <div style={style} className={styles.header}>
+        <div
+          className={classNames(styles.label, styles[label], {
+            [styles.isRole]: isRole,
+          })}
+        >
+          {icon || label}
+        </div>
+        <div className={styles.title}>{title}</div>
       </div>
-      <div className={styles.title}>{title}</div>
-    </div>
-  );
+    );
+  });
+
+  return headerRows;
 };
 
 const Body = ({ data, style }) => {
