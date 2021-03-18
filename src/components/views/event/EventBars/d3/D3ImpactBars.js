@@ -109,41 +109,42 @@ class D3ImpactBars extends Chart {
       return -(maxLabelWidth + margin) || -this.margin.left + 10;
     };
 
-    this.update = (data, newFlowType = params.curFlowType, params) => {
-      const allFundsZero = !data.some(d => d.sort !== 0);
+    this.update = (dataTmp, newFlowType = params.curFlowType, params) => {
+      const allFundsZero = !dataTmp.some(d => d.sort !== 0);
       const sortKey = allFundsZero ? "value" : "sort";
 
       // format stack bar data
-      let stackXMax, stackData;
-
+      let data = [];
       if (params.stack) {
-        stackData = [];
-        const dataByRegion = {};
-        data.forEach(d => {
-          const region = d.region_who || "No WHO region";
-          if (dataByRegion[region] === undefined) {
-            dataByRegion[region] = [d];
+        const newData = [];
+        const newDataByBarLabel = {};
+        dataTmp.forEach(d => {
+          const barLabel = d[params.stackField] || params.noStackField;
+          if (newDataByBarLabel[barLabel] === undefined) {
+            newDataByBarLabel[barLabel] = [{...d}];
           } else if (
-            d.value !== 0 &&
-            d.value !== undefined &&
-            d.value !== null
+            d[sortKey] !== 0 &&
+            d[sortKey] !== undefined &&
+            d[sortKey] !== null
           ) {
-            dataByRegion[region].push(d);
+            newDataByBarLabel[barLabel].push({...d});
           }
         });
-        for (const [region, children] of Object.entries(dataByRegion)) {
-          stackData.push({
+        for (const [region, children] of Object.entries(newDataByBarLabel)) {
+          children.forEach(d => {
+            d.region = region;
+          });
+          newData.push({
             name: region,
             children: children.sort((a, b) => {
               return d3.descending(a[sortKey], b[sortKey]);
             }),
             value: d3.sum(children, d => d.value),
-            sort: d3.sum(children, d => d.sort),
+            impact: d3.sum(children, d => d.impact),
             bar_id: `${region}-${newFlowType}`,
           });
         }
-        stackXMax = d3.max(stackData, d => d.value);
-        data = stackData;
+        data = newData;
       }
 
       // Sort

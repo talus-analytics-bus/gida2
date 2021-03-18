@@ -220,6 +220,7 @@ class D3EventBars extends Chart {
             if (dataByRegionAndStakeholder[d.name] === undefined) {
               dataByRegionAndStakeholder[d.name] = {};
               d.children.forEach(dd => {
+                if (dd.value === 0) return;
                 if (
                   dataByRegionAndStakeholder[d.name][
                     dd[params.otherDirection].name
@@ -237,6 +238,7 @@ class D3EventBars extends Chart {
             if (dataByFirstAndSecondSh[d.name] === undefined) {
               dataByFirstAndSecondSh[d.name] = {};
               d.children.forEach(dd => {
+                if (dd.value === 0) return;
                 if (
                   dataByFirstAndSecondSh[d.name][
                     dd[params.otherDirection].name
