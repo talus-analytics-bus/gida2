@@ -238,7 +238,7 @@ class D3EventBars extends Chart {
             if (dataByFirstAndSecondSh[d.name] === undefined) {
               dataByFirstAndSecondSh[d.name] = {};
               d.children.forEach(dd => {
-                if (dd.value === 0) return;
+                if (dd.value === 0 || dd.value === null) return;
                 if (
                   dataByFirstAndSecondSh[d.name][
                     dd[params.otherDirection].name

@@ -39,7 +39,7 @@ const EventBars = ({
   const [funds, setFunds] = useState("recipient_country");
 
   // "Filter recipients/funders"
-  const [region, setRegion] = useState("");
+  const [region, setRegion] = useState("paho");
 
   // show top 10 bars only?
   const [top10Only, setTop10Only] = useState(true);
@@ -283,13 +283,14 @@ const EventBars = ({
           d.impact = newCaseDeathDataForChartTmpByIso2[d.iso2].value;
         } else d.impact = 0;
       });
-      setDataForChart(newDataForChart);
+
+      // add blank funding record for places with cases but no funding
 
       // if case/death data are not available for a place that is in the
       // funding dataset, add it as null
       const newCaseDeathDataForChart = [];
       newDataForChart[curFlowType].forEach(
-        ({ name, target, value, region }) => {
+        ({ name, target, value, region_who }) => {
           const iso2 = target.iso2.toLowerCase();
           if (newCaseDeathDataForChartTmpByIso2[iso2] === undefined) {
             newCaseDeathDataForChart.push({
@@ -298,7 +299,7 @@ const EventBars = ({
               sort: value,
               name,
               bar_id: `${iso2}-${curFlowType}-${impact}`,
-              region,
+              region_who,
             });
           } else {
             newCaseDeathDataForChart.push({
@@ -308,6 +309,26 @@ const EventBars = ({
           }
         }
       );
+
+      // add case/death data missing bc not in funding data
+      for (const iso2 in newCaseDeathDataForChartTmpByIso2) {
+        if (newCaseDeathDataForChart.find(d => d.iso2 === iso2) === undefined) {
+          newCaseDeathDataForChart.push({
+            ...newCaseDeathDataForChartTmpByIso2[iso2],
+            sort: null,
+          });
+        }
+        if (
+          newDataForChart[curFlowType].find(d => d.iso2 === iso2) === undefined
+        ) {
+          newDataForChart[curFlowType].push({
+            ...newCaseDeathDataForChartTmpByIso2[iso2],
+            value: null,
+            sort: null,
+          });
+        }
+      }
+      setDataForChart(newDataForChart);
       setCaseDeathDataForChart(newCaseDeathDataForChart);
     }
   }, [data, impactData, curFlowType]);
