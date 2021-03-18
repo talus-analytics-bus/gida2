@@ -38,9 +38,12 @@ const Website = ({
     ) : null;
   if (linksOnly) {
     return (
-      <a href={url} target={"_blank"}>
-        {publication}
-      </a>
+      <>
+        <a href={url} target={"_blank"}>
+          {publication}
+        </a>
+        <>.{notesJsx}</>
+      </>
     );
   } else
     return (
