@@ -137,14 +137,13 @@ class D3EventBars extends Chart {
       data
         .map(d => {
           let runningValue = 0;
-          d.children = d3.shuffle(
-            d.children.map(c => {
-              c.value0 = runningValue;
-              runningValue += c.value;
-              c.value1 = runningValue;
-              return c;
-            })
-          );
+          d.children = d.children.map(c => {
+            c.value0 = runningValue;
+            runningValue += c.value;
+            c.value1 = runningValue;
+            return c;
+          });
+
           return d;
         })
         .sort((a, b) => a[sortKey] > b[sortKey]);
@@ -221,18 +220,34 @@ class D3EventBars extends Chart {
             if (dataByRegionAndStakeholder[d.name] === undefined) {
               dataByRegionAndStakeholder[d.name] = {};
               d.children.forEach(dd => {
+                if (
+                  dataByRegionAndStakeholder[d.name][
+                    dd[params.otherDirection].name
+                  ] === undefined
+                )
+                  dataByRegionAndStakeholder[d.name][
+                    dd[params.otherDirection].name
+                  ] = [];
                 dataByRegionAndStakeholder[d.name][
                   dd[params.otherDirection].name
-                ] = dd;
+                ].push(dd);
               });
             }
           } else {
             if (dataByFirstAndSecondSh[d.name] === undefined) {
               dataByFirstAndSecondSh[d.name] = {};
               d.children.forEach(dd => {
+                if (
+                  dataByFirstAndSecondSh[d.name][
+                    dd[params.otherDirection].name
+                  ] === undefined
+                )
+                  dataByFirstAndSecondSh[d.name][
+                    dd[params.otherDirection].name
+                  ] = [];
                 dataByFirstAndSecondSh[d.name][
                   dd[params.otherDirection].name
-                ] = dd;
+                ].push(dd);
               });
             }
           }
@@ -263,7 +278,9 @@ class D3EventBars extends Chart {
               body: [
                 {
                   field: xLabel.text().replace(" (USD)", ""),
-                  value: Util.money(lookupTable[primarySh][title].value),
+                  value: Util.money(
+                    d3.sum(lookupTable[primarySh][title], dd => dd.value)
+                  ),
                 },
               ],
             };
@@ -276,7 +293,7 @@ class D3EventBars extends Chart {
                 {
                   field: xLabel.text().replace(" (USD)", ""),
                   value: Util.money(
-                    d3.sum(Object.values(lookupTable[d]), dd => dd.value)
+                    d3.sum(Object.values(lookupTable[d]).flat(), dd => dd.value)
                   ),
                 },
               ],
@@ -361,7 +378,8 @@ class D3EventBars extends Chart {
           outbreakBlue5,
         ];
         newData.forEach(stackBar => {
-          const seed = parseInt(Math.random() * colors.length);
+          const seed = colors.length;
+          // const seed = parseInt(Math.random() * colors.length);
           bars
             .selectAll("rect")
             .data(d => d.children)
