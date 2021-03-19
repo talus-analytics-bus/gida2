@@ -1,20 +1,9 @@
 // 3rd party libs
 import React, { useState, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
-import classNames from "classnames";
-
-// assets and styles
-import styles from "../details.module.scss";
 
 // local
-import { Settings } from "../../../../App.js";
-import {
-  getNodeLinkList,
-  getWeightsBySummaryAttributeSimple,
-  getSummaryAttributeWeightsByNode,
-  isUnknownDataOnly,
-  parseIdsAsNames,
-} from "../../../misc/Data.js";
+import { getNodeLinkList } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
 import { Loading } from "../../../common";
 import TableInstance from "../../../chart/table/TableInstance.js";
