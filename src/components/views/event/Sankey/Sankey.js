@@ -11,12 +11,10 @@ import sortedDesc from "../../../../assets/images/icons/sorted-desc.svg";
 import unsorted from "../../../../assets/images/icons/unsorted.svg";
 
 // local components
-import { Settings } from "../../../../App";
 import D3Sankey from "./d3/D3Sankey";
 import { execute, Chords } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
-import {Checkbox} from "../../../common";
-import {Loading} from "../../../common";
+import { Loading } from "../../../common";
 
 const Sankey = ({ eventId, curFlowType }) => {
   // STATE //
@@ -43,7 +41,6 @@ const Sankey = ({ eventId, curFlowType }) => {
     const filters = {
       "Event.id": [eventId],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-      "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     };
     // add region filter
     if (region !== "") {

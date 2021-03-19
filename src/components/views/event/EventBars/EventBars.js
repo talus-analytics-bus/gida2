@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import ReactTooltip from "react-tooltip";
 
-import { Settings } from "../../../../App";
-
 // styles
 import styles from "./eventbars.module.scss";
 import classNames from "classnames";
@@ -11,7 +9,7 @@ import classNames from "classnames";
 // local libs
 import D3EventBars from "./d3/D3EventBars";
 import D3ImpactBars from "./d3/D3ImpactBars";
-import { execute, NodeSums, Chords } from "../../../misc/Queries";
+import { execute, Chords } from "../../../misc/Queries";
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
 import { Loading, Checkbox, Popup, popupStyles } from "../../../common";
 
@@ -142,7 +140,6 @@ const EventBars = ({
     const filters = {
       "Event.id": [eventId],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-      "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
       "Flow.response_or_capacity": ["response"],
     };
     const shEntity =
