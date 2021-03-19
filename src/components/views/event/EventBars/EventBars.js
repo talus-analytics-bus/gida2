@@ -36,10 +36,10 @@ const EventBars = ({
   const [impact, setImpact] = useState("cases");
 
   // "Funds by"
-  const [funds, setFunds] = useState("recipient_country");
+  const [funds, setFunds] = useState("funder_all");
 
   // "Filter recipients/funders"
-  const [region, setRegion] = useState("paho");
+  const [region, setRegion] = useState("");
 
   // show top 10 bars only?
   const [top10Only, setTop10Only] = useState(true);
@@ -143,6 +143,7 @@ const EventBars = ({
       "Event.id": [eventId],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+      "Flow.response_or_capacity": ["response"],
     };
     const shEntity =
       direction === "target" ? "OtherStakeholder" : "Stakeholder";
@@ -207,9 +208,10 @@ const EventBars = ({
       const dataByIso2 = {};
       const dataByIso3 = {};
       data[curFlowType].forEach(d => {
-        dataByIso2[d[params.direction].iso2.toLowerCase()] = d;
-        dataByIso3[d[params.direction].iso3.toLowerCase()] = d;
         d.value = d[curFlowType];
+
+        dataByIso2[(d[params.direction].iso2 || "none").toLowerCase()] = d;
+        dataByIso3[(d[params.direction].iso3 || "none").toLowerCase()] = d;
       });
       const newCaseDeathDataForChartTmpByIso2 = {};
 
@@ -291,7 +293,7 @@ const EventBars = ({
       const newCaseDeathDataForChart = [];
       newDataForChart[curFlowType].forEach(
         ({ name, target, value, region_who }) => {
-          const iso2 = target.iso2.toLowerCase();
+          const iso2 = (target.iso2 || "none").toLowerCase();
           if (newCaseDeathDataForChartTmpByIso2[iso2] === undefined) {
             newCaseDeathDataForChart.push({
               iso2,
