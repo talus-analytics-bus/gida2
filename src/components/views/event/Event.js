@@ -125,18 +125,18 @@ const Event = ({ slug, flowTypeInfo }) => {
           Click on a funder or recipient to view their profile.
         </span>
       ),
-      // content: (
-      //   <EventTable
-      //     {...{
-      //       hideName: true,
-      //       eventId: data.id,
-      //       curFlowType,
-      //       curFlowTypeName,
-      //       setEventTotalsData: () => "",
-      //       sortByProp: "amount",
-      //     }}
-      //   />
-      // ),
+      content: (
+        <EventTable
+          {...{
+            hideName: true,
+            eventId: data.id,
+            curFlowType,
+            curFlowTypeName,
+            setEventTotalsData: () => "",
+            sortByProp: "amount",
+          }}
+        />
+      ),
     };
 
   // get crossreferences section dynamic title
