@@ -106,20 +106,6 @@ class D3EventBars extends Chart {
       .classed("axis-title", true)
       .text("Funds");
 
-    const getYLabelPos = data => {
-      const fakeText = chart
-        .selectAll(".fake-text")
-        .data(data)
-        .enter()
-        .append("text")
-        .text(d => d.name)
-        .attr("class", [styles.tick, styles.fakeText].join(" "));
-      const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
-      fakeText.remove();
-      const margin = 65;
-      return -(maxLabelWidth + margin) || -this.margin.left + 10;
-    };
-
     const getLeftMargin = (data, fmt, padding = 0) => {
       const fakeText = chart
         .selectAll(".fake-text")
