@@ -79,10 +79,9 @@ const Event = ({ slug, flowTypeInfo }) => {
     header: <h2>Total event funding</h2>,
     text: (
       <span>
-        The chart below shows total funding by recipient and by funder.
-        Recipient funding is compared to event impact, by either cases or
-        deaths. Click on the name of a funder or recipient to view their
-        profile.
+        The chart below shows total funding by recipient or by funder. Recipient
+        funding is compared to event impact, by either cases or deaths. Hover
+        over stacked bar sections or labels to view details.
       </span>
     ),
     content: (
