@@ -184,7 +184,7 @@ class D3EventBars extends Chart {
       const getShortName = this.getShortName;
 
       const tickFormat = params.stack ? formatRegion : getShortName;
-      const padding = params.stack ? 25 : 60;
+      const padding = params.stack ? 30 : 60;
       this.updateWidth({
         ...this.margin,
         left: getLeftMargin(newData, tickFormat, padding),
