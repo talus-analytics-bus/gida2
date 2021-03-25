@@ -894,6 +894,8 @@ export const formatValue = (val, cn, units = true, round = false) => {
         if (val === -9999 || val === "zzz") return val;
         else if (typeof val === "string") return val;
         else return Util.getScoreName(val);
+      case "response_disbursed_funds":
+      case "response_committed_funds":
       case "disbursed_funds":
       case "committed_funds":
       case "funds":
@@ -904,6 +906,8 @@ export const formatValue = (val, cn, units = true, round = false) => {
       case "needs_met_legend":
         if (val === 0) return "Needs met";
         else return "Needs unmet";
+      case "response_provided_inkind":
+      case "response_committed_inkind":
       case "provided_inkind":
       case "committed_inkind":
       case "inkind":
