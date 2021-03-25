@@ -208,9 +208,12 @@ class D3EventBars extends Chart {
               d.children.forEach(dd => {
                 if (dd.value === 0) return;
                 if (
+                  (dataByRegionAndStakeholder[d.name][
+                    dd[params.otherDirection]
+                  ] === undefined &&
                   dataByRegionAndStakeholder[d.name][
                     dd[params.otherDirection].name
-                  ] === undefined
+                    ]) === undefined
                 )
                   dataByRegionAndStakeholder[d.name][
                     dd[params.otherDirection].name
