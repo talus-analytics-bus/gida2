@@ -125,13 +125,12 @@ const Event = ({ slug, flowTypeInfo }) => {
           Click on a funder or recipient to view their profile.
         </span>
       ),
+      toggleFlowType: false,
       content: (
         <EventTable
           {...{
             hideName: true,
             eventId: data.id,
-            curFlowType,
-            curFlowTypeName,
             setEventTotalsData: () => "",
             sortByProp: "amount",
           }}
