@@ -82,11 +82,6 @@ const EventBars = ({
   // max number of bar chart bars to show
   const max = top10Only ? 10 : 1e6;
 
-  // // no data? shows a message to that effect
-  // setNoFilteredData(
-  //   dataForChart !== null && dataForChart[curFlowType].length === 0
-  // );
-
   // countries?
   const showRegionFilter =
     funds === "recipient_country" || funds === "funder_country";
@@ -163,9 +158,6 @@ const EventBars = ({
 
     // add values that appear in case date but not funding
     setData(results.nodeSums);
-    setNoFilteredData(
-      !Object.values(results.nodeSums).some(d => d.length !== 0)
-    );
   };
 
   // EFFECT HOOKS //
@@ -196,12 +188,14 @@ const EventBars = ({
       setLoaded(true);
     }
   }, [data, caseDeathDataForChart]);
-
   // Format data.
   // if both sets of required raw data are not null, process them into data
   // that can be used in the charts
   useEffect(() => {
     if (data !== null && impactData !== null) {
+      // hide/show no data message
+      setNoFilteredData(data[curFlowType].length === 0);
+
       const dataByIso2 = {};
       const dataByIso3 = {};
       data[curFlowType].forEach(d => {
