@@ -276,12 +276,14 @@ const EventBars = ({
         }
       }
 
-      // add case / death value to funding data for sorting purposes
-      newDataForChart[curFlowType].forEach(d => {
-        if (newCaseDeathDataForChartTmpByIso2[d.iso2] !== undefined) {
-          d.impact = newCaseDeathDataForChartTmpByIso2[d.iso2].value;
-        } else d.impact = 0;
-      });
+      // add case / death value to funding data for sorting purposes, if the
+      // impact dot chart is shown
+      if (showImpacts)
+        newDataForChart[curFlowType].forEach(d => {
+          if (newCaseDeathDataForChartTmpByIso2[d.iso2] !== undefined) {
+            d.impact = newCaseDeathDataForChartTmpByIso2[d.iso2].value;
+          } else d.impact = 0;
+        });
 
       // add blank funding record for places with cases but no funding
 
@@ -310,23 +312,27 @@ const EventBars = ({
       );
 
       // add case/death data missing bc not in funding data
-      for (const iso2 in newCaseDeathDataForChartTmpByIso2) {
-        if (newCaseDeathDataForChart.find(d => d.iso2 === iso2) === undefined) {
-          newCaseDeathDataForChart.push({
-            ...newCaseDeathDataForChartTmpByIso2[iso2],
-            sort: null,
-          });
+      if (showImpacts)
+        for (const iso2 in newCaseDeathDataForChartTmpByIso2) {
+          if (
+            newCaseDeathDataForChart.find(d => d.iso2 === iso2) === undefined
+          ) {
+            newCaseDeathDataForChart.push({
+              ...newCaseDeathDataForChartTmpByIso2[iso2],
+              sort: null,
+            });
+          }
+          if (
+            newDataForChart[curFlowType].find(d => d.iso2 === iso2) ===
+            undefined
+          ) {
+            newDataForChart[curFlowType].push({
+              ...newCaseDeathDataForChartTmpByIso2[iso2],
+              value: null,
+              sort: null,
+            });
+          }
         }
-        if (
-          newDataForChart[curFlowType].find(d => d.iso2 === iso2) === undefined
-        ) {
-          newDataForChart[curFlowType].push({
-            ...newCaseDeathDataForChartTmpByIso2[iso2],
-            value: null,
-            sort: null,
-          });
-        }
-      }
       setDataForChart(newDataForChart);
       setCaseDeathDataForChart(newCaseDeathDataForChart);
     }
