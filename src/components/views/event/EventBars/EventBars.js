@@ -462,7 +462,9 @@ const EventBars = ({
                   )}
               </div>
               <div
-                className={classNames(styles.bars, { [styles.hidden]: false })}
+                className={classNames(styles.bars, {
+                  [styles.hidden]: noFilteredData,
+                })}
               />
             </div>
             <div className={styles.chart}>
