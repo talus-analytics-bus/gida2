@@ -35,7 +35,7 @@ const EventTable = ({
   const [dataLoaded, setDataLoaded] = useState(false);
 
   // CONSTANTS //
-  const showBothFlowTypes = curFlowType === undefined; // TODO implement
+  const showBothFlowTypes = curFlowType === undefined;
   const standardCols = [
     {
       title: "PHEIC",
