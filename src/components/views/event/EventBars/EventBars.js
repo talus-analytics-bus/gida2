@@ -34,7 +34,7 @@ const EventBars = ({
   const [impact, setImpact] = useState("cases");
 
   // "Funds by"
-  const [funds, setFunds] = useState("funder_all");
+  const [funds, setFunds] = useState("recipient_all");
 
   // "Filter recipients/funders"
   const [region, setRegion] = useState("");
