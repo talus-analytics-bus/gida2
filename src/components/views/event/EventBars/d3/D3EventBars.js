@@ -211,8 +211,8 @@ class D3EventBars extends Chart {
                   (dataByRegionAndStakeholder[d.name][
                     dd[params.otherDirection]
                   ] === undefined &&
-                  dataByRegionAndStakeholder[d.name][
-                    dd[params.otherDirection].name
+                    dataByRegionAndStakeholder[d.name][
+                      dd[params.otherDirection].name
                     ]) === undefined
                 )
                   dataByRegionAndStakeholder[d.name][
@@ -368,6 +368,16 @@ class D3EventBars extends Chart {
           outbreakBlue4,
           outbreakBlue5,
         ];
+        let prevColor = "";
+        let color = "";
+        const getRandomBarColor = () => {
+          while (color === prevColor) {
+            color = colors[Math.floor(Math.random() * colors.length)];
+          }
+          prevColor = color;
+          return color;
+        };
+
         newData.forEach(stackBar => {
           const seed = colors.length;
           // const seed = parseInt(Math.random() * colors.length);
@@ -376,10 +386,7 @@ class D3EventBars extends Chart {
             .data(d => d.children)
             .enter()
             .append("rect")
-            .style("fill", (d, i) => {
-              const idx = (i + seed) % colors.length;
-              return colors[idx];
-            })
+            .style("fill", getRandomBarColor)
             .attr("data-tip", true)
             .attr("data-for", "chartTooltip")
             .on("mouseover", d => {
