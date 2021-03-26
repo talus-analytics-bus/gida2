@@ -23,7 +23,7 @@ export const searchableSubcats = [
   // "state_/_department_/_territory",
   // "sub-organization",
   "world",
-]
+];
 /**
  * Generic radio toggle
  * TODO implement tooltip
@@ -39,10 +39,10 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   const [results, setResults] = useState(null);
 
   const handleInputChange = async e => {
-    const val = e.target.value
+    const val = e.target.value;
     // If no value, show region list.
     if (val === "") {
-      setResults(null)
+      setResults(null);
     } else {
       // Find country or org matches
       // Return them by setting the country values
@@ -68,7 +68,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
                 "region",
                 "agency",
                 "sub-organization",
-          ],
+              ],
             ],
           ],
           "Stakeholder.slug": [["neq", ["not-reported"]]],
@@ -111,12 +111,12 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       if (e.target.previousSibling !== null) e.target.previousSibling.focus();
       else document.getElementById("placeSearch-" + name).focus();
     }
-  }
+  };
 
   const unset = () => {
-    document.getElementById("placeSearch-" + name).value = ""
-    setResults(null)
-  }
+    document.getElementById("placeSearch-" + name).value = "";
+    setResults(null);
+  };
 
   const getResults = results => {
     if (callback === undefined) {
@@ -140,27 +140,27 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
               </div>
             </div>
           </Link>
-        )
-      })
+        );
+      });
     } else
       return results.map(d => (
         <div
           onClick={() => {
-            unset()
-            callback(d.id)
+            unset();
+            callback(d.id);
           }}
           className={styles.result}
         >
           <div className={styles.name}>{d.name}</div>
           <div className={styles.type}>{d.type}</div>
         </div>
-      ))
-  }
+      ));
+  };
 
   // Hide menus on root click
   document.getElementById("root").onclick = e => {
-    setShowResults(false)
-  }
+    setShowResults(false);
+  };
 
   const inputEl = (
     <input
@@ -172,7 +172,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       onChange={handleInputChange}
       onKeyDown={handleKeyPress}
     />
-  )
+  );
 
   // JSX //
   return (
@@ -192,10 +192,10 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
               // If search bar results are showing when it's minimized, then
               // hide the results.
               if (expanded) {
-                e.stopPropagation()
-                setShowResults(false)
+                e.stopPropagation();
+                setShowResults(false);
               }
-              if (props.expandedDefault !== true) setExpanded(!expanded)
+              if (props.expandedDefault !== true) setExpanded(!expanded);
             }}
             className={"material-icons"}
           >
@@ -222,7 +222,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Search
+export default Search;
