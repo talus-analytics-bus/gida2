@@ -80,8 +80,8 @@ const Event = ({ slug, flowTypeInfo }) => {
     text: (
       <span>
         The chart below shows total funding by recipient or by funder. Recipient
-        funding is compared to event impact, by either cases or deaths. Hover
-        over stacked bar sections or labels to view details.
+        funding is compared to event impact, by either cases or deaths, when
+        available. Hover over stacked bar sections or labels to view details.
       </span>
     ),
     content: (
