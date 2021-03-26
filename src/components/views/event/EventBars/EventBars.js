@@ -19,6 +19,7 @@ const EventBars = ({
   caseData,
   deathData,
   stakeholders,
+  hasImpactsData,
 }) => {
   // STATE //
   const [chart, setChart] = useState(null);
@@ -65,7 +66,8 @@ const EventBars = ({
   const impactData = impact === "cases" ? caseData : deathData;
 
   // show impacts dot chart?
-  const showImpacts = ["recipient_country", "recipient_region"].includes(funds);
+  const showImpacts =
+    ["recipient_country", "recipient_region"].includes(funds) && hasImpactsData;
 
   // charts ready to be shown?
   const drawn = chart !== null && (!showImpacts || secChart !== null) && loaded;
@@ -211,7 +213,7 @@ const EventBars = ({
 
       // for each datum of case or death data, put it in chart data format
       // indexed by iso2 code
-      impactData.forEach(({ value, ...d }) => {
+      removeGlobalData(impactData).forEach(({ value, ...d }) => {
         const iso3 = d.place_iso3 || d.iso3;
         const stakeholderInfo = filteredStakeholders[iso3];
         if (stakeholderInfo === undefined) return;
@@ -222,7 +224,7 @@ const EventBars = ({
           d.name = curShInfo.name;
         }
         const name = d.place_name || d.name;
-        const iso2 = (d.iso2 || d.place_iso).toLowerCase();
+        const iso2 = (d.iso2 || d.place_iso || "none").toLowerCase();
         newCaseDeathDataForChartTmpByIso2[iso2] = {
           value,
           iso2,
@@ -240,7 +242,7 @@ const EventBars = ({
       };
       if (addUnfundedCountriesWithCases) {
         for (const flowType of Object.keys(newDataForChart)) {
-          impactData.forEach(d => {
+          removeGlobalData(impactData).forEach(d => {
             // if the case/death data place doesn't appear in the stakeholders
             // dataset, skip it, otherwise if it doesn't appear in the funding
             // dataset, add it with zero value
@@ -523,3 +525,8 @@ const EventBars = ({
   );
 };
 export default EventBars;
+
+const removeGlobalData = data => {
+  if (data === null) return data;
+  else return data.filter(d => d.iso3 !== "GLB");
+};
