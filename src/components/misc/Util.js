@@ -888,6 +888,7 @@ export const formatValue = (val, cn, units = true, round = false) => {
   if (val === -8888 || val === "yyy") return "Specific amount not reported";
   if (val === "n/a" || val === "Unavailable") return val;
   if (val === undefined || val === null) val = 0;
+  if (typeof val === "string") return val;
   else {
     switch (cn) {
       case "jee":
