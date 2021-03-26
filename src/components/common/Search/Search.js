@@ -61,14 +61,22 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
         limit: limit || 5,
         filters: {
           "Stakeholder.subcat": [
-            ["neq", ["state_/_department_/_territory", "region"]],
+            [
+              "neq",
+              [
+                "state_/_department_/_territory",
+                "region",
+                "agency",
+                "sub-organization",
+          ],
+            ],
           ],
           "Stakeholder.slug": [["neq", ["not-reported"]]],
         },
-      })
-      setResults(results)
+      });
+      setResults(results);
     }
-  }
+  };
 
   const handleKeyPress = e => {
     if (e.keyCode === 27) {
