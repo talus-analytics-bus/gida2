@@ -92,7 +92,9 @@ const Event = ({ slug, flowTypeInfo }) => {
           caseData,
           deathData,
           stakeholders,
-          // setNoData: setNoFundingData,
+          hasImpactsData:
+            data.source_of_cases_and_deaths !== "Static CSV" ||
+            data.cases_and_deaths_json.some(d => d.iso3 !== "GLB"),
         }}
       />
     ),
