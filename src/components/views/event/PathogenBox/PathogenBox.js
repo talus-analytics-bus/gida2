@@ -14,10 +14,10 @@ import { NONE_VALS, getInitCap } from "../../../misc/Util";
 const PathogenBox = ({
   pathogen_name,
   mcms_available,
+  mcms_during_event,
   transmission_type,
   route_of_infection,
   // signs_and_symptoms,
-  mcms_during_event,
 }) => {
   // CONSTANTS //
   const arrJoin = (a = []) => getInitCap(a.join(", ").toLowerCase());
@@ -43,7 +43,10 @@ const PathogenBox = ({
     {
       icon: syringeSvg,
       title: "Medical countermeasures",
-      data: MCMBox({ onset: mcms_during_event, today: mcms_available }),
+      data: MCMBox({
+        onset: mcms_during_event || [1],
+        today: mcms_available || [],
+      }),
       fmt: v => v,
     },
   ];
@@ -91,12 +94,20 @@ const mcmNameByCode = [
 
 const MCMBox = ({ onset = [], today = [] }) => {
   if (
-    onset === null ||
-    today === null ||
+    (onset === null && today === null) ||
     (onset.length === 0 && today.length === 0)
   )
     return null;
   else {
+    const todayNew = [];
+    let anyNew = false;
+    today.forEach(d => {
+      if (!onset.includes(d)) {
+        anyNew = true;
+        todayNew.push(d);
+      }
+    });
+
     // JSX //
     const onsetJsx = (
       <>
@@ -112,17 +123,19 @@ const MCMBox = ({ onset = [], today = [] }) => {
         </div>
       </>
     );
+
     const todayJsx = (
       <>
         <div className={styles.subtitle}>Developed during or after event:</div>
         <div className={styles.value}>
-          {today.length > 0 &&
+          {anyNew &&
             getInitCap(
-              today
+              todayNew
                 .map(d => mcmNameByCode[d - 1])
                 .join(", ")
                 .toLowerCase()
             )}
+          {!anyNew && <>n/a</>}
         </div>
       </>
     );
