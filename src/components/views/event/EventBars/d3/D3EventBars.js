@@ -364,7 +364,7 @@ class D3EventBars extends Chart {
       if (params.stack) {
         const colors = [
           outbreakBlue2,
-          outbreakBlue3,
+          // outbreakBlue3,
           outbreakBlue4,
           outbreakBlue5,
         ];
