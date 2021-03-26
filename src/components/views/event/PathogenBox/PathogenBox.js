@@ -82,6 +82,13 @@ const PathogenBox = ({
   );
 };
 
+const mcmNameByCode = [
+  "None",
+  "Treatments (antibiotics; antivirals)",
+  "Diagnostic tests",
+  "Vaccines",
+];
+
 const MCMBox = ({ onset = [], today = [] }) => {
   if (
     onset === null ||
@@ -95,7 +102,13 @@ const MCMBox = ({ onset = [], today = [] }) => {
       <>
         <div className={styles.subtitle}>Available at onset:</div>
         <div className={styles.value}>
-          {onset.length > 0 && getInitCap(onset.join(", ").toLowerCase())}
+          {onset.length > 0 &&
+            getInitCap(
+              onset
+                .map(d => mcmNameByCode[d - 1])
+                .join(", ")
+                .toLowerCase()
+            )}
         </div>
       </>
     );
@@ -103,7 +116,13 @@ const MCMBox = ({ onset = [], today = [] }) => {
       <>
         <div className={styles.subtitle}>Developed during or after event:</div>
         <div className={styles.value}>
-          {today.length > 0 && getInitCap(today.join(", ").toLowerCase())}
+          {today.length > 0 &&
+            getInitCap(
+              today
+                .map(d => mcmNameByCode[d - 1])
+                .join(", ")
+                .toLowerCase()
+            )}
         </div>
       </>
     );
