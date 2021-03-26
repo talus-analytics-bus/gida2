@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
-import Util from "../../misc/Util.js";
+import Util, { getInitCap } from "../../misc/Util.js";
 import { Loading } from "../../common";
 import styles from "./totalbyflowtype.module.scss";
 
@@ -84,6 +84,9 @@ const getAmountByFlowType = (flowType, data) => {
     if (data.length !== undefined) {
       // Add them up
       let total;
+      if (!data.some(d => typeof d.value !== "string")) {
+        return getInitCap(data[0].value);
+      }
       data.forEach(d => {
         if (d[flowType] === undefined || d[flowType] === null) return;
         else {
@@ -92,7 +95,7 @@ const getAmountByFlowType = (flowType, data) => {
           else if (curVal !== "unknown") total += curVal;
         }
       });
-      if (total === undefined) return 0;
+      if (total === undefined) return "Unavailable";
       else return total;
     } else {
       const flowTypeData = data[flowType];
