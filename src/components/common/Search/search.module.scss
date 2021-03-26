@@ -29,8 +29,7 @@
           color: darken($grey, 10%);
         }
       }
-      input,
-      input::placeholder {
+      input {
         transition: 0.5s width;
         cursor: text !important;
         width: 0;
