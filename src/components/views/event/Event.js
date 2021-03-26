@@ -65,8 +65,6 @@ const Event = ({ slug, flowTypeInfo }) => {
   const dataLoaded = data !== null;
 
   // Get display name for current flow type
-  const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
-    .display_name;
   const isGlobal =
     countryImpacts.length === 1 && countryImpacts[0].label === "Global";
   const highlighted = countryImpacts
