@@ -4,7 +4,7 @@ import ReactTooltip from "react-tooltip";
 
 // local components
 import Carousel from "./Carousel/Carousel";
-import {Button} from "../../../common";
+import { Button } from "../../../common";
 import { Excel } from "../../../misc/Queries";
 
 // styles and assets
@@ -38,7 +38,7 @@ const Crossreferences = ({
     },
     {
       text:
-        "Click below to download a complete set of World Health Organization disease outbreak news reports (DONs) related to this event, compiled by the Georgetown Center for Global Health Science and Security. ",
+        "Click below to download a complete set of World Health Organization disease outbreak news reports (DONs) related to this PHEIC, compiled by the Georgetown Center for Global Health Science and Security. ",
       label: "Download list of DONs for " + name,
       onClick: () => {
         Excel({

@@ -74,7 +74,7 @@ const Event = ({ slug, flowTypeInfo }) => {
     });
 
   const eventBars = dataLoaded && {
-    header: <h2>Total event funding</h2>,
+    header: <h2>Total PHEIC funding</h2>,
     text: (
       <span>
         The chart below shows total funding by recipient or by funder. Recipient
@@ -120,8 +120,10 @@ const Event = ({ slug, flowTypeInfo }) => {
       header: <h2>Funders for {data.name}</h2>,
       text: (
         <span>
-          The table below displays funders in order of amount of funds provided.
-          Click on a funder or recipient to view their profile.
+          The table below displays PHEIC response projects in order of amount of
+          funds provided. Click on a funder or recipient to view their profile.
+          Note that some projects funding more PHEICs than just this one may be
+          listed, and the amount shown is the total for all.
         </span>
       ),
       toggleFlowType: false,
