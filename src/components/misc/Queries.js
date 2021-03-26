@@ -302,7 +302,6 @@ export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
       return eventData.cases_and_deaths_json.map(d => {
         return { value: d[casesOrDeaths], iso3: d.iso3 };
       });
-      // return d3.sum(eventData.cases_and_deaths_json, d => d[casesOrDeaths]);
     }
   } else {
     const res = await ObservationQuery({
