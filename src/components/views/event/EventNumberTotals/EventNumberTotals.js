@@ -15,6 +15,8 @@ import {
   CumulativeCasesOrDeaths,
   NodeSums,
 } from "../../../misc/Queries";
+import { comma } from "../../../misc/Util";
+import { WebsiteList } from "../../../common/SourceText/SourceText";
 
 const EventNumberTotals = ({
   type,
@@ -86,17 +88,39 @@ const EventNumberTotals = ({
 
   // get totals to show
   const getTotalInfo = type => {
-    const dataFunc = getDataFunc(type);
     if (type === "funding")
       return [
         ["Disbursed funding", "disbursed_funds", fundData],
         ["Committed funding", "committed_funds", fundData],
       ];
-    else
+    else {
+      // if GLB is present then only use that
+      const returnGlobalOnlyIfPresent = data => {
+        if (data === null) return data;
+        const globalDatum = data.find(d => d.iso3 === "GLB");
+        if (globalDatum !== undefined) {
+          // if hyphenated number, format accordingly
+          const isHyphenatedNumber =
+            typeof globalDatum.value === "string" &&
+            globalDatum.value.includes("-");
+          if (isHyphenatedNumber) {
+            const formattedGlobalDatum = {
+              ...globalDatum,
+              value: globalDatum.value
+                .split("-")
+                .map(d => comma(d))
+                .join(" - "),
+            };
+            return formattedGlobalDatum;
+          }
+          return [globalDatum];
+        } else return data;
+      };
       return [
-        ["Total cases", "total_cases", caseData],
-        ["Total deaths", "total_deaths", deathData],
+        ["Total cases", "total_cases", returnGlobalOnlyIfPresent(caseData)],
+        ["Total deaths", "total_deaths", returnGlobalOnlyIfPresent(deathData)],
       ];
+    }
   };
 
   // CONSTANTS //
@@ -134,12 +158,35 @@ const EventNumberTotals = ({
           </div>
           {hasImpactDataSources && (
             <SourceText>
-              {impactDataSourcesNoun}:{" "}
-              {eventData.cases_and_deaths_refs.map(d => (
-                <SourceText.Website {...{ ...d }} />
-              ))}
+              <span
+                style={{
+                  fontWeight:
+                    eventData.cases_and_deaths_refs.length > 1 ? 600 : "",
+                }}
+              >
+                {impactDataSourcesNoun}
+              </span>
+              <WebsiteList
+                {...{
+                  websites: eventData.cases_and_deaths_refs,
+                  linksOnly: false,
+                }}
+              />
             </SourceText>
           )}
+          {/* {
+          hasImpactDataSources && (
+            <SourceText>
+              {impactDataSourcesNoun}:{" "}
+              {eventData.cases_and_deaths_refs.map(d => (
+                <>
+                  <SourceText.Website {...{ ...d }} />
+                  {d.notes === "" ? ". " : ""}
+                </>
+              ))}
+            </SourceText>
+          )
+          } */}
           {!isImpacts && (
             <SourceText>
               Source: <Link to={"/about/data"}>View sources</Link>
