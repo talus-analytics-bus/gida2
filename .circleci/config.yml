@@ -113,7 +113,7 @@ jobs:
 
       - run:
           name: Deploy to third dev site
-          command: yarn run deploy-dev2
+          command: yarn run deploy-dev3
 
       - run:
           name: Invalidate CloudFront cache for second dev site
