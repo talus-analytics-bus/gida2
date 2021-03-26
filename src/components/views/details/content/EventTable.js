@@ -105,9 +105,9 @@ const EventTable = ({
     },
     {
       title: "Funding year(s)",
-      prop: "year_range_proj",
+      prop: "year_range_response",
       type: "text",
-      func: d => d.years,
+      func: d => d.years_response,
       render: d => d,
     },
   ];
@@ -215,7 +215,7 @@ const EventTable = ({
     <Loading loaded={dataLoaded}>
       <TableInstance
         paging={true}
-        sortByProp={props.sortByProp || "years"}
+        sortByProp={props.sortByProp || "years_response"}
         tableColumns={tableColumns}
         tableData={flows}
         hide={r => r.amount === -9999}
