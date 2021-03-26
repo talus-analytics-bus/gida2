@@ -91,7 +91,7 @@ const EventOverview = ({
       )}
       <DurationTimeline
         {...{
-          points,
+          points: points.filter(d => d.type.startsWith("pheic")),
           isOngoing,
         }}
       />
