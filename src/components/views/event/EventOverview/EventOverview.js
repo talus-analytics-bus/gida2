@@ -71,7 +71,8 @@ const EventOverview = ({
   const isOngoing = getIsOngoing(points);
   const showDesc = !NONE_VALS.includes(desc);
   const hasDescDataSources = desc_refs.length > 0;
-  const descDataSourcesNoun = desc_refs.length === 1 ? "Sources" : "Sources";
+  const descDataSourcesNoun = desc_refs.length === 1 ? "Source" : "Sources";
+  const linksOnly = false;
   // JSX //
   return (
     <div className={styles.eventOverview}>
@@ -83,8 +84,16 @@ const EventOverview = ({
           ))}
           {hasDescDataSources && (
             <SourceText>
-              {descDataSourcesNoun}:{" "}
-              <WebsiteList {...{ websites: desc_refs, linksOnly: true }} />
+              <span style={{ fontWeight: 600 }}>
+                {descDataSourcesNoun}
+                {linksOnly ? ": " : ""}
+              </span>
+              <WebsiteList
+                {...{
+                  websites: desc_refs,
+                  linksOnly,
+                }}
+              />
             </SourceText>
           )}
         </p>
