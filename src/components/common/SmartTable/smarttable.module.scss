@@ -1,4 +1,21 @@
 .smartTable {
     display: flex;
     flex-flow: column;
+    table {
+        border: 1px solid #ddd;
+        tr {
+            th,
+            td {
+                padding: 8px;
+                border: 1px solid #ddd;
+            }
+            th {
+                background-color: #efefef;
+                border-bottom-width: 2px;
+                cursor: pointer;
+                td {
+                }
+            }
+        }
+    }
 }

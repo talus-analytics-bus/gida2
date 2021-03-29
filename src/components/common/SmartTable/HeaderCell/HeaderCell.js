@@ -8,7 +8,7 @@ export default function HeaderCell({
   setIsDesc,
 }) {
   return (
-    <td
+    <th
       onClick={() =>
         onClick({
           entity: colDatum.entity,
@@ -21,7 +21,7 @@ export default function HeaderCell({
       }
     >
       {colDatum.title}
-    </td>
+    </th>
   );
 }
 

@@ -38,6 +38,7 @@ export const Paginator = ({
    * @param  {[type]}   }                     [description]
    */
   const PageButton = ({
+    control = false, // true if a control button, false if a number button
     label = null, // button label, the number
     iconName = null, // optional: name of material icon to show
     onClick, // callback fired when button clicked
@@ -49,6 +50,8 @@ export const Paginator = ({
         <i className={classNames("material-icons")}>{iconName}</i>
       ) : null;
 
+    const labelComponent = control ? <span>{label}</span> : label;
+
     // return page button
     return (
       <button
@@ -56,7 +59,7 @@ export const Paginator = ({
         {...{ onClick }}
       >
         {icon}
-        {label}
+        {labelComponent}
       </button>
     );
   };
@@ -92,6 +95,7 @@ export const Paginator = ({
   // first page
   const firstButton = PageButton({
     label: "«",
+    control: true,
     onClick: () => {
       if (!onFirstPage) setCurPage(1);
     },
@@ -103,6 +107,7 @@ export const Paginator = ({
 
   // previous page
   const prevButton = PageButton({
+    control: true,
     label: "‹",
     onClick: () => {
       if (!onFirstPage) setCurPage(curPage - 1);
@@ -115,6 +120,7 @@ export const Paginator = ({
 
   // next page
   const nextButton = PageButton({
+    control: true,
     label: "›",
     onClick: () => {
       if (!onLastPage) setCurPage(curPage + 1);
@@ -127,6 +133,7 @@ export const Paginator = ({
 
   // last page
   const lastButton = PageButton({
+    control: true,
     label: "»",
     onClick: () => {
       if (!onLastPage) setCurPage(numPages);

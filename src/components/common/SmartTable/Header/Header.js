@@ -8,9 +8,11 @@ export default function Header({
   setSortCol,
   setIsDesc,
 }) {
-  return colData.map(colDatum => (
-    <th>
-      <HeaderCell {...{ colDatum, sortCol, isDesc, setSortCol, setIsDesc }} />
-    </th>
-  ));
+  return (
+    <tr>
+      {colData.map(colDatum => (
+        <HeaderCell {...{ colDatum, sortCol, isDesc, setSortCol, setIsDesc }} />
+      ))}
+    </tr>
+  );
 }

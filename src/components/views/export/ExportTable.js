@@ -5,9 +5,9 @@ import { Settings } from "../../../App.js";
 import { execute, Flow } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 import FlowQuery from "../../misc/FlowQuery.js";
-import {Chevron} from "../../common";
-import {Loading} from "../../common";
-import {Pagination} from "../../common";
+import { Chevron } from "../../common";
+import { Loading } from "../../common";
+import { Pagination } from "../../common";
 
 // Content components
 import TableInstance from "../../chart/table/TableInstance.js";
@@ -72,7 +72,7 @@ const ExportTable = ({
       prop: "sources",
       type: "text",
       func: d =>
-        d.sources !== undefined
+        d.sources !== undefined && d.sources !== null
           ? d.sources.filter(dd => dd.trim() !== "").join("; ")
           : "",
     },
