@@ -79,6 +79,9 @@ export /**
 const Flow = async function({
   originIds = [],
   targetIds = [],
+  searchText = null,
+  sortCol = null,
+  isDesc = false,
   filters = {},
   page = 1,
   pagesize = 1e6,
@@ -95,11 +98,14 @@ const Flow = async function({
     ["origin_ids", originIds],
     ["target_ids", targetIds],
     ["format", format],
+    ["sort_col", [sortCol]],
+    ["is_desc", [isDesc]],
+    ["search_text", [searchText]],
   ];
   toAdd.forEach(([key, values]) => {
     if (values !== undefined && values.length > 0) {
       values.forEach(v => {
-        params.append(key, v);
+        if (v !== null) params.append(key, v);
       });
     }
   });

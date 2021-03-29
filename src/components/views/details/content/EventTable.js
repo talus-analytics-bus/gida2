@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { getNodeLinkList } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
 import { Loading, SmartTable } from "../../../common";
-// import TableInstance from "../../../chart/table/TableInstance.js";
 
 // queries
 import { execute, Outbreak, Flow } from "../../../misc/Queries";
@@ -38,6 +37,8 @@ const EventTable = ({
   // table state
   const [pagesize, setPagesize] = useState(10);
   const [curPage, setCurPage] = useState(1);
+  const [sortCol, setSortCol] = useState("Project.response_committed_funds");
+  const [isDesc, setIsDesc] = useState(true);
 
   // CONSTANTS //
   const showBothFlowTypes = curFlowType === undefined;
@@ -45,6 +46,7 @@ const EventTable = ({
     {
       title: "PHEIC",
       prop: "event",
+      entity: "project_constants",
       type: "text",
       func: d => {
         // get link to outbreak page
@@ -67,7 +69,8 @@ const EventTable = ({
     },
     {
       title: "Project name",
-      prop: "project_name",
+      prop: "name",
+      entity: "Project",
       type: "text",
       func: d => d.name,
       render: d => d,
@@ -80,6 +83,7 @@ const EventTable = ({
         })
       ),
       prop: "origins",
+      entity: "project_constants",
       type: "text",
       func: d => JSON.stringify(d.origins),
       render: d =>
@@ -98,6 +102,7 @@ const EventTable = ({
         })
       ),
       prop: "targets",
+      entity: "project_constants",
       type: "text",
       func: d => JSON.stringify(d.targets),
       render: d =>
@@ -110,7 +115,8 @@ const EventTable = ({
     },
     {
       title: "Funding year(s)",
-      prop: "year_range_response",
+      prop: "years_response",
+      entity: "project_constants",
       type: "text",
       func: d => d.years_response,
       render: d => d,
@@ -121,7 +127,8 @@ const EventTable = ({
   const getFlowTypeCol = (curFlowType, curFlowTypeName) => {
     return {
       title: curFlowTypeName + ' (or "In-kind support")',
-      prop: `amount-${curFlowType}`,
+      prop: `response_${curFlowType}`,
+      entity: "Project",
       type: "num",
       className: d => (d > 0 ? "num" : "num-with-text"),
       func: d => {
@@ -140,6 +147,7 @@ const EventTable = ({
           else return -9999;
         }
       },
+
       render: d =>
         d === -7777
           ? Util.formatValue("In-kind support", "inkind")
@@ -162,6 +170,15 @@ const EventTable = ({
       outbreaks: Outbreak({}),
     };
 
+    // define params for flow query
+    const flowParams = {
+      page: curPage,
+      pagesize,
+      isDesc,
+      sortCol,
+      format: ["stakeholder_details"],
+    };
+
     // define filters
     const flowFilters = {
       "Project_Constants.response_or_capacity": ["both", "response"],
@@ -176,18 +193,20 @@ const EventTable = ({
 
       // get flows for GHSA
       queries.flows = Flow({
-        format: ["stakeholder_details"],
+        ...flowParams,
         filters: flowFilters,
       });
     } else {
       // get flows for defined target/origin
       queries.flows = Flow({
-        format: ["stakeholder_details"],
+        ...flowParams,
         filters: flowFilters,
         [direction + "Ids"]: [id],
         [otherDirection + "Ids"]: [],
         page: curPage,
         pagesize,
+        isDesc,
+        sortCol,
       });
     }
 
@@ -218,7 +237,7 @@ const EventTable = ({
     if (dataLoaded) {
       getData();
     }
-  }, [curPage, pagesize]);
+  }, [curPage, pagesize, sortCol, isDesc]);
 
   useLayoutEffect(() => {
     setFlows([]);
@@ -234,8 +253,12 @@ const EventTable = ({
           nTotalRecords,
           curPage,
           pagesize,
+          sortCol,
+          isDesc,
           setPagesize,
           setCurPage,
+          setSortCol,
+          setIsDesc,
         }}
       />
     </Loading>
