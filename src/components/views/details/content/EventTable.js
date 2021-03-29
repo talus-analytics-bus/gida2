@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 // local
 import { getNodeLinkList } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
-import { Loading } from "../../../common";
-import TableInstance from "../../../chart/table/TableInstance.js";
+import { Loading, SmartTable } from "../../../common";
+// import TableInstance from "../../../chart/table/TableInstance.js";
 
 // queries
 import { execute, Outbreak, Flow } from "../../../misc/Queries";
@@ -32,7 +32,12 @@ const EventTable = ({
   // STATE //
   const [outbreaks, setOutbreaks] = useState([]);
   const [flows, setFlows] = useState([]);
+  const [nTotalRecords, setNTotalRecords] = useState(0);
   const [dataLoaded, setDataLoaded] = useState(false);
+
+  // table state
+  const [pagesize, setPagesize] = useState(10);
+  const [curPage, setCurPage] = useState(1);
 
   // CONSTANTS //
   const showBothFlowTypes = curFlowType === undefined;
@@ -181,6 +186,8 @@ const EventTable = ({
         filters: flowFilters,
         [direction + "Ids"]: [id],
         [otherDirection + "Ids"]: [],
+        page: curPage,
+        pagesize,
       });
     }
 
@@ -190,6 +197,7 @@ const EventTable = ({
     const eventsNotNull = d => d.events.length !== 0 && d.events[0] !== null;
     const newFlows = results.flows.data.filter(eventsNotNull);
     setFlows(newFlows);
+    setNTotalRecords(results.flows.paging.n_records);
     setOutbreaks(results.outbreaks);
     setEventTotalsData(newFlows);
     setDataLoaded(true);
@@ -207,18 +215,28 @@ const EventTable = ({
   }, [dataLoaded]);
 
   useLayoutEffect(() => {
+    if (dataLoaded) {
+      getData();
+    }
+  }, [curPage, pagesize]);
+
+  useLayoutEffect(() => {
     setFlows([]);
     setDataLoaded(false);
   }, [id, direction]);
 
   return (
     <Loading loaded={dataLoaded}>
-      <TableInstance
-        paging={true}
-        sortByProp={props.sortByProp || "years_response"}
-        tableColumns={tableColumns}
-        tableData={flows}
-        hide={r => r.amount === -9999}
+      <SmartTable
+        {...{
+          data: flows,
+          columns: tableColumns.filter(d => d.hide !== true),
+          nTotalRecords,
+          curPage,
+          pagesize,
+          setPagesize,
+          setCurPage,
+        }}
       />
     </Loading>
   );

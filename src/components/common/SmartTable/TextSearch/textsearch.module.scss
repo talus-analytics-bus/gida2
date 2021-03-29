@@ -1,0 +1,20 @@
+.search {
+  margin-left: auto;
+  position: relative;
+  input {
+    padding: 5px 30px 5px 10px;
+    border: none;
+    &::placeholder {
+      font-style: italic;
+    }
+  }
+
+  // magnifying glass
+  i {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    color: #4682b4;
+    font-weight: bold;
+  }
+}
