@@ -46,7 +46,7 @@ const EventTable = ({
   const standardCols = [
     {
       title: "PHEIC",
-      prop: "event",
+      prop: "events",
       entity: "project_constants",
       type: "text",
       func: d => {
