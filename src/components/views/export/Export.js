@@ -12,7 +12,7 @@ import { Button } from "../../common";
 import { searchableSubcats } from "../../common/Search/Search";
 
 // Content components
-import ExportTable, { getFlowQuery } from "./ExportTable.js";
+import ExportTable, { getFlowQueryForDataPage } from "./ExportTable.js";
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
@@ -42,7 +42,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     ["name", "Project name", true],
     ["desc", "Project description"],
     ["sources", "Data source"],
-    ["ccs", "Core capacities"],
+    ["core_capacities", "Core capacities"],
     ["origins", "Funder"],
     ["targets", "Recipient"],
     ["assistance_type", "Support type"],
@@ -129,7 +129,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const download = () => {
     // Erase download cookie.
     Util.createCookie("download_completed", "no");
-    getFlowQuery({
+    getFlowQueryForDataPage({
       curPage,
       props: {
         funders,
@@ -316,7 +316,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                           ? undefined
                           : () => {
                               setDownloading(true);
-                              getFlowQuery({
+                              getFlowQueryForDataPage({
                                 curPage,
                                 props: {
                                   funders,

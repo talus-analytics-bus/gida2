@@ -35,7 +35,7 @@ const EventTable = ({
   const [dataLoaded, setDataLoaded] = useState(false);
 
   // table state
-  const [pagesize, setPagesize] = useState(10);
+  const [pagesize, setPagesize] = useState(5);
   const [curPage, setCurPage] = useState(1);
   const [sortCol, setSortCol] = useState("Project.response_committed_funds");
   const [isDesc, setIsDesc] = useState(true);
@@ -177,6 +177,17 @@ const EventTable = ({
       isDesc,
       sortCol,
       format: ["stakeholder_details"],
+      fields: [
+        "Project.name",
+        "Project.response_disbursed_funds",
+        "Project.response_committed_funds",
+        "Project.response_provided_inkind",
+        "Project.response_committed_inkind",
+        "project_constants.targets",
+        "project_constants.origins",
+        "project_constants.events",
+        "project_constants.years_response",
+      ],
     };
 
     // define filters
@@ -237,7 +248,14 @@ const EventTable = ({
     if (dataLoaded) {
       getData();
     }
-  }, [curPage, pagesize, sortCol, isDesc]);
+  }, [curPage, pagesize]);
+
+  useLayoutEffect(() => {
+    if (dataLoaded) {
+      if (curPage !== 1) setCurPage(1);
+      else getData();
+    }
+  }, [sortCol, isDesc]);
 
   useLayoutEffect(() => {
     setFlows([]);

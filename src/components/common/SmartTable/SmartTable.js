@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Paginator, Header, Body } from "./";
 import styles from "./smarttable.module.scss";
 export default function SmartTable({

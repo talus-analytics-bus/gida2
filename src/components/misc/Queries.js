@@ -87,6 +87,7 @@ const Flow = async function({
   pagesize = 1e6,
   forExport = false,
   format = [],
+  fields = [],
 }) {
   // Define POST body data
   const data = { filters };
@@ -101,6 +102,7 @@ const Flow = async function({
     ["sort_col", [sortCol]],
     ["is_desc", [isDesc]],
     ["search_text", [searchText]],
+    ["fields", fields],
   ];
   toAdd.forEach(([key, values]) => {
     if (values !== undefined && values.length > 0) {

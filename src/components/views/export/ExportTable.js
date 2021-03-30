@@ -78,9 +78,9 @@ const ExportTable = ({
     },
     {
       title: "Core capacities",
-      prop: "ccs",
+      prop: "core_capacities",
       type: "text",
-      func: d => (d.ccs ? d.ccs.join("; ") : ""),
+      func: d => (d.core_capacities ? d.core_capacities.join("; ") : ""),
     },
     {
       title: "Transaction year range",
@@ -148,7 +148,7 @@ const ExportTable = ({
   );
 
   const getData = async () => {
-    const flowQuery = getFlowQuery({
+    const flowQuery = getFlowQueryForDataPage({
       props: { outbreaks, coreCapacities, supportType, funders, recipients },
       curPage,
     });
@@ -189,11 +189,15 @@ const ExportTable = ({
   );
 };
 
-export const getFlowQuery = ({ props, curPage, forExport = false }) => {
+export const getFlowQueryForDataPage = ({
+  props,
+  curPage,
+  forExport = false,
+}) => {
   // Define queries for typical ExportTable page.
   const flowFilters = {};
 
-  // CCs
+  // core_capacities
   if (props.coreCapacities.length > 0) {
     flowFilters["Project_Constants.core_capacities"] = [
       ["any", props.coreCapacities.map(d => d.value)],
@@ -219,6 +223,24 @@ export const getFlowQuery = ({ props, curPage, forExport = false }) => {
     targetIds: props.recipients.map(d => d.value),
     pagesize: 10,
     page: curPage,
+    fields: [
+      "Project.id",
+      "Project.name",
+      "Project.desc",
+      "project_constants.targets",
+      "project_constants.origins",
+      "Project.sources",
+      "Project.notes",
+      "project_constants.core_capacities",
+      "project_constants.years",
+      "project_constants.disbursed_funds",
+      "project_constants.committed_funds",
+      "project_constants.provided_inkind",
+      "project_constants.committed_inkind",
+      "project_constants.is_inkind",
+      "project_constants.is_ghsa",
+      "project_constants.response_or_capacity",
+    ],
   };
   if (!forExport)
     return Flow({
