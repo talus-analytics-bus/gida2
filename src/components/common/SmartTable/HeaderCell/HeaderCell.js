@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./headercell.module.scss";
 
 export default function HeaderCell({
@@ -17,6 +17,18 @@ export default function HeaderCell({
       isDesc,
     })
   );
+
+  useEffect(() => {
+    // update sort state whenever the sortCol or isDesc is updated
+    setSortMode(
+      getSortMode({
+        entity: colDatum.entity,
+        colKey: colDatum.colKey,
+        sortCol,
+        isDesc,
+      })
+    );
+  }, [sortCol, isDesc]);
 
   return (
     <th
@@ -55,22 +67,11 @@ const setNewSortParams = ({
   // if already sorting by this col, flip sort direction
   if (newSortCol === sortCol) {
     setIsDesc(!isDesc);
-    setSortMode(isDesc ? "ascending" : "descending");
   }
   // otherwise, sort by this column ascending
   else {
     setSortCol(newSortCol);
     setIsDesc(false);
-    setSortMode("ascending");
-  }
-
-  // update sort mode
-  if (newSortCol === sortCol) {
-    setSortMode(isDesc ? "ascending" : "descending");
-  }
-  // otherwise, sort by this column ascending
-  else {
-    setSortMode("ascending");
   }
 };
 
