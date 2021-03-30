@@ -33,6 +33,7 @@ const EventTable = ({
   const [flows, setFlows] = useState([]);
   const [nTotalRecords, setNTotalRecords] = useState(0);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [fetchingRows, setFetchingRows] = useState(false);
 
   // table state
   const [pagesize, setPagesize] = useState(5);
@@ -221,7 +222,9 @@ const EventTable = ({
       });
     }
 
+    setFetchingRows(true);
     const results = await execute({ queries });
+    setFetchingRows(false);
 
     // filter out flows with outbreaks not in database
     const eventsNotNull = d => d.events.length !== 0 && d.events[0] !== null;
@@ -277,6 +280,7 @@ const EventTable = ({
           setCurPage,
           setSortCol,
           setIsDesc,
+          loading: fetchingRows,
         }}
       />
     </Loading>

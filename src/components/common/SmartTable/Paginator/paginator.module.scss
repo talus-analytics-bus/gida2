@@ -11,6 +11,11 @@ $phone: "screen and (max-width: 812px)";
     align-items: flex-start;
   }
 
+  .rightSide {
+    display: flex;
+    align-items: center;
+  }
+
   // pagesize picker (select)
   .pagesizePicker {
     display: flex;

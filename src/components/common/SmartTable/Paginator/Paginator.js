@@ -1,5 +1,6 @@
 // standard packages
-import React, { useState } from "react";
+import React from "react";
+import { Loading } from "../../";
 
 // assets and styles
 import styles from "./paginator.module.scss";
@@ -16,6 +17,7 @@ export const Paginator = ({
   nTotalRecords,
   pagesize,
   setPagesize,
+  loading = false,
 }) => {
   // constants
   // max records to show on 'All' selection
@@ -193,6 +195,7 @@ export const Paginator = ({
         </div>
       </div>
       <div className={styles.rightSide}>
+        <Loading {...{ loaded: !loading, small: true }} />
         <div className={styles.pageButtons}>
           {firstButton}
           {prevButton}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Paginator, Header, Body } from "./";
 import styles from "./smarttable.module.scss";
 export default function SmartTable({
@@ -13,6 +13,7 @@ export default function SmartTable({
   setCurPage,
   setSortCol,
   setIsDesc,
+  loading = false,
 }) {
   // transform data into rowData array and colData array
   // TODO move this to EventTable since it is specific to that component
@@ -29,6 +30,7 @@ export default function SmartTable({
             curPage,
             setPagesize,
             setCurPage,
+            loading,
           }}
         />
         <table>
