@@ -7,6 +7,9 @@ import styles from "./paginator.module.scss";
 import classNames from "classnames";
 import { comma } from "../../../misc/Util";
 
+// max records to show on 'All' selection
+const maxRecords = 1e9;
+
 /**
  * @method Paginator
  * Handle custom pagination for `Table` component
@@ -18,10 +21,9 @@ export const Paginator = ({
   pagesize,
   setPagesize,
   loading = false,
+  hidePagesizePicker = true,
 }) => {
   // constants
-  // max records to show on 'All' selection
-  const maxRecords = 1e9;
 
   // max pagination buttons to show at once
   const maxButtons = 9; // make odd
@@ -145,55 +147,22 @@ export const Paginator = ({
       [styles.control]: true,
     },
   });
-
-  // state
-  // pagesize selector
-  const pagesizeOptions = [
-    {
-      label: 5,
-      value: 5,
-    },
-    {
-      label: 10,
-      value: 10,
-    },
-    {
-      label: 25,
-      value: 25,
-    },
-    {
-      label: 50,
-      value: 50,
-    },
-    {
-      label: "All",
-      value: maxRecords,
-    },
-  ];
-
   return (
-    <div className={styles.paginator}>
-      <div className={styles.leftSide}>
-        <div className={styles.pagesizePicker}>
-          <label>Page size</label>
-          <select
-            value={pagesize}
-            onChange={e => {
-              const v = e.target.value;
-              setPagesize(v);
-            }}
-          >
-            {pagesizeOptions.map(d => (
-              <option value={d.value}>{d.label}</option>
-            ))}
-          </select>
+    <div
+      className={classNames(styles.paginator, {
+        [styles.right]: hidePagesizePicker,
+      })}
+    >
+      {!hidePagesizePicker && (
+        <div className={styles.leftSide}>
+          <PagesizePicker
+            pagesize={pagesize}
+            setPagesize={setPagesize}
+            curPage={curPage}
+            nTotalRecords={nTotalRecords}
+          />
         </div>
-        <div className={styles.rowNumberTracker}>
-          Showing {comma(curPage * pagesize - pagesize + 1)} to{" "}
-          {comma(Math.min(curPage * pagesize, nTotalRecords))} of{" "}
-          {comma(nTotalRecords)} rows
-        </div>
-      </div>
+      )}
       <div className={styles.rightSide}>
         <Loading {...{ loaded: !loading, small: true }} />
         <div className={styles.pageButtons}>
@@ -209,3 +178,53 @@ export const Paginator = ({
 };
 
 export default Paginator;
+
+// pagesize selector
+const pagesizeOptions = [
+  {
+    label: 5,
+    value: 5,
+  },
+  {
+    label: 10,
+    value: 10,
+  },
+  {
+    label: 25,
+    value: 25,
+  },
+  {
+    label: 50,
+    value: 50,
+  },
+  {
+    label: "All",
+    value: maxRecords,
+  },
+];
+
+function PagesizePicker({ pagesize, setPagesize, curPage, nTotalRecords }) {
+  return (
+    <>
+      <div className={styles.pagesizePicker}>
+        <label>Page size</label>
+        <select
+          value={pagesize}
+          onChange={e => {
+            const v = e.target.value;
+            setPagesize(v);
+          }}
+        >
+          {pagesizeOptions.map(d => (
+            <option value={d.value}>{d.label}</option>
+          ))}
+        </select>
+      </div>
+      <div className={styles.rowNumberTracker}>
+        Showing {comma(curPage * pagesize - pagesize + 1)} to{" "}
+        {comma(Math.min(curPage * pagesize, nTotalRecords))} of{" "}
+        {comma(nTotalRecords)} rows
+      </div>
+    </>
+  );
+}

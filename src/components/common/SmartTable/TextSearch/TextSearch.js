@@ -9,9 +9,9 @@ import styles from "./textsearch.module.scss";
  * Handle custom text search for `SmartTable` component
  */
 export const TextSearch = ({
-  onChangeFunc = val => {},
+  onChangeFunc,
   searchText,
-  ...props
+  placeholder = "search for...",
 }) => {
   const [curTimeout, setCurTimeout] = useState(null);
   let searchRef = useRef(null);
@@ -28,15 +28,15 @@ export const TextSearch = ({
           clearTimeout(curTimeout);
           const v = e.target.value !== "" ? e.target.value : null;
           const newTimeout = setTimeout(() => {
-            onChangeFunc(v);
+            if (onChangeFunc !== undefined) onChangeFunc(v);
           }, 500);
           setCurTimeout(newTimeout);
         }}
         type="text"
-        placeholder="search for..."
+        placeholder={placeholder}
         ref={searchRef}
       />
-      <i className={"material-icons"}>search</i>
+      {/* {<i className={"material-icons"}>search</i>} */}
     </div>
   );
 };

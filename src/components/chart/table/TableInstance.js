@@ -1,10 +1,8 @@
 import * as d3 from "d3/dist/d3.min";
 import React, { useState, useEffect } from "react";
-import ReactTooltip from "react-tooltip";
 import classNames from "classnames";
 import { DataTable } from "react-data-components";
 import { getTableRowData } from "../../misc/Data.js";
-import Util from "../../misc/Util.js";
 import styles from "./tableinstance.module.scss";
 
 /**
@@ -85,6 +83,17 @@ const TableInstance = ({
       </div>
     );
   };
+
+  useEffect(() => {
+    // On initial render set placeholder text of search input
+    if (component !== null) {
+      const els = document.querySelectorAll("#search-field");
+      for (let i = 0; i < els.length; i++) {
+        const el = els[i];
+        el.placeholder = "search for keyword...";
+      }
+    }
+  }, [component]);
 
   // update table component whenever the data are changed
   useEffect(() => {

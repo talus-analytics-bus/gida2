@@ -1,9 +1,13 @@
+@import "src/assets/styles/colors.scss";
 .search {
-  margin-left: auto;
+  &.right {
+    margin-left: auto;
+  }
   position: relative;
   input {
-    padding: 5px 30px 5px 10px;
-    border: none;
+    padding: 5px;
+    border: 1px solid $gray-2;
+    border-radius: 5px;
     &::placeholder {
       font-style: italic;
     }

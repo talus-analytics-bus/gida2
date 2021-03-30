@@ -1,5 +1,5 @@
 import React from "react";
-import { Paginator, Header, Body } from "./";
+import { Paginator, Header, Body, TextSearch } from "./";
 import styles from "./smarttable.module.scss";
 export default function SmartTable({
   data,
@@ -9,10 +9,12 @@ export default function SmartTable({
   pagesize,
   sortCol,
   isDesc,
+  searchText,
   setPagesize,
   setCurPage,
   setSortCol,
   setIsDesc,
+  setSearchText,
   loading = false,
 }) {
   // transform data into rowData array and colData array
@@ -23,16 +25,27 @@ export default function SmartTable({
   else
     return (
       <div className={styles.smartTable}>
-        <Paginator
-          {...{
-            nTotalRecords,
-            pagesize,
-            curPage,
-            setPagesize,
-            setCurPage,
-            loading,
-          }}
-        />
+        <div className={styles.controls}>
+          <TextSearch
+            {...{
+              searchText,
+              placeholder: "search for keyword...",
+              onChangeFunc: v => {
+                setSearchText(v);
+              },
+            }}
+          />
+          <Paginator
+            {...{
+              nTotalRecords,
+              pagesize,
+              curPage,
+              setPagesize,
+              setCurPage,
+              loading,
+            }}
+          />
+        </div>
         <table>
           <Header
             {...{

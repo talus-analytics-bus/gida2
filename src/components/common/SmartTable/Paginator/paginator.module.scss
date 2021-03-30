@@ -4,11 +4,15 @@ $phone: "screen and (max-width: 812px)";
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
   @media #{$phone} {
     // reflow vertically on mobile
     flex-flow: column-reverse;
     align-items: flex-start;
+  }
+
+  .right {
+    align-items: right;
   }
 
   .rightSide {

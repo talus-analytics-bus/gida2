@@ -34,6 +34,7 @@ const EventTable = ({
   const [nTotalRecords, setNTotalRecords] = useState(0);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [fetchingRows, setFetchingRows] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   // table state
   const [pagesize, setPagesize] = useState(5);
@@ -178,6 +179,7 @@ const EventTable = ({
       isDesc,
       sortCol,
       format: ["stakeholder_details"],
+      searchText,
       fields: [
         "Project.name",
         "Project.response_disbursed_funds",
@@ -258,7 +260,7 @@ const EventTable = ({
       if (curPage !== 1) setCurPage(1);
       else getData();
     }
-  }, [sortCol, isDesc]);
+  }, [sortCol, isDesc, searchText]);
 
   useLayoutEffect(() => {
     setFlows([]);
@@ -272,15 +274,17 @@ const EventTable = ({
           data: flows,
           columns: tableColumns.filter(d => d.hide !== true),
           nTotalRecords,
+          loading: fetchingRows,
           curPage,
           pagesize,
           sortCol,
           isDesc,
+          searchText,
           setPagesize,
           setCurPage,
           setSortCol,
           setIsDesc,
-          loading: fetchingRows,
+          setSearchText,
         }}
       />
     </Loading>

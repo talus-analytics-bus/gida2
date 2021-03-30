@@ -1,6 +1,13 @@
 .smartTable {
     display: flex;
     flex-flow: column;
+    .controls {
+        height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        // margin-bottom: 40px;
+    }
     table {
         border: 1px solid #ddd;
         tr {
