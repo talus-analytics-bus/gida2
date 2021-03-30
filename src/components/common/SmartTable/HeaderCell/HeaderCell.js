@@ -9,14 +9,21 @@ export default function HeaderCell({
   setIsDesc,
   style = {},
 }) {
-  const [sortMode, setSortMode] = useState("none");
+  const [sortMode, setSortMode] = useState(
+    getSortMode({
+      entity: colDatum.entity,
+      colKey: colDatum.colKey,
+      sortCol,
+      isDesc,
+    })
+  );
 
   return (
     <th
       style={style}
       className={styles.headerCell}
       onClick={() =>
-        onClick({
+        setNewSortParams({
           entity: colDatum.entity,
           colKey: colDatum.colKey,
           sortCol,
@@ -33,7 +40,7 @@ export default function HeaderCell({
   );
 }
 
-const onClick = ({
+const setNewSortParams = ({
   entity,
   colKey,
   sortCol,
@@ -56,6 +63,23 @@ const onClick = ({
     setIsDesc(false);
     setSortMode("ascending");
   }
+
+  // update sort mode
+  if (newSortCol === sortCol) {
+    setSortMode(isDesc ? "ascending" : "descending");
+  }
+  // otherwise, sort by this column ascending
+  else {
+    setSortMode("ascending");
+  }
+};
+
+const getSortMode = ({ entity, colKey, sortCol, isDesc }) => {
+  const thisSortCol = entity + "." + colKey;
+  if (thisSortCol === sortCol) {
+    if (isDesc) return "descending";
+    else return "ascending";
+  } else return "none";
 };
 
 const getCaret = (thisSorted, thisDesc) => {
