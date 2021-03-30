@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { getNodeLinkList } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
 import { Loading, SmartTable } from "../../../common";
+import { PagesizePicker } from "../../../common/SmartTable/Paginator/Paginator";
 import { cols } from "../../export/Export";
 
 // queries
@@ -297,6 +298,14 @@ const EventTable = ({
           setIsDesc,
           setSearchText,
           exportExcel,
+        }}
+      />
+      <PagesizePicker
+        {...{
+          pagesize,
+          setPagesize,
+          curPage,
+          nTotalRecords,
         }}
       />
     </Loading>

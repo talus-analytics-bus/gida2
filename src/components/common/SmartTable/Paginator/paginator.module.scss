@@ -20,14 +20,6 @@ $phone: "screen and (max-width: 812px)";
     align-items: center;
   }
 
-  // pagesize picker (select)
-  .pagesizePicker {
-    display: flex;
-    label {
-      margin: 0;
-      margin-right: 5px;
-    }
-  }
   .rowNumberTracker {
     margin-top: 5px;
   }
@@ -103,5 +95,17 @@ $phone: "screen and (max-width: 812px)";
         }
       }
     }
+  }
+}
+
+// pagesize picker (select)
+.pagesizePicker {
+  display: flex;
+  label {
+    margin: 0;
+    margin-right: 5px;
+  }
+  &.below {
+    margin-top: 10px;
   }
 }

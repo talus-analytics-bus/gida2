@@ -203,10 +203,20 @@ const pagesizeOptions = [
   },
 ];
 
-function PagesizePicker({ pagesize, setPagesize, curPage, nTotalRecords }) {
+export function PagesizePicker({
+  pagesize,
+  setPagesize,
+  curPage,
+  nTotalRecords,
+  location = "below",
+}) {
   return (
     <>
-      <div className={styles.pagesizePicker}>
+      <div
+        className={classNames(styles.pagesizePicker, {
+          [styles.below]: location === "below",
+        })}
+      >
         <label>Page size</label>
         <select
           value={pagesize}
@@ -220,11 +230,14 @@ function PagesizePicker({ pagesize, setPagesize, curPage, nTotalRecords }) {
           ))}
         </select>
       </div>
-      <div className={styles.rowNumberTracker}>
-        Showing {comma(curPage * pagesize - pagesize + 1)} to{" "}
-        {comma(Math.min(curPage * pagesize, nTotalRecords))} of{" "}
-        {comma(nTotalRecords)} rows
-      </div>
+      {nTotalRecords > 0 && (
+        <div className={styles.rowNumberTracker}>
+          Showing {comma(curPage * pagesize - pagesize + 1)} to{" "}
+          {comma(Math.min(curPage * pagesize, nTotalRecords))} of{" "}
+          {comma(nTotalRecords)} rows
+        </div>
+      )}
+      {nTotalRecords === 0 && <>No data to show</>}
     </>
   );
 }
