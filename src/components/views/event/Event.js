@@ -74,7 +74,11 @@ const Event = ({ slug, flowTypeInfo }) => {
     });
 
   const eventBars = dataLoaded && {
-    header: <h2>Total PHEIC funding</h2>,
+    header: (
+      <h2>
+        Funders and recipients <h4>for {data.name}</h4>
+      </h2>
+    ),
     text: (
       <span>
         The chart below shows total funding by recipient or by funder. Recipient
@@ -117,7 +121,11 @@ const Event = ({ slug, flowTypeInfo }) => {
 
   const eventTable = dataLoaded &&
     !noFundingData && {
-      header: <h2>Funders for {data.name}</h2>,
+      header: (
+        <h2>
+          Projects <h4>for {data.name}</h4>
+        </h2>
+      ),
       text: (
         <span>
           The table below displays PHEIC response projects in order of amount of
@@ -148,7 +156,12 @@ const Event = ({ slug, flowTypeInfo }) => {
   const title = titleArr.join(" and ");
 
   const crossreferences = dataLoaded && {
-    header: <h2>{title}</h2>,
+    header: (
+      <h2>
+        {title}
+        <h4>for {data.name}</h4>
+      </h2>
+    ),
     text: null,
     content: <Crossreferences {...{ ...data, hasCaseStudies, hasDons }} />,
     showSource: false,
