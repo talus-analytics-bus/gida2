@@ -25,12 +25,13 @@
                 padding: 8px;
                 border: 1px solid #ddd;
             }
+            td {
+                background-color: white;
+            }
             th {
                 background-color: #efefef;
                 border-bottom-width: 2px;
                 cursor: pointer;
-                td {
-                }
             }
         }
     }
