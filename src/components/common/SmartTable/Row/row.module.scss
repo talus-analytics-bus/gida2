@@ -1,3 +1,11 @@
 .row {
-    height: 100px;
+    td:not(.noData) {
+        height: 100px;
+    }
+    .noData {
+        font-style: italic;
+        font-size: 16px;
+        text-align: center;
+        height: 50px;
+    }
 }

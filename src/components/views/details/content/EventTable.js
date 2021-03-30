@@ -6,9 +6,10 @@ import { Link } from "react-router-dom";
 import { getNodeLinkList } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
 import { Loading, SmartTable } from "../../../common";
+import { cols } from "../../export/Export";
 
 // queries
-import { execute, Outbreak, Flow } from "../../../misc/Queries";
+import { execute, Outbreak, Flow, Excel } from "../../../misc/Queries";
 
 // FC for EventTable.
 const EventTable = ({
@@ -167,7 +168,9 @@ const EventTable = ({
       ]);
   };
 
-  const getData = async () => {
+  const exportExcel = async () => getData(true);
+
+  const getData = async (forExport = false) => {
     const queries = {
       outbreaks: Outbreak({}),
     };
@@ -180,6 +183,7 @@ const EventTable = ({
       sortCol,
       format: ["stakeholder_details"],
       searchText,
+      forExport,
       fields: [
         "Project.name",
         "Project.response_disbursed_funds",
@@ -224,19 +228,26 @@ const EventTable = ({
       });
     }
 
-    setFetchingRows(true);
-    const results = await execute({ queries });
-    setFetchingRows(false);
+    if (forExport) {
+      // download excel
+      const { data, params } = await queries.flows;
+      data.cols = cols;
+      await Excel({ method: "post", data, params });
+    } else {
+      setFetchingRows(true);
+      const results = await execute({ queries });
+      setFetchingRows(false);
 
-    // filter out flows with outbreaks not in database
-    const eventsNotNull = d => d.events.length !== 0 && d.events[0] !== null;
-    const newFlows = results.flows.data.filter(eventsNotNull);
-    setFlows(newFlows);
-    setNTotalRecords(results.flows.paging.n_records);
-    setOutbreaks(results.outbreaks);
-    setEventTotalsData(newFlows);
-    setDataLoaded(true);
-    setLoaded(true);
+      // filter out flows with outbreaks not in database
+      const eventsNotNull = d => d.events.length !== 0 && d.events[0] !== null;
+      const newFlows = results.flows.data.filter(eventsNotNull);
+      setFlows(newFlows);
+      setNTotalRecords(results.flows.paging.n_records);
+      setOutbreaks(results.outbreaks);
+      setEventTotalsData(newFlows);
+      setDataLoaded(true);
+      setLoaded(true);
+    }
   };
 
   // FUNCTION CALLS //
@@ -285,12 +296,15 @@ const EventTable = ({
           setSortCol,
           setIsDesc,
           setSearchText,
+          exportExcel,
         }}
       />
     </Loading>
   );
-
-  return <div />;
 };
 
 export default EventTable;
+
+const downloadExcel = () => {
+  //
+};

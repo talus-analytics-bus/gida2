@@ -43,10 +43,17 @@
       margin: 0;
       img {
         width: 30px;
-        // height: 30px;
         animation: rotation 12s infinite linear;
       }
-      // @include placeholder(30px);
+    }
+  }
+  &.tiny {
+    .imgContainer {
+      margin: 0;
+      img {
+        width: 15px;
+        animation: rotation 12s infinite linear;
+      }
     }
   }
 

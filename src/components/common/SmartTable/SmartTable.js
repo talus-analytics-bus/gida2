@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Paginator, Header, Body, TextSearch } from "./";
+import { Button, Loading } from "../";
 import styles from "./smarttable.module.scss";
 export default function SmartTable({
   data,
@@ -16,7 +17,9 @@ export default function SmartTable({
   setIsDesc,
   setSearchText,
   loading = false,
+  exportExcel,
 }) {
+  const [downloading, setDownloading] = useState(false);
   // transform data into rowData array and colData array
   // TODO move this to EventTable since it is specific to that component
   const rowData = getRowData(data, columns);
@@ -35,6 +38,38 @@ export default function SmartTable({
               },
             }}
           />
+          {exportExcel && nTotalRecords !== 0 && (
+            <div className={styles.exportExcel}>
+              <Button
+                {...{
+                  label: !downloading ? (
+                    <>
+                      <span className={"glyphicon glyphicon-download-alt"} />
+                      Download Excel
+                    </>
+                  ) : (
+                    <>
+                      <Loading
+                        {...{
+                          loaded: false,
+                          tiny: true,
+                        }}
+                      />
+                      <span>Downloading...</span>
+                    </>
+                  ),
+                  type: "secondary",
+                  onClick: () => {
+                    setDownloading(true);
+                    exportExcel().then(() => {
+                      setDownloading(false);
+                    });
+                  },
+                  disabled: downloading,
+                }}
+              />
+            </div>
+          )}
           <Paginator
             {...{
               nTotalRecords,
@@ -56,7 +91,7 @@ export default function SmartTable({
               setIsDesc,
             }}
           />
-          <Body {...{ rowData }} />
+          <Body {...{ rowData, nCol: colData.length }} />
         </table>
       </div>
     );

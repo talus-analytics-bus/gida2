@@ -64,9 +64,10 @@
   }
   &.secondary {
     border: 1px solid #cccccc;
-    background-color: #e6e6e6;
+    background-color: white;
+    padding: 5px;
     &:hover {
-      background-color: darken(#e6e6e6, 10%);
+      background-color: darken(white, 5%);
     }
   }
   &.primary {
@@ -88,11 +89,7 @@
       box-shadow: 5px 5px 15px 0 #b3b3b3;
       -webkit-box-shadow: 5px 5px 15px 0 #b3b3b3;
     }
-    background: linear-gradient(
-      180deg,
-      rgba(2, 63, 136, 0.85) 0%,
-      #023f88 100%
-    );
+    background: linear-gradient(180deg, rgba(2, 63, 136, 0.85) 0%, #023f88 100%);
     color: white;
     &:hover {
       background: white;

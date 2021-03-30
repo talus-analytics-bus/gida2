@@ -8,6 +8,7 @@ import spinnerImg from "../../../assets/images/loading.gif";
 const Loading = ({
   loaded = true,
   small = false,
+  tiny = false,
   slideUp = false,
   align = "left", // or 'center'
   message = null,
@@ -28,6 +29,7 @@ const Loading = ({
           style={{ margin, top, right, minHeight, position }}
           className={classNames(styles.placeholder, styles[align], {
             [styles.small]: small,
+            [styles.tiny]: tiny,
           })}
         >
           <div className={styles.imgContainer}>

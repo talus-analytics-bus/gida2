@@ -344,7 +344,6 @@ export const GOALCaseStudies = async () => {
 export const Excel = async function({
   method,
   data = null,
-  class_name,
   params = undefined,
   filename = "GHS Tracking - Data Export",
   isDONs = false,

@@ -8,6 +8,15 @@
         align-items: center;
         // margin-bottom: 40px;
     }
+    .exportExcel {
+        margin-right: auto;
+        margin-left: 5px;
+        button {
+            height: 32px !important;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    }
     table {
         border: 1px solid #ddd;
         tr {

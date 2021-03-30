@@ -14,6 +14,27 @@ import { searchableSubcats } from "../../common/Search/Search";
 // Content components
 import ExportTable, { getFlowQueryForDataPage } from "./ExportTable.js";
 
+export const cols = [
+  ["name", "Project name", true],
+  ["desc", "Project description"],
+  ["sources", "Data source"],
+  ["core_capacities", "Core capacities"],
+  ["origins", "Funder"],
+  ["targets", "Recipient"],
+  ["assistance_type", "Support type"],
+  ["years", "Transaction year range"],
+  [
+    "committed_funds",
+    `Amount committed`,
+    // `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
+  ],
+  [
+    "disbursed_funds",
+    `Amount disbursed`,
+    // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
+  ],
+];
+
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const [coreCapacities, setCoreCapacities] = useState([]);
@@ -37,27 +58,6 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     funders.length > 0 ||
     outbreaks.length > 0 ||
     recipients.length > 0;
-
-  const cols = [
-    ["name", "Project name", true],
-    ["desc", "Project description"],
-    ["sources", "Data source"],
-    ["core_capacities", "Core capacities"],
-    ["origins", "Funder"],
-    ["targets", "Recipient"],
-    ["assistance_type", "Support type"],
-    ["years", "Transaction year range"],
-    [
-      "committed_funds",
-      `Amount committed`,
-      // `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
-    ],
-    [
-      "disbursed_funds",
-      `Amount disbursed`,
-      // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
-    ],
-  ];
 
   const [exportCols, setExportCols] = useState(cols.map(d => d[0]));
   const remove = (arr, aTmp) => {
