@@ -164,8 +164,8 @@ const EventTable = ({
       return standardCols.concat(curFlowTypeCol);
     } else
       return standardCols.concat([
-        getFlowTypeCol("disbursed_funds", "Disbursed funds"),
         getFlowTypeCol("committed_funds", "Committed funds"),
+        getFlowTypeCol("disbursed_funds", "Disbursed funds"),
       ]);
   };
 

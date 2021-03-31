@@ -3,6 +3,7 @@ import styles from "./details.module.scss";
 import classNames from "classnames";
 import { Settings } from "../../../App.js";
 import Util, { isEmpty } from "../../misc/Util.js";
+import EventNumberTotals from "../../views/event/EventNumberTotals/EventNumberTotals";
 
 // queries
 import { execute, Stakeholder, Assessment } from "../../misc/Queries";
@@ -454,45 +455,35 @@ const Details = ({
               header: (
                 <div>
                   <h2>
-                    Recent PHEIC funding projects <br />
-                    {
-                      // Time frame
-                      // <span>in past 12 months</span>
-                    }
-                    {
-                      // // Date range
-                      // <span className={styles.timeFrame}>
-                      //   {props.responseStart.toLocaleString("en-us", {
-                      //     // month: "short",
-                      //     // day: "numeric",
-                      //     year: "numeric",
-                      //     timeZone: "UTC",
-                      //   })}{" "}
-                      //   -{" "}
-                      //   {props.responseEnd.toLocaleString("en-us", {
-                      //     // month: "short",
-                      //     // day: "numeric",
-                      //     year: "numeric",
-                      //     timeZone: "UTC",
-                      //   })}
-                      // </span>
-                    }
+                    PHEIC funding projects <br />
                   </h2>
                 </div>
               ),
               text: (
                 <div>
                   <p>
-                    This tab shows recent event response funding projects where{" "}
+                    This tab shows PHEIC response funding projects where{" "}
                     {nodeData.name} or an associated region/group was a{" "}
-                    {entityRole}. Note that all values listed here may not apply
-                    specifically to {nodeData.name}.
+                    {entityRole}. Note that values listed in the table may not
+                    apply specifically to {nodeData.name}. Contributions known
+                    to be specifically{" "}
+                    {entityRole === "funder" ? "from" : "for"} {nodeData.name}{" "}
+                    are tabulated in the two numbers below.
                   </p>
-                  {eventResponseTotals}
+                  {/* {eventResponseTotals} */}
                 </div>
               ),
               content: (
                 <div>
+                  <EventNumberTotals
+                    {...{
+                      key: `${id}-${entityRole}`,
+                      compact: true,
+                      type: "funding",
+                      id,
+                      role: entityRole,
+                    }}
+                  />
                   <EventTable
                     {...{
                       id,
@@ -500,8 +491,8 @@ const Details = ({
                       otherDirection,
                       entityRole,
                       otherEntityRole,
-                      curFlowType,
-                      curFlowTypeName,
+                      // curFlowType,
+                      // curFlowTypeName,
                       setEventTotalsData, // set flows to var. for totals
                       isGhsaPage: id === "ghsa",
                       sortByProp: `amount-${curFlowType}`,
@@ -509,7 +500,7 @@ const Details = ({
                   />
                 </div>
               ),
-              toggleFlowType: true,
+              toggleFlowType: false,
               hide: noData || noFinancialData,
             },
           ],

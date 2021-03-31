@@ -1,9 +1,10 @@
 // 3rd party libs
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 // styles and assets
 import styles from "./eventnumbertotals.module.scss";
+import classNames from "classnames";
 import dollarSvg from "./svg/dollar.svg";
 import personSvg from "./svg/person.svg";
 
@@ -26,11 +27,19 @@ const EventNumberTotals = ({
   setCaseData,
   deathData,
   setDeathData,
+
+  // stakeholder filters
+  id,
+  role,
+
+  // styling properties
+  compact = false,
 }) => {
   // STATE //
   // data arrays from which totals are calculated.
   // arrays should contain one el. per country with cumu. totals
   const [fundData, setFundData] = useState(null);
+  const hasEventData = eventData !== undefined && eventData !== null;
 
   // FUNCTIONS //
   // get icon to show
@@ -43,16 +52,19 @@ const EventNumberTotals = ({
   const getDataFunc = type => {
     if (type.endsWith("_funds")) {
       return async () => {
+        const filters = {
+          "Flow.flow_type": ["disbursed_funds", "committed_funds"],
+          "Flow.response_or_capacity": ["response"],
+        };
+        if (hasEventData) filters["Flow.events"] = [["has", [eventData.id]]];
+        if (id !== undefined) filters["Stakeholder.id"] = [id];
+
         const queries = {
           byYear: NodeSums({
             format: "line_chart",
-            direction: "target",
+            direction: role === "funder" ? "origin" : "target",
             group_by: "Flow.year",
-            filters: {
-              "Flow.events": [["has", [eventData.id]]],
-              "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-              "Flow.response_or_capacity": ["response", "both"],
-            },
+            filters,
           }),
         };
         const results = await execute({ queries });
@@ -90,8 +102,8 @@ const EventNumberTotals = ({
   const getTotalInfo = type => {
     if (type === "funding")
       return [
-        ["Disbursed funding", "disbursed_funds", fundData],
         ["Committed funding", "committed_funds", fundData],
+        ["Disbursed funding", "disbursed_funds", fundData],
       ];
     else {
       // if GLB is present then only use that
@@ -127,14 +139,20 @@ const EventNumberTotals = ({
   const totalInfo = getTotalInfo(type);
   const isImpacts = type === "impacts";
   const hasImpactDataSources =
-    isImpacts && eventData.cases_and_deaths_refs.length > 0;
+    isImpacts && hasEventData && eventData.cases_and_deaths_refs.length > 0;
 
   const impactDataSourcesNoun =
-    hasImpactDataSources && eventData.cases_and_deaths_refs.length === 1
+    hasImpactDataSources &&
+    hasEventData &&
+    eventData.cases_and_deaths_refs.length === 1
       ? "Source"
       : "Sources";
   return (
-    <div className={styles.eventFundingTotals}>
+    <div
+      className={classNames(styles.eventFundingTotals, {
+        [styles.compact]: compact,
+      })}
+    >
       <div className={styles.content}>
         <div className={styles.icon}>
           <img src={getIcon(type)} />
@@ -161,14 +179,16 @@ const EventNumberTotals = ({
               <span
                 style={{
                   fontWeight:
-                    eventData.cases_and_deaths_refs.length > 1 ? 600 : "",
+                    hasEventData && eventData.cases_and_deaths_refs.length > 1
+                      ? 600
+                      : "",
                 }}
               >
                 {impactDataSourcesNoun}
               </span>
               <WebsiteList
                 {...{
-                  websites: eventData.cases_and_deaths_refs,
+                  websites: hasEventData ? eventData.cases_and_deaths_refs : [],
                   linksOnly: false,
                 }}
               />

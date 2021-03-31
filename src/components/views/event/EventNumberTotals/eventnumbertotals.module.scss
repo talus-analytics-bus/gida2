@@ -24,4 +24,19 @@
       }
     }
   }
+
+  // alternate styling modes
+  &.compact {
+    .rows {
+      width: unset;
+      @include spaceChildrenHoriz(125px);
+    }
+    .icon {
+      display: none;
+    }
+    // hide source text in compact mode
+    .cols + div {
+      display: none;
+    }
+  }
 }
