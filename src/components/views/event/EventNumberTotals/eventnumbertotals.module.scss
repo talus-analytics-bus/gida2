@@ -30,6 +30,10 @@
     .rows {
       width: unset;
       @include spaceChildrenHoriz(125px);
+
+      // TODO more elegantly add this spacing, should not
+      // be set in this styling file, in JS instead
+      margin-bottom: 20px;
     }
     .icon {
       display: none;

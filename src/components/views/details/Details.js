@@ -164,28 +164,6 @@ const Details = ({
 
   // Define details content sections.
   const showTabs = true;
-  // const showTabs = !noData && !unknownDataOnly && !noFinancialData;
-
-  // For event response funding: get totals.
-  // TODO move into EventTable
-  const eventResponseTotals = (
-    <div className={styles.totals}>
-      <TotalByFlowType
-        key={"c"}
-        inline={true}
-        flowType="committed_funds"
-        data={eventTotalsData}
-        label={"PHEIC funding"}
-      />
-      <TotalByFlowType
-        key={"d"}
-        inline={true}
-        flowType="disbursed_funds"
-        data={eventTotalsData}
-        label={"PHEIC funding"}
-      />
-    </div>
-  );
 
   const pvsLegend = (
     <div className={styles.legend}>
@@ -373,6 +351,8 @@ const Details = ({
                   over a bar to see additional funding details.
                 </p>
               ),
+              // TODO check props.nodesData below, seems to be
+              // duplicate variable
               content: (
                 <StackBar
                   staticStakeholders={props.nodesData}
@@ -570,7 +550,7 @@ const Details = ({
         if (haveEvent) setCurTab("event");
         else if (havePvs) setCurTab("pvs");
         else setCurTab(null);
-      } else setCurTab("ihr");
+      } else if (eventTotalsData.length === 0) setCurTab("ihr");
     } else setCurTab("ihr");
   }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id]);
 
