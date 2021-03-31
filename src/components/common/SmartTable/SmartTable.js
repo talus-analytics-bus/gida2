@@ -110,7 +110,7 @@ const getRowData = (data, columns) => {
         colKey: c.prop,
         type: c.type,
         title: c.title,
-        valueFormatted: c.render(value),
+        valueFormatted: c.render !== undefined ? c.render(value) : value,
       });
     });
     rowData.push(row);

@@ -34,6 +34,26 @@ export const cols = [
     // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
   ],
 ];
+// export const cols = [
+//          ["Project.name", "Project name", true],
+//          ["Project.desc", "Project description"],
+//          ["Project.sources", "Data source"],
+//          ["project_constants.core_capacities", "Core capacities"],
+//          ["project_constants.origins", "Funder"],
+//          ["project_constants.targets", "Recipient"],
+//          ["assistance_type", "Support type"],
+//          ["project_constants.years", "Transaction year range"],
+//          [
+//            "project_constants.committed_funds",
+//            `Amount committed`,
+//            // `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
+//          ],
+//          [
+//            "project_constants.disbursed_funds",
+//            `Amount disbursed`,
+//            // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
+//          ],
+//        ];
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {

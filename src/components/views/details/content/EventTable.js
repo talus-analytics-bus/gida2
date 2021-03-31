@@ -182,8 +182,8 @@ const EventTable = ({
       pagesize,
       isDesc,
       sortCol,
-      format: ["stakeholder_details"],
       searchText,
+      format: ["stakeholder_details"],
       forExport,
       fields: [
         "Project.name",

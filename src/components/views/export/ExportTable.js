@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import styles from "./exporttable.module.scss";
-import { Settings } from "../../../App.js";
 import { execute, Flow } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
-import FlowQuery from "../../misc/FlowQuery.js";
-import { Chevron } from "../../common";
-import { Loading } from "../../common";
-import { Pagination } from "../../common";
+import { Chevron, Loading, Pagination, SmartTable } from "../../common";
 
 // Content components
 import TableInstance from "../../chart/table/TableInstance.js";
@@ -28,7 +24,11 @@ const ExportTable = ({
   ...props
 }) => {
   // Currently unused, will be used for dynamic page size selection.
-  const [curPageSize, setCurPageSize] = useState(5);
+  const [pagesize, setPagesize] = useState(5);
+  const [fetchingRows, setFetchingRows] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [sortCol, setSortCol] = useState("project_constants.committed_funds");
+  const [isDesc, setIsDesc] = useState(true);
 
   // define data
   const [data, setData] = useState({
@@ -48,28 +48,44 @@ const ExportTable = ({
     }
   }, [coreCapacities, funders, recipients, outbreaks, supportType]);
 
-  // TODO call when filters change
+  // // TODO call when filters change
+  // useEffect(() => {
+  //   if (initLoaded) setPageLoading(true);
+  //   getData();
+  // }, [curPage, pagesize]);
+
   useEffect(() => {
-    if (initLoaded) setPageLoading(true);
-    getData();
-  }, [curPage, curPageSize]);
+    if (initLoaded) {
+      getData();
+    }
+  }, [curPage, pagesize]);
+
+  useEffect(() => {
+    if (initLoaded) {
+      if (curPage !== 1) setCurPage(1);
+      else getData();
+    }
+  }, [sortCol, isDesc, searchText]);
 
   const cols = [
     {
       title: "Project name",
       prop: "name",
+      entity: "Project",
       type: "text",
       func: d => d.name,
     },
     {
       title: "Project description",
       prop: "desc",
+      entity: "Project",
       type: "text",
       func: d => d.desc,
     },
     {
       title: "Data source",
       prop: "sources",
+      entity: "Project",
       type: "text",
       func: d =>
         d.sources !== undefined && d.sources !== null
@@ -79,12 +95,14 @@ const ExportTable = ({
     {
       title: "Core capacities",
       prop: "core_capacities",
+      entity: "project_constants",
       type: "text",
       func: d => (d.core_capacities ? d.core_capacities.join("; ") : ""),
     },
     {
       title: "Transaction year range",
       prop: "years",
+      entity: "project_constants",
       type: "text",
       func: d => (d.years ? d.years : ""),
     },
@@ -96,6 +114,7 @@ const ExportTable = ({
         </div>
       ),
       prop: "origins",
+      entity: "project_constants",
       type: "text",
       func: d => d.origins.map(dd => stakeholders[dd].name).join("; "),
     },
@@ -107,12 +126,14 @@ const ExportTable = ({
         </div>
       ),
       prop: "targets",
+      entity: "project_constants",
       type: "text",
       func: d => d.targets.map(dd => stakeholders[dd].name).join("; "),
     },
     {
       title: "Support type",
       prop: "assistance_type",
+      entity: "project_constants", // TODO implement
       type: "text",
       func: d => {
         if (!d.is_inkind) return "Financial assistance";
@@ -122,6 +143,7 @@ const ExportTable = ({
     {
       title: `Amount committed`,
       prop: "committed_funds",
+      entity: "project_constants",
       type: "num",
       className: d => (d > 0 ? "num" : "num-with-text"),
       func: d => (d.committed_funds !== null ? d.committed_funds : ""),
@@ -130,6 +152,7 @@ const ExportTable = ({
     {
       title: `Amount disbursed`,
       prop: "disbursed_funds",
+      entity: "project_constants",
       type: "num",
       className: d => (d > 0 ? "num" : "num-with-text"),
       func: d => (d.disbursed_funds !== null ? d.disbursed_funds : ""),
@@ -138,19 +161,42 @@ const ExportTable = ({
   ].filter(d => exportCols.includes(d.prop));
 
   const dataTable = (
-    <TableInstance
-      noNativePaging={true}
-      noNativeSearch={true}
-      noNativeSorting={true}
-      tableColumns={cols}
-      tableData={data.flows.data}
+    <SmartTable
+      {...{
+        data: data.flows.data,
+        columns: cols.filter(d => d.hide !== true),
+        nTotalRecords: data.flows.paging.n_records,
+        loading: fetchingRows,
+        curPage,
+        pagesize,
+        sortCol,
+        isDesc,
+        searchText,
+        setPagesize,
+        setCurPage,
+        setSortCol,
+        setIsDesc,
+        setSearchText,
+      }}
     />
   );
+  // const dataTable = (
+  //   <TableInstance
+  //     noNativePaging={true}
+  //     noNativeSearch={true}
+  //     noNativeSorting={true}
+  //     tableColumns={cols}
+  //     tableData={data.flows.data}
+  //   />
+  // );
 
   const getData = async () => {
     const flowQuery = getFlowQueryForDataPage({
       props: { outbreaks, coreCapacities, supportType, funders, recipients },
       curPage,
+      isDesc,
+      sortCol,
+      searchText,
     });
 
     const queries = {
@@ -159,7 +205,9 @@ const ExportTable = ({
     };
 
     // Get results in parallel
+    setFetchingRows(true);
     const results = await execute({ queries });
+    setFetchingRows(false);
     setData(results);
     setPageLoading(false);
     setInitLoaded(true);
@@ -168,22 +216,6 @@ const ExportTable = ({
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.exportTable)}>
-      {
-        <div>
-          {
-            <Pagination
-              {...{
-                curPage,
-                setCurPage,
-                setCurPageSize,
-                loaded: !pageLoading,
-                initLoaded,
-                nPages: data.flows.paging.n_pages,
-              }}
-            />
-          }
-        </div>
-      }
       <Loading loaded={initLoaded}>{dataTable}</Loading>
     </div>
   );
@@ -192,6 +224,9 @@ const ExportTable = ({
 export const getFlowQueryForDataPage = ({
   props,
   curPage,
+  isDesc,
+  sortCol,
+  searchText,
   forExport = false,
 }) => {
   // Define queries for typical ExportTable page.
@@ -223,6 +258,9 @@ export const getFlowQueryForDataPage = ({
     targetIds: props.recipients.map(d => d.value),
     pagesize: 10,
     page: curPage,
+    isDesc,
+    sortCol,
+    searchText,
     fields: [
       "Project.id",
       "Project.name",
