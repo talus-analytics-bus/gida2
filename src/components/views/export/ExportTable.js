@@ -5,12 +5,17 @@ import { execute, Flow } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 import { Chevron, Loading, Pagination, SmartTable } from "../../common";
 
-// Content components
-import TableInstance from "../../chart/table/TableInstance.js";
-
 // FC for ExportTable.
 const ExportTable = ({
   exportCols,
+  searchText,
+  sortCol,
+  isDesc,
+  pagesize,
+  setSearchText,
+  setSortCol,
+  setIsDesc,
+  setPagesize,
   curPage,
   setCurPage,
   stakeholders,
@@ -24,11 +29,7 @@ const ExportTable = ({
   ...props
 }) => {
   // Currently unused, will be used for dynamic page size selection.
-  const [pagesize, setPagesize] = useState(5);
   const [fetchingRows, setFetchingRows] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [sortCol, setSortCol] = useState("project_constants.committed_funds");
-  const [isDesc, setIsDesc] = useState(true);
 
   // define data
   const [data, setData] = useState({
@@ -194,6 +195,7 @@ const ExportTable = ({
     const flowQuery = getFlowQueryForDataPage({
       props: { outbreaks, coreCapacities, supportType, funders, recipients },
       curPage,
+      pagesize,
       isDesc,
       sortCol,
       searchText,
@@ -224,6 +226,7 @@ const ExportTable = ({
 export const getFlowQueryForDataPage = ({
   props,
   curPage,
+  pagesize,
   isDesc,
   sortCol,
   searchText,
@@ -256,7 +259,7 @@ export const getFlowQueryForDataPage = ({
     filters: flowFilters,
     originIds: props.funders.map(d => d.value),
     targetIds: props.recipients.map(d => d.value),
-    pagesize: 10,
+    pagesize,
     page: curPage,
     isDesc,
     sortCol,

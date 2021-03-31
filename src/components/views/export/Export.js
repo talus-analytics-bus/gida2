@@ -34,26 +34,6 @@ export const cols = [
     // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
   ],
 ];
-// export const cols = [
-//          ["Project.name", "Project name", true],
-//          ["Project.desc", "Project description"],
-//          ["Project.sources", "Data source"],
-//          ["project_constants.core_capacities", "Core capacities"],
-//          ["project_constants.origins", "Funder"],
-//          ["project_constants.targets", "Recipient"],
-//          ["assistance_type", "Support type"],
-//          ["project_constants.years", "Transaction year range"],
-//          [
-//            "project_constants.committed_funds",
-//            `Amount committed`,
-//            // `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
-//          ],
-//          [
-//            "project_constants.disbursed_funds",
-//            `Amount disbursed`,
-//            // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
-//          ],
-//        ];
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
@@ -71,13 +51,18 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
 
   // if page is changed, show pagination loading
   const [pageLoading, setPageLoading] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [sortCol, setSortCol] = useState("project_constants.committed_funds");
+  const [isDesc, setIsDesc] = useState(true);
+  const [pagesize, setPagesize] = useState(5);
 
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
     funders.length > 0 ||
     outbreaks.length > 0 ||
-    recipients.length > 0;
+    recipients.length > 0 ||
+    searchText !== "";
 
   const [exportCols, setExportCols] = useState(cols.map(d => d[0]));
   const remove = (arr, aTmp) => {
@@ -120,20 +105,17 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         setComponent: setExportTable,
         curPage,
         setCurPage,
+        pagesize,
+        setPagesize,
         stakeholders: data.stakeholders,
         pageLoading,
         setPageLoading,
-      }}
-    />
-  );
-
-  const filterTest = (
-    <FilterDropdown
-      {...{
-        label: "",
-        options: core_capacities,
-        placeholder: "Funding by core capacity",
-        onChange: setCoreCapacities,
+        searchText,
+        sortCol,
+        isDesc,
+        setSearchText,
+        setSortCol,
+        setIsDesc,
       }}
     />
   );
@@ -144,64 +126,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     setFunders([]);
     setRecipients([]);
     setOutbreaks([]);
+    setSearchText("");
   };
-
-  const download = () => {
-    // Erase download cookie.
-    Util.createCookie("download_completed", "no");
-    getFlowQueryForDataPage({
-      curPage,
-      props: {
-        funders,
-        recipients,
-        coreCapacities,
-        outbreaks,
-        supportType,
-      },
-      forExport: true,
-      ...props,
-    }).then(paramsTmp => {
-      // URL query params
-      const params = paramsTmp.params;
-
-      // POST body JSON
-      const data = paramsTmp.data;
-      data.cols = cols.filter(d => exportCols.includes(d[0]));
-
-      const queryString = params.toString();
-
-      const exportBodyRows = [];
-      for (let key in data) {
-        const d = data[key];
-        exportBodyRows.push(
-          <div>
-            <input
-              {...{
-                name: key,
-                id: key,
-                value: JSON.stringify(d),
-              }}
-            />
-          </div>
-        );
-      }
-      const exportBody = exportBodyRows;
-      setExportAction(
-        process.env.REACT_APP_API_URL + "/post/export?" + queryString
-      );
-      setExportBody(exportBody);
-    });
-  };
-
-  const exportFlowJsx = (
-    <form action={exportAction} method="POST">
-      {exportBody}
-      <div>
-        <button id={"download"}>Send request to POST</button>
-      </div>
-      //{" "}
-    </form>
-  );
 
   // When download data button is pressed, and form data are updated,
   // perform the POST request.
@@ -345,6 +271,10 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                                   outbreaks,
                                   supportType,
                                 },
+                                isDesc,
+                                sortCol,
+                                searchText,
+                                pagesize,
                                 forExport: true,
                                 ...props,
                               }).then(paramsTmp => {
