@@ -13,6 +13,7 @@ import FilterDropdown from "./FilterDropdown/FilterDropdown.js";
 import ScoreBlocks from "./ScoreBlocks/ScoreBlocks.js";
 import Popup from "./Popup/Popup.js";
 import SmartTable from "./SmartTable/SmartTable.js";
+import ShowMore from "./ShowMore/ShowMore.js";
 import popupStyles from "./Popup/popup.module.scss";
 export {
   Button,
@@ -30,5 +31,6 @@ export {
   ScoreBlocks,
   Popup,
   SmartTable,
+  ShowMore,
   popupStyles,
 };

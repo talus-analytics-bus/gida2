@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import classNames from "classnames";
 import styles from "./exporttable.module.scss";
-import { execute, Flow } from "../../misc/Queries";
+import { execute, Flow, Outbreak } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
-import { Chevron, Loading, Pagination, SmartTable } from "../../common";
+import { Chevron, Loading, ShowMore, SmartTable } from "../../common";
 
 // FC for ExportTable.
 const ExportTable = ({
@@ -41,6 +42,9 @@ const ExportTable = ({
   // track where data initially loaded
   const [initLoaded, setInitLoaded] = useState(false);
 
+  // lookup table for outbreak names by IDs
+  const [outbreakNameById, setOutbreakNameById] = useState(null);
+
   useEffect(() => {
     if (curPage !== 1) setCurPage(1);
     else {
@@ -48,12 +52,6 @@ const ExportTable = ({
       getData();
     }
   }, [coreCapacities, funders, recipients, outbreaks, supportType]);
-
-  // // TODO call when filters change
-  // useEffect(() => {
-  //   if (initLoaded) setPageLoading(true);
-  //   getData();
-  // }, [curPage, pagesize]);
 
   useEffect(() => {
     if (initLoaded) {
@@ -75,6 +73,7 @@ const ExportTable = ({
       entity: "Project",
       type: "text",
       func: d => d.name,
+      render: d => <ShowMore {...{ text: d, charLimit: 100 }} />,
     },
     {
       title: "Project description",
@@ -82,6 +81,7 @@ const ExportTable = ({
       entity: "Project",
       type: "text",
       func: d => d.desc,
+      render: d => <ShowMore {...{ text: d, charLimit: 100 }} />,
     },
     {
       title: "Data source",
@@ -92,6 +92,7 @@ const ExportTable = ({
         d.sources !== undefined && d.sources !== null
           ? d.sources.filter(dd => dd.trim() !== "").join("; ")
           : "",
+      render: d => <ShowMore {...{ text: d, charLimit: 100 }} />,
     },
     {
       title: "Core capacities",
@@ -99,6 +100,25 @@ const ExportTable = ({
       entity: "project_constants",
       type: "text",
       func: d => (d.core_capacities ? d.core_capacities.join("; ") : ""),
+    },
+    {
+      title: "PHEICs",
+      prop: "events",
+      entity: "project_constants",
+      type: "text",
+      func: d => d.events || [],
+      render: d =>
+        outbreakNameById !== null &&
+        d.map((dd, ii) => {
+          const comma = ii !== d.length - 1 ? ", " : null;
+          const { name, slug } = outbreakNameById[dd];
+          return (
+            <>
+              <Link {...{ to: `/events/${slug}` }}>{name}</Link>
+              {comma}
+            </>
+          );
+        }),
     },
     {
       title: "Transaction year range",
@@ -118,6 +138,7 @@ const ExportTable = ({
       entity: "project_constants",
       type: "text",
       func: d => d.origins.map(dd => stakeholders[dd].name).join("; "),
+      render: d => <ShowMore {...{ text: d, charLimit: 100 }} />,
     },
     {
       title: (
@@ -133,7 +154,7 @@ const ExportTable = ({
     },
     {
       title: "Support type",
-      prop: "assistance_type",
+      prop: "assistance_type_project",
       entity: "project_constants", // TODO implement
       type: "text",
       func: d => {
@@ -204,6 +225,7 @@ const ExportTable = ({
     const queries = {
       // Information about the entity
       flows: flowQuery,
+      outbreakNameById: Outbreak({ format: "names_by_id" }),
     };
 
     // Get results in parallel
@@ -213,6 +235,7 @@ const ExportTable = ({
     setData(results);
     setPageLoading(false);
     setInitLoaded(true);
+    setOutbreakNameById(results.outbreakNameById);
   };
 
   // Return JSX
@@ -281,6 +304,7 @@ export const getFlowQueryForDataPage = ({
       "project_constants.is_inkind",
       "project_constants.is_ghsa",
       "project_constants.response_or_capacity",
+      "project_constants.events",
     ],
   };
   if (!forExport)
