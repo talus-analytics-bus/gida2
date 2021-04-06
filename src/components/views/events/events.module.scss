@@ -10,4 +10,15 @@
     @include instructions;
     margin-bottom: 20px;
   }
+  article {
+    font-size: 16px;
+    p,
+    ul {
+      margin-bottom: 20px;
+    }
+    ul {
+      line-height: 30px;
+      // @include spaceChildrenVert(5px);
+    }
+  }
 }

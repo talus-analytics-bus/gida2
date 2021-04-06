@@ -1,8 +1,8 @@
 // 3rd party libs
 import React, { useState, useLayoutEffect } from "react";
-import { Link } from "react-router-dom";
 
 // local
+import { EventLink } from "./../../events/EventLink";
 import { getNodeLinkList } from "../../../misc/Data.js";
 import Util from "../../../misc/Util.js";
 import { Loading, SmartTable } from "../../../common";
@@ -62,7 +62,7 @@ const EventTable = ({
           const comma = ii !== matchingOutbreaks.length - 1 ? ", " : null;
           return (
             <span>
-              <Link {...{ to: `/events/${dd.slug}` }}>{dd.name}</Link>
+              <EventLink {...{ name: dd.name, slug: dd.slug }} />
               {comma}
             </span>
           );
