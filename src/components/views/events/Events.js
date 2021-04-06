@@ -20,9 +20,11 @@ export const Events = ({ ...props }) => {
       <article>
         <h2 className={styles.title}>What are PHEICs?</h2>
         <p>
-          PHEICs are{" "}
-          <strong>public health emergencies of international concern</strong>.
-          The{" "}
+          A PHEIC, or{" "}
+          <strong>public health emergency of international concern</strong>, is
+          a declaration used by the World Health Organization (WHO) when a
+          public health threat unexpectedly emerges that has the potential to
+          spread beyond the affected country’s national borders. The
           <a
             href={"https://www.who.int/publications/i/item/9789241580496"}
             target={"_blank"}
@@ -30,15 +32,13 @@ export const Events = ({ ...props }) => {
             {" "}
             International Health Regulations (2005)
           </a>{" "}
-          define a PHEIC as "an extraordinary event that may constitute a public
-          health risk to other countries through international spread of disease
-          and may require an international coordinated response."
+          confer certain legal obligations on states to respond to the PHEIC.
         </p>
         <p>
-          Six PHEICs have been declared to date, listed in chronological order
-          below. Click a PHEIC below to view the funding provided and received
-          for the response to the PHEIC, as well as details including a
-          description of the event and the pathogen.
+          <strong>Six PHEICs have been declared to date</strong>, listed in
+          chronological order below. Click a PHEIC below to view the funding
+          provided and received for the response to the PHEIC, as well as
+          details including a description of the event and the pathogen.
         </p>
         <PheicList />
       </article>
