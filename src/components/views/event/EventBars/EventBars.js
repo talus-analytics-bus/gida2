@@ -58,6 +58,16 @@ const EventBars = ({
   params.otherRole = params.role === "recipient" ? "funder" : "recipient";
   params.otherDirection = params.direction === "origin" ? "target" : "origin";
 
+  // have more than 10 bras?
+  const moreThan10Bars =
+    dataForChart !== null &&
+    dataForChart[curFlowType] !== undefined &&
+    new Set(
+      dataForChart[curFlowType]
+        .filter(d => d[params.direction] !== undefined)
+        .map(d => d[params.direction].name)
+    ).size > 10;
+
   // add countries with zero funding to main bar chart if they had cases?
   const addUnfundedCountriesWithCases =
     funds === "recipient_country" || funds === "recipient_region";
@@ -413,8 +423,14 @@ const EventBars = ({
                           value: "funder_all",
                           label: "Funder (all types)",
                         },
-                        { value: "funder_country", label: "Funder (country)" },
-                        { value: "funder_org", label: "Funder (organization)" },
+                        {
+                          value: "funder_country",
+                          label: "Funder (country)",
+                        },
+                        {
+                          value: "funder_org",
+                          label: "Funder (organization)",
+                        },
                       ],
                     },
                   }}
@@ -436,7 +452,10 @@ const EventBars = ({
                           value: "searo",
                           label: "South-East Asia Region (SEARO)",
                         },
-                        { value: "euro", label: "European Region (EURO)" },
+                        {
+                          value: "euro",
+                          label: "European Region (EURO)",
+                        },
                         {
                           value: "emro",
                           label: "Eastern Mediterranean Region (EMRO)",
@@ -451,7 +470,7 @@ const EventBars = ({
                 )}
                 {funds !== "recipient_region" &&
                   dataForChart !== null &&
-                  dataForChart[curFlowType].length > 10 && (
+                  moreThan10Bars && (
                     <Checkbox
                       {...{
                         label: "Show top 10 only",
