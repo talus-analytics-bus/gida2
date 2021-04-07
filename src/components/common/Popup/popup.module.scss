@@ -4,7 +4,7 @@
 }
 [class*="__react_component_tooltip"].container {
   padding: 0;
-  opacity: 1;
+  opacity: 1 !important;
   $padding: 15px;
   $grid-gap: 1rem 2rem;
   &,
