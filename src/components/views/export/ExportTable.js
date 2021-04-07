@@ -6,6 +6,8 @@ import { execute, Flow, Outbreak } from "../../misc/Queries";
 import Util from "../../misc/Util.js";
 import { Chevron, Loading, ShowMore, SmartTable } from "../../common";
 
+const None = () => <span className={styles.none}>None</span>;
+
 // FC for ExportTable.
 const ExportTable = ({
   exportCols,
@@ -107,18 +109,26 @@ const ExportTable = ({
       entity: "project_constants",
       type: "text",
       func: d => d.events || [],
-      render: d =>
-        outbreakNameById !== null &&
-        d.map((dd, ii) => {
-          const comma = ii !== d.length - 1 ? ", " : null;
-          const { name, slug } = outbreakNameById[dd];
-          return (
-            <>
-              <Link {...{ to: `/events/${slug}` }}>{name}</Link>
-              {comma}
-            </>
-          );
-        }),
+      render: d => {
+        const ready = outbreakNameById !== null;
+        if (ready) {
+          if (d.length > 0)
+            return (
+              ready &&
+              d.map((dd, ii) => {
+                const comma = ii !== d.length - 1 ? ", " : null;
+                const { name, slug } = outbreakNameById[dd];
+                return (
+                  <>
+                    <Link {...{ to: `/events/${slug}` }}>{name}</Link>
+                    {comma}
+                  </>
+                );
+              })
+            );
+          else return <None />;
+        } else return null;
+      },
     },
     {
       title: "Transaction year range",
@@ -169,7 +179,7 @@ const ExportTable = ({
       type: "num",
       className: d => (d > 0 ? "num" : "num-with-text"),
       func: d => (d.committed_funds !== null ? d.committed_funds : ""),
-      render: d => Util.formatValue(d, "committed_funds"),
+      render: d => Util.formatValue(d, "committed_funds") || <None />,
     },
     {
       title: `Amount disbursed`,
@@ -178,7 +188,7 @@ const ExportTable = ({
       type: "num",
       className: d => (d > 0 ? "num" : "num-with-text"),
       func: d => (d.disbursed_funds !== null ? d.disbursed_funds : ""),
-      render: d => Util.formatValue(d, "disbursed_funds"),
+      render: d => Util.formatValue(d, "disbursed_funds") || <None />,
     },
   ].filter(d => exportCols.includes(d.prop));
 
