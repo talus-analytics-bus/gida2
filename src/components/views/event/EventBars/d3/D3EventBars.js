@@ -40,6 +40,16 @@ class D3EventBars extends Chart {
     // Params object
     const params = this.params;
 
+    // define badge dimensions
+    const badgeHeight = 30;
+    const badgeWidth = badgeHeight * 2;
+    const badgeDim = {
+      width: badgeWidth,
+      height: badgeHeight,
+      x: -badgeWidth + 12,
+      y: -(badgeHeight / 2),
+    };
+
     // define chart accessor
     const chart = this.chart.classed("event-impacts-chart", true);
 
@@ -116,7 +126,7 @@ class D3EventBars extends Chart {
         .attr("class", [styles.tick, styles.fakeText].join(" "));
       const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
       fakeText.remove();
-      return maxLabelWidth + padding;
+      return maxLabelWidth + padding + badgeWidth;
     };
 
     function setRunningValues(data, sortKey) {
@@ -135,6 +145,7 @@ class D3EventBars extends Chart {
         .sort((a, b) => a[sortKey] > b[sortKey]);
       return data;
     }
+
     this.update = function(newData, newFlowType = params.curFlowType, params) {
       const allFundsZero = !newData.some(d => d.value !== 0);
       const sortKey = allFundsZero ? "impact" : "value";
@@ -201,6 +212,9 @@ class D3EventBars extends Chart {
       const dataByName = {};
       // TODO confirm this for all cases
       newData.forEach(d => {
+        dataByName[d.name] = d;
+        if (d.children && d.children.length > 0)
+          d.flag_url = d.children[0].flag_url;
         if (params.stack) {
           if (params.stackField == "region_who") {
             if (dataByRegionAndStakeholder[d.name] === undefined) {
@@ -477,28 +491,19 @@ class D3EventBars extends Chart {
         .on("mouseover", updateTooltip);
 
       // flag icons
-      if (!params.stack) {
+      if (params.showFlags) {
         chart
           .selectAll(".y.axis .tick:not(.iconned)")
           .each(function addIcons(d) {
             const g = d3.select(this).classed("iconned", true);
-            const xOffset = -1 * (d.tickTextWidth + 7) - 5 - 5;
             const axisGap = -7;
             const iconGroup = g
               .append("g")
               .attr("class", "icon")
               .attr("transform", `translate(${axisGap}, 0)`);
 
-            const badgeHeight = 30;
-            const badgeWidth = badgeHeight * 2;
-            const badgeDim = {
-              width: badgeWidth,
-              height: badgeHeight,
-              x: -badgeWidth + 12,
-              y: -(badgeHeight / 2),
-            };
             const flagUrl = dataByName[d].flag_url;
-            const showFlag = flagUrl !== null;
+            const showFlag = flagUrl !== null && flagUrl !== "";
             if (showFlag) {
               iconGroup
                 .append("image")
@@ -511,16 +516,23 @@ class D3EventBars extends Chart {
                   d3.select(this).style("display", "block");
                 })
                 .on("error", function onError(d) {
-                  d3.select(this).attr(
-                    "href",
-                    "https://flags.talusanalytics.com/64px/org.png"
-                  );
+                  // nudge label to right to fill empty flag space
+                  // nudge y-axis tick label to accomodate flag
+                  g.select("text").attr("x", -10);
+
+                  // // show org flag (generic)
+                  // d3.select(this).attr(
+                  //   "href",
+                  //   "https://flags.talusanalytics.com/64px/org.png"
+                  // );
                 });
-            } else {
-              // nudge y-axis tick label to right to occupy space where flag
-              // would be
-              g.select("text").attr("x", -10);
+              g.select("text").attr("x", -50);
             }
+            // else {
+            //   // nudge y-axis tick label to right to occupy space where flag
+            //   // would be
+            //   g.select("text").attr("x", -10);
+            // }
           });
       }
 

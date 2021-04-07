@@ -53,6 +53,8 @@ const EventBars = ({
     stack: true,
     stackField: funds.includes("region") ? "region_who" : "name", // TODO dynamically
     noStackField: "No WHO region", // TODO dynamically
+    byRegion: funds.includes("region"),
+    showFlags: !funds.includes("region"),
   };
   params.direction = params.role === "recipient" ? "target" : "origin";
   params.otherRole = params.role === "recipient" ? "funder" : "recipient";
@@ -262,8 +264,9 @@ const EventBars = ({
               dataByIso2[iso2] === undefined &&
               dataByIso3[iso3] === undefined
             ) {
-              if (filteredStakeholders[iso3] === undefined) return;
-              const shInfo = filteredStakeholders[iso3];
+              const iso3Upper = iso3.toUpperCase();
+              if (filteredStakeholders[iso3Upper] === undefined) return;
+              const shInfo = filteredStakeholders[iso3Upper];
               let iso2 = (shInfo.iso2 || "none").toLowerCase();
               const name = shInfo.name || d.place_name || d.name;
               const newDatumForChart = {
@@ -274,6 +277,7 @@ const EventBars = ({
                 name,
                 flag_url: getFlagUrl(name, iso2),
                 region_who: shInfo.region_who,
+                target:{iso2}
               };
 
               newDataForChart[flowType].push(newDatumForChart);
@@ -302,6 +306,7 @@ const EventBars = ({
           if (newCaseDeathDataForChartTmpByIso2[iso2] === undefined) {
             newCaseDeathDataForChart.push({
               iso2,
+              flag_url: getFlagUrl(name, iso2),
               value: null,
               sort: value,
               name,
