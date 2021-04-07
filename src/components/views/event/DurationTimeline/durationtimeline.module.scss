@@ -46,6 +46,16 @@
     height: 15px;
     transform: translate(-1px);
   }
+  .ongoingLabel {
+    position: absolute;
+    top: -2em;
+    font-size: 1em;
+    text-align: center;
+    text-transform: uppercase;
+    color: #125088;
+    font-weight: 700;
+    font-family: "Open Sans", sans-serif;
+  }
   .years {
     width: 100%;
     display: flex;

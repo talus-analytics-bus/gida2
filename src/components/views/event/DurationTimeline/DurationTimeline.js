@@ -140,7 +140,7 @@ const DurationTimeline = ({ points, isOngoing }) => {
   return (
     <>
       <div className={styles.durationTimeline}>
-        <div className={styles.title}>Duration{ongoingText}</div>
+        <div className={styles.title}>Timeline</div>
         <div className={styles.track}>
           <div className={styles.ticks}>
             {ticks.map(t => (
@@ -152,11 +152,19 @@ const DurationTimeline = ({ points, isOngoing }) => {
             className={styles.thickTrack}
           />
           {isOngoing && (
-            <img
-              style={{ left: arrowStart }}
-              src={arrowSvg}
-              className={styles.arrow}
-            />
+            <>
+              <div
+                style={{ left: `calc(${arrowStart} - 32px)` }}
+                className={styles.ongoingLabel}
+              >
+                Ongoing
+              </div>
+              <img
+                style={{ left: arrowStart }}
+                src={arrowSvg}
+                className={styles.arrow}
+              />
+            </>
           )}
           <div className={styles.dots}>
             {dots.map(d => (
