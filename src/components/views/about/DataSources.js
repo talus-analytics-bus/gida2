@@ -15,10 +15,10 @@ const DataSources = () => {
         </div>
         <div className={styles.description}>
           <p>
-            GIDA currently aggregates data from a multitude of sources. A
-            complete list of these sources, along with detailed descriptions, is
-            included below. In addition to these data sources, we also receive
-            data directly from donor countries, and users may{" "}
+            GHS Tracking currently aggregates data from a multitude of sources.
+            A complete list of these sources, along with detailed descriptions,
+            is included below. In addition to these data sources, we also
+            receive data directly from donor countries, and users may{" "}
             <Link to="/about/submit">submit additional data</Link> for
             incorporation into the tool.
           </p>
