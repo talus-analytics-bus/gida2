@@ -400,7 +400,7 @@ const EventBars = ({
   // JSX //
   return (
     <>
-      <Loading {...{ loaded: drawn, position: "absolute", right: 0 }} />
+      <Loading {...{ loaded: drawn, align: "center", position: "absolute" }} />
       <div className={styles.eventBars}>
         {
           <div
@@ -498,26 +498,28 @@ const EventBars = ({
             </div>
             <div className={styles.chart}>
               {showImpacts && (
-                <div className={styles.controls}>
-                  <div className={styles.dropdowns}>
-                    <Selectpicker
-                      {...{
-                        label: "Event impact by",
-                        curSelection: impact,
-                        setOption: setImpact,
-                        optionList: [
-                          { value: "cases", label: "Cases" },
-                          { value: "deaths", label: "Deaths" },
-                        ],
-                      }}
-                    />
+                <>
+                  <div className={styles.controls}>
+                    <div className={styles.dropdowns}>
+                      <Selectpicker
+                        {...{
+                          label: "Event impact by",
+                          curSelection: impact,
+                          setOption: setImpact,
+                          optionList: [
+                            { value: "cases", label: "Cases" },
+                            { value: "deaths", label: "Deaths" },
+                          ],
+                        }}
+                      />
+                    </div>
                   </div>
                   <div
                     className={classNames(styles.impacts, {
                       [styles.hidden]: noFilteredData,
                     })}
                   />
-                </div>
+                </>
               )}
             </div>
           </div>

@@ -27,7 +27,8 @@
         text-transform: uppercase;
         display: flex;
         flex-flow: column;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+        height: 102px; // required so that secondary chart aligns with main
         .dropdowns {
           display: flex;
           align-items: flex-end;
