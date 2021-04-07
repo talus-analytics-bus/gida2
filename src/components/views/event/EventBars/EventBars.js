@@ -277,7 +277,7 @@ const EventBars = ({
                 name,
                 flag_url: getFlagUrl(name, iso2),
                 region_who: shInfo.region_who,
-                target:{iso2}
+                target: { iso2 },
               };
 
               newDataForChart[flowType].push(newDatumForChart);
@@ -384,6 +384,19 @@ const EventBars = ({
     }
   }, [impact]);
 
+  const top10Checkbox = funds !== "recipient_region" &&
+    dataForChart !== null &&
+    moreThan10Bars && (
+      <Checkbox
+        {...{
+          label: "Show top 10 only",
+          value: "top10only",
+          curChecked: top10Only,
+          callback: () => setTop10Only(!top10Only),
+          classes: [styles.checkbox],
+        }}
+      />
+    );
   // JSX //
   return (
     <>
@@ -398,94 +411,84 @@ const EventBars = ({
             })}
           >
             <div className={styles.chart}>
-              <div className={styles.dropdowns}>
-                <Selectpicker
-                  {...{
-                    label: "Funds by",
-                    curSelection: funds,
-                    setOption: setFunds,
-                    optionGroups: {
-                      Recipient: [
-                        {
-                          value: "recipient_all",
-                          label: "Recipient (all types)",
-                        },
-                        {
-                          value: "recipient_country",
-                          label: "Recipient (country)",
-                        },
-                        {
-                          value: "recipient_region",
-                          label: "Recipient (region)",
-                        },
-                        {
-                          value: "recipient_org",
-                          label: "Recipient (organization)",
-                        },
-                      ],
-                      Funder: [
-                        {
-                          value: "funder_all",
-                          label: "Funder (all types)",
-                        },
-                        {
-                          value: "funder_country",
-                          label: "Funder (country)",
-                        },
-                        {
-                          value: "funder_org",
-                          label: "Funder (organization)",
-                        },
-                      ],
-                    },
-                  }}
-                />
-                {showRegionFilter && (
+              <div className={styles.controls}>
+                <div className={styles.dropdowns}>
                   <Selectpicker
                     {...{
-                      label: `Filter ${roleNoun}s`,
-                      curSelection: region,
-                      setOption: setRegion,
-                      optionList: [
-                        { value: "", label: "All regions" },
-                        { value: "afro", label: "African Region (AFRO)" },
-                        {
-                          value: "paho",
-                          label: "Region of the Americas (PAHO)",
-                        },
-                        {
-                          value: "searo",
-                          label: "South-East Asia Region (SEARO)",
-                        },
-                        {
-                          value: "euro",
-                          label: "European Region (EURO)",
-                        },
-                        {
-                          value: "emro",
-                          label: "Eastern Mediterranean Region (EMRO)",
-                        },
-                        {
-                          value: "wpro",
-                          label: "Western Pacific Region (WPRO)",
-                        },
-                      ],
+                      label: "Funds by",
+                      curSelection: funds,
+                      setOption: setFunds,
+                      optionGroups: {
+                        Recipient: [
+                          {
+                            value: "recipient_all",
+                            label: "Recipient (all types)",
+                          },
+                          {
+                            value: "recipient_country",
+                            label: "Recipient (country)",
+                          },
+                          {
+                            value: "recipient_region",
+                            label: "Recipient (region)",
+                          },
+                          {
+                            value: "recipient_org",
+                            label: "Recipient (organization)",
+                          },
+                        ],
+                        Funder: [
+                          {
+                            value: "funder_all",
+                            label: "Funder (all types)",
+                          },
+                          {
+                            value: "funder_country",
+                            label: "Funder (country)",
+                          },
+                          {
+                            value: "funder_org",
+                            label: "Funder (organization)",
+                          },
+                        ],
+                      },
                     }}
                   />
-                )}
-                {funds !== "recipient_region" &&
-                  dataForChart !== null &&
-                  moreThan10Bars && (
-                    <Checkbox
+                  {showRegionFilter && (
+                    <Selectpicker
                       {...{
-                        label: "Show top 10 only",
-                        value: "top10only",
-                        curChecked: top10Only,
-                        callback: () => setTop10Only(!top10Only),
-                        classes: [styles.checkbox],
+                        label: `Filter ${roleNoun}s`,
+                        curSelection: region,
+                        setOption: setRegion,
+                        optionList: [
+                          { value: "", label: "All regions" },
+                          { value: "afro", label: "African Region (AFRO)" },
+                          {
+                            value: "paho",
+                            label: "Region of the Americas (PAHO)",
+                          },
+                          {
+                            value: "searo",
+                            label: "South-East Asia Region (SEARO)",
+                          },
+                          {
+                            value: "euro",
+                            label: "European Region (EURO)",
+                          },
+                          {
+                            value: "emro",
+                            label: "Eastern Mediterranean Region (EMRO)",
+                          },
+                          {
+                            value: "wpro",
+                            label: "Western Pacific Region (WPRO)",
+                          },
+                        ],
                       }}
                     />
                   )}
+                </div>
+                {top10Checkbox}
               </div>
               <div
                 className={classNames(styles.bars, {
@@ -495,7 +498,7 @@ const EventBars = ({
             </div>
             <div className={styles.chart}>
               {showImpacts && (
-                <>
+                <div className={styles.controls}>
                   <div className={styles.dropdowns}>
                     <Selectpicker
                       {...{
@@ -514,7 +517,7 @@ const EventBars = ({
                       [styles.hidden]: noFilteredData,
                     })}
                   />
-                </>
+                </div>
               )}
             </div>
           </div>

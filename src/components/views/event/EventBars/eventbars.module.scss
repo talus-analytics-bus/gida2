@@ -23,24 +23,26 @@
     .chart {
       height: auto;
       width: 100%;
-
-      .dropdowns {
-        display: flex;
-        align-items: flex-end;
-        > div,
-        form label {
-          margin: 0;
-        }
-        margin-bottom: 30px;
-        @include spaceChildrenHoriz(10px);
+      .controls {
         text-transform: uppercase;
-        > div:not(.checkbox) {
-          @include dropdown();
+        display: flex;
+        flex-flow: column;
+        margin-bottom: 20px;
+        .dropdowns {
+          display: flex;
+          align-items: flex-end;
+          > div,
+          form label {
+            margin: 0;
+          }
+          @include spaceChildrenHoriz(10px);
+          > div {
+            @include dropdown();
+          }
         }
-        // .checkbox {
-        //   position: relative;
-        //   top: 13px;
-        // }
+        form {
+          margin-top: 10px;
+        }
       }
 
       .bars,
