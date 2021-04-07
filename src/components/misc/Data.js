@@ -483,12 +483,13 @@ export const getNodeLinkList = ({
   return nodeList.map((node, i) => {
     const type = node.cat;
     const subcat = node.subcat;
+    const doParentUrl =
+      node.parent !== undefined && parentUrlSubcats.includes(subcat);
     const doUrl =
       !nonUrlTypes.includes(type) &&
       !nonUrlSubcats.includes(subcat) &&
-      !parentUrlSubcats.includes(subcat) &&
+      !doParentUrl &&
       node.slug !== "not-reported";
-    const doParentUrl = parentUrlSubcats.includes(subcat);
     const url = !doParentUrl ? urlFunc(node.id) : urlFunc(node.parent.id);
 
     const skipUrlBecauseIsTargetInRecipientCol =
