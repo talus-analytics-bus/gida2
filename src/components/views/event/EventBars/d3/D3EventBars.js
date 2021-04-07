@@ -277,8 +277,10 @@ class D3EventBars extends Chart {
           if (isBarSegment) {
             const otherSh = dTmp[params.otherDirection];
             const title = otherSh.name;
-            const header = [{ title, label: params.otherRole }];
-            if (byRegion) header.push({ title: dTmp.name, label: params.role });
+            const header = [
+              { title, label: params.otherRole },
+              { title: dTmp.name, label: params.role },
+            ];
             const tooltipData = {
               header,
               body: [
