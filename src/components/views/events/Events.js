@@ -45,8 +45,8 @@ export const Events = ({ ...props }) => {
       <h2 className={styles.title}>PHEIC funding projects</h2>
       <Loading {...{ loaded, align: "center" }}>
         <div className={styles.instructions}>
-          Choose PHEIC in table to view details. Each row is a project
-          supporting the response to a particular PHEIC.
+          Click PHEIC in table to view details. Each row is a project supporting
+          the response to one or more PHEICs.
         </div>
         <EventTable {...{ setLoaded, sortByProp: "amount-disbursed_funds" }} />
       </Loading>
