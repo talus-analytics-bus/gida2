@@ -1,4 +1,7 @@
 @import "src/assets/styles/colors.scss";
+[class*="__react_component_tooltip"].show {
+  opacity: 1 !important;
+}
 [class*="__react_component_tooltip"].container {
   padding: 0;
   opacity: 1;
