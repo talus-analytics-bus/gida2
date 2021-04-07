@@ -47,6 +47,8 @@
       display: grid;
       grid-template-columns: auto auto;
       grid-gap: $grid-gap;
+      font-size: 2rem;
+
       .label {
         color: $outbreak-gray-2;
         font-weight: bold;
