@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 // styles and assets
 import styles from "./eventnumbertotals.module.scss";
 import classNames from "classnames";
-import dollarSvg from "./svg/dollar.svg";
+import moneySvg from "./svg/bank-note.svg";
 import personSvg from "./svg/person.svg";
 
 // local components
@@ -44,7 +44,7 @@ const EventNumberTotals = ({
   // FUNCTIONS //
   // get icon to show
   const getIcon = type => {
-    if (type === "funding") return dollarSvg;
+    if (type === "funding") return moneySvg;
     else return personSvg;
   };
 
@@ -155,7 +155,10 @@ const EventNumberTotals = ({
     >
       <div className={styles.content}>
         <div className={styles.icon}>
-          <img src={getIcon(type)} />
+          <img
+            className={type === "funding" ? styles.money : ""}
+            src={getIcon(type)}
+          />
         </div>
         <div className={styles.rows}>
           <div className={styles.cols}>

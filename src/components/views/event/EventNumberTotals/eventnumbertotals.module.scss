@@ -6,7 +6,13 @@
     .icon {
       margin-right: 30px;
       img {
+        transform-origin: top;
+        width: 40px;
         height: 40px;
+        &.money {
+          height: 28px;
+        }
+        margin-top: 4px;
       }
     }
 
