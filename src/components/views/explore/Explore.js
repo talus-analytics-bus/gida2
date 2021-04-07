@@ -4,12 +4,8 @@ import styles from "./explore.module.scss";
 import classNames from "classnames";
 
 // Content components
-import GhsaToggle from "../../misc/GhsaToggle.js";
 import {Loading} from "../../common";
-import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
 import { Settings } from "../../../App.js";
-import Tab from "../../misc/Tab.js";
-// import { renderMapViewer } from "./content/MapViewer/MapViewer.js";
 import { renderOrgs } from "./content/Orgs/Orgs.js";
 import { Toggle } from "react-toggle-component";
 
@@ -25,7 +21,6 @@ const Explore = ({
   // Track tab content components
   const [mapViewerComponent, setMapViewerComponent] = useState(null);
   const [orgComponent, setOrgComponent] = useState(null);
-  const [curComponent, setCurComponent] = useState(null);
   const [loadedMapOnce, setLoadedMapOnce] = useState(false);
   if (loadedMapOnce) supportTypeDefault = undefined;
 
@@ -35,7 +30,6 @@ const Explore = ({
 
   // Track entity role selected for the map
   const [entityRole, setEntityRole] = useState("recipient");
-  // const [entityRole, setEntityRole] = useState("funder");
 
   // Track min and max year of data (consistent across tabs)
   const [minYear, setMinYear] = useState(Settings.startYear);
@@ -214,6 +208,9 @@ const Explore = ({
   const loadingInstructions =
     activeTab === "map" ? "Loading map" : "Loading tables";
 
+  // constants for sliding up loading spinner children on org page
+  const slideUpParams = activeTab !== "map" ? { slideUp: true, top: "-20px", messageTop: "20px" } : {};
+
   // Return JSX
   return (
     <div
@@ -283,7 +280,7 @@ const Explore = ({
       </div>
       {
         // primary loading spinner for page initialization
-        <Loading {...{ loaded: initialSpinnerDone, align: "center" }}>
+        <Loading {...{ loaded: initialSpinnerDone, align: "center", ...slideUpParams }}>
           <div
             className={classNames(styles.content, {
               [styles.dark]: props.isDark,

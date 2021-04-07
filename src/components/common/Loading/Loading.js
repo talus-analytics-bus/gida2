@@ -17,6 +17,7 @@ const Loading = ({
   // custom styles
   margin,
   top,
+  messageTop,
   right,
   position,
   minHeight,
@@ -32,7 +33,10 @@ const Loading = ({
             [styles.tiny]: tiny,
           })}
         >
-          <div className={styles.imgContainer}>
+          <div
+            style={{ top: messageTop, position: "relative" }}
+            className={styles.imgContainer}
+          >
             {message && <i>{message}</i>}
             <img src={spinnerImg} />
           </div>

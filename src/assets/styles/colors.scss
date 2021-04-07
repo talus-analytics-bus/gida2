@@ -66,27 +66,11 @@ $primary-light-blue: #009bdf;
 // Gradients
 $light-blue-1: #87acd5;
 $light-blue-2: #5697bf;
-$light-blue-gradient-1: linear-gradient(
-  0deg,
-  $light-blue-2 0%,
-  $light-blue-1 100%
-);
-$light-blue-gradient-2: linear-gradient(
-  0deg,
-  darken($light-blue-2, 15%) 0%,
-  darken($light-blue-1, 15%) 100%
-);
-$light-blue-gradient-3: linear-gradient(
-  0deg,
-  darken($light-blue-2, 25%) 0%,
-  darken($light-blue-1, 25%) 100%
-);
+$light-blue-gradient-1: linear-gradient(0deg, $light-blue-2 0%, $light-blue-1 100%);
+$light-blue-gradient-2: linear-gradient(0deg, darken($light-blue-2, 15%) 0%, darken($light-blue-1, 15%) 100%);
+$light-blue-gradient-3: linear-gradient(0deg, darken($light-blue-2, 25%) 0%, darken($light-blue-1, 25%) 100%);
 $value-red-gradient: linear-gradient(90deg, #e6c1c6 0%, $value-red 100%);
-$value-change-gradient: linear-gradient(
-  90deg,
-  $funder-blue 0%,
-  $recipient-red 100%
-);
+$value-change-gradient: linear-gradient(90deg, $funder-blue 0%, $recipient-red 100%);
 $needs-met-gradient: linear-gradient(90deg, #32649f 0%, #def6d0 100%);
 // $needs-met-gradient: linear-gradient(90deg, #32649f 0%, #e0eed8 100%);
 // $value-change-gradient: linear-gradient(
@@ -96,11 +80,7 @@ $needs-met-gradient: linear-gradient(90deg, #32649f 0%, #def6d0 100%);
 //   $value-red 100%
 // );
 
-$loading-spinner-gradient: radial-gradient(
-  circle at top right,
-  white,
-  rgba(255, 255, 255, 0.0001) 75%
-);
+$loading-spinner-gradient: radial-gradient(circle at top right, white, rgba(255, 255, 255, 0.0001) 75%);
 
 // MEDIA QUERIES
 $phone: "screen and (max-width : 670px)";
@@ -223,7 +203,7 @@ $phone-width-narrow: 375px;
     appearance: none;
 
     display: block;
-    border-radius: 10px;
+    border-radius: 5px;
 
     width: 100%;
     height: 40px;

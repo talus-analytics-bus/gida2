@@ -216,65 +216,67 @@ const Event = ({ slug, flowTypeInfo }) => {
       <div className={classNames("pageContainer", styles.content)}>
         <div className={styles.title}>PHEIC</div>
 
-        {dataLoaded && (
+        {
           <Loading
             {...{
               loaded,
               slideUp: true,
-              minHeight: "75vh",
               top: "-20px",
+              minHeight: "75vh",
             }}
           >
-            <div className={styles.card}>
-              <div className={styles.cols}>
-                <div className={classNames(styles.col, styles.left)}>
-                  {loaded && (
-                    <EventOverview
+            {dataLoaded && (
+              <div className={styles.card}>
+                <div className={styles.cols}>
+                  <div className={classNames(styles.col, styles.left)}>
+                    {loaded && (
+                      <EventOverview
+                        {...{
+                          ...data,
+                          // assign affected countries from cases data
+                          afterCaseData:
+                            data.case_data_id !== null
+                              ? d => {
+                                  const formattedCountryImpacts = d.map(dd => {
+                                    const sh = stakeholders[dd.iso3];
+                                    if (sh === undefined) return {};
+                                    else
+                                      return {
+                                        label: sh.name,
+                                        url: `/details/${sh.id}/${
+                                          sh.primary_role
+                                        }`,
+                                        ...sh,
+                                      };
+                                  });
+                                  setCountryImpacts(formattedCountryImpacts);
+                                }
+                              : undefined,
+                          caseData,
+                          setCaseData,
+                          deathData,
+                          setDeathData,
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div className={classNames(styles.col, styles.right)}>
+                    <EventSidebar
                       {...{
-                        ...data,
-                        // assign affected countries from cases data
-                        afterCaseData:
-                          data.case_data_id !== null
-                            ? d => {
-                                const formattedCountryImpacts = d.map(dd => {
-                                  const sh = stakeholders[dd.iso3];
-                                  if (sh === undefined) return {};
-                                  else
-                                    return {
-                                      label: sh.name,
-                                      url: `/details/${sh.id}/${
-                                        sh.primary_role
-                                      }`,
-                                      ...sh,
-                                    };
-                                });
-                                setCountryImpacts(formattedCountryImpacts);
-                              }
-                            : undefined,
-                        caseData,
-                        setCaseData,
-                        deathData,
-                        setDeathData,
+                        countryImpacts,
+                        isGlobal,
+                        highlighted,
+                        pathogen: data.pathogen,
+                        mcms_during_event: data.mcms_during_event,
                       }}
                     />
-                  )}
-                </div>
-                <div className={classNames(styles.col, styles.right)}>
-                  <EventSidebar
-                    {...{
-                      countryImpacts,
-                      isGlobal,
-                      highlighted,
-                      pathogen: data.pathogen,
-                      mcms_during_event: data.mcms_during_event,
-                    }}
-                  />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
             <div className={styles.subsections}>{subsectionsJsx}</div>
           </Loading>
-        )}
+        }
       </div>
       <div className={styles.band} />
     </div>

@@ -43,7 +43,7 @@ export const Events = ({ ...props }) => {
         <PheicList />
       </article>
       <h2 className={styles.title}>PHEIC funding projects</h2>
-      <Loading {...{ loaded, align: "center" }}>
+      <Loading {...{ loaded, align: "center", slideUp: true, top: "-20px" }}>
         <div className={styles.instructions}>
           Click PHEIC in table to view details. Each row is a project supporting
           the response to one or more PHEICs.

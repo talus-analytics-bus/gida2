@@ -280,7 +280,7 @@ const EventTable = ({
   }, [id, direction]);
 
   return (
-    <Loading loaded={dataLoaded}>
+    <Loading {...{loaded: dataLoaded, slideUp: true, top: "-20px" }}>
       <SmartTable
         {...{
           data: flows,
