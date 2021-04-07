@@ -477,18 +477,20 @@ export const getNodeLinkList = ({
   }
 
   // Do not list URLs unless the node belongs to any of these types
-  const urlTypes = ["country", "organization"];
   const nonUrlTypes = ["region", "state_/_department_/_territory"];
-  const nonUrlSubcats = ["region", "agency", "sub-organization"];
-  // const nonUrlTypes = ["region", "state_/_department_/_territory", "other"];
+  const nonUrlSubcats = ["region"];
+  const parentUrlSubcats = ["agency", "sub-organization"];
   return nodeList.map((node, i) => {
-    const url = urlFunc(node.id);
     const type = node.cat;
     const subcat = node.subcat;
     const doUrl =
       !nonUrlTypes.includes(type) &&
       !nonUrlSubcats.includes(subcat) &&
+      !parentUrlSubcats.includes(subcat) &&
       node.slug !== "not-reported";
+    const doParentUrl = parentUrlSubcats.includes(subcat);
+    const url = !doParentUrl ? urlFunc(node.id) : urlFunc(node.parent.id);
+
     const skipUrlBecauseIsTargetInRecipientCol =
       otherId && node.id === otherId && entityRole === "recipient";
     const skipUrlBecauseIsSourceInFunderCol =
@@ -506,7 +508,16 @@ export const getNodeLinkList = ({
               {i !== nodeList.length - 1 && <span>; </span>}
             </span>
           )}
-        {(!doUrl ||
+        {doParentUrl &&
+          !skipUrlBecauseIsOnlyNode &&
+          !skipUrlBecauseIsTargetInRecipientCol &&
+          !skipUrlBecauseIsSourceInFunderCol && (
+            <span>
+              <Link to={url}>{node.parent.name}</Link> (via {node.name})
+              {i !== nodeList.length - 1 && <span>; </span>}
+            </span>
+          )}
+        {((!doUrl && !doParentUrl) ||
           skipUrlBecauseIsOnlyNode ||
           skipUrlBecauseIsTargetInRecipientCol ||
           skipUrlBecauseIsSourceInFunderCol) && (
