@@ -1,66 +1,66 @@
-import React from "react";
-import * as d3 from "d3/dist/d3.min";
-import Chart from "../../../../chart/Chart.js";
-import Util, { formatRegion } from "../../../../misc/Util.js";
-import styles from "./d3eventbars.module.scss";
-import ReactTooltip from "react-tooltip";
+import React from "react"
+import * as d3 from "d3/dist/d3.min"
+import Chart from "../../../../chart/Chart.js"
+import Util, { formatRegion } from "../../../../misc/Util.js"
+import styles from "./d3eventbars.module.scss"
+import ReactTooltip from "react-tooltip"
 
 // colors
 import {
   outbreakBlue2,
-  outbreakBlue3,
+  // outbreakBlue3,
   outbreakBlue4,
   outbreakBlue5,
-} from "../../../../../assets/styles/colors.scss";
+} from "../../../../../assets/styles/colors.scss"
 
 class D3EventBars extends Chart {
   constructor(selector, params = {}) {
-    super(selector, params);
+    super(selector, params)
 
     // Define data
-    this.params = params;
+    this.params = params
 
     // Define margins
-    this.margin = {};
+    this.margin = {}
 
     // Set dimensions
-    this.width = this.containerwidth;
-    this.height = this.containerheight;
-    this.margin = { top: 50, right: 70, bottom: 35, left: 0 };
+    this.width = this.containerwidth
+    this.height = this.containerheight
+    this.margin = { top: 50, right: 70, bottom: 35, left: 0 }
 
     // Initialize chart
-    this.init();
+    this.init()
 
     // Draw chart
-    this.draw();
+    this.draw()
   }
 
   draw() {
     // Initialize some constants
     // Params object
-    const params = this.params;
+    const params = this.params
 
     // define badge dimensions
-    const badgeHeight = 30;
-    const badgeWidth = badgeHeight * 2;
+    const badgeHeight = 30
+    const badgeWidth = badgeHeight * 2
     const badgeDim = {
       width: badgeWidth,
       height: badgeHeight,
       x: -badgeWidth + 12,
       y: -(badgeHeight / 2),
-    };
+    }
 
     // define chart accessor
-    const chart = this.chart.classed("event-impacts-chart", true);
+    const chart = this.chart.classed("event-impacts-chart", true)
 
     // define dimension accessors
-    const margin = this.margin;
-    const width = this.width;
-    const height = this.height;
+    const margin = this.margin
+    const width = this.width
+    // const height = this.height
 
     // Define scales
-    const x = d3.scaleLinear().range([0, width]);
-    const y = d3.scaleBand().padding(0.25);
+    const x = d3.scaleLinear().range([0, width])
+    const y = d3.scaleBand().padding(0.25)
 
     // // Define color scale
     // const colorScale = d3.scaleLinear().range(["blue", "blue"]);
@@ -73,7 +73,7 @@ class D3EventBars extends Chart {
       .tickSizeOuter(5)
       .tickPadding(8)
       .tickFormat(Util.formatSIInteger)
-      .scale(x);
+      .scale(x)
 
     // y-axis
     const yAxis = d3
@@ -81,30 +81,30 @@ class D3EventBars extends Chart {
       .scale(y)
       .tickSize(0)
       .tickSizeOuter(5)
-      .tickPadding(params.stack ? 10 : 50);
+      .tickPadding(params.stack ? 10 : 50)
 
-    if (params.stack) yAxis.tickFormat(formatRegion);
+    if (params.stack) yAxis.tickFormat(formatRegion)
 
-    const allBars = chart.append("g");
+    const allBars = chart.append("g")
 
     const xAxisG = chart
       .append("g")
       .attr("class", "x axis")
-      .style("stroke-width", 1);
+      .style("stroke-width", 1)
 
     const yAxisG = chart
       .append("g")
       .attr("class", "y axis")
-      .call(yAxis);
+      .call(yAxis)
 
     // add axes labels
-    let xAxisLabel = "";
+    let xAxisLabel = ""
     chart
       .append("text")
       .attr("class", styles["axis-label"])
       .attr("x", width / 2)
       .attr("y", -70)
-      .text(xAxisLabel);
+      .text(xAxisLabel)
 
     const xLabel = chart
       .append("text")
@@ -114,7 +114,7 @@ class D3EventBars extends Chart {
       .style("text-anchor", "middle")
       .attr("class", styles["axis-label"])
       .classed("axis-title", true)
-      .text("Funds");
+      .text("Funds")
 
     const getLeftMargin = (data, fmt, padding = 0) => {
       const fakeText = chart
@@ -123,193 +123,197 @@ class D3EventBars extends Chart {
         .enter()
         .append("text")
         .text(d => fmt(d.name))
-        .attr("class", [styles.tick, styles.fakeText].join(" "));
-      const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width);
-      fakeText.remove();
-      return maxLabelWidth + padding + badgeWidth;
-    };
+        .attr("class", [styles.tick, styles.fakeText].join(" "))
+      const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
+      fakeText.remove()
+      return maxLabelWidth + padding + badgeWidth
+    }
 
     function setRunningValues(data, sortKey) {
       data
         .map(d => {
-          let runningValue = 0;
+          let runningValue = 0
           d.children = d.children.map(c => {
-            c.value0 = runningValue;
-            runningValue += c.value;
-            c.value1 = runningValue;
-            return c;
-          });
+            c.value0 = runningValue
+            runningValue += c.value
+            c.value1 = runningValue
+            return c
+          })
 
-          return d;
+          return d
         })
-        .sort((a, b) => a[sortKey] > b[sortKey]);
-      return data;
+        .sort((a, b) => a[sortKey] > b[sortKey])
+      return data
     }
 
-    this.update = function (newData, newFlowType = params.curFlowType, params) {
-      const allFundsZero = !newData.some(d => d.value !== 0);
-      const sortKey = allFundsZero ? "impact" : "value";
+    this.update = function(newData, newFlowType = params.curFlowType, params) {
+      const allFundsZero = !newData.some(d => d.value !== 0)
+      const sortKey = allFundsZero ? "impact" : "value"
       // format stack bar data
-      let stackXMax, stackData;
+      let stackXMax, stackData
       if (params.stack) {
-        stackData = [];
-        const newDataByBarLabel = {};
+        stackData = []
+        const newDataByBarLabel = {}
         newData.forEach(d => {
-          const barLabel = d[params.stackField] || params.noStackField;
+          const barLabel = d[params.stackField] || params.noStackField
           if (newDataByBarLabel[barLabel] === undefined) {
-            newDataByBarLabel[barLabel] = [d];
+            newDataByBarLabel[barLabel] = [d]
           } else if (
             d[sortKey] !== 0 &&
             d[sortKey] !== undefined &&
             d[sortKey] !== null
           ) {
-            newDataByBarLabel[barLabel].push(d);
+            newDataByBarLabel[barLabel].push(d)
           }
-        });
+        })
         for (const [region, children] of Object.entries(newDataByBarLabel)) {
           children.forEach(d => {
-            d.region = region;
-          });
+            d.region = region
+          })
           stackData.push({
             name: region,
             children: children.sort((a, b) => {
-              return d3.descending(a[sortKey], b[sortKey]);
+              return d3.descending(a[sortKey], b[sortKey])
             }),
             value: d3.sum(children, d => d.value),
             impact: d3.sum(children, d => d.impact),
             bar_id: `${region}-${newFlowType}`,
-          });
+          })
         }
-        setRunningValues(stackData, sortKey);
-        stackXMax = d3.max(stackData, d => d.value);
-        newData = stackData;
+        setRunningValues(stackData, sortKey)
+        stackXMax = d3.max(stackData, d => d.value)
+        newData = stackData
       }
 
       // Sort
       newData.sort((a, b) => {
-        return d3.descending(a[sortKey], b[sortKey]);
-      });
+        return d3.descending(a[sortKey], b[sortKey])
+      })
 
       // keep only `max` number of data
-      newData = newData.slice(0, params.max || 1e6);
-      const getShortName = this.getShortName;
+      newData = newData.slice(0, params.max || 1e6)
+      const getShortName = this.getShortName
 
-      const tickFormat = params.stack ? formatRegion : getShortName;
-      const padding = params.stack ? 30 : 60;
+      const tickFormat = params.stack ? formatRegion : getShortName
+      const padding = params.stack ? 30 : 60
       this.updateWidth({
         ...this.margin,
         left: getLeftMargin(newData, tickFormat, padding),
-      });
+      })
 
-      xLabel.attr("x", this.width / 2);
+      xLabel.attr("x", this.width / 2)
 
       // update xscale
-      x.range([0, this.width]);
+      x.range([0, this.width])
 
       // get flag URLs and other data by name of stakeholder
-      const dataByFirstAndSecondSh = {};
-      const dataByRegionAndStakeholder = {};
-      const dataByName = {};
+      const dataByFirstAndSecondSh = {}
+      const dataByRegionAndStakeholder = {}
+      const dataByName = {}
       // TODO confirm this for all cases
       newData.forEach(d => {
-        dataByName[d.name] = d;
+        dataByName[d.name] = d
         if (d.children && d.children.length > 0)
-          d.flag_url = d.children[0].flag_url;
+          d.flag_url = d.children[0].flag_url
         if (params.stack) {
           if (params.stackField == "region_who") {
             if (dataByRegionAndStakeholder[d.name] === undefined) {
-              dataByRegionAndStakeholder[d.name] = {};
+              dataByRegionAndStakeholder[d.name] = {}
               d.children.forEach(dd => {
-                if (dd.value === 0 || dd.value === null) return;
+                if (dd.value === 0 || dd.value === null) return
                 if (
                   (dd[params.otherDirection] === undefined ||
                     (dataByRegionAndStakeholder[d.name][
                       dd[params.otherDirection]
                     ] === undefined &&
                       dataByRegionAndStakeholder[d.name][
-                      dd[params.otherDirection].name
+                        dd[params.otherDirection].name
                       ])) === undefined
                 )
                   dataByRegionAndStakeholder[d.name][
                     dd[params.otherDirection].name
-                  ] = [];
+                  ] = []
                 dataByRegionAndStakeholder[d.name][
                   dd[params.otherDirection].name
-                ].push(dd);
-              });
+                ].push(dd)
+              })
             }
           } else {
             if (dataByFirstAndSecondSh[d.name] === undefined) {
-              dataByFirstAndSecondSh[d.name] = {};
+              dataByFirstAndSecondSh[d.name] = {}
               d.children.forEach(dd => {
-                if (dd.value === 0 || dd.value === null) return;
+                if (dd.value === 0 || dd.value === null) return
                 if (
                   dataByFirstAndSecondSh[d.name][
-                  dd[params.otherDirection].name
+                    dd[params.otherDirection].name
                   ] === undefined
                 )
                   dataByFirstAndSecondSh[d.name][
                     dd[params.otherDirection].name
-                  ] = [];
+                  ] = []
                 dataByFirstAndSecondSh[d.name][
                   dd[params.otherDirection].name
-                ].push(dd);
-              });
+                ].push(dd)
+              })
             }
           }
         } else {
-          dataByName[d.name] = d;
+          dataByName[d.name] = d
         }
-      });
+      })
 
       function updateTooltip(dTmp, primarySh) {
-        const d = typeof dTmp === "object" ? dTmp.name : dTmp;
-        let lookupTable;
+        const d = typeof dTmp === "object" ? dTmp.name : dTmp
+        let lookupTable
         if (params.stack) {
-          const byRegion = params.stackField == "region_who";
+          const byRegion = params.stackField == "region_who"
           if (byRegion) {
-            lookupTable = dataByRegionAndStakeholder;
+            lookupTable = dataByRegionAndStakeholder
           } else {
-            lookupTable = dataByFirstAndSecondSh;
+            lookupTable = dataByFirstAndSecondSh
           }
-          const isBarSegment = lookupTable[primarySh] !== undefined;
-          const isBarLabel = !isBarSegment;
+          const isBarSegment = lookupTable[primarySh] !== undefined
+          // const isBarLabel = !isBarSegment
           if (isBarSegment) {
-            const otherSh = dTmp[params.otherDirection];
-            const title = otherSh.name;
+            const otherSh = dTmp[params.otherDirection]
+            const title = otherSh.name
             const header = [
               { title, label: params.otherRole },
               { title: dTmp.name, label: params.role },
-            ];
+            ]
             const tooltipData = {
               header,
               body: [
                 {
                   field: xLabel.text().replace(" (USD)", ""),
                   value: Util.money(
-                    d3.sum(lookupTable[primarySh][title], dd => dd.value)
+                    d3.sum(lookupTable[primarySh][title], dd => dd.value),
                   ),
                 },
               ],
-            };
-            params.setTooltipData(tooltipData);
-          } else if (isBarLabel) {
-            const title = formatRegion(d);
-            const tooltipData = {
-              header: [{ title, label: params.role }],
-              body: [
-                {
-                  field: xLabel.text().replace(" (USD)", ""),
-                  value: Util.money(
-                    d3.sum(Object.values(lookupTable[d]).flat(), dd => dd.value)
-                  ),
-                },
-              ],
-            };
-            params.setTooltipData(tooltipData);
+            }
+            params.setTooltipData(tooltipData)
           }
+          // else if (isBarLabel) {
+          //   const title = formatRegion(d)
+          //   const tooltipData = {
+          //     header: [{ title, label: params.role }],
+          //     body: [
+          //       {
+          //         field: xLabel.text().replace(" (USD)", ""),
+          //         value: Util.money(
+          //           d3.sum(
+          //             Object.values(lookupTable[d]).flat(),
+          //             dd => dd.value,
+          //           ),
+          //         ),
+          //       },
+          //     ],
+          //   }
+          //   params.setTooltipData(tooltipData)
+          // }
         } else {
-          const title = dataByName[d].name;
+          const title = dataByName[d].name
           const tooltipData = {
             header: [{ title, label: params.direction }],
             body: [
@@ -318,8 +322,8 @@ class D3EventBars extends Chart {
                 value: Util.money(dataByName[d].value),
               },
             ],
-          };
-          params.setTooltipData(tooltipData);
+          }
+          params.setTooltipData(tooltipData)
         }
       }
 
@@ -329,74 +333,74 @@ class D3EventBars extends Chart {
         .enter()
         .append("text")
         .text(d => {
-          return "Label"; // TODO
+          return "Label" // TODO
         })
         .attr("class", styles.tick)
-        .each(function (d) {
-          d.tickTextWidth = this.getBBox().width;
-        });
-      fakeText.remove();
+        .each(function(d) {
+          d.tickTextWidth = this.getBBox().width
+        })
+      fakeText.remove()
 
-      const newHeight = 40 * newData.length; // TODO confirm
-      this.svg.attr("height", newHeight + margin.top + margin.bottom);
+      const newHeight = 40 * newData.length // TODO confirm
+      this.svg.attr("height", newHeight + margin.top + margin.bottom)
 
       // set new axes and transition
       // if stack: set xMax based on sum of bar segments
-      const defaultXMax = 1000;
-      let xMax;
-      if (params.stack) xMax = 1.1 * stackXMax || defaultXMax;
+      const defaultXMax = 1000
+      let xMax
+      if (params.stack) xMax = 1.1 * stackXMax || defaultXMax
       else {
-        const maxVal = d3.max(newData, d => d.value);
-        xMax = 1.1 * maxVal || defaultXMax;
+        const maxVal = d3.max(newData, d => d.value)
+        xMax = 1.1 * maxVal || defaultXMax
       }
-      x.domain([0, xMax]);
-      y.domain(newData.map(d => d.name)).range([0, newHeight]);
-      const bandwidth = y.bandwidth();
+      x.domain([0, xMax])
+      y.domain(newData.map(d => d.name)).range([0, newHeight])
+      const bandwidth = y.bandwidth()
 
       // remove first
       let bars = allBars
         .selectAll("." + styles.bar)
-        .data(newData, d => d.bar_id); // TODO check
-      bars.exit().remove();
+        .data(newData, d => d.bar_id) // TODO check
+      bars.exit().remove()
 
       const newGroups = bars
         .enter()
         .append("g")
         .attr("class", styles.bar)
         .attr("id", d => {
-          return d.bar_id;
-        });
+          return d.bar_id
+        })
 
-      bars = newGroups.merge(bars);
+      bars = newGroups.merge(bars)
       if (params.sortOnly) {
         bars
           .transition()
           .duration(1000)
-          .attr("transform", d => `translate(0, ${y(d.name)})`);
+          .attr("transform", d => `translate(0, ${y(d.name)})`)
       } else {
-        bars.attr("transform", d => `translate(0, ${y(d.name)})`);
+        bars.attr("transform", d => `translate(0, ${y(d.name)})`)
       }
 
-      const durationHorizontal = params.sortOnly ? 0 : 1000;
+      const durationHorizontal = params.sortOnly ? 0 : 1000
       if (params.stack) {
         const colors = [
           outbreakBlue2,
           // outbreakBlue3,
           outbreakBlue4,
           outbreakBlue5,
-        ];
-        let prevColor = "";
-        let color = "";
+        ]
+        let prevColor = ""
+        let color = ""
         const getRandomBarColor = () => {
           while (color === prevColor) {
-            color = colors[Math.floor(Math.random() * colors.length)];
+            color = colors[Math.floor(Math.random() * colors.length)]
           }
-          prevColor = color;
-          return color;
-        };
+          prevColor = color
+          return color
+        }
 
         newData.forEach(stackBar => {
-          const seed = colors.length;
+          const seed = colors.length
           // const seed = parseInt(Math.random() * colors.length);
           bars
             .selectAll("rect")
@@ -407,14 +411,14 @@ class D3EventBars extends Chart {
             .attr("data-tip", true)
             .attr("data-for", "chartTooltip")
             .on("mouseover", d => {
-              updateTooltip(d, d.region);
+              updateTooltip(d, d.region)
             })
             .attr("height", bandwidth)
             .transition()
             .duration(durationHorizontal)
             .attr("x", d => x(d.value0))
-            .attr("width", d => x(d.value1) - x(d.value0));
-        });
+            .attr("width", d => x(d.value1) - x(d.value0))
+        })
       } else {
         bars
           .selectAll("rect")
@@ -428,47 +432,47 @@ class D3EventBars extends Chart {
           .transition()
           .duration(durationHorizontal)
           .attr("x", d => x(0))
-          .attr("width", d => x(d.value));
+          .attr("width", d => x(d.value))
       }
 
       // set axes labels
-      let xLabelPreText = "Disbursed";
+      let xLabelPreText = "Disbursed"
       if (params.nodeType === "recipient") {
         if (newFlowType === "disbursed_funds") {
-          xLabelPreText = "Disbursed";
+          xLabelPreText = "Disbursed"
         } else {
-          xLabelPreText = "Committed";
+          xLabelPreText = "Committed"
         }
       } else {
         if (newFlowType === "disbursed_funds") {
-          xLabelPreText = "Disbursed";
+          xLabelPreText = "Disbursed"
         } else {
-          xLabelPreText = "Committed";
+          xLabelPreText = "Committed"
         }
       }
-      xLabel.text(`${xLabelPreText} funds (${Util.money(0).split(" ")[1]})`);
+      xLabel.text(`${xLabelPreText} funds (${Util.money(0).split(" ")[1]})`)
 
-      chart.select(".y-label-text").attr("x", -newHeight / 2);
+      chart.select(".y-label-text").attr("x", -newHeight / 2)
 
-      xAxis.scale(x);
-      xAxisG.transition().duration(durationHorizontal);
+      xAxis.scale(x)
+      xAxisG.transition().duration(durationHorizontal)
       if (!isNaN(xMax))
-        xAxisG.call(xAxis.tickValues(this.getTickValues(xMax, 7)));
+        xAxisG.call(xAxis.tickValues(this.getTickValues(xMax, 7)))
 
-      yAxis.scale(y);
+      yAxis.scale(y)
 
       const urlFormat = params.stack
         ? d => `<tspan>${tickFormat(d)}</tspan>`
         : d =>
-          `<a href="/details/${dataByName[d].id}/${params.role}">${tickFormat(
-            d
-          )}</a>`;
+            `<a href="/details/${dataByName[d].id}/${params.role}">${tickFormat(
+              d,
+            )}</a>`
       yAxisG
         .call(yAxis)
         .selectAll("text")
-        .each(function (d) {
-          d3.select(this).html(urlFormat(d));
-        });
+        .each(function(d) {
+          d3.select(this).html(urlFormat(d))
+        })
 
       newGroups
         .append("text")
@@ -476,36 +480,36 @@ class D3EventBars extends Chart {
         .attr("dy", "1.2em")
         .text(d => {
           if (d.value !== 0) {
-            return Util.money(d.value);
+            return Util.money(d.value)
           }
         })
         .transition()
         .duration(durationHorizontal)
-        .attr("x", d => x(d.value) + 5);
+        .attr("x", d => x(d.value) + 5)
 
-      chart.selectAll(".tick").classed(styles.tick, true);
+      chart.selectAll(".tick").classed(styles.tick, true)
 
-      // y-axis tick tooltips
-      chart
-        .selectAll(".y.axis .tick")
-        .attr("data-tip", true)
-        .attr("data-for", "chartTooltip")
-        .on("mouseover", updateTooltip);
+      // // y-axis tick tooltips
+      // chart
+      //   .selectAll(".y.axis .tick")
+      //   .attr("data-tip", true)
+      //   .attr("data-for", "chartTooltip")
+      //   .on("mouseover", updateTooltip)
 
       // flag icons
       if (params.showFlags) {
         chart
           .selectAll(".y.axis .tick:not(.iconned)")
           .each(function addIcons(d) {
-            const g = d3.select(this).classed("iconned", true);
-            const axisGap = -7;
+            const g = d3.select(this).classed("iconned", true)
+            const axisGap = -7
             const iconGroup = g
               .append("g")
               .attr("class", "icon")
-              .attr("transform", `translate(${axisGap}, 0)`);
+              .attr("transform", `translate(${axisGap}, 0)`)
 
-            const flagUrl = dataByName[d].flag_url;
-            const showFlag = flagUrl !== null && flagUrl !== "";
+            const flagUrl = dataByName[d].flag_url
+            const showFlag = flagUrl !== null && flagUrl !== ""
             if (showFlag) {
               iconGroup
                 .append("image")
@@ -515,71 +519,71 @@ class D3EventBars extends Chart {
                 .attr("x", badgeDim.x)
                 .attr("y", badgeDim.y)
                 .on("load", function onError(d) {
-                  d3.select(this).style("display", "block");
+                  d3.select(this).style("display", "block")
                 })
                 .on("error", function onError(d) {
                   // nudge label to right to fill empty flag space
                   // nudge y-axis tick label to accomodate flag
-                  g.select("text").attr("x", -10);
+                  g.select("text").attr("x", -10)
 
                   // // show org flag (generic)
                   // d3.select(this).attr(
                   //   "href",
                   //   "https://flags.talusanalytics.com/64px/org.png"
                   // );
-                });
-              g.select("text").attr("x", -50);
+                })
+              g.select("text").attr("x", -50)
             }
             // else {
             //   // nudge y-axis tick label to right to occupy space where flag
             //   // would be
             //   g.select("text").attr("x", -10);
             // }
-          });
+          })
       }
 
-      ReactTooltip.rebuild();
-    };
+      ReactTooltip.rebuild()
+    }
     if (this.initialized !== true) {
       this.update(params.data, params.curFlowType, {
         ...params,
-      });
-      this.initialized = true;
+      })
+      this.initialized = true
     }
   }
 
   getTickValues(maxVal, numTicks) {
-    const magnitude = Math.floor(Math.log10(maxVal)) - 1;
-    var vals = [0];
+    const magnitude = Math.floor(Math.log10(maxVal)) - 1
+    var vals = [0]
     for (var i = 1; i <= numTicks; i++) {
       if (i === numTicks) {
-        vals.push(maxVal);
+        vals.push(maxVal)
       } else {
-        vals.push(this.precisionRound((i / numTicks) * maxVal, -magnitude));
+        vals.push(this.precisionRound((i / numTicks) * maxVal, -magnitude))
       }
     }
-    return vals;
+    return vals
   }
 
   precisionRound(number, precision) {
-    const factor = Math.pow(10, precision);
-    return Math.round(number * factor) / factor;
+    const factor = Math.pow(10, precision)
+    return Math.round(number * factor) / factor
   }
   getShortName(s) {
-    if (s === "General IHR") return s;
-    const maxLen = 20;
+    if (s === "General IHR") return s
+    const maxLen = 20
     if (s.length > maxLen) {
       const shortened = s
         .split(" ")
         .slice(0, 4)
-        .join(" ");
+        .join(" ")
       if (/[^a-z]$/.test(shortened.toLowerCase())) {
-        return `${shortened.slice(0, shortened.length - 1)}...`;
+        return `${shortened.slice(0, shortened.length - 1)}...`
       }
-      return shortened === s ? s : `${shortened}...`;
+      return shortened === s ? s : `${shortened}...`
     } else {
-      return s;
+      return s
     }
   }
 }
-export default D3EventBars;
+export default D3EventBars
