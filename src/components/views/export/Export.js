@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import classNames from "classnames";
-import styles from "./export.module.scss";
-import Util from "../../misc/Util.js";
-import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries";
-import { Drawer } from "../../common";
-import { Checkbox } from "../../common";
-import { FilterDropdown } from "../../common";
-import { Loading } from "../../common";
-import { core_capacities } from "../../misc/Data.js";
-import { Button } from "../../common";
-import { searchableSubcats } from "../../common/Search/Search";
+import React, { useState } from "react"
+import classNames from "classnames"
+import styles from "./export.module.scss"
+import Util from "../../misc/Util.js"
+import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries"
+import { Drawer } from "../../common"
+import { Checkbox } from "../../common"
+import { FilterDropdown } from "../../common"
+import { Loading } from "../../common"
+import { core_capacities } from "../../misc/Data.js"
+import { Button } from "../../common"
+import { searchableSubcats } from "../../common/Search/Search"
 
 // Content components
-import ExportTable, { getFlowQueryForDataPage } from "./ExportTable.js";
+import ExportTable, { getFlowQueryForDataPage } from "./ExportTable.js"
 
 export const cols = [
   ["name", "Project name", true],
@@ -35,7 +35,7 @@ export const cols = [
     `Amount disbursed`,
     // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
   ],
-];
+]
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
@@ -52,11 +52,11 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   const [downloading, setDownloading] = useState(false)
 
   // if page is changed, show pagination loading
-  const [pageLoading, setPageLoading] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [sortCol, setSortCol] = useState("project_constants.committed_funds");
-  const [isDesc, setIsDesc] = useState(true);
-  const [pagesize, setPagesize] = useState(5);
+  const [pageLoading, setPageLoading] = useState(false)
+  const [searchText, setSearchText] = useState("")
+  const [sortCol, setSortCol] = useState("project_constants.committed_funds")
+  const [isDesc, setIsDesc] = useState(true)
+  const [pagesize, setPagesize] = useState(5)
 
   const showClear =
     coreCapacities.length > 0 ||
@@ -64,24 +64,23 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     funders.length > 0 ||
     outbreaks.length > 0 ||
     recipients.length > 0 ||
-    searchText !== "";
-
-  const [exportCols, setExportCols] = useState(cols.map(d => d[0]));
-  const remove = (arr, aTmp) => {
-    const a = aTmp;
-    let what,
-      L = a.length,
-      ax;
-    while (L > 1 && arr.length) {
-      what = a[--L];
-      while ((ax = arr.indexOf(what)) !== -1) {
-        arr.splice(ax, 1);
-      }
-    }
-    return arr;
-  };
+    searchText !== ""
 
   const [exportCols, setExportCols] = useState(cols.map(d => d[0]))
+  const remove = (arr, aTmp) => {
+    const a = aTmp
+    let what,
+      L = a.length,
+      ax
+    while (L > 1 && arr.length) {
+      what = a[--L]
+      while ((ax = arr.indexOf(what)) !== -1) {
+        arr.splice(ax, 1)
+      }
+    }
+    return arr
+  }
+
   const updateExportCols = value => {
     const shouldRemove = exportCols.includes(value)
     const editableExportCols = [...exportCols]
@@ -124,13 +123,13 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   )
 
   const clearSelections = () => {
-    setCoreCapacities([]);
-    setSupportType([]);
-    setFunders([]);
-    setRecipients([]);
-    setOutbreaks([]);
-    setSearchText("");
-  };
+    setCoreCapacities([])
+    setSupportType([])
+    setFunders([])
+    setRecipients([])
+    setOutbreaks([])
+    setSearchText("")
+  }
 
   // When download data button is pressed, and form data are updated,
   // perform the POST request.
@@ -264,7 +263,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                         !showClear
                           ? undefined
                           : () => {
-                              setDownloading(true);
+                              setDownloading(true)
                               getFlowQueryForDataPage({
                                 curPage,
                                 props: {
@@ -282,24 +281,24 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                                 ...props,
                               }).then(paramsTmp => {
                                 // URL query params
-                                const params = paramsTmp.params;
+                                const params = paramsTmp.params
 
                                 // POST body JSON
                                 const data = {
                                   filters: paramsTmp.data.filters,
-                                };
+                                }
                                 data.cols = cols.filter(d =>
-                                  exportCols.includes(d[0])
-                                );
+                                  exportCols.includes(d[0]),
+                                )
 
                                 Excel({
                                   method: "post",
                                   data,
                                   params,
                                 }).then(() => {
-                                  setDownloading(false);
-                                });
-                              });
+                                  setDownloading(false)
+                                })
+                              })
                             }
                       }
                       disabled={downloading}
@@ -410,56 +409,3 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
 }
 
 export default Export
-function onDownloadClick(
-  setDownloading,
-  curPage,
-  funders,
-  recipients,
-  coreCapacities,
-  outbreaks,
-  supportType,
-  props,
-  cols,
-  exportCols,
-) {
-  return () => {
-    setDownloading(true)
-    getFlowQuery({
-      curPage,
-      props: {
-        funders,
-        recipients,
-        coreCapacities,
-        outbreaks,
-        supportType,
-      },
-      forExport: true,
-      ...props,
-    }).then(paramsTmp => {
-      // URL query params
-      const params = paramsTmp.params
-
-      // POST body JSON
-      const data = {
-        filters: paramsTmp.data.filters,
-      }
-      console.log(paramsTmp)
-      data.cols = cols.filter(d => exportCols.includes(d[0]))
-
-      Excel({
-        method: "post",
-        data,
-        params,
-      })
-        .then(() => {
-          setDownloading(false)
-        })
-        .catch(e => {
-          console.error(e)
-        })
-        .finally(() => {
-          setDownloading(false)
-        })
-    })
-  }
-}

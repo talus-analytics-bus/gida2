@@ -11,19 +11,20 @@ import Footer from "./components/layout/footer/Footer.js"
 import { execute, FlowType, Version } from "./components/misc/Queries"
 
 // views
-import Home from "./components/views/home/Home.js";
-import MapViewer from "./components/views/explore/content/MapViewer/MapViewer.js";
-import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
-import { renderExport } from "./components/views/export/Export.js";
-import AnalysisData from "./components/views/analysis/AnalysisData.js";
-import Events from "./components/views/events/Events";
-import Event from "./components/views/event/Event";
-import Details from "./components/views/details/Details";
-import Background from "./components/views/about/Background.js";
-import DataSources from "./components/views/about/DataSources.js";
-import Citations from "./components/views/about/Citations.js";
-import Submit from "./components/views/about/Submit.js";
-import spinnerImg from "./assets/images/spinner.svg";
+import Home from "./components/views/home/Home.js"
+import MapViewer from "./components/views/explore/content/MapViewer/MapViewer.js"
+import { renderEntityTable } from "./components/views/entitytable/EntityTable.js"
+import { renderExport } from "./components/views/export/Export.js"
+import FundersAndRecipients from "./components/views/explore/content/Orgs/FundersAndRecipients"
+import AnalysisData from "./components/views/analysis/AnalysisData.js"
+import Events from "./components/views/events/Events"
+import Event from "./components/views/event/Event"
+import Details from "./components/views/details/Details"
+import Background from "./components/views/about/Background.js"
+import DataSources from "./components/views/about/DataSources.js"
+import Citations from "./components/views/about/Citations.js"
+import Submit from "./components/views/about/Submit.js"
+import spinnerImg from "./assets/images/spinner.svg"
 
 // styles
 import styles from "./App.module.scss"
@@ -64,15 +65,15 @@ const App = () => {
     const el = document.getElementById("loadingSpinner")
     if (el) {
       if (get) {
-        return spinnerOn;
+        return spinnerOn
       } else {
         if (val) {
-          setSpinnerOn(true);
-          if (id) waitingFor.push(id);
+          setSpinnerOn(true)
+          if (id) waitingFor.push(id)
         } else {
           if (id) waitingFor.pop()
           if (waitingFor.length === 0 || override) {
-            setSpinnerOn(false);
+            setSpinnerOn(false)
           }
         }
       }
@@ -249,9 +250,9 @@ const App = () => {
                 exact
                 path="/details/:id/:entityRole"
                 render={d => {
-                  const id = parseInt(d.match.params.id);
-                  const entityRole = d.match.params.entityRole;
-                  setPage('details')
+                  const id = parseInt(d.match.params.id)
+                  const entityRole = d.match.params.entityRole
+                  setPage("details")
                   return (
                     <Details
                       {...{
@@ -276,14 +277,14 @@ const App = () => {
                   exact
                   path="/events/"
                   render={d => {
-                    setPage("events");
+                    setPage("events")
                     return (
                       <Events
                         {...{
                           flowTypeInfo,
                         }}
                       />
-                    );
+                    )
                   }}
                 />
               }
@@ -291,8 +292,8 @@ const App = () => {
                 <Route
                   path="/events/:slug"
                   render={d => {
-                    setPage("event");
-                    const slug = d.match.params.slug;
+                    setPage("event")
+                    const slug = d.match.params.slug
                     return (
                       <Event
                         {...{
@@ -301,7 +302,7 @@ const App = () => {
                           flowTypeInfo,
                         }}
                       />
-                    );
+                    )
                   }}
                 />
               }
@@ -382,9 +383,9 @@ const App = () => {
                 exact
                 path="/details/:id"
                 render={d => {
-                  const id = d.match.params.id;
+                  const id = d.match.params.id
                   if (id === "ghsa") {
-                    setPage("ghsa");
+                    setPage("ghsa")
                     return (
                       <Details
                         {...{
@@ -399,9 +400,9 @@ const App = () => {
                           setLoadingSpinnerOn,
                         }}
                       />
-                    );
-                  } else setPage(undefined);
-                  return <Redirect to={`/details/${id}/funder`} />;
+                    )
+                  } else setPage(undefined)
+                  return <Redirect to={`/details/${id}/funder`} />
                 }}
               />
               <Route
