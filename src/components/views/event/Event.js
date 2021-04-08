@@ -217,24 +217,7 @@ const Event = ({ slug, flowTypeInfo }) => {
       <div className={classNames("pageContainer", styles.content)}>
         <div className={styles.title}>
           Public health emergency of international concern (PHEIC){" "}
-          <InfoTooltip
-            {...{
-              light: true,
-              text: (
-                <p>
-                  A PHEIC, or{" "}
-                  <strong>
-                    public health emergency of international concern
-                  </strong>
-                  , is a declaration used by the World Health Organization (WHO)
-                  when a public health threat unexpectedly emerges that has the
-                  potential to spread beyond the affected country’s national
-                  borders. The International Health Regulations (2005) confer
-                  certain legal obligations on states to respond to the PHEIC.
-                </p>
-              ),
-            }}
-          />
+          <PheicTooltip />
         </div>
 
         {
@@ -305,3 +288,27 @@ const Event = ({ slug, flowTypeInfo }) => {
 }
 
 export default Event
+
+/**
+ * Define what a PHEIC is.
+ */
+function PheicTooltip() {
+  return (
+    <InfoTooltip
+      {...{
+        light: true,
+        text: (
+          <p>
+            A PHEIC, or{" "}
+            <strong>public health emergency of international concern</strong>,
+            is a declaration used by the World Health Organization (WHO) when a
+            public health threat unexpectedly emerges that has the potential to
+            spread beyond the affected country’s national borders. The
+            International Health Regulations (2005) confer certain legal
+            obligations on states to respond to the PHEIC.
+          </p>
+        ),
+      }}
+    />
+  )
+}

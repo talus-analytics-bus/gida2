@@ -3,6 +3,6 @@
   "editor.formatOnSave": true,
   "circleci-vscode.apiToken": "4bba004e199abb923b2e5b1eb72684dc463e9891",
   "[javascript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
