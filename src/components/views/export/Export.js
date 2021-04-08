@@ -24,6 +24,7 @@ export const cols = [
   ["targets", "Recipient"],
   ["assistance_type_project", "Support type"],
   ["years", "Transaction year range"],
+  ["years_response", "Response-specific transaction year range"],
   [
     "committed_funds",
     `Amount committed`,
