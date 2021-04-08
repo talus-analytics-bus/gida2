@@ -146,7 +146,7 @@ class D3EventBars extends Chart {
       return data;
     }
 
-    this.update = function(newData, newFlowType = params.curFlowType, params) {
+    this.update = function (newData, newFlowType = params.curFlowType, params) {
       const allFundsZero = !newData.some(d => d.value !== 0);
       const sortKey = allFundsZero ? "impact" : "value";
       // format stack bar data
@@ -227,7 +227,7 @@ class D3EventBars extends Chart {
                       dd[params.otherDirection]
                     ] === undefined &&
                       dataByRegionAndStakeholder[d.name][
-                        dd[params.otherDirection].name
+                      dd[params.otherDirection].name
                       ])) === undefined
                 )
                   dataByRegionAndStakeholder[d.name][
@@ -245,7 +245,7 @@ class D3EventBars extends Chart {
                 if (dd.value === 0 || dd.value === null) return;
                 if (
                   dataByFirstAndSecondSh[d.name][
-                    dd[params.otherDirection].name
+                  dd[params.otherDirection].name
                   ] === undefined
                 )
                   dataByFirstAndSecondSh[d.name][
@@ -332,7 +332,7 @@ class D3EventBars extends Chart {
           return "Label"; // TODO
         })
         .attr("class", styles.tick)
-        .each(function(d) {
+        .each(function (d) {
           d.tickTextWidth = this.getBBox().width;
         });
       fakeText.remove();
@@ -460,13 +460,13 @@ class D3EventBars extends Chart {
       const urlFormat = params.stack
         ? d => `<tspan>${tickFormat(d)}</tspan>`
         : d =>
-            `<a href="/details/${dataByName[d].id}/${params.role}">${tickFormat(
-              d
-            )}</a>`;
+          `<a href="/details/${dataByName[d].id}/${params.role}">${tickFormat(
+            d
+          )}</a>`;
       yAxisG
         .call(yAxis)
         .selectAll("text")
-        .each(function(d) {
+        .each(function (d) {
           d3.select(this).html(urlFormat(d));
         });
 

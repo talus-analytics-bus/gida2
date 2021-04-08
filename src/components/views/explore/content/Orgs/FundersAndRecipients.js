@@ -356,22 +356,22 @@ const FundersAndRecipients = ({
       const tooltipData =
         d !== undefined
           ? getInfoBoxData({
-              nodeDataToCheck: d,
-              mapData,
-              datum,
-              supportType,
-              jeeScores: [],
-              coreCapacities: [],
-              colorScale: () => {
-                if (nodeType === "origin") return greens[greens.length - 1]
-                else return purples[purples.length - 1]
-              },
-              entityRole: nodeType === "origin" ? "funder" : "recipient",
-              minYear,
-              maxYear,
-              flowType,
-              simple: false,
-            })
+            nodeDataToCheck: d,
+            mapData,
+            datum,
+            supportType,
+            jeeScores: [],
+            coreCapacities: [],
+            colorScale: () => {
+              if (nodeType === "origin") return greens[greens.length - 1]
+              else return purples[purples.length - 1]
+            },
+            entityRole: nodeType === "origin" ? "funder" : "recipient",
+            minYear,
+            maxYear,
+            flowType,
+            simple: false,
+          })
           : undefined
       if (tooltipData && tooltipData.colorValue === undefined)
         tooltipData.colorValue = 1
@@ -427,7 +427,7 @@ const FundersAndRecipients = ({
         <TableInstance
           updateVar={[data, supportType, transactionType]}
           key={roleSlug}
-          tooltipFunc={function(d) {
+          tooltipFunc={function (d) {
             return {
               "data-tip": "",
               "data-for": "orgTooltip",
@@ -613,10 +613,10 @@ const FundersAndRecipients = ({
             offset={{ top: 5 }}
             effect="float"
             clickable={true}
-            afterShow={function(e) {
+            afterShow={function (e) {
               setRevealed(true)
             }}
-            afterHide={function(e) {
+            afterHide={function (e) {
               setRevealed(false)
             }}
             eventOff={null}

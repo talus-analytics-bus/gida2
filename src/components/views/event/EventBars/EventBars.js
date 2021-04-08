@@ -186,10 +186,10 @@ const EventBars = ({
 
       const newSecChart = showImpacts
         ? new D3ImpactBars("." + styles.impacts, {
-            ...params,
-            max,
-            data: caseDeathDataForChart,
-          })
+          ...params,
+          max,
+          data: caseDeathDataForChart,
+        })
         : null;
       setChart(newChart);
       setSecChart(newSecChart);

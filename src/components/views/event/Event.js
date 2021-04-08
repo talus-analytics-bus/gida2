@@ -1,10 +1,10 @@
 // 3rd party libs
-import React, { useState, useLayoutEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useLayoutEffect } from "react"
+import { Link } from "react-router-dom"
 
 // styles, colors, and assets
-import styles from "./event.module.scss";
-import classNames from "classnames";
+import styles from "./event.module.scss"
+import classNames from "classnames"
 
 // local components
 import {
@@ -13,23 +13,24 @@ import {
   EventBars,
   // Sankey,
   Crossreferences,
-} from ".";
-import { Outbreak, Stakeholder, execute } from "../../misc/Queries";
-import { Loading } from "../../common";
-import EventTable from "../details/content/EventTable";
-import DetailsSection from "../details/content/DetailsSection";
+} from "."
+import { Outbreak, Stakeholder, execute } from "../../misc/Queries"
+import { Loading } from "../../common"
+import InfoTooltip from "../../misc/InfoTooltip"
+import EventTable from "../details/content/EventTable"
+import DetailsSection from "../details/content/DetailsSection"
 
 const Event = ({ slug, flowTypeInfo }) => {
   // STATE //
-  const [loaded, setLoaded] = useState(false);
-  const [data, setData] = useState(null);
-  const [stakeholders, setStakeholders] = useState({});
-  const [countryImpacts, setCountryImpacts] = useState([]);
+  const [loaded, setLoaded] = useState(false)
+  const [data, setData] = useState(null)
+  const [stakeholders, setStakeholders] = useState({})
+  const [countryImpacts, setCountryImpacts] = useState([])
   // const [curFlowType, setCurFlowType] = useState("disbursed_funds");
-  const [curFlowType, setCurFlowType] = useState("committed_funds");
-  const [caseData, setCaseData] = useState(null);
-  const [deathData, setDeathData] = useState(null);
-  const [noFundingData, setNoFundingData] = useState(false);
+  const [curFlowType, setCurFlowType] = useState("committed_funds")
+  const [caseData, setCaseData] = useState(null)
+  const [deathData, setDeathData] = useState(null)
+  const [noFundingData, setNoFundingData] = useState(false)
 
   // FUNCTIONS //
   const getData = async () => {
@@ -41,11 +42,11 @@ const Event = ({ slug, flowTypeInfo }) => {
           filters: { "Stakeholder.subcat": ["country", "world"] },
         }),
       },
-    });
-    setData(results.outbreak);
-    setStakeholders(results.stakeholders);
+    })
+    setData(results.outbreak)
+    setStakeholders(results.stakeholders)
 
-    const countryImpacts = results.outbreak.country_impacts;
+    const countryImpacts = results.outbreak.country_impacts
     if (results.outbreak.case_data_id === null) {
       setCountryImpacts(
         countryImpacts.map(d => {
@@ -53,25 +54,25 @@ const Event = ({ slug, flowTypeInfo }) => {
             url: `/details/${d.id}/${d.primary_role}`,
             label: results.stakeholders[d.iso3].name,
             ...d,
-          };
-        })
-      );
+          }
+        }),
+      )
     }
-    setLoaded(true);
-  };
+    setLoaded(true)
+  }
 
   // CONSTANTS //
   // data loaded?
-  const dataLoaded = data !== null;
+  const dataLoaded = data !== null
 
   // Get display name for current flow type
   const isGlobal =
-    countryImpacts.length === 1 && countryImpacts[0].label === "Global";
+    countryImpacts.length === 1 && countryImpacts[0].label === "Global"
   const highlighted = countryImpacts
     .filter(d => d.iso3 !== undefined)
     .map(d => {
-      return stakeholders[d.iso3].iso2;
-    });
+      return stakeholders[d.iso3].iso2
+    })
 
   const eventBars = dataLoaded && {
     header: (
@@ -106,7 +107,7 @@ const Event = ({ slug, flowTypeInfo }) => {
         <Link to={"/about/submit"}>Click here to submit data</Link>.
       </i>
     ),
-  };
+  }
   // const sankey = dataLoaded && {
   //   header: <h2>Flow of funding</h2>,
   //   text: (
@@ -145,15 +146,15 @@ const Event = ({ slug, flowTypeInfo }) => {
           }}
         />
       ),
-    };
+    }
 
   // get crossreferences section dynamic title
-  const hasDons = data !== null && data.any_dons;
-  const hasCaseStudies = data !== null && data.int_refs.length > 0;
-  const titleArr = [];
-  if (hasCaseStudies) titleArr.push("Case studies");
-  if (hasDons) titleArr.push("DONs data");
-  const title = titleArr.join(" and ");
+  const hasDons = data !== null && data.any_dons
+  const hasCaseStudies = data !== null && data.int_refs.length > 0
+  const titleArr = []
+  if (hasCaseStudies) titleArr.push("Case studies")
+  if (hasDons) titleArr.push("DONs data")
+  const title = titleArr.join(" and ")
 
   const crossreferences = dataLoaded && {
     header: (
@@ -167,13 +168,13 @@ const Event = ({ slug, flowTypeInfo }) => {
     showSource: false,
     toggleFlowType: false,
     hide: !hasCaseStudies && !hasDons,
-  };
+  }
 
   // collate subsections
   // const subsections = [eventBars, eventTable, crossreferences].filter(
   const subsections = [eventBars, eventTable, crossreferences].filter(
-    d => d.hide !== true && d !== false
-  );
+    d => d.hide !== true && d !== false,
+  )
   const subsectionsJsx = subsections.map(
     ({
       header,
@@ -203,18 +204,38 @@ const Event = ({ slug, flowTypeInfo }) => {
           ...props,
         }}
       />
-    )
-  );
+    ),
+  )
 
   // EFFECT HOOKS //
   useLayoutEffect(() => {
-    getData();
-  }, []);
+    getData()
+  }, [])
 
   return (
     <div className={classNames(styles.events)}>
       <div className={classNames("pageContainer", styles.content)}>
-        <div className={styles.title}>PHEIC</div>
+        <div className={styles.title}>
+          Public health emergency of international concern (PHEIC){" "}
+          <InfoTooltip
+            {...{
+              light: true,
+              text: (
+                <p>
+                  A PHEIC, or{" "}
+                  <strong>
+                    public health emergency of international concern
+                  </strong>
+                  , is a declaration used by the World Health Organization (WHO)
+                  when a public health threat unexpectedly emerges that has the
+                  potential to spread beyond the affected country’s national
+                  borders. The International Health Regulations (2005) confer
+                  certain legal obligations on states to respond to the PHEIC.
+                </p>
+              ),
+            }}
+          />
+        </div>
 
         {
           <Loading
@@ -238,8 +259,8 @@ const Event = ({ slug, flowTypeInfo }) => {
                             data.case_data_id !== null
                               ? d => {
                                   const formattedCountryImpacts = d.map(dd => {
-                                    const sh = stakeholders[dd.iso3];
-                                    if (sh === undefined) return {};
+                                    const sh = stakeholders[dd.iso3]
+                                    if (sh === undefined) return {}
                                     else
                                       return {
                                         label: sh.name,
@@ -247,9 +268,9 @@ const Event = ({ slug, flowTypeInfo }) => {
                                           sh.primary_role
                                         }`,
                                         ...sh,
-                                      };
-                                  });
-                                  setCountryImpacts(formattedCountryImpacts);
+                                      }
+                                  })
+                                  setCountryImpacts(formattedCountryImpacts)
                                 }
                               : undefined,
                           caseData,
@@ -280,7 +301,7 @@ const Event = ({ slug, flowTypeInfo }) => {
       </div>
       <div className={styles.band} />
     </div>
-  );
-};
+  )
+}
 
-export default Event;
+export default Event

@@ -1,18 +1,18 @@
 // 3rd party libs
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 
 // styles and assets
-import styles from "./events.module.scss";
-import classNames from "classnames";
+import styles from "./events.module.scss"
+import classNames from "classnames"
 
 // common and local components
-import EventTable from "../details/content/EventTable";
-import PheicList from "./PheicList";
-import { Loading } from "../../common/";
+import EventTable from "../details/content/EventTable"
+import PheicList from "./PheicList"
+import { Loading } from "../../common/"
 
 export const Events = ({ ...props }) => {
   // STATE //
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(false)
 
   // JSX //
   return (
@@ -35,8 +35,8 @@ export const Events = ({ ...props }) => {
           confer certain legal obligations on states to respond to the PHEIC.
         </p>
         <p>
-          <strong>Six PHEICs have been declared to date</strong>, listed below from
-          most recent to least. Click a PHEIC below to view the funding
+          <strong>Six PHEICs have been declared to date</strong>, listed below
+          from most recent to least. Click a PHEIC below to view the funding
           provided and received for the response to the PHEIC, as well as
           details including a description of the event and the pathogen.
         </p>
@@ -51,6 +51,6 @@ export const Events = ({ ...props }) => {
         <EventTable {...{ setLoaded, sortByProp: "amount-disbursed_funds" }} />
       </Loading>
     </div>
-  );
-};
-export default Events;
+  )
+}
+export default Events
