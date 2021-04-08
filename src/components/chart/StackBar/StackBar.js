@@ -12,9 +12,6 @@ import { execute, Stakeholder, Assessment, NodeSums } from "../../misc/Queries"
 import StackLegend from "./StackLegend/StackLegend.js"
 import { getMapColorScale } from "../../map/MapUtil.js"
 
-// TEMP components
-import SimpleTable from "../table/SimpleTable.js"
-
 // FC
 const StackBar = ({
   flowType,
