@@ -3,20 +3,16 @@ import classNames from "classnames";
 import { Link } from "react-router-dom";
 import styles from "./nav.module.scss";
 import logoLight from "../../../assets/images/tracking.png";
-// import logoLight from "../../../assets/images/logo-light.png";
 import logoDark from "../../../assets/images/tracking-dark-mode.png";
-// import logoDark from "../../../assets/images/logo-dark.png"; // TODO add dark version of logo
-import ReactTooltip from "react-tooltip";
 import Menu from "./content/Menu/Menu.js";
 import { Search } from "../../common";
-import { GhsaButton } from "../../common";
 
 const Nav = ({ page, ...props }) => {
-  const logo = props.isDark ? logoDark : logoLight;
-  const [openMenu, setOpenMenu] = React.useState("");
+  const logo = props.isDark ? logoDark : logoLight
+  const [openMenu, setOpenMenu] = React.useState("")
   const toggleMenu = name => {
-    setOpenMenu(openMenu !== name ? name : "");
-  };
+    setOpenMenu(openMenu !== name ? name : "")
+  }
 
   return (
     <div
@@ -28,7 +24,7 @@ const Nav = ({ page, ...props }) => {
           [styles.dark]: props.isDark,
           [styles.wide]: page === "explore-map",
         },
-        styles[page]
+        styles[page],
       )}
     >
       <div
@@ -36,7 +32,7 @@ const Nav = ({ page, ...props }) => {
           styles.content,
           { wide: page === "explore-map" },
           "pageContainer",
-          "noPadding"
+          "noPadding",
         )}
       >
         <Link to="/">
@@ -50,19 +46,19 @@ const Nav = ({ page, ...props }) => {
                 ? styles.active
                 : ""
             }
-            to="/explore/map"
+            to="/map"
           >
             Countries
           </Link>
           <Link
             className={
-              page === "explore-org" || page === "details-org"
+              page === "funders-and-recipients" || page === "details"
                 ? styles.active
                 : ""
             }
-            to="/explore/org"
+            to="/funders-and-recipients"
           >
-            Orgs
+            Funders and recipients
           </Link>
           <Link
             className={
@@ -72,6 +68,16 @@ const Nav = ({ page, ...props }) => {
           >
             PHEICs
           </Link>
+          {
+            // Analysis page commented out until more content is developed,
+            // e.g., a Sankey diagram
+            // <Link
+            //   className={page === "analysis" ? styles.active : ""}
+            //   to="/analysis"
+            // >
+            //   Analysis
+            // </Link>
+          }
           <Link className={page === "data" ? styles.active : ""} to="/data">
             Data
           </Link>
@@ -104,7 +110,7 @@ const Nav = ({ page, ...props }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Nav;
+export default Nav

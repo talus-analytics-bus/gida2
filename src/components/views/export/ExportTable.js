@@ -25,6 +25,7 @@ const ExportTable = ({
   pageLoading,
   setPageLoading,
   outbreaks,
+  allOutbreaks,
   coreCapacities,
   supportType,
   funders,
@@ -37,23 +38,23 @@ const ExportTable = ({
   // define data
   const [data, setData] = useState({
     flows: { data: [], paging: { n_records: null } },
-  });
+  })
   // Set n records
-  props.setNRecords(data.flows.paging.n_records);
+  props.setNRecords(data.flows.paging.n_records)
 
   // track where data initially loaded
-  const [initLoaded, setInitLoaded] = useState(false);
+  const [initLoaded, setInitLoaded] = useState(false)
 
   // lookup table for outbreak names by IDs
   const [outbreakNameById, setOutbreakNameById] = useState(null);
 
   useEffect(() => {
-    if (curPage !== 1) setCurPage(1);
+    if (curPage !== 1) setCurPage(1)
     else {
-      setInitLoaded(false);
-      getData();
+      setInitLoaded(false)
+      getData()
     }
-  }, [coreCapacities, funders, recipients, outbreaks, supportType]);
+  }, [coreCapacities, funders, recipients, outbreaks, supportType])
 
   useEffect(() => {
     if (initLoaded) {
@@ -131,6 +132,21 @@ const ExportTable = ({
       },
     },
     {
+      title: "PHEIC(s)",
+      prop: "events",
+      type: "text",
+      func: d => {
+        return d.events
+          .map(dd => {
+            const match = allOutbreaks.find(ddd => ddd.id === dd)
+            console.log(match)
+            if (match) return match.name
+            else return undefined
+          })
+          .join("; ")
+      },
+    },
+    {
       title: "Transaction year range",
       prop: "years",
       entity: "project_constants",
@@ -161,6 +177,7 @@ const ExportTable = ({
       entity: "project_constants",
       type: "text",
       func: d => d.targets.map(dd => stakeholders[dd].name).join("; "),
+      render: d => getLimitedText(d),
     },
     {
       title: "Support type",
@@ -168,8 +185,8 @@ const ExportTable = ({
       entity: "project_constants", // TODO implement
       type: "text",
       func: d => {
-        if (!d.is_inkind) return "Financial assistance";
-        else return "In-kind support";
+        if (!d.is_inkind) return "Financial assistance"
+        else return "In-kind support"
       },
     },
     {
@@ -190,7 +207,7 @@ const ExportTable = ({
       func: d => (d.disbursed_funds !== null ? d.disbursed_funds : ""),
       render: d => Util.formatValue(d, "disbursed_funds") || <None />,
     },
-  ].filter(d => exportCols.includes(d.prop));
+  ].filter(d => exportCols.includes(d.prop))
 
   const dataTable = (
     <SmartTable
@@ -255,8 +272,8 @@ const ExportTable = ({
         {dataTable}
       </Loading>
     </div>
-  );
-};
+  )
+}
 
 export const getFlowQueryForDataPage = ({
   props,
@@ -268,27 +285,27 @@ export const getFlowQueryForDataPage = ({
   forExport = false,
 }) => {
   // Define queries for typical ExportTable page.
-  const flowFilters = {};
+  const flowFilters = {}
 
   // core_capacities
   if (props.coreCapacities.length > 0) {
     flowFilters["Project_Constants.core_capacities"] = [
       ["any", props.coreCapacities.map(d => d.value)],
-    ];
+    ]
   }
 
   // assistance type
   if (props.supportType.length === 1) {
     flowFilters["Project_Constants.is_inkind"] = [
       props.supportType[0].value === "inkind",
-    ];
+    ]
   }
 
   // outbreak events
   if (props.outbreaks.length > 0) {
     flowFilters["Project.events"] = [
       ["any", "Event.id", props.outbreaks.map(d => d.value)],
-    ];
+    ]
   }
   const standardProps = {
     filters: flowFilters,
@@ -323,12 +340,15 @@ export const getFlowQueryForDataPage = ({
     return Flow({
       ...standardProps,
       forExport: false,
-    });
+    })
   else
     return Flow({
       ...standardProps,
       forExport: true,
-    });
-};
+    })
+}
 
-export default ExportTable;
+export default ExportTable
+function getLimitedText(d) {
+  return <ShowMore {...{ text: d, charLimit: 90 }} />
+}

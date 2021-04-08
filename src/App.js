@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from "react";
-import classNames from "classnames";
-import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom";
-import BrowserDetection from "react-browser-detection";
+import React, { useState, useEffect } from "react"
+import classNames from "classnames"
+import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom"
+import BrowserDetection from "react-browser-detection"
 
 // layout
-import Nav from "./components/layout/nav/Nav.js";
-import Footer from "./components/layout/footer/Footer.js";
+import Nav from "./components/layout/nav/Nav.js"
+import Footer from "./components/layout/footer/Footer.js"
 
 // queries
-import {
-  execute,
-  FlowType,
-  Stakeholder,
-  Version,
-} from "./components/misc/Queries";
+import { execute, FlowType, Version } from "./components/misc/Queries"
 
 // views
 import Home from "./components/views/home/Home.js";
-import { renderExplore } from "./components/views/explore/Explore.js";
 import MapViewer from "./components/views/explore/content/MapViewer/MapViewer.js";
 import { renderEntityTable } from "./components/views/entitytable/EntityTable.js";
 import { renderExport } from "./components/views/export/Export.js";
@@ -32,51 +26,42 @@ import Submit from "./components/views/about/Submit.js";
 import spinnerImg from "./assets/images/spinner.svg";
 
 // styles
-import styles from "./App.module.scss";
-import "./components/views/details/details.module.scss";
+import styles from "./App.module.scss"
+import "./components/views/details/details.module.scss"
 // import "material-design-icons/iconfont/material-icons.css";
 
-// testing components
-import SimpleTable from "./components/chart/table/SimpleTable.js";
-
 // Misc
-import Modal from "reactjs-popup";
+import Modal from "reactjs-popup"
 
 //: FC
 const App = () => {
   // Track whether the component is still loading.
-  const [loading, setLoading] = useState(true);
-  const [funderData, setFunderData] = useState([]);
-  const [recipientData, setRecipientData] = useState([]);
-  const [countryFunderData, setCountryFunderData] = useState([]);
-  const [countryRecipientData, setCountryRecipientData] = useState([]);
-  const [networkData, setNetworkData] = useState([]);
-  const [flowTypeInfo, setFlowTypeInfo] = useState([]);
-  const [versionData, setVersionData] = useState([]);
+  const [loading, setLoading] = useState(true)
+  const [flowTypeInfo, setFlowTypeInfo] = useState([])
+  const [versionData, setVersionData] = useState([])
 
   // Try components
-  const [detailsComponent, setDetailsComponent] = useState(null);
-  const [entityTableComponent, setEntityTableComponent] = useState(null);
-  const [entityTableFundType, setEntityTableFundType] = useState("false");
-  const [exploreComponent, setExploreComponent] = useState(null);
-  const [exportComponent, setExportComponent] = useState(null);
-  const [analysisDataComponent, setAnalysisDataComponent] = useState(null);
+  const [detailsComponent, setDetailsComponent] = useState(null)
+  const [entityTableComponent, setEntityTableComponent] = useState(null)
+  const [entityTableFundType, setEntityTableFundType] = useState("false")
+  const [exploreComponent, setExploreComponent] = useState(null)
+  const [exportComponent, setExportComponent] = useState(null)
+  const [analysisDataComponent, setAnalysisDataComponent] = useState(null)
 
   // Track data selections
-  const [ghsaOnly, setGhsaOnly] = useState("false");
-  const [spinnerOn, setSpinnerOn] = useState(false);
+  const [ghsaOnly, setGhsaOnly] = useState("false")
+  const [spinnerOn, setSpinnerOn] = useState(false)
 
   // Track whether styling is dark or light
-  const [isDark, setIsDark] = useState(false);
-  const loadingSpinnerOn = false;
-  const waitingFor = [];
+  const [isDark, setIsDark] = useState(false)
+  const waitingFor = []
   const setLoadingSpinnerOn = (
     val,
     get = false,
     id = undefined,
-    override = false
+    override = false,
   ) => {
-    const el = document.getElementById("loadingSpinner");
+    const el = document.getElementById("loadingSpinner")
     if (el) {
       if (get) {
         return spinnerOn;
@@ -85,128 +70,41 @@ const App = () => {
           setSpinnerOn(true);
           if (id) waitingFor.push(id);
         } else {
-          if (id) waitingFor.pop();
+          if (id) waitingFor.pop()
           if (waitingFor.length === 0 || override) {
             setSpinnerOn(false);
           }
         }
       }
     } else {
-      console.log("No element found");
+      console.log("No element found")
     }
-  };
+  }
 
   async function getData() {
     const queries = {
       flowTypeInfo: FlowType({}),
       versions: Version(),
-    };
+    }
 
-    const results = await execute({ queries });
-    setFlowTypeInfo(results.flowTypeInfo);
-    setVersionData(results.versions);
-    setLoading(false);
+    const results = await execute({ queries })
+    setFlowTypeInfo(results.flowTypeInfo)
+    setVersionData(results.versions)
+    setLoading(false)
   }
 
   useEffect(() => {
-    getData();
-    const envName = process.env.REACT_APP_ENV_NAME;
-    console.log("[INFO] Environment name: " + envName);
-  }, []);
+    getData()
+    const envName = process.env.REACT_APP_ENV_NAME
+    console.log("[INFO] Environment name: " + envName)
+  }, [])
 
   // Define what columns to show in tables
-  const valueColsInkind = ["provided_inkind", "committed_inkind"];
-  const valueColsFinancial = ["disbursed_funds", "committed_funds"];
-  const valueColsAssistance = valueColsInkind.concat(valueColsFinancial);
-
-  /**
-   * TODO move this into the simpletable component
-   * Return row data for tables of top funders/recipients, and other tables.
-   * @method getTableRows
-   * @param  {[type]}     valueCols [description]
-   * @param  {[type]}     data      [description]
-   * @return {[type]}               [description]
-   */
-  const getTableRows = ({ valueCols, data }) => {
-    return data;
-    const tableRows = [];
-    data.forEach(node => {
-      const row = {
-        name: node.focus_node_id,
-      };
-      node.flow_bundles.forEach(fb => {
-        if (valueCols.includes(fb.flow_type)) {
-          row[fb.flow_type] = fb.focus_node_weight;
-        }
-      });
-      tableRows.push(row);
-    });
-    return tableRows;
-  };
-
-  /**
-   * TODO at minimum move this into a NetworkMap component that just returns table for now
-   * TODO move this data processing to API (selected via "format" argument)
-   * TODO find way to nest within regions
-   * @method getNetworkFlows
-   * @param  {[type]}        valueCols [description]
-   * @param  {[type]}        data      [description]
-   * @return {[type]}                  [description]
-   */
-  const getNetworkFlows = ({ data }) => {
-    const networkFlows = [];
-    data.forEach(d => {
-      // Create flow between source and target
-      const strict = true;
-      if (strict) {
-        if (d.source.length > 1) return;
-        else if (d.target.length > 1) return;
-      }
-      const flow = {
-        source: d.focus_node_id,
-        target: d.target.join(", "),
-      };
-
-      // Add flow type values
-      for (const [key, val] of Object.entries(d.flow_types)) {
-        flow[key] = val.focus_node_weight;
-      }
-      networkFlows.push(flow);
-    });
-    return networkFlows;
-  };
-
-  const networkFlows = getNetworkFlows({
-    data: networkData,
-  });
-
-  const limit = 50;
-
-  const baseCols = [
-    {
-      name: "name",
-      display_name: "Name",
-    },
-  ];
-
-  const baseColsNetwork = [
-    {
-      name: "source",
-      display_name: "Funder",
-    },
-    {
-      name: "target",
-      display_name: "Recipient",
-    },
-  ];
-
-  const getColInfo = ({ valueCols, baseCols, flowTypeInfo }) => {
-    const valueColInfo = flowTypeInfo.filter(ft => valueCols.includes(ft.name));
-    return baseCols.concat(valueColInfo);
-  };
+  const valueColsInkind = ["provided_inkind", "committed_inkind"]
+  const valueColsFinancial = ["disbursed_funds", "committed_funds"]
 
   // Track the current page.
-  const [page, setPage] = useState(undefined);
+  const [page, setPage] = useState(undefined)
 
   // Define a modal to show if an unexpected or unsupported browser is detected
   const browserModal = browser => (
@@ -238,7 +136,7 @@ const App = () => {
         </div>
       )}
     </Modal>
-  );
+  )
 
   const modalToShow = {
     chrome: () => "",
@@ -248,10 +146,10 @@ const App = () => {
     ie: browser => browserModal("Internet Explorer"),
     opera: browser => browserModal("Opera"),
     default: browser => browserModal("an unsupported browser"),
-  };
+  }
 
   // JSX for main app.
-  if (loading) return <div />;
+  if (loading) return <div />
   else
     return (
       <div className={isDark ? "dark" : ""}>
@@ -263,14 +161,21 @@ const App = () => {
                 exact
                 path="/explore/map"
                 render={d => {
-                  setPage("explore-map");
-                  setExploreComponent(null);
+                  return <Redirect to="/map" />
+                }}
+              />
+              <Route
+                exact
+                path="/map"
+                render={d => {
+                  setPage("explore-map")
+                  setExploreComponent(null)
                   // Get support type if specified.
-                  const urlParams = new URLSearchParams(d.location.search);
+                  const urlParams = new URLSearchParams(d.location.search)
                   const supportTypeDefault =
                     urlParams.get("supportType") !== null
                       ? urlParams.get("supportType")
-                      : undefined;
+                      : undefined
                   return (
                     <MapViewer
                       {...{
@@ -292,41 +197,52 @@ const App = () => {
                         setPage,
                       }}
                     />
-                  );
+                  )
                 }}
               />
               <Route
                 exact
                 path="/explore/org"
                 render={d => {
-                  setPage("explore-org");
-                  setExploreComponent(null);
+                  return <Redirect to="/funders-and-recipients" />
+                }}
+              />
+              <Route
+                exact
+                path="/funders-and-recipients"
+                render={d => {
+                  setPage("funders-and-recipients")
+
                   // Get support type if specified.
-                  const urlParams = new URLSearchParams(d.location.search);
+                  const urlParams = new URLSearchParams(d.location.search)
                   const supportTypeDefault =
                     d.match.params.activeTab === "map"
                       ? urlParams.get("supportType") !== null
                         ? urlParams.get("supportType")
                         : undefined
-                      : undefined;
+                      : undefined
 
-                  return renderExplore({
-                    ...d.match.params,
-                    versionData,
-                    component: exploreComponent,
-                    setComponent: setExploreComponent,
-                    loading: loading,
-                    setLoading: setLoading,
-                    flowTypeInfo,
-                    ghsaOnly: ghsaOnly,
-                    setGhsaOnly: setGhsaOnly,
-                    isDark: isDark,
-                    setIsDark: setIsDark,
-                    supportTypeDefault: supportTypeDefault,
-                    fundTypeDefault:
-                      supportTypeDefault !== undefined ? "" : "false",
-                    setLoadingSpinnerOn,
-                  });
+                  return (
+                    <FundersAndRecipients
+                      {...{
+                        ...d.match.params,
+                        versionData,
+                        component: exploreComponent,
+                        setComponent: setExploreComponent,
+                        loading: loading,
+                        setLoading: setLoading,
+                        flowTypeInfo,
+                        ghsaOnly: ghsaOnly,
+                        setGhsaOnly: setGhsaOnly,
+                        isDark: isDark,
+                        setIsDark: setIsDark,
+                        supportTypeDefault: supportTypeDefault,
+                        fundTypeDefault:
+                          supportTypeDefault !== undefined ? "" : "false",
+                        setLoadingSpinnerOn,
+                      }}
+                    />
+                  )
                 }}
               />
               <Route
@@ -335,6 +251,7 @@ const App = () => {
                 render={d => {
                   const id = parseInt(d.match.params.id);
                   const entityRole = d.match.params.entityRole;
+                  setPage('details')
                   return (
                     <Details
                       {...{
@@ -351,7 +268,7 @@ const App = () => {
                         setPage,
                       }}
                     />
-                  );
+                  )
                 }}
               />
               {
@@ -393,11 +310,9 @@ const App = () => {
                 exact
                 path="/table/:id/:entityRole"
                 render={d => {
-                  setPage("data");
+                  setPage("data")
                   const defaultGhsaOnly =
-                    d.match.params.id === "ghsa"
-                      ? "false"
-                      : entityTableFundType;
+                    d.match.params.id === "ghsa" ? "false" : entityTableFundType
                   return renderEntityTable({
                     ...d.match.params,
                     component: entityTableComponent,
@@ -408,27 +323,27 @@ const App = () => {
                     ghsaOnly: defaultGhsaOnly,
                     setGhsaOnly: setEntityTableFundType,
                     setLoadingSpinnerOn,
-                  });
+                  })
                 }}
               />
               <Route
                 exact
                 path="/data"
                 render={d => {
-                  setPage("data");
+                  setPage("data")
                   return renderExport({
                     ...d.match.params,
                     component: exportComponent,
                     setComponent: setExportComponent,
                     setLoadingSpinnerOn,
-                  });
+                  })
                 }}
               />
               <Route
                 exact
                 path="/analysis"
                 render={d => {
-                  setPage("analysis");
+                  setPage("analysis")
                   return (
                     <AnalysisData
                       {...{
@@ -441,14 +356,14 @@ const App = () => {
                         setLoadingSpinnerOn,
                       }}
                     />
-                  );
+                  )
                 }}
               />
               <Route
                 exact
                 path="/pair-table/:funderId/:recipientId"
                 render={d => {
-                  setPage(undefined);
+                  setPage(undefined)
                   return renderEntityTable({
                     id: parseInt(d.match.params.funderId),
                     otherId: parseInt(d.match.params.recipientId),
@@ -460,7 +375,7 @@ const App = () => {
                     ghsaOnly: entityTableFundType,
                     setGhsaOnly: setEntityTableFundType,
                     setLoadingSpinnerOn,
-                  });
+                  })
                 }}
               />
               <Route
@@ -493,40 +408,40 @@ const App = () => {
                 exact
                 path="/about/background"
                 render={d => {
-                  setPage("about");
-                  return <Background {...{ setLoadingSpinnerOn }} />;
+                  setPage("about")
+                  return <Background {...{ setLoadingSpinnerOn }} />
                 }}
               />
               <Route
                 exact
                 path="/about/data"
                 render={d => {
-                  setPage("about");
-                  return <DataSources />;
+                  setPage("about")
+                  return <DataSources />
                 }}
               />
               <Route
                 exact
                 path="/about/citations"
                 render={d => {
-                  setPage("about");
-                  return <Citations />;
+                  setPage("about")
+                  return <Citations />
                 }}
               />
               <Route
                 exact
                 path="/about/submit"
                 render={d => {
-                  setPage("about");
-                  return <Submit {...{ setLoadingSpinnerOn }} />;
+                  setPage("about")
+                  return <Submit {...{ setLoadingSpinnerOn }} />
                 }}
               />
               <Route
                 exact
                 path="/"
                 render={d => {
-                  setPage("home");
-                  return <Home />;
+                  setPage("home")
+                  return <Home />
                 }}
               />
             </div>
@@ -550,12 +465,12 @@ const App = () => {
           </div>
         }
       </div>
-    );
-};
+    )
+}
 
 export const Settings = {
   startYear: 2014,
-  endYear: 2020,
-};
+  endYear: 2021,
+}
 
-export default App;
+export default App

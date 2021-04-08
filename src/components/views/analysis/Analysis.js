@@ -1,25 +1,14 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import styles from "./analysis.module.scss";
-import GhsaToggle from "../../misc/GhsaToggle.js";
-import RadioToggle from "../../misc/RadioToggle.js";
-import { Settings } from "../../../App.js";
 import Util from "../../misc/Util.js";
-import TimeSlider from "../../misc/TimeSlider.js";
 import TableInstance from "../../chart/table/TableInstance.js";
-import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js";
-import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js";
-import Chord from "./content/Chord.js";
-import {Search} from "../../common";
-import axios from "axios";
-import { Link } from "react-router-dom";
-import { execute, NodeSums, Chords } from "../../misc/Queries";
-import { core_capacities, getNodeLinkList } from "../../misc/Data.js";
-import {FilterDropdown} from "../../common";
-import {SourceText} from "../../common";
-import {Button} from "../../common";
-import {Chevron} from "../../common";
-import {Loading} from "../../common";
+import { NodeSums, Chords } from "../../misc/Queries";
+import { getNodeLinkList } from "../../misc/Data.js";
+import { SourceText } from "../../common";
+import { Button } from "../../common";
+import { Chevron } from "../../common";
+import { Loading } from "../../common";
 
 // FC for Analysis.
 const Analysis = ({
@@ -37,18 +26,18 @@ const Analysis = ({
   ...props
 }) => {
   // Track transaction type selected for the map
-  const [transactionType, setTransactionType] = useState("committed");
-  const [chordComponent, setChordComponent] = useState(null);
-  const [selectedEntity, setSelectedEntity] = useState(null);
-  const [selectedEntityInfo, setSelectedEntityInfo] = useState(null);
-  const [entityArcInfo, setEntityArcInfo] = useState(null);
-  const [showInfo, setShowInfo] = useState(false);
+  const [transactionType, setTransactionType] = useState("committed")
+  const [chordComponent, setChordComponent] = useState(null)
+  const [selectedEntity, setSelectedEntity] = useState(null)
+  const [selectedEntityInfo, setSelectedEntityInfo] = useState(null)
+  const [entityArcInfo, setEntityArcInfo] = useState(null)
+  const [showInfo, setShowInfo] = useState(false)
 
   // Data
   // const [chordData, setChordData] = useState(null);
-  const [tableData, setTableData] = useState(null);
-  const [initialized, setInitialized] = useState(false);
-  const [chordGettingData, setChordGettingData] = useState(true);
+  const [tableData, setTableData] = useState(null)
+  const [initialized, setInitialized] = useState(false)
+  const [chordGettingData, setChordGettingData] = useState(true)
 
   // FUNCTIONS //
   // const getChordData = async () => {
@@ -95,29 +84,29 @@ const Analysis = ({
     // Define typical base query parameters used in FlowQuery,
     // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
     // modified in code below.
-    const nodeType = entityRole === "recipient" ? "target" : "origin";
+    const nodeType = entityRole === "recipient" ? "target" : "origin"
 
     const filters = {
       "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
-    };
+    }
 
     // add assistance type filter
     if (ghsaOnly === "true") {
-      filters["Flow.is_ghsa"] = [true];
+      filters["Flow.is_ghsa"] = [true]
     } else if (ghsaOnly === "event") {
-      filters["Flow.response_or_capacity"] = ["response"];
+      filters["Flow.response_or_capacity"] = ["response"]
     } else if (ghsaOnly === "capacity") {
-      filters["Flow.response_or_capacity"] = ["capacity"];
+      filters["Flow.response_or_capacity"] = ["capacity"]
     }
 
     // add outbreak events filters
     if (props.events && props.events.length > 0) {
-      filters["Event.id"] = props.events;
+      filters["Event.id"] = props.events
     }
     if (coreCapacities.length > 0) {
-      filters["Core_Capacity.name"] = coreCapacities;
+      filters["Core_Capacity.name"] = coreCapacities
     }
 
     // Define queries for analysis page.
@@ -133,23 +122,23 @@ const Analysis = ({
         direction: "target",
         filters,
       }),
-    };
+    }
 
     // Get query results.
-    const results = await Util.getQueryResults(queries);
-    setTableData({ ...results });
-  };
+    const results = await Util.getQueryResults(queries)
+    setTableData({ ...results })
+  }
 
   // Get flow type
   const flowType =
-    transactionType === "committed" ? "committed_funds" : "disbursed_funds";
+    transactionType === "committed" ? "committed_funds" : "disbursed_funds"
 
   // Get pretty name for flow type
   const flowTypeDisplayName = flowTypeInfo.find(ft => ft.name === flowType)
-    .display_name;
+    .display_name
 
   // Get top funder table and top recipient table
-  const tableInstances = [];
+  const tableInstances = []
 
   const tables = [
     [
@@ -170,24 +159,24 @@ const Analysis = ({
       "target",
       "nodeSumsTarget",
     ],
-  ];
+  ]
 
   useEffect(() => {
     if (selectedEntity === null) {
-      setShowInfo(false);
-      setSelectedEntityInfo(null);
+      setShowInfo(false)
+      setSelectedEntityInfo(null)
     } else {
-      setShowInfo(true);
+      setShowInfo(true)
       setSelectedEntityInfo(
-        entityArcInfo.find(d => d.data.id === selectedEntity)
-      );
+        entityArcInfo.find(d => d.data.id === selectedEntity),
+      )
     }
-  }, [selectedEntity]);
+  }, [selectedEntity])
 
   // load data initially
   useEffect(() => {
-    if (tableData === null) getTableData();
-  }, [tableData]);
+    if (tableData === null) getTableData()
+  }, [tableData])
   // useEffect(() => {
   //   if (chordData === null) getChordData();
   //   else if (tableData !== null) setInitialized(true);
@@ -199,7 +188,7 @@ const Analysis = ({
   // }, [transactionType, ghsaOnly, coreCapacities, minYear, maxYear]);
 
   const transactionTypeNoun =
-    transactionType === "committed" ? "commitments" : "disbursements";
+    transactionType === "committed" ? "commitments" : "disbursements"
   const info = selectedEntity && showInfo && selectedEntityInfo && (
     <div style={{ display: showInfo }} className={styles.info}>
       <div
@@ -209,7 +198,7 @@ const Analysis = ({
         <div className={styles.name}>{selectedEntityInfo.name}</div>
         <Button
           callback={() => {
-            setSelectedEntity(null);
+            setSelectedEntity(null)
           }}
           type={"close"}
         />
@@ -250,7 +239,7 @@ const Analysis = ({
         )}
       </div>
     </div>
-  );
+  )
 
   if (tableData !== null)
     tables.forEach(([header, role, roleSlug, dataKey]) => {
@@ -300,9 +289,9 @@ const Analysis = ({
             noNativeSearch={true}
             noNativeSorting={true}
           />
-        </div>
-      );
-    });
+        </div>,
+      )
+    })
 
   // const chordContent =
   //   chordData !== null ? (
@@ -348,7 +337,8 @@ const Analysis = ({
           funds, and the recipients that have received the most funds. Click on
           any entry in the tables for additional detail on that funder or
           recipient's activities. For information on a funder or recipient not
-          included on this list, search for that country or organization below.
+          included on these lists, search for that stakeholder by name in the
+          search bar to the upper right.
         </p>
         <Loading
           {...{
@@ -456,8 +446,8 @@ const Analysis = ({
         // </div>
       }
     </div>
-  );
-};
+  )
+}
 
 const remountComponent = ({
   component,
@@ -472,9 +462,9 @@ const remountComponent = ({
     component.props.minYear !== minYear ||
     component.props.maxYear !== maxYear ||
     component.props.ghsaOnly !== ghsaOnly ||
-    component.props.coreCapacities.toString() !== coreCapacities.toString();
-  return remount;
-};
+    component.props.coreCapacities.toString() !== coreCapacities.toString()
+  return remount
+}
 
 export const renderAnalysis = ({
   component,
@@ -493,7 +483,7 @@ export const renderAnalysis = ({
   ...props
 }) => {
   if (loading) {
-    return <div className={"placeholder"} />;
+    return <div className={"placeholder"} />
   } else if (
     component === null ||
     (component &&
@@ -519,13 +509,13 @@ export const renderAnalysis = ({
       setMaxYear: setMaxYear,
       setLoadingSpinnerOn,
       ...props,
-    });
+    })
 
-    return component ? component : <div className={"placeholder"} />;
+    return component ? component : <div className={"placeholder"} />
   } else {
-    return component;
+    return component
   }
-};
+}
 
 /**
  * Returns data for the details page given the entity type and id.
@@ -555,28 +545,28 @@ const getComponentData = async ({
   // Define typical base query parameters used in FlowQuery,
   // FlowBundleFocusQuery, and FlowBundleGeneralQuery. These are adapted and
   // modified in code below.
-  const nodeType = entityRole === "recipient" ? "target" : "origin";
+  const nodeType = entityRole === "recipient" ? "target" : "origin"
 
   const filters = {
     "Flow.year": [["gt_eq", minYear], ["lt_eq", maxYear]],
     "Flow.flow_type": ["disbursed_funds", "committed_funds"],
-  };
+  }
 
   // add assistance type filter
   if (ghsaOnly === "true") {
-    filters["Flow.is_ghsa"] = [true];
+    filters["Flow.is_ghsa"] = [true]
   } else if (ghsaOnly === "event") {
-    filters["Flow.response_or_capacity"] = ["response"];
+    filters["Flow.response_or_capacity"] = ["response"]
   } else if (ghsaOnly === "capacity") {
-    filters["Flow.response_or_capacity"] = ["capacity"];
+    filters["Flow.response_or_capacity"] = ["capacity"]
   }
 
   // add outbreak events filters
   if (props.events && props.events.length > 0) {
-    filters["Event.id"] = props.events;
+    filters["Event.id"] = props.events
   }
   if (coreCapacities.length > 0) {
-    filters["Core_Capacity.name"] = coreCapacities;
+    filters["Core_Capacity.name"] = coreCapacities
   }
 
   // Define queries for analysis page.
@@ -592,14 +582,14 @@ const getComponentData = async ({
       direction: "target",
       filters,
     }),
-  };
+  }
 
   // Get query results.
-  setLoadingSpinnerOn(true);
-  const results = await Util.getQueryResults(queries);
-  setLoadingSpinnerOn(false);
+  setLoadingSpinnerOn(true)
+  const results = await Util.getQueryResults(queries)
+  setLoadingSpinnerOn(false)
 
-  if (props.returnDataOnly === true) return results;
+  if (props.returnDataOnly === true) return results
   // Feed results and other data to the details component and mount it.
   setComponent(
     <Analysis
@@ -616,8 +606,8 @@ const getComponentData = async ({
       maxYear={maxYear}
       setMinYear={setMinYear}
       setMaxYear={setMaxYear}
-    />
-  );
-};
+    />,
+  )
+}
 
-export default Analysis;
+export default Analysis

@@ -31,18 +31,18 @@ export const searchableSubcats = [
  */
 const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   // REFS //
-  const resultsRef = useRef(null);
+  const resultsRef = useRef(null)
 
   // STATE //
-  const [expanded, setExpanded] = useState(props.expandedDefault || false);
-  const [showResults, setShowResults] = useState(false);
-  const [results, setResults] = useState(null);
+  const [expanded, setExpanded] = useState(props.expandedDefault || false)
+  const [showResults, setShowResults] = useState(false)
+  const [results, setResults] = useState(null)
 
   const handleInputChange = async e => {
-    const val = e.target.value;
+    const val = e.target.value
     // If no value, show region list.
     if (val === "") {
-      setResults(null);
+      setResults(null)
     } else {
       // Find country or org matches
       // Return them by setting the country values
@@ -73,50 +73,50 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
           ],
           "Stakeholder.slug": [["neq", ["not-reported"]]],
         },
-      });
-      setResults(results);
+      })
+      setResults(results)
     }
-  };
+  }
 
   const handleKeyPress = e => {
     if (e.keyCode === 27) {
-      e.target.value = "";
-      setResults(null);
+      e.target.value = ""
+      setResults(null)
     } else if (e.keyCode === 40) {
-      e.preventDefault();
+      e.preventDefault()
       // down
       // focus first result if any
       if (resultsRef.current !== null) {
-        const firstResultEl = resultsRef.current.children[0];
-        if (firstResultEl !== undefined) firstResultEl.focus();
+        const firstResultEl = resultsRef.current.children[0]
+        if (firstResultEl !== undefined) firstResultEl.focus()
       }
     } else if (e.keyCode === 13) {
       // enter
       // jump to first result's page if any
       if (resultsRef.current !== null) {
-        const firstResultEl = resultsRef.current.children[0];
-        if (firstResultEl !== undefined) firstResultEl.click();
+        const firstResultEl = resultsRef.current.children[0]
+        if (firstResultEl !== undefined) firstResultEl.click()
       }
     }
-  };
+  }
 
   const handleKeyPressResult = e => {
     if (e.keyCode === 40) {
       // down
-      e.preventDefault();
-      if (e.target.nextSibling !== null) e.target.nextSibling.focus();
+      e.preventDefault()
+      if (e.target.nextSibling !== null) e.target.nextSibling.focus()
     } else if (e.keyCode === 38) {
       // up
-      e.preventDefault();
-      if (e.target.previousSibling !== null) e.target.previousSibling.focus();
-      else document.getElementById("placeSearch-" + name).focus();
+      e.preventDefault()
+      if (e.target.previousSibling !== null) e.target.previousSibling.focus()
+      else document.getElementById("placeSearch-" + name).focus()
     }
-  };
+  }
 
   const unset = () => {
-    document.getElementById("placeSearch-" + name).value = "";
-    setResults(null);
-  };
+    document.getElementById("placeSearch-" + name).value = ""
+    setResults(null)
+  }
 
   const getResults = results => {
     if (callback === undefined) {
@@ -140,27 +140,27 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
               </div>
             </div>
           </Link>
-        );
-      });
+        )
+      })
     } else
       return results.map(d => (
         <div
           onClick={() => {
-            unset();
-            callback(d.id);
+            unset()
+            callback(d.id)
           }}
           className={styles.result}
         >
           <div className={styles.name}>{d.name}</div>
           <div className={styles.type}>{d.type}</div>
         </div>
-      ));
-  };
+      ))
+  }
 
   // Hide menus on root click
   document.getElementById("root").onclick = e => {
-    setShowResults(false);
-  };
+    setShowResults(false)
+  }
 
   const inputEl = (
     <input
@@ -172,7 +172,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       onChange={handleInputChange}
       onKeyDown={handleKeyPress}
     />
-  );
+  )
 
   // JSX //
   return (
@@ -192,10 +192,10 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
               // If search bar results are showing when it's minimized, then
               // hide the results.
               if (expanded) {
-                e.stopPropagation();
-                setShowResults(false);
+                e.stopPropagation()
+                setShowResults(false)
               }
-              if (props.expandedDefault !== true) setExpanded(!expanded);
+              if (props.expandedDefault !== true) setExpanded(!expanded)
             }}
             className={"material-icons"}
           >
@@ -222,7 +222,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Search;
+export default Search

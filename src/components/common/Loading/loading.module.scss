@@ -35,7 +35,11 @@
       // height: 50px;
       animation: rotation 12s infinite linear;
     }
-    // @include placeholder(50px);
+    .message {
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 10px;
+    }
   }
 
   &.small {

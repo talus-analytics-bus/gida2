@@ -174,7 +174,7 @@ const EventTable = ({
   const getData = async (forExport = false) => {
     const queries = {
       outbreaks: Outbreak({}),
-    };
+    }
 
     // define params for flow query
     const flowParams = {
@@ -204,17 +204,17 @@ const EventTable = ({
     };
     // Add event ID filter if defined
     if (eventId !== undefined)
-      flowFilters["Project_Constants.events"] = [["has", [eventId]]];
+      flowFilters["Project_Constants.events"] = [["has", [eventId]]]
 
     if (isGhsaPage) {
       // add GHSA filter
-      flowFilters["Project_Constants.is_ghsa"] = [true];
+      flowFilters["Project_Constants.is_ghsa"] = [true]
 
       // get flows for GHSA
       queries.flows = Flow({
         ...flowParams,
         filters: flowFilters,
-      });
+      })
     } else {
       // get flows for defined target/origin
       queries.flows = Flow({
@@ -257,9 +257,9 @@ const EventTable = ({
   // EFFECT HOOKS //
   useLayoutEffect(() => {
     if (!dataLoaded) {
-      getData();
+      getData()
     }
-  }, [dataLoaded]);
+  }, [dataLoaded])
 
   useLayoutEffect(() => {
     if (dataLoaded) {

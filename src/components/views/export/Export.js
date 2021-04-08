@@ -39,17 +39,17 @@ export const cols = [
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
-  const [coreCapacities, setCoreCapacities] = useState([]);
-  const [supportType, setSupportType] = useState([]);
-  const [funders, setFunders] = useState([]);
-  const [recipients, setRecipients] = useState([]);
-  const [outbreaks, setOutbreaks] = useState([]);
-  const [exportTable, setExportTable] = useState(null);
-  const [nRecords, setNRecords] = useState(0);
-  const [curPage, setCurPage] = useState(1);
-  const [exportAction, setExportAction] = useState(undefined);
-  const [exportBody, setExportBody] = useState(undefined);
-  const [downloading, setDownloading] = useState(false);
+  const [coreCapacities, setCoreCapacities] = useState([])
+  const [supportType, setSupportType] = useState([])
+  const [funders, setFunders] = useState([])
+  const [recipients, setRecipients] = useState([])
+  const [outbreaks, setOutbreaks] = useState([])
+  const [exportTable, setExportTable] = useState(null)
+  const [nRecords, setNRecords] = useState(0)
+  const [curPage, setCurPage] = useState(1)
+  const [exportAction, setExportAction] = useState(undefined)
+  const [exportBody, setExportBody] = useState(undefined)
+  const [downloading, setDownloading] = useState(false)
 
   // if page is changed, show pagination loading
   const [pageLoading, setPageLoading] = useState(false);
@@ -81,22 +81,23 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     return arr;
   };
 
+  const [exportCols, setExportCols] = useState(cols.map(d => d[0]))
   const updateExportCols = value => {
-    const shouldRemove = exportCols.includes(value);
-    const editableExportCols = [...exportCols];
+    const shouldRemove = exportCols.includes(value)
+    const editableExportCols = [...exportCols]
 
-    if (shouldRemove)
-      setExportCols(editableExportCols.filter(d => d !== value));
+    if (shouldRemove) setExportCols(editableExportCols.filter(d => d !== value))
     else {
-      editableExportCols.push(value);
-      setExportCols(editableExportCols.sort());
+      editableExportCols.push(value)
+      setExportCols(editableExportCols.sort())
     }
-  };
+  }
 
   const dataTable = (
     <ExportTable
       {...{
         outbreaks,
+        allOutbreaks: data.outbreaks,
         coreCapacities,
         supportType,
         funders,
@@ -120,7 +121,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         setIsDesc,
       }}
     />
-  );
+  )
 
   const clearSelections = () => {
     setCoreCapacities([]);
@@ -135,17 +136,17 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   // perform the POST request.
   React.useEffect(() => {
     if (exportAction !== undefined && exportBody !== undefined) {
-      const el = document.getElementById("download");
+      const el = document.getElementById("download")
       if (el) {
-        el.click();
+        el.click()
         const downloadCompletedCheck = setInterval(() => {
           if (Util.readCookie("download_completed") === "yes") {
-            clearInterval(downloadCompletedCheck);
+            clearInterval(downloadCompletedCheck)
           }
-        }, 500);
+        }, 500)
       }
     }
-  }, [exportAction, exportBody]);
+  }, [exportAction, exportBody])
 
   // Return JSX
   return (
@@ -197,7 +198,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: Object.values(data.stakeholders)
                       .filter(d => searchableSubcats.includes(d.subcat))
                       .map(d => {
-                        return { value: d.id, label: d.name };
+                        return { value: d.id, label: d.name }
                       }),
                     placeholder: "Funder",
                     onChange: setFunders,
@@ -210,7 +211,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     options: Object.values(data.stakeholders)
                       .filter(d => searchableSubcats.includes(d.subcat))
                       .map(d => {
-                        return { value: d.id, label: d.name };
+                        return { value: d.id, label: d.name }
                       }),
                     placeholder: "Recipient",
                     onChange: setRecipients,
@@ -221,7 +222,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   {...{
                     label: "",
                     options: data.outbreaks.map(d => {
-                      return { value: d.id, label: d.name };
+                      return { value: d.id, label: d.name }
                     }),
                     placeholder: "PHEIC",
                     onChange: setOutbreaks,
@@ -248,7 +249,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                               callback: updateExportCols,
                             }}
                           />
-                        )
+                        ),
                     )}
                   </div>
                   <div>
@@ -319,7 +320,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                           {!downloading && (
                             <span
                               className={classNames(
-                                "glyphicon glyphicon-download-alt"
+                                "glyphicon glyphicon-download-alt",
                               )}
                             />
                           )}
@@ -357,8 +358,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       />
       {dataTable}
     </div>
-  );
-};
+  )
+}
 
 export const renderExport = ({
   component,
@@ -368,18 +369,18 @@ export const renderExport = ({
 }) => {
   // Get data
   if (loading) {
-    return <div className={"placeholder"} />;
+    return <div className={"placeholder"} />
   } else if (component === null) {
     getComponentData({
       setComponent: setComponent,
       setLoadingSpinnerOn,
-    });
+    })
 
-    return component ? component : <div className={"placeholder"} />;
+    return component ? component : <div className={"placeholder"} />
   } else {
-    return component;
+    return component
   }
-};
+}
 
 /**
  * Returns data for the details page given the entity type and id.
@@ -397,15 +398,68 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
       by: "id",
     }),
     outbreaks: Outbreak({}),
-  };
+  }
 
   // Get results in parallel
-  const results = await execute({ queries });
+  const results = await execute({ queries })
 
   // Set the component
   setComponent(
-    <Export data={results} setLoadingSpinnerOn={setLoadingSpinnerOn} />
-  );
-};
+    <Export data={results} setLoadingSpinnerOn={setLoadingSpinnerOn} />,
+  )
+}
 
-export default Export;
+export default Export
+function onDownloadClick(
+  setDownloading,
+  curPage,
+  funders,
+  recipients,
+  coreCapacities,
+  outbreaks,
+  supportType,
+  props,
+  cols,
+  exportCols,
+) {
+  return () => {
+    setDownloading(true)
+    getFlowQuery({
+      curPage,
+      props: {
+        funders,
+        recipients,
+        coreCapacities,
+        outbreaks,
+        supportType,
+      },
+      forExport: true,
+      ...props,
+    }).then(paramsTmp => {
+      // URL query params
+      const params = paramsTmp.params
+
+      // POST body JSON
+      const data = {
+        filters: paramsTmp.data.filters,
+      }
+      console.log(paramsTmp)
+      data.cols = cols.filter(d => exportCols.includes(d[0]))
+
+      Excel({
+        method: "post",
+        data,
+        params,
+      })
+        .then(() => {
+          setDownloading(false)
+        })
+        .catch(e => {
+          console.error(e)
+        })
+        .finally(() => {
+          setDownloading(false)
+        })
+    })
+  }
+}
