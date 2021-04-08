@@ -55,6 +55,9 @@ const StackBar = ({
       "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
     };
     if (!isGhsaPage) stackBarFilters["OtherStakeholder.id"] = [id];
+    else {
+      stackBarFilters["Flow.is_ghsa"] = [true];
+    }
 
     // top funder / recipient table
     const queries = {
