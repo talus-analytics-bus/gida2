@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { Settings } from "../../../App.js";
-import Util from "../../misc/Util.js";
-import styles from "./stackbar.module.scss";
-import ReactTooltip from "react-tooltip";
-import {Loading} from "../../common";
-import tooltipStyles from "../../common/tooltip.module.scss";
-import * as d3 from "d3/dist/d3.min";
-import D3StackBar from "./D3StackBar.js";
-import RadioToggle from "../../misc/RadioToggle.js";
-import { execute, Stakeholder, Assessment, NodeSums } from "../../misc/Queries";
-import StackLegend from "./StackLegend/StackLegend.js";
-import { getMapColorScale } from "../../map/MapUtil.js";
+import React, { useState, useEffect } from "react"
+import { Settings } from "../../../App.js"
+import Util from "../../misc/Util.js"
+import styles from "./stackbar.module.scss"
+import ReactTooltip from "react-tooltip"
+import { Loading } from "../../common"
+import tooltipStyles from "../../common/tooltip.module.scss"
+import * as d3 from "d3/dist/d3.min"
+import D3StackBar from "./D3StackBar.js"
+import RadioToggle from "../../misc/RadioToggle.js"
+import { execute, Stakeholder, Assessment, NodeSums } from "../../misc/Queries"
+import StackLegend from "./StackLegend/StackLegend.js"
+import { getMapColorScale } from "../../map/MapUtil.js"
 
 // TEMP components
-import SimpleTable from "../table/SimpleTable.js";
+import SimpleTable from "../table/SimpleTable.js"
 
 // FC
 const StackBar = ({
@@ -29,22 +29,22 @@ const StackBar = ({
   otherDirection,
   ...props
 }) => {
-  const [data, setData] = useState([]);
-  const [jeeScores, setJeeScores] = useState(null);
-  const [processedData, setProcessedData] = useState(false);
-  const [stackBar, setStackBar] = useState(null);
+  const [data, setData] = useState([])
+  const [jeeScores, setJeeScores] = useState(null)
+  const [processedData, setProcessedData] = useState(false)
+  const [stackBar, setStackBar] = useState(null)
   const [stakeholders, setStakeholders] = useState(
-    staticStakeholders !== undefined ? staticStakeholders : null
-  );
-  const [sort, setSort] = useState("amount"); // or jee
-  const [tooltipData, setTooltipData] = useState(undefined);
-  const [dataLoaded, setDataLoaded] = useState(false);
+    staticStakeholders !== undefined ? staticStakeholders : null,
+  )
+  const [sort, setSort] = useState("amount") // or jee
+  const [tooltipData, setTooltipData] = useState(undefined)
+  const [dataLoaded, setDataLoaded] = useState(false)
 
-  const isGhsaPage = id === "ghsa";
+  const isGhsaPage = id === "ghsa"
 
   const jeeColorScale = getMapColorScale({
     supportType: "jee",
-  });
+  })
 
   const getData = async () => {
     // core capacity bar chart filters
@@ -53,8 +53,11 @@ const StackBar = ({
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
       "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
-    };
-    if (!isGhsaPage) stackBarFilters["OtherStakeholder.id"] = [id];
+    }
+    if (!isGhsaPage) stackBarFilters["OtherStakeholder.id"] = [id]
+    else {
+      stackBarFilters["Flow.is_ghsa"] = [true]
+    }
 
     // top funder / recipient table
     const queries = {
@@ -65,37 +68,37 @@ const StackBar = ({
         preserve_stakeholder_groupings: false,
         filters: stackBarFilters,
       }),
-    };
+    }
     if (!isGhsaPage)
       queries.jeeScores = Assessment({
         format: "stack_bar_chart",
         scoreType: "JEE v1",
         id,
         fields: ["name", "value"],
-      });
+      })
     if (staticStakeholders === undefined)
-      queries.stakeholders = Stakeholder({ by: "id" });
-    const results = await execute({ queries });
+      queries.stakeholders = Stakeholder({ by: "id" })
+    const results = await execute({ queries })
     if (staticStakeholders === undefined) {
-      setStakeholders(results.stakeholders);
+      setStakeholders(results.stakeholders)
     }
 
     // TODO only request scores needed
-    if (!isGhsaPage) setJeeScores(results.jeeScores);
-    setData(results.stackBar.points);
-    setDataLoaded(true);
-  };
+    if (!isGhsaPage) setJeeScores(results.jeeScores)
+    setData(results.stackBar.points)
+    setDataLoaded(true)
+  }
 
   const chartData = data.filter(
     d =>
       d[flowType] !== undefined &&
       d[flowType] !== "unknown" &&
-      d.attribute !== "Unspecified"
-  );
+      d.attribute !== "Unspecified",
+  )
 
   // Show chart?
-  const display = chartData.length > 0;
-  const showJee = nodeType !== "origin";
+  const display = chartData.length > 0
+  const showJee = nodeType !== "origin"
 
   const legend =
     id !== "ghsa" && display && showJee ? (
@@ -113,7 +116,7 @@ const StackBar = ({
       />
     ) : (
       <div />
-    );
+    )
 
   const stackBarParams = {
     flowType,
@@ -125,47 +128,47 @@ const StackBar = ({
     tooltipClassName: styles.stackBarTooltip,
     sort,
     placeType,
-  };
+  }
   useEffect(() => {
     if (render && stakeholders !== null && dataLoaded) {
       const stackBarNew = new D3StackBar("." + styles.stackBarChart, {
         ...stackBarParams,
         data: chartData,
-      });
-      setStackBar(stackBarNew);
+      })
+      setStackBar(stackBarNew)
     }
-  }, [id, nodeType, ghsaOnly, render, dataLoaded, stakeholders]);
+  }, [id, nodeType, ghsaOnly, render, dataLoaded, stakeholders])
 
   useEffect(() => {
     if (stackBar !== null) {
       stackBar.updateStackBar(chartData, flowType, {
         ...stackBarParams,
-      });
+      })
     }
-  }, [flowType]);
+  }, [flowType])
   useEffect(() => {
     if (stackBar !== null) {
       stackBar.updateStackBar(chartData, flowType, {
         ...stackBarParams,
         sortOnly: true,
-      });
+      })
     }
-  }, [sort]);
+  }, [sort])
 
   useEffect(() => {
     // on initial load, check for stakeholders data
-    if (!dataLoaded) getData();
-  }, [dataLoaded]);
+    if (!dataLoaded) getData()
+  }, [dataLoaded])
 
   useEffect(() => {
     if (dataLoaded) {
-      setDataLoaded(false);
-      setData([]);
-      setJeeScores(null);
+      setDataLoaded(false)
+      setData([])
+      setJeeScores(null)
     }
-  }, [id, otherDirection]);
+  }, [id, otherDirection])
 
-  const jeeWhite = nodeType === "origin" || placeType !== "country";
+  const jeeWhite = nodeType === "origin" || placeType !== "country"
 
   // const hasCorrectFlowType =
   //   data.length === 0 ? true : data[0][otherDirection] !== undefined;
@@ -226,7 +229,7 @@ const StackBar = ({
         }
       </div>
     </Loading>
-  );
-};
+  )
+}
 
-export default StackBar;
+export default StackBar
