@@ -1,140 +1,163 @@
 // 3rd party libs
-import React, { useState, useEffect } from "react";
-import ReactTooltip from "react-tooltip";
-import moment from "moment";
-import * as d3 from "d3/dist/d3.min";
+import React, { useEffect } from "react"
+import ReactTooltip from "react-tooltip"
+import moment from "moment"
+import * as d3 from "d3/dist/d3.min"
 
 // styles and assets
-import styles from "./durationtimeline.module.scss";
-import { popupStyles } from "../../../common";
-import arrowSvg from "./svg/arrow.svg";
+import styles from "./durationtimeline.module.scss"
+import { popupStyles } from "../../../common"
+import arrowSvg from "./svg/arrow.svg"
 
 // utility
-import { getIntArray, floatToPctString } from "../../../misc/Util";
+import { floatToPctString } from "../../../misc/Util"
 
 // local components
-import Dot from "./Dot/Dot";
+import Dot from "./Dot/Dot"
 
 const DurationTimeline = ({ points, isOngoing }) => {
-  // FUNCTIONS //
-  const getRightLimit = (isOngoing, max) => {
-    if (!isOngoing) {
-      return moment(max).endOf("year");
-    } else return moment().endOf("year");
-  };
-
   // convert string dates into moments
-  points.forEach(p => (p.m = moment(p.date)));
+  points.forEach(p => (p.m = moment(p.date)))
 
   // get min and max
-  const max = d3.max(points, p => p.m);
-  const min = d3.min(points, p => p.m);
+  const min = getMin(points)
+  const max = getMax(points)
+  adjustMinMax(min, max)
 
   // define timeline bounds
-  const left = moment(min).startOf("year");
-  const right = getRightLimit(isOngoing, max);
+  const left = moment(min).startOf("year")
+
+  const getRightLimit = (isOngoing, max) => {
+    if (!isOngoing) {
+      return moment(max).endOf("year")
+    } else return moment().endOf("year")
+  }
+  const right = getRightLimit(isOngoing, max)
 
   // define relative positions of dots
-  const den = right - left;
+  const den = right - left
   const getRelPos = (p, l) => {
-    const num = p.m - left;
-    return 100.0 * (num / den);
-  };
+    const num = p.m - left
+    return 100.0 * (num / den)
+  }
 
   // get timeline data from points
   const getTimelineDataFromPoints = ps => {
     ps.forEach(p => {
-      const x = getRelPos(p, left);
-      p.x = x;
-      p.left = floatToPctString(x);
-    });
+      const x = getRelPos(p, left)
+      p.x = x
+      p.left = floatToPctString(x)
+    })
 
     const getMidOfYear = y => {
-      const m = moment(`${y}-01-01`);
-      const s = m;
-      const e = moment(m).endOf("year");
-      const mid = moment(s).add((e - s) / 2);
-      return mid;
-    };
+      const m = moment(`${y}-01-01`)
+      const s = m
+      const e = moment(m).endOf("year")
+      const mid = moment(s).add((e - s) / 2)
+      return mid
+    }
 
     const getYearsFromPoints = (ps, l) => {
-      const ysData = ps.map(p => p.m.year());
-      if (isOngoing) ysData.push(moment().year());
-      const ysTmp = [...new Set(ysData)].sort();
-      const ys = [];
+      const ysData = ps.map(p => p.m.year())
+      if (isOngoing) ysData.push(moment().year())
+      const ysTmp = [...new Set(ysData)].sort()
+
+      // // if there is one year, add one in the future and one in the past
+      // const nYsTmp = ysTmp.length
+      // if (nYsTmp === 1) {
+      //   ysTmp.unshift(ysTmp[0] - 1)
+      //   ysTmp.push(ysTmp[1] + 1)
+      // } else if (nYsTmp === 2) {
+      //   ysTmp.push(ysTmp[1] + 1)
+      // }
+
+      const ys = []
       // fill in any missing years
-      let prvY = ysTmp[0] - 1;
+      let prvY = ysTmp[0] - 1
       ysTmp.forEach(y => {
-        if (y == prvY - 1) {
-          ys.push(y);
-          return;
+        if (y === prvY - 1) {
+          ys.push(y)
+          return
         } else {
           while (prvY < y) {
-            ys.push(prvY + 1);
-            prvY = prvY + 1;
+            ys.push(prvY + 1)
+            prvY = prvY + 1
           }
         }
-      });
-      const ms = ys.map(y => getMidOfYear(y));
+      })
+
+      // if there is one year, add one in the future and one in the past
+      // if two, add one in the future
+      const nYs = ys.length
+      if (nYs === 1) {
+        ys.unshift(ys[0] - 1)
+        ys.push(ys[1] + 1)
+      } else if (nYs === 2) {
+        ys.push(ys[1] + 1)
+      }
+
+      const ms = ys.map(y => getMidOfYear(y))
       const yls = ms.map(m => {
-        const x = getRelPos({ m }, l);
-        return { x, left: floatToPctString(x), l: m.year().toString(), m: m };
-      });
-      return yls;
-    };
+        const x = getRelPos({ m }, l)
+        return {
+          x,
+          left: floatToPctString(x),
+          l: m.year().toString(),
+          m: m,
+        }
+      })
+      return yls
+    }
 
     const getTicksFromYears = (ys, l) => {
-      const ts = [];
+      const ts = []
       ys.forEach((y, i) => {
-        const x1 = getRelPos({ m: moment(y.m).startOf("year") }, l);
-        ts.push(floatToPctString(x1));
+        const x1 = getRelPos({ m: moment(y.m).startOf("year") }, l)
+        ts.push(floatToPctString(x1))
         if (i === ys.length - 1) {
-          const x2 = getRelPos({ m: moment(y.m).endOf("year") }, l);
-          ts.push(floatToPctString(x2));
+          const x2 = getRelPos({ m: moment(y.m).endOf("year") }, l)
+          ts.push(floatToPctString(x2))
         }
-      });
-      return ts;
-    };
+      })
+      return ts
+    }
 
-    const ys = getYearsFromPoints(ps, left);
-    const ts = getTicksFromYears(ys, left);
+    const ys = getYearsFromPoints(ps, left)
+    const ts = getTicksFromYears(ys, left)
 
     // sort points by descending date
     ps.sort(function(a, b) {
-      if (a.m > b.m) return 1;
-      else if (a.m < b.m) return -1;
-      else return 0;
-    });
+      if (a.m > b.m) return 1
+      else if (a.m < b.m) return -1
+      else return 0
+    })
 
-    return [ps, ys, ts];
-  };
+    return [ps, ys, ts]
+  }
 
   // FUNCTION CALLS //
   // get dot positions
-  const [dots, years, ticks] = getTimelineDataFromPoints(points);
+  const [dots, years, ticks] = getTimelineDataFromPoints(points)
 
   const getThickStartEndFromPoints = (ps, r) => {
     // has event ended?
-    if (ps.length == 0) return [0, 0];
+    if (ps.length === 0) return [0, 0]
     else {
-      const [s, e] = [ps[0].x, ps[ps.length - 1].x];
-      const l = !isOngoing ? e - s : r - s;
-      const w = floatToPctString(l);
-      const arrowStart = floatToPctString(l + s);
-      return [floatToPctString(s), w, arrowStart];
+      const [s, e] = [ps[0].x, ps[ps.length - 1].x]
+      const l = !isOngoing ? e - s : r - s
+      const w = floatToPctString(l)
+      const arrowStart = floatToPctString(l + s)
+      return [floatToPctString(s), w, arrowStart]
     }
-  };
+  }
   const [thickStart, thickWidth, arrowStart] = getThickStartEndFromPoints(
     dots,
-    getRelPos({ m: moment() }, left)
-  );
-
-  // CONSTANTS //
-  const ongoingText = isOngoing ? <> (ongoing)</> : null;
+    getRelPos({ m: moment() }, left),
+  )
 
   // EFFECTS //
   // rebuild tooltips on load
-  useEffect(ReactTooltip.rebuild, [dots]);
+  useEffect(ReactTooltip.rebuild, [dots])
 
   // JSX //
   return (
@@ -163,6 +186,7 @@ const DurationTimeline = ({ points, isOngoing }) => {
                 style={{ left: arrowStart }}
                 src={arrowSvg}
                 className={styles.arrow}
+                alt={"Arrow head"}
               />
             </>
           )}
@@ -193,6 +217,28 @@ const DurationTimeline = ({ points, isOngoing }) => {
         />
       }
     </>
-  );
-};
-export default DurationTimeline;
+  )
+}
+export default DurationTimeline
+
+function getMin(points) {
+  return moment(d3.min(points, p => p.m))
+}
+
+function getMax(points) {
+  return moment(d3.max(points, p => p.m))
+}
+
+function adjustMinMax(min, max) {
+  const sameDate = max.isSame(min, "date")
+  if (!sameDate) {
+    const sameYear = max.isSame(min, "year")
+    const consecYears = Math.abs(max.year() - min.year()) === 1
+    if (sameYear) {
+      max.add(1, "year")
+      min.subtract(1, "year")
+    } else if (consecYears) {
+      max.add(1, "year")
+    }
+  }
+}
