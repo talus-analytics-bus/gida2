@@ -24,7 +24,7 @@ export const cols = [
   ["targets", "Recipient"],
   ["assistance_type_project", "Support type"],
   ["years", "Transaction year range"],
-  ["years_response", "Response-specific transaction year range"],
+  ["years_response", "Response-specific transaction year range", true],
   [
     "committed_funds",
     `Amount committed`,
@@ -66,20 +66,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     recipients.length > 0 ||
     searchText !== ""
 
-  const [exportCols, setExportCols] = useState(cols.map(d => d[0]))
-  const remove = (arr, aTmp) => {
-    const a = aTmp
-    let what,
-      L = a.length,
-      ax
-    while (L > 1 && arr.length) {
-      what = a[--L]
-      while ((ax = arr.indexOf(what)) !== -1) {
-        arr.splice(ax, 1)
-      }
-    }
-    return arr
-  }
+  const [exportCols, setExportCols] = useState(
+    cols.filter(d => d[0] !== "desc").map(d => d[0]),
+  )
 
   const updateExportCols = value => {
     const shouldRemove = exportCols.includes(value)
