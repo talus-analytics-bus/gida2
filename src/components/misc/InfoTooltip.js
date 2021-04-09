@@ -8,7 +8,7 @@ import styles from "./infotooltip.module.scss"
  * Generic info tooltip
  * @method InfoTooltip
  */
-const InfoTooltip = ({ text, light = false }) => {
+const InfoTooltip = ({ text, light = false, place }) => {
   const dataHtml = renderToString(text)
   return (
     <div
@@ -16,6 +16,7 @@ const InfoTooltip = ({ text, light = false }) => {
       data-for={"infoTooltip"}
       data-html={true}
       data-tip={dataHtml}
+      data-place={place}
     >
       <img src={light ? imgSrcLight : imgSrc} alt={"Info tooltip icon"} />
     </div>

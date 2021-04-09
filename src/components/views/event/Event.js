@@ -297,6 +297,7 @@ function PheicTooltip() {
     <InfoTooltip
       {...{
         light: true,
+        place: "bottom",
         text: (
           <p>
             A PHEIC, or{" "}
