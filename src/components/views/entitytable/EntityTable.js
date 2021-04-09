@@ -1,27 +1,17 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useLayoutEffect } from "react"
 import classNames from "classnames"
-import { Link } from "react-router-dom"
 import styles from "./entitytable.module.scss"
 import { Settings } from "../../../App.js"
-import {
-  getWeightsBySummaryAttribute,
-  getNodeLinkList,
-} from "../../misc/Data.js"
+import { getNodeLinkList } from "../../misc/Data.js"
 import Util from "../../misc/Util.js"
 import { execute, Stakeholder, NodeSums, Flow } from "../../misc/Queries"
-import FlowQuery from "../../misc/FlowQuery.js"
-import FlowBundleGeneralQuery from "../../misc/FlowBundleGeneralQuery.js"
-import FlowBundleFocusQuery from "../../misc/FlowBundleFocusQuery.js"
 
 // Content components
-import TableInstance from "../../chart/table/TableInstance.js";
-import Tab from "../../misc/Tab.js";
-import GhsaToggle from "../../misc/GhsaToggle.js";
-import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
-import {Loading} from "../../common";
-import {SourceText} from "../../common";
-import {Button} from "../../common";
-import DataTable from "../../chart/table/DataTable/DataTable.js";
+import TableInstance from "../../chart/table/TableInstance.js"
+import Tab from "../../misc/Tab.js"
+import GhsaToggle from "../../misc/GhsaToggle.js"
+import EntityRoleToggle from "../../misc/EntityRoleToggle.js"
+import { Loading, Button, SmartTable } from "../../common"
 
 // FC for EntityTable.
 const EntityTable = ({
@@ -32,10 +22,7 @@ const EntityTable = ({
   ghsaOnly,
   setGhsaOnly,
   otherId,
-  setLoadingSpinnerOn,
-  setComponent,
   getTableDataFuncs,
-  ...props
 }) => {
   // Get page type from id
   let pageType
@@ -119,91 +106,112 @@ const EntityTable = ({
 
   const [inkindCount, setInkindCount] = useState(null)
   const [financialCount, setFinancialCount] = useState(null)
+  const [financialData, setFinancialData] = useState(null)
+  const [inkindData, setInkindData] = useState(null)
+  const [curPage, setCurPage] = useState(1)
+  const [sortCol, setSortCol] = useState("project_constants.disbursed_funds")
+  const [isDesc, setIsDesc] = useState(true)
+  const [searchText, setSearchText] = useState("")
 
-  // tableData={data.flows.flows.filter(f =>
-  //   f.flow_info.assistance_type.toLowerCase().includes("financial")
-  // )}
   const sections = [
     {
       header: <>All funds{financialCount}</>,
       slug: "all",
       content: (
-        <DataTable
-          noNativePaging={true}
-          noNativeSearch={true}
-          noNativeSorting={true}
-          getTableData={getTableDataFuncs.flowsFinancial}
-          pageSize={10}
-          rowCount={financialCount}
-          setRowCount={setFinancialCount}
-          tableColumns={[
-            {
-              title: "Funder",
-              prop: "origin",
-              type: "text",
-              func: d => JSON.stringify(d.origins),
-              render: d =>
-                getNodeLinkList({
-                  urlType:
-                    entityRole === "funder" || pageType === "ghsa"
-                      ? "table"
-                      : pairTableSlug,
-                  nodeList: JSON.parse(d),
-                  entityRole: "funder",
-                  id: id,
-                  otherId: otherId,
-                }),
-            },
-            {
-              title: "Recipient",
-              prop: "target",
-              type: "text",
-              func: d => JSON.stringify(d.targets),
-              render: d =>
-                getNodeLinkList({
-                  urlType:
-                    entityRole === "recipient" || pageType === "ghsa"
-                      ? "table"
-                      : pairTableSlug,
-                  nodeList: JSON.parse(d),
-                  entityRole: "recipient",
-                  id: id,
-                  otherId: otherId,
-                }),
-            },
-            {
-              title: "Project name",
-              func: d => d.name,
-              type: "text",
-              prop: "name",
-              render: val => Util.formatValue(val, "project_name"),
-            },
-            {
-              title: `Committed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
-              func: d => d.committed_funds,
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              prop: "committed_funds",
-              render: val => Util.formatValue(val, "committed_funds"),
-              defaultContent: "n/a",
-            },
-            {
-              title: `Disbursed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
-              func: d => d.disbursed_funds,
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              prop: "disbursed_funds",
-              render: val => Util.formatValue(val, "disbursed_funds"),
-              defaultContent: "n/a",
-            },
-          ]}
-          setLoadingSpinnerOn={setLoadingSpinnerOn}
-          sortByProp={"disbursed_funds"}
-        />
+        <Loading {...{ loaded: financialData !== null }}>
+          {financialData && (
+            <SmartTable
+              {...{
+                data: financialData,
+                pagesize: 10,
+                curPage,
+                searchText,
+                setSearchText,
+                setCurPage,
+                setPagesize: () => 10,
+                nTotalRecords:
+                  financialCount !== null
+                    ? financialCount.props["data-count"]
+                    : null,
+                columns: [
+                  {
+                    title: "Funder",
+                    prop: "origins",
+                    entity: "project_constants",
+                    type: "text",
+                    func: d => JSON.stringify(d.origins),
+                    render: d =>
+                      getNodeLinkList({
+                        urlType:
+                          entityRole === "funder" || pageType === "ghsa"
+                            ? "table"
+                            : pairTableSlug,
+                        nodeList: JSON.parse(d),
+                        entityRole: "funder",
+                        id: id,
+                        otherId: otherId,
+                      }),
+                  },
+                  {
+                    title: "Recipient",
+                    prop: "targets",
+                    entity: "project_constants",
+                    type: "text",
+                    func: d => JSON.stringify(d.targets),
+                    render: d =>
+                      getNodeLinkList({
+                        urlType:
+                          entityRole === "recipient" || pageType === "ghsa"
+                            ? "table"
+                            : pairTableSlug,
+                        nodeList: JSON.parse(d),
+                        entityRole: "recipient",
+                        id: id,
+                        otherId: otherId,
+                      }),
+                  },
+                  {
+                    title: "Project name",
+                    func: d => d.name,
+                    type: "text",
+                    prop: "name",
+                    entity: "Project",
+                    render: val => Util.formatValue(val, "project_name"),
+                  },
+                  {
+                    title: `Committed funds (${Settings.startYear} - ${
+                      Settings.endYear
+                    })`,
+                    func: d => d.committed_funds,
+                    type: "num",
+                    className: d => (d > 0 ? "num" : "num-with-text"),
+                    prop: "committed_funds",
+                    entity: "project_constants",
+                    render: val => Util.formatValue(val, "committed_funds"),
+                    defaultContent: "n/a",
+                  },
+                  {
+                    title: `Disbursed funds (${Settings.startYear} - ${
+                      Settings.endYear
+                    })`,
+                    func: d => d.disbursed_funds,
+                    type: "num",
+                    className: d => (d > 0 ? "num" : "num-with-text"),
+                    prop: "disbursed_funds",
+                    entity: "project_constants",
+                    render: val => Util.formatValue(val, "disbursed_funds"),
+                    defaultContent: "n/a",
+                  },
+                ],
+                loading: false,
+                sortCol,
+                setSortCol,
+                isDesc,
+                setIsDesc,
+              }}
+            />
+          )}
+        </Loading>
       ),
     },
     {
@@ -324,101 +332,217 @@ const EntityTable = ({
       slug: "in-kind",
       show: inkindCount === null || inkindCount.props["data-count"] !== 0,
       content: (
-        <DataTable
-          noNativePaging={true}
-          noNativeSearch={true}
-          noNativeSorting={true}
-          getTableData={getTableDataFuncs.flowsInkind}
-          pageSize={10}
-          sortByProp={"provided_inkind"}
-          setLoadingSpinnerOn={setLoadingSpinnerOn}
-          tableColumns={[
-            {
-              title: "Provider",
-              prop: "origin",
-              type: "text",
-              func: d => JSON.stringify(d.origins),
-              render: d =>
-                getNodeLinkList({
-                  urlType:
-                    entityRole === "funder" || pageType === "ghsa"
-                      ? "table"
-                      : pairTableSlug,
-                  nodeList: JSON.parse(d),
-                  entityRole: "funder",
-                  id: id,
-                  otherId: otherId,
-                }),
-            },
-            {
-              title: "Recipient",
-              prop: "target",
-              type: "text",
-              func: d => JSON.stringify(d.targets),
-              render: d =>
-                getNodeLinkList({
-                  urlType:
-                    entityRole === "recipient" || pageType === "ghsa"
-                      ? "table"
-                      : pairTableSlug,
-                  nodeList: JSON.parse(d),
-                  entityRole: "recipient",
-                  id: id,
-                  otherId: otherId,
-                }),
-            },
-            {
-              title: "Project name",
-              func: d => d.name,
-              type: "text",
-              prop: "name",
-            },
-            {
-              title: "Total years project committed",
-              func: d => d.committed_inkind,
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              prop: "committed_inkind",
-              render: val => Util.formatValue(val, "inkind"),
-              defaultContent: "n/a",
-            },
-            {
-              title: "Total years project provided",
-              func: d => d.provided_inkind,
-              type: "num",
-              className: d => (d > 0 ? "num" : "num-with-text"),
-              prop: "provided_inkind",
-              render: val => Util.formatValue(val, "inkind"),
-              defaultContent: "n/a",
-            },
-          ]}
-          rowCount={inkindCount}
-          setRowCount={setInkindCount}
-        />
+        <Loading {...{ loaded: inkindData !== null }}>
+          {inkindData && (
+            <SmartTable
+              {...{
+                data: inkindData,
+                pagesize: 10,
+                curPage,
+                searchText,
+                setSearchText,
+                setCurPage,
+                setPagesize: () => 10,
+                nTotalRecords:
+                  inkindCount !== null ? inkindCount.props["data-count"] : null,
+
+                columns: [
+                  {
+                    title: "Provider",
+                    prop: "origins",
+                    entity: "project_constants",
+                    type: "text",
+                    func: d => JSON.stringify(d.origins),
+                    render: d =>
+                      getNodeLinkList({
+                        urlType:
+                          entityRole === "funder" || pageType === "ghsa"
+                            ? "table"
+                            : pairTableSlug,
+                        nodeList: JSON.parse(d),
+                        entityRole: "funder",
+                        id: id,
+                        otherId: otherId,
+                      }),
+                  },
+                  {
+                    title: "Recipient",
+                    prop: "targets",
+                    entity: "project_constants",
+                    type: "text",
+                    func: d => JSON.stringify(d.targets),
+                    render: d =>
+                      getNodeLinkList({
+                        urlType:
+                          entityRole === "recipient" || pageType === "ghsa"
+                            ? "table"
+                            : pairTableSlug,
+                        nodeList: JSON.parse(d),
+                        entityRole: "recipient",
+                        id: id,
+                        otherId: otherId,
+                      }),
+                  },
+                  {
+                    title: "Project name",
+                    func: d => d.name,
+                    type: "text",
+                    prop: "name",
+                    entity: "Project",
+                  },
+                  {
+                    title: "Total years project committed",
+                    func: d => d.committed_inkind,
+                    type: "num",
+                    className: d => (d > 0 ? "num" : "num-with-text"),
+                    prop: "committed_inkind",
+                    entity: "project_constants",
+                    render: val => Util.formatValue(val, "inkind"),
+                    defaultContent: "n/a",
+                  },
+                  {
+                    title: "Total years project provided",
+                    func: d => d.provided_inkind,
+                    type: "num",
+                    className: d => (d > 0 ? "num" : "num-with-text"),
+                    prop: "provided_inkind",
+                    entity: "project_constants",
+                    render: val => Util.formatValue(val, "inkind"),
+                    defaultContent: "n/a",
+                  },
+                ],
+                loading: false,
+                sortCol,
+                setSortCol,
+                isDesc,
+                setIsDesc,
+              }}
+            />
+          )}
+        </Loading>
       ),
     },
   ]
 
   // Track currently visible tab
   const [curTab, setCurTab] = useState(sections[0].slug)
+  const dynamicTablesNotLoaded = financialData === null || inkindData === null
+
+  // initial data load
+  useEffect(() => {
+    if (
+      dynamicTablesNotLoaded &&
+      getTableDataFuncs.flowsFinancial !== undefined
+    ) {
+      getDynamicTableData(
+        "flowsFinancial",
+        getTableDataFuncs,
+        curPage,
+        setFinancialData,
+        setFinancialCount,
+        sortCol,
+        isDesc,
+        searchText,
+      )
+      getDynamicTableData(
+        "flowsInkind",
+        getTableDataFuncs,
+        curPage,
+        setInkindData,
+        setInkindCount,
+        sortCol,
+        isDesc,
+        searchText,
+      )
+    }
+  }, [])
+
+  // reset dynamic table params when tab changed
+  useLayoutEffect(() => {
+    setCurPage(1)
+    setSearchText("")
+    setIsDesc(true)
+    setSortCol("project_constants.disbursed_funds")
+  }, [curTab])
+
+  // refresh data for dynamic tables when needed
+  useEffect(() => {
+    if (dynamicTablesNotLoaded) return
+    if (curTab === "all") {
+      getDynamicTableData(
+        "flowsFinancial",
+        getTableDataFuncs,
+        curPage,
+        setFinancialData,
+        setFinancialCount,
+        sortCol,
+        isDesc,
+        searchText,
+      )
+    } else if (curTab === "in-kind") {
+      getDynamicTableData(
+        "flowsInkind",
+        getTableDataFuncs,
+        curPage,
+        setInkindData,
+        setInkindCount,
+        sortCol,
+        isDesc,
+        searchText,
+      )
+    }
+  }, [curPage, curTab])
+
+  useEffect(() => {
+    if (dynamicTablesNotLoaded) return
+    // reload data on sort
+    if (curPage !== 1) setCurPage(1)
+    else {
+      if (curTab === "all") {
+        getDynamicTableData(
+          "flowsFinancial",
+          getTableDataFuncs,
+          curPage,
+          setFinancialData,
+          setFinancialCount,
+          sortCol,
+          isDesc,
+          searchText,
+        )
+      } else if (curTab === "in-kind") {
+        getDynamicTableData(
+          "flowsInkind",
+          getTableDataFuncs,
+          curPage,
+          setInkindData,
+          setInkindCount,
+          sortCol,
+          isDesc,
+          searchText,
+        )
+      }
+    }
+  }, [sortCol, isDesc, searchText])
 
   // clear counts when id or type changes
+  // TODO verify
   useEffect(() => {
     setInkindCount(null)
     setFinancialCount(null)
   }, [id, ghsaOnly])
 
-  // update tab when stakeholder changes if needed
-  useEffect(() => {
-    if (inkindCount !== null && financialCount !== null) {
-      const newInitTabIdx =
-        inkindCount.props["data-count"] === 0 ||
-        financialCount.props["data-count"] !== 0
-          ? 0
-          : sections.length - 1
-      setCurTab(sections[newInitTabIdx].slug)
-    }
-  }, [inkindCount, financialCount])
+  // // update tab when stakeholder changes if needed
+  // // TODO verify
+  // useEffect(() => {
+  //   if (inkindCount !== null && financialCount !== null) {
+  //     const newInitTabIdx =
+  //       inkindCount.props["data-count"] === 0 ||
+  //       financialCount.props["data-count"] !== 0
+  //         ? 0
+  //         : sections.length - 1
+  //     setCurTab(sections[newInitTabIdx].slug)
+  //   }
+  // }, [inkindCount, financialCount])
 
   // Return JSX
   return (
@@ -606,8 +730,6 @@ const getComponentData = async ({
   }
 
   const otherNodeType = nodeType === "target" ? "origin" : "target"
-  const filterNodeType = nodeType + "s"
-  const filterNodeTypeOther = otherNodeType + "s"
 
   if (isNaN(otherId)) otherId = undefined
   const baseQueryParams = {
@@ -751,10 +873,13 @@ const getComponentData = async ({
   }
 
   const getTableDataFuncs = {
-    flowsFinancial: (page, pagesize) => {
+    flowsFinancial: (page, pagesize, sortCol, isDesc, searchText) => {
       return Flow({
         page,
         pagesize,
+        sortCol,
+        isDesc,
+        searchText,
         [nodeType + "Ids"]: !isGhsaPage ? [id] : undefined,
         format: ["stakeholder_details"],
         filters: {
@@ -763,10 +888,13 @@ const getComponentData = async ({
         },
       })
     },
-    flowsInkind: (page, pagesize) => {
+    flowsInkind: (page, pagesize, sortCol, isDesc, searchText) => {
       return Flow({
         page,
         pagesize,
+        sortCol,
+        isDesc,
+        searchText,
         [nodeType + "Ids"]: !isGhsaPage ? [id] : undefined,
         format: ["stakeholder_details"],
         filters: {
@@ -808,3 +936,29 @@ const getComponentData = async ({
 }
 
 export default EntityTable
+
+async function getDynamicTableData(
+  key,
+  getTableDataFuncs,
+  curPage,
+  setData,
+  setCount,
+  sortCol,
+  isDesc,
+  searchText,
+) {
+  const newData = await getTableDataFuncs[key](
+    curPage,
+    10,
+    sortCol,
+    isDesc,
+    searchText,
+  )
+  setData(newData.data)
+  setCount(
+    <span data-count={newData.paging.n_records}>
+      {" "}
+      ({Util.comma(newData.paging.n_records)})
+    </span>,
+  )
+}
