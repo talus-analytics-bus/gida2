@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import classNames from "classnames";
-import styles from "./exporttable.module.scss";
-import { execute, Flow, Outbreak } from "../../misc/Queries";
-import Util from "../../misc/Util.js";
-import { Chevron, Loading, ShowMore, SmartTable } from "../../common";
+import React, { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import classNames from "classnames"
+import styles from "./exporttable.module.scss"
+import { execute, Flow, Outbreak } from "../../misc/Queries"
+import Util from "../../misc/Util.js"
+import { Chevron, Loading, ShowMore, SmartTable } from "../../common"
 
-const None = () => <span className={styles.none}>None</span>;
+const None = () => <span className={styles.none}>None</span>
 
 // FC for ExportTable.
 const ExportTable = ({
@@ -33,7 +33,7 @@ const ExportTable = ({
   ...props
 }) => {
   // Currently unused, will be used for dynamic page size selection.
-  const [fetchingRows, setFetchingRows] = useState(false);
+  const [fetchingRows, setFetchingRows] = useState(false)
 
   // define data
   const [data, setData] = useState({
@@ -46,7 +46,7 @@ const ExportTable = ({
   const [initLoaded, setInitLoaded] = useState(false)
 
   // lookup table for outbreak names by IDs
-  const [outbreakNameById, setOutbreakNameById] = useState(null);
+  const [outbreakNameById, setOutbreakNameById] = useState(null)
 
   useEffect(() => {
     if (curPage !== 1) setCurPage(1)
@@ -58,16 +58,16 @@ const ExportTable = ({
 
   useEffect(() => {
     if (initLoaded) {
-      getData();
+      getData()
     }
-  }, [curPage, pagesize]);
+  }, [curPage, pagesize])
 
   useEffect(() => {
     if (initLoaded) {
-      if (curPage !== 1) setCurPage(1);
-      else getData();
+      if (curPage !== 1) setCurPage(1)
+      else getData()
     }
-  }, [sortCol, isDesc, searchText]);
+  }, [sortCol, isDesc, searchText])
 
   const cols = [
     {
@@ -111,39 +111,24 @@ const ExportTable = ({
       type: "text",
       func: d => d.events || [],
       render: d => {
-        const ready = outbreakNameById !== null;
+        const ready = outbreakNameById !== null
         if (ready) {
           if (d.length > 0)
             return (
               ready &&
               d.map((dd, ii) => {
-                const comma = ii !== d.length - 1 ? ", " : null;
-                const { name, slug } = outbreakNameById[dd];
+                const comma = ii !== d.length - 1 ? ", " : null
+                const { name, slug } = outbreakNameById[dd]
                 return (
                   <>
                     <Link {...{ to: `/events/${slug}` }}>{name}</Link>
                     {comma}
                   </>
-                );
+                )
               })
-            );
-          else return <None />;
-        } else return null;
-      },
-    },
-    {
-      title: "PHEIC(s)",
-      prop: "events",
-      type: "text",
-      func: d => {
-        return d.events
-          .map(dd => {
-            const match = allOutbreaks.find(ddd => ddd.id === dd)
-            console.log(match)
-            if (match) return match.name
-            else return undefined
-          })
-          .join("; ")
+            )
+          else return <None />
+        } else return null
       },
     },
     {
@@ -228,7 +213,7 @@ const ExportTable = ({
         setSearchText,
       }}
     />
-  );
+  )
   // const dataTable = (
   //   <TableInstance
   //     noNativePaging={true}
@@ -247,23 +232,23 @@ const ExportTable = ({
       isDesc,
       sortCol,
       searchText,
-    });
+    })
 
     const queries = {
       // Information about the entity
       flows: flowQuery,
       outbreakNameById: Outbreak({ format: "names_by_id" }),
-    };
+    }
 
     // Get results in parallel
-    setFetchingRows(true);
-    const results = await execute({ queries });
-    setFetchingRows(false);
-    setData(results);
-    setPageLoading(false);
-    setInitLoaded(true);
-    setOutbreakNameById(results.outbreakNameById);
-  };
+    setFetchingRows(true)
+    const results = await execute({ queries })
+    setFetchingRows(false)
+    setData(results)
+    setPageLoading(false)
+    setInitLoaded(true)
+    setOutbreakNameById(results.outbreakNameById)
+  }
 
   // Return JSX
   return (
@@ -335,7 +320,7 @@ export const getFlowQueryForDataPage = ({
       "project_constants.response_or_capacity",
       "project_constants.events",
     ],
-  };
+  }
   if (!forExport)
     return Flow({
       ...standardProps,
