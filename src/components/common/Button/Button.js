@@ -1,17 +1,22 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import classNames from "classnames";
-import styles from "./button.module.scss";
-import close from "../../../assets/images/close.png";
-import plusWhite from "../../../assets/images/plus-white.svg";
+import React from "react"
+import { Link } from "react-router-dom"
+import classNames from "classnames"
+import styles from "./button.module.scss"
+import close from "../../../assets/images/close.png"
+import plusWhite from "../../../assets/images/plus-white.svg"
 
 /**
- * Generic radio toggle
- * TODO implement tooltip
+ * Generic button
  * @method Button
  */
-const Button = ({ label, url, disabled = false, ...props }) => {
-  const classes = props.className ? [props.className] : [];
+const Button = ({
+  label,
+  url,
+  disabled = false,
+  iconName = null,
+  ...props
+}) => {
+  const classes = props.className ? [props.className] : []
   const button = (
     <button
       style={props.linkTo === undefined ? props.style : undefined}
@@ -25,12 +30,17 @@ const Button = ({ label, url, disabled = false, ...props }) => {
         [styles.disabled]: disabled,
       })}
     >
-      {props.type === "close" && <img src={close} />}
-      {props.type === "close-badge" && <img src={plusWhite} />}
-      {props.image && <img src={props.image} />}
+      {props.type === "close" && (
+        <img src={close} alt={"X symbol (close icon)"} />
+      )}
+      {props.type === "close-badge" && (
+        <img src={plusWhite} alt={"Plus symbol (expand icon)"} />
+      )}
+      {props.image && <img src={props.image} alt={"Button icon (generic)"} />}
+      {iconName && <i className={"material-icons"}>{iconName}</i>}
       {label}
     </button>
-  );
+  )
   if (props.linkTo) {
     return (
       <Link
@@ -41,7 +51,7 @@ const Button = ({ label, url, disabled = false, ...props }) => {
       >
         {button}
       </Link>
-    );
+    )
   } else if (url) {
     return (
       <a
@@ -52,7 +62,7 @@ const Button = ({ label, url, disabled = false, ...props }) => {
       >
         {button}
       </a>
-    );
-  } else return button;
-};
-export default Button;
+    )
+  } else return button
+}
+export default Button

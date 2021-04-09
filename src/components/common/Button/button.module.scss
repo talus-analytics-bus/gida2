@@ -9,6 +9,11 @@
   font-size: 1.6rem;
   width: max-content;
 
+  // space between any icons and txt
+  i {
+    margin-right: 10px;
+  }
+
   span[class^="glyphicon"] {
     margin-right: 10px;
   }
