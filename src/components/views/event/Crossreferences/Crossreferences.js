@@ -89,7 +89,6 @@ const Crossreferences = ({
           id={"infoTooltip"}
           type="light"
           className={tooltipStyles.tooltip}
-          place="top"
           effect="float"
         />
       }
