@@ -1,9 +1,9 @@
-import React from "react"
 import * as d3 from "d3/dist/d3.min"
 import Chart from "../../../../chart/Chart.js"
 import Util, { formatRegion } from "../../../../misc/Util.js"
 import styles from "./d3eventbars.module.scss"
 import ReactTooltip from "react-tooltip"
+import { FLAG_BASE_URL_64 } from "../../../../views/explore/content/Orgs/Flag"
 
 // colors
 import {
@@ -527,7 +527,7 @@ class D3EventBars extends Chart {
             if (showFlag) {
               iconGroup
                 .append("image")
-                .attr("href", dataByName[d].flag_url)
+                .attr("href", FLAG_BASE_URL_64 + dataByName[d].flag_url)
                 .attr("width", badgeDim.width)
                 .attr("height", badgeDim.height)
                 .attr("x", badgeDim.x)
@@ -539,7 +539,6 @@ class D3EventBars extends Chart {
                   // nudge label to right to fill empty flag space
                   // nudge y-axis tick label to accomodate flag
                   g.select("text").attr("x", -10)
-
                   // // show org flag (generic)
                   // d3.select(this).attr(
                   //   "href",

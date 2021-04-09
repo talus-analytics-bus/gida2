@@ -1,30 +1,31 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
-import styles from "./details.module.scss";
-import classNames from "classnames";
-import { Settings } from "../../../App.js";
-import Util, { isEmpty } from "../../misc/Util.js";
-import EventNumberTotals from "../../views/event/EventNumberTotals/EventNumberTotals";
+import React, { useState, useEffect, useLayoutEffect } from "react"
+import styles from "./details.module.scss"
+import classNames from "classnames"
+import { Settings } from "../../../App.js"
+import Util, { isEmpty } from "../../misc/Util.js"
+import EventNumberTotals from "../../views/event/EventNumberTotals/EventNumberTotals"
 
 // queries
-import { execute, Stakeholder, Assessment } from "../../misc/Queries";
-
-import { pvsCats, pvsColors } from "../../map/MapUtil.js";
+import { execute, Stakeholder, Assessment } from "../../misc/Queries"
+import { pvsCats, pvsColors } from "../../map/MapUtil.js"
 
 // Content components
-import DetailsSection from "../../views/details/content/DetailsSection.js";
-import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
-import StackBar from "../../chart/StackBar/StackBar.js";
-import TableInstance from "../../chart/table/TableInstance.js";
-import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
-import { Loading } from "../../common";
-import { ScoreBlocks } from "../../common";
-import Tab from "../../misc/Tab.js";
-import ReactTooltip from "react-tooltip";
-import tooltipStyles from "../../common/tooltip.module.scss";
-import TopTable from "../../chart/TopTable/TopTable";
-
-// local components
+import DetailsSection from "../../views/details/content/DetailsSection.js"
+import FundsByYear from "../../chart/FundsByYear/FundsByYear.js"
+import StackBar from "../../chart/StackBar/StackBar.js"
+import TableInstance from "../../chart/table/TableInstance.js"
+import EntityRoleToggle from "../../misc/EntityRoleToggle.js"
+import { Loading } from "../../common"
+import { ScoreBlocks } from "../../common"
+import Tab from "../../misc/Tab.js"
+import ReactTooltip from "react-tooltip"
+import tooltipStyles from "../../common/tooltip.module.scss"
+import TopTable from "../../chart/TopTable/TopTable"
 import EventTable from "./content/EventTable"
+import { Flag } from "../../views/explore/content/Orgs/Flag"
+
+// Constants
+import { FLAG_BASE_URL } from "../../views/explore/content/Orgs/Flag"
 
 // FC for Details.
 const Details = ({
@@ -68,12 +69,12 @@ const Details = ({
   const [inkindOnly, setInkindOnly] = useState(false)
 
   // track flows used to calc. total event funding
-  const [eventTotalsData, setEventTotalsData] = useState(null);
-  const [nodeData, setNodeData] = useState({});
-  const [nodesData, setNodesData] = useState({});
-  const defaultPvs = { eds: [], data: [], loading: true };
-  const [pvs, setPvs] = useState(defaultPvs);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [eventTotalsData, setEventTotalsData] = useState(null)
+  const [nodeData, setNodeData] = useState({})
+  const [nodesData, setNodesData] = useState({})
+  const defaultPvs = { eds: [], data: [], loading: true }
+  const [pvs, setPvs] = useState(defaultPvs)
+  const [dataLoaded, setDataLoaded] = useState(false)
 
   const getData = async () => {
     // define common filters for most queries
@@ -155,7 +156,7 @@ const Details = ({
   }
 
   // Define details content sections.
-  const showTabs = true;
+  const showTabs = true
 
   const pvsLegend = (
     <div className={styles.legend}>
@@ -492,20 +493,16 @@ const Details = ({
 
   const ghsa = pageType === "ghsa"
 
-  const flagSrc = ghsa
-    ? `/flags/ghsa.png`
-    : `https://flags.talusanalytics.com/1000px/${flagId}.png`
-  // : `https://www.countryflags.io/${flagId}/flat/64.png`;
-  const flag =
-    !isEmpty(nodeData) && (showFlag || ghsa) ? (
-      <img
-        alt={"Flag of " + flagId}
-        key={flagId}
-        onError={e => addDefaultSrc(e)}
-        className={classNames({ [styles.small]: ghsa })}
-        src={flagSrc}
-      />
-    ) : null
+  const flag = (
+    <Flag
+      {...{
+        filename: ghsa ? "ghsa.png" : flagId + ".png",
+        show: !isEmpty(nodeData) && (showFlag || ghsa),
+        big: !ghsa,
+        localFile: ghsa,
+      }}
+    />
+  )
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
@@ -540,12 +537,12 @@ const Details = ({
   useEffect(() => {
     if (noData !== null && eventTotalsData !== null) {
       if (!haveAssistance) {
-        if (haveEvent) setCurTab("event");
-        else if (havePvs) setCurTab("pvs");
-        else setCurTab(null);
-      } else if (eventTotalsData.length === 0) setCurTab("ihr");
-    } else setCurTab("ihr");
-  }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id]);
+        if (haveEvent) setCurTab("event")
+        else if (havePvs) setCurTab("pvs")
+        else setCurTab(null)
+      } else if (eventTotalsData.length === 0) setCurTab("ihr")
+    } else setCurTab("ihr")
+  }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id])
 
   useEffect(() => {
     // setCurTab("ihr");

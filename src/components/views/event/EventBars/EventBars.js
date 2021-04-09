@@ -1,17 +1,18 @@
 // 3rd party libs
-import React, { useState, useEffect } from "react";
-import ReactTooltip from "react-tooltip";
+import React, { useState, useEffect } from "react"
+import ReactTooltip from "react-tooltip"
 
 // styles
-import styles from "./eventbars.module.scss";
-import classNames from "classnames";
+import styles from "./eventbars.module.scss"
+import classNames from "classnames"
 
 // local libs
-import D3EventBars from "./d3/D3EventBars";
-import D3ImpactBars from "./d3/D3ImpactBars";
-import { execute, Chords } from "../../../misc/Queries";
-import Selectpicker from "../../../chart/Selectpicker/Selectpicker";
-import { Loading, Checkbox, Popup, popupStyles } from "../../../common";
+import D3EventBars from "./d3/D3EventBars"
+import D3ImpactBars from "./d3/D3ImpactBars"
+import { execute, Chords } from "../../../misc/Queries"
+import Selectpicker from "../../../chart/Selectpicker/Selectpicker"
+import { Loading, Checkbox, Popup, popupStyles } from "../../../common"
+import { FLAG_BASE_URL_64 } from "../../../views/explore/content/Orgs/Flag"
 
 const EventBars = ({
   eventId,
@@ -22,26 +23,26 @@ const EventBars = ({
   hasImpactsData,
 }) => {
   // STATE //
-  const [chart, setChart] = useState(null);
-  const [secChart, setSecChart] = useState(null);
-  const [data, setData] = useState(null);
-  const [dataForChart, setDataForChart] = useState(null);
-  const [caseDeathDataForChart, setCaseDeathDataForChart] = useState(null);
-  const [loaded, setLoaded] = useState(false);
-  const [tooltipData, setTooltipData] = useState(false);
-  const [noFilteredData, setNoFilteredData] = useState(false);
+  const [chart, setChart] = useState(null)
+  const [secChart, setSecChart] = useState(null)
+  const [data, setData] = useState(null)
+  const [dataForChart, setDataForChart] = useState(null)
+  const [caseDeathDataForChart, setCaseDeathDataForChart] = useState(null)
+  const [loaded, setLoaded] = useState(false)
+  const [tooltipData, setTooltipData] = useState(false)
+  const [noFilteredData, setNoFilteredData] = useState(false)
 
   // "Event impact by"
-  const [impact, setImpact] = useState("cases");
+  const [impact, setImpact] = useState("cases")
 
   // "Funds by"
-  const [funds, setFunds] = useState("recipient_all");
+  const [funds, setFunds] = useState("recipient_all")
 
   // "Filter recipients/funders"
-  const [region, setRegion] = useState("");
+  const [region, setRegion] = useState("")
 
   // show top 10 bars only?
-  const [top10Only, setTop10Only] = useState(true);
+  const [top10Only, setTop10Only] = useState(true)
 
   // CONSTANTS //
   // chart parameters
@@ -55,10 +56,10 @@ const EventBars = ({
     noStackField: "No WHO region", // TODO dynamically
     byRegion: funds.includes("region"),
     showFlags: !funds.includes("region"),
-  };
-  params.direction = params.role === "recipient" ? "target" : "origin";
-  params.otherRole = params.role === "recipient" ? "funder" : "recipient";
-  params.otherDirection = params.direction === "origin" ? "target" : "origin";
+  }
+  params.direction = params.role === "recipient" ? "target" : "origin"
+  params.otherRole = params.role === "recipient" ? "funder" : "recipient"
+  params.otherDirection = params.direction === "origin" ? "target" : "origin"
 
   // have more than 10 bras?
   const moreThan10Bars =
@@ -67,82 +68,82 @@ const EventBars = ({
     new Set(
       dataForChart[curFlowType]
         .filter(d => d[params.direction] !== undefined)
-        .map(d => d[params.direction].name)
-    ).size > 10;
+        .map(d => d[params.direction].name),
+    ).size > 10
 
   // add countries with zero funding to main bar chart if they had cases?
   const addUnfundedCountriesWithCases =
-    funds === "recipient_country" || funds === "recipient_region";
+    funds === "recipient_country" || funds === "recipient_region"
 
   // cases or deaths plotted?
-  const impactData = impact === "cases" ? caseData : deathData;
+  const impactData = impact === "cases" ? caseData : deathData
 
   // show impacts dot chart?
   const showImpacts =
-    ["recipient_country", "recipient_region"].includes(funds) && hasImpactsData;
+    ["recipient_country", "recipient_region"].includes(funds) && hasImpactsData
 
   // charts ready to be shown?
-  const drawn = chart !== null && (!showImpacts || secChart !== null) && loaded;
+  const drawn = chart !== null && (!showImpacts || secChart !== null) && loaded
 
   // was main chart initialized?
-  const initialized = chart !== null;
+  const initialized = chart !== null
 
   // direction of funding flow
-  const direction = funds.startsWith("recipient") ? "target" : "origin";
+  const direction = funds.startsWith("recipient") ? "target" : "origin"
 
   // recipient or funder?
-  const roleNoun = direction === "target" ? "recipient" : "funder";
+  const roleNoun = direction === "target" ? "recipient" : "funder"
 
   // max number of bar chart bars to show
-  const max = top10Only ? 10 : 1e6;
+  const max = top10Only ? 10 : 1e6
 
   // countries?
   const showRegionFilter =
-    funds === "recipient_country" || funds === "funder_country";
+    funds === "recipient_country" || funds === "funder_country"
 
   // FUNCTIONS //
   // get flag urls
   const getFlagUrl = (name, iso2) => {
     const showFlag =
-      name !== "General Global Benefit" && name !== "Not reported";
+      name !== "General Global Benefit" && name !== "Not reported"
     if (showFlag) {
-      return `https://flags.talusanalytics.com/64px/${iso2}.png`;
-    } else return null;
-  };
+      return `${FLAG_BASE_URL_64}${iso2}.png`
+    } else return null
+  }
 
   // return stakeholder dictionary keeping only those that match region filter
   // if applicable
   const getFilteredStakeholders = () => {
-    if (!showRegionFilter || region === "") return stakeholders;
+    if (!showRegionFilter || region === "") return stakeholders
     else {
-      const filteredStakeholders = {};
+      const filteredStakeholders = {}
       for (const [k, v] of Object.entries(stakeholders)) {
-        if (v.region_who === region) filteredStakeholders[k] = v;
+        if (v.region_who === region) filteredStakeholders[k] = v
       }
-      return filteredStakeholders;
+      return filteredStakeholders
     }
-  };
+  }
 
   const setStakeholderFilter = (f, shEntity) => {
-    const isAll = funds.endsWith("_all");
-    const isCountries = showRegionFilter;
-    const isRegions = funds === "recipient_region";
-    const isOrgs = funds === "recipient_org" || funds === "funder_org";
-    if (isAll) return;
+    const isAll = funds.endsWith("_all")
+    const isCountries = showRegionFilter
+    const isRegions = funds === "recipient_region"
+    const isOrgs = funds === "recipient_org" || funds === "funder_org"
+    if (isAll) return
     else {
       f[shEntity + ".slug"] = [
         ["neq", ["not-reported", "general-global-benefit"]],
-      ];
+      ]
     }
-    if (isCountries) f[shEntity + ".subcat"] = ["country", "world"];
+    if (isCountries) f[shEntity + ".subcat"] = ["country", "world"]
     else if (isRegions) {
-      f[shEntity + ".subcat"] = ["country"];
+      f[shEntity + ".subcat"] = ["country"]
     } else if (isOrgs) {
-      f[shEntity + ".cat"] = ["organization"];
+      f[shEntity + ".cat"] = ["organization"]
     } else {
-      console.error("Unknown `funds` value: " + funds);
+      console.error("Unknown `funds` value: " + funds)
     }
-  };
+  }
   // get data
   const getData = async () => {
     // define query filters
@@ -150,29 +151,28 @@ const EventBars = ({
       "Event.id": [eventId],
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.response_or_capacity": ["response"],
-    };
-    const shEntity =
-      direction === "target" ? "OtherStakeholder" : "Stakeholder";
-    setStakeholderFilter(filters, shEntity);
+    }
+    const shEntity = direction === "target" ? "OtherStakeholder" : "Stakeholder"
+    setStakeholderFilter(filters, shEntity)
 
     // add region filter
     if (showRegionFilter && region !== "") {
-      filters[shEntity + ".region_who"] = [region];
+      filters[shEntity + ".region_who"] = [region]
     }
 
     // define queries
-    const queries = {};
+    const queries = {}
     queries.nodeSums = Chords({
       format: "bar_chart",
       stackBy: direction,
       direction,
       filters,
-    });
-    const results = await execute({ queries });
+    })
+    const results = await execute({ queries })
 
     // add values that appear in case date but not funding
-    setData(results.nodeSums);
-  };
+    setData(results.nodeSums)
+  }
 
   // EFFECT HOOKS //
   // initialize charts when data are `loaded`
@@ -182,93 +182,93 @@ const EventBars = ({
         ...params,
         max,
         data: dataForChart[curFlowType],
-      });
+      })
 
       const newSecChart = showImpacts
         ? new D3ImpactBars("." + styles.impacts, {
-          ...params,
-          max,
-          data: caseDeathDataForChart,
-        })
-        : null;
-      setChart(newChart);
-      setSecChart(newSecChart);
+            ...params,
+            max,
+            data: caseDeathDataForChart,
+          })
+        : null
+      setChart(newChart)
+      setSecChart(newSecChart)
     }
-  }, [loaded, dataForChart, caseDeathDataForChart, top10Only]);
+  }, [loaded, dataForChart, caseDeathDataForChart, top10Only])
 
   // if both sets of required data are not null, mark as `loaded`
   useEffect(() => {
     if (dataForChart !== null && caseDeathDataForChart !== null) {
-      setLoaded(true);
+      setLoaded(true)
     }
-  }, [data, caseDeathDataForChart]);
+  }, [data, caseDeathDataForChart])
   // Format data.
   // if both sets of required raw data are not null, process them into data
   // that can be used in the charts
   useEffect(() => {
     if (data !== null && impactData !== null) {
       // hide/show no data message
-      setNoFilteredData(data[curFlowType].length === 0);
+      setNoFilteredData(data[curFlowType].length === 0)
 
-      const dataByIso2 = {};
-      const dataByIso3 = {};
+      const dataByIso2 = {}
+      const dataByIso3 = {}
       data[curFlowType].forEach(d => {
-        d.value = d[curFlowType];
+        d.value = d[curFlowType]
 
-        dataByIso2[(d[params.direction].iso2 || "none").toLowerCase()] = d;
-        dataByIso3[(d[params.direction].iso3 || "none").toLowerCase()] = d;
-      });
-      const newCaseDeathDataForChartTmpByIso2 = {};
+        dataByIso2[(d[params.direction].iso2 || "none").toLowerCase()] = d
+        dataByIso3[(d[params.direction].iso3 || "none").toLowerCase()] = d
+      })
+      const newCaseDeathDataForChartTmpByIso2 = {}
 
       // Get region-filtered stakeholders
-      const filteredStakeholders = getFilteredStakeholders();
+      const filteredStakeholders = getFilteredStakeholders()
 
       // for each datum of case or death data, put it in chart data format
       // indexed by iso2 code
       removeGlobalData(impactData).forEach(({ value, ...d }) => {
-        const iso3 = d.place_iso3 || d.iso3;
-        const stakeholderInfo = filteredStakeholders[iso3];
-        if (stakeholderInfo === undefined) return;
+        const iso3 = d.place_iso3 || d.iso3
+        const stakeholderInfo = filteredStakeholders[iso3]
+        if (stakeholderInfo === undefined) return
         else {
-          const curShInfo = filteredStakeholders[iso3];
-          d.iso2 = curShInfo.iso2;
-          d.region_who = curShInfo.region_who;
-          d.name = curShInfo.name;
+          const curShInfo = filteredStakeholders[iso3]
+          d.iso2 = curShInfo.iso2
+          d.region_who = curShInfo.region_who
+          d.name = curShInfo.name
         }
-        const name = d.place_name || d.name;
-        const iso2 = (d.iso2 || d.place_iso || "none").toLowerCase();
+        const name = d.place_name || d.name
+        const iso2 = (d.iso2 || d.place_iso || "none").toLowerCase()
         newCaseDeathDataForChartTmpByIso2[iso2] = {
           value,
           iso2,
           name,
           bar_id: `${iso2}-${curFlowType}-${impact}`,
           region_who: d.region_who,
-        };
-      });
+        }
+      })
 
       // reciprocally: add zeroes for funding for countries that had cases
       // but no funding listed
       const newDataForChart = {
         committed_funds: JSON.parse(JSON.stringify(data.committed_funds)),
         disbursed_funds: JSON.parse(JSON.stringify(data.disbursed_funds)),
-      };
+      }
       if (addUnfundedCountriesWithCases) {
         for (const flowType of Object.keys(newDataForChart)) {
           removeGlobalData(impactData).forEach(d => {
             // if the case/death data place doesn't appear in the stakeholders
             // dataset, skip it, otherwise if it doesn't appear in the funding
             // dataset, add it with zero value
-            let iso2 = (d.place_iso || d.iso2 || "none").toLowerCase();
-            const iso3 = (d.place_iso3 || d.iso3 || "none").toLowerCase();
+            let iso2 = (d.place_iso || d.iso2 || "none").toLowerCase()
+            const iso3 = (d.place_iso3 || d.iso3 || "none").toLowerCase()
             if (
               dataByIso2[iso2] === undefined &&
               dataByIso3[iso3] === undefined
             ) {
-              const iso3Upper = iso3.toUpperCase();
-              if (filteredStakeholders[iso3Upper] === undefined) return;
-              const shInfo = filteredStakeholders[iso3Upper];
-              let iso2 = (shInfo.iso2 || "none").toLowerCase();
-              const name = shInfo.name || d.place_name || d.name;
+              const iso3Upper = iso3.toUpperCase()
+              if (filteredStakeholders[iso3Upper] === undefined) return
+              const shInfo = filteredStakeholders[iso3Upper]
+              let iso2 = (shInfo.iso2 || "none").toLowerCase()
+              const name = shInfo.name || d.place_name || d.name
               const newDatumForChart = {
                 value: 0,
                 iso2,
@@ -278,11 +278,11 @@ const EventBars = ({
                 flag_url: getFlagUrl(name, iso2),
                 region_who: shInfo.region_who,
                 target: { iso2 },
-              };
+              }
 
-              newDataForChart[flowType].push(newDatumForChart);
+              newDataForChart[flowType].push(newDatumForChart)
             }
-          });
+          })
         }
       }
 
@@ -291,18 +291,18 @@ const EventBars = ({
       if (showImpacts)
         newDataForChart[curFlowType].forEach(d => {
           if (newCaseDeathDataForChartTmpByIso2[d.iso2] !== undefined) {
-            d.impact = newCaseDeathDataForChartTmpByIso2[d.iso2].value;
-          } else d.impact = 0;
-        });
+            d.impact = newCaseDeathDataForChartTmpByIso2[d.iso2].value
+          } else d.impact = 0
+        })
 
       // add blank funding record for places with cases but no funding
 
       // if case/death data are not available for a place that is in the
       // funding dataset, add it as null
-      const newCaseDeathDataForChart = [];
+      const newCaseDeathDataForChart = []
       newDataForChart[curFlowType].forEach(
         ({ name, target, value, region_who }) => {
-          const iso2 = (target.iso2 || "none").toLowerCase();
+          const iso2 = (target.iso2 || "none").toLowerCase()
           if (newCaseDeathDataForChartTmpByIso2[iso2] === undefined) {
             newCaseDeathDataForChart.push({
               iso2,
@@ -312,15 +312,15 @@ const EventBars = ({
               name,
               bar_id: `${iso2}-${curFlowType}-${impact}`,
               region_who,
-            });
+            })
           } else {
             newCaseDeathDataForChart.push({
               ...newCaseDeathDataForChartTmpByIso2[iso2],
               sort: value,
-            });
+            })
           }
-        }
-      );
+        },
+      )
 
       // add case/death data missing bc not in funding data
       if (showImpacts)
@@ -331,7 +331,7 @@ const EventBars = ({
             newCaseDeathDataForChart.push({
               ...newCaseDeathDataForChartTmpByIso2[iso2],
               sort: null,
-            });
+            })
           }
           if (
             newDataForChart[curFlowType].find(d => d.iso2 === iso2) ===
@@ -341,13 +341,13 @@ const EventBars = ({
               ...newCaseDeathDataForChartTmpByIso2[iso2],
               value: null,
               sort: null,
-            });
+            })
           }
         }
-      setDataForChart(newDataForChart);
-      setCaseDeathDataForChart(newCaseDeathDataForChart);
+      setDataForChart(newDataForChart)
+      setCaseDeathDataForChart(newCaseDeathDataForChart)
     }
-  }, [data, impactData, curFlowType]);
+  }, [data, impactData, curFlowType])
 
   // update bar chart when flow type is changed
   useEffect(() => {
@@ -355,23 +355,23 @@ const EventBars = ({
       chart.update(data[curFlowType], curFlowType, {
         ...params,
         max,
-      });
+      })
       secChart.update(caseDeathDataForChart, curFlowType, {
         ...params,
         max,
-      });
+      })
     } else if (data === null) {
-      getData();
+      getData()
     }
-  }, [caseDeathDataForChart]);
+  }, [caseDeathDataForChart])
 
   // update charts if fund type is changed
   useEffect(() => {
     if (initialized) {
-      setLoaded(false);
-      getData();
+      setLoaded(false)
+      getData()
     }
-  }, [funds, region]);
+  }, [funds, region])
 
   // update second bar chart when impact is changed
   useEffect(() => {
@@ -380,9 +380,9 @@ const EventBars = ({
         ...params,
         impact,
         max,
-      });
+      })
     }
-  }, [impact]);
+  }, [impact])
 
   const top10Checkbox = funds !== "recipient_region" &&
     dataForChart !== null &&
@@ -396,7 +396,7 @@ const EventBars = ({
           classes: [styles.checkbox],
         }}
       />
-    );
+    )
   // JSX //
   return (
     <>
@@ -551,11 +551,11 @@ const EventBars = ({
         />
       }
     </>
-  );
-};
-export default EventBars;
+  )
+}
+export default EventBars
 
 const removeGlobalData = data => {
-  if (data === null) return data;
-  else return data.filter(d => d.iso3 !== "GLB");
-};
+  if (data === null) return data
+  else return data.filter(d => d.iso3 !== "GLB")
+}
