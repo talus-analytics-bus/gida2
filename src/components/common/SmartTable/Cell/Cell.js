@@ -1,5 +1,5 @@
-import React from "react";
+import React from "react"
 
 export default function Cell({ cellDatum }) {
-  return <td>{cellDatum.valueFormatted}</td>;
+  return <td key={cellDatum.colKey}>{cellDatum.valueFormatted}</td>
 }

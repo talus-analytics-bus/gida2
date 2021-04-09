@@ -1,15 +1,11 @@
 @import "../../../assets/styles/colors.scss";
 
+// bootstrap overrides
+[class*="table-bordered"] {
+  border: unset;
+}
+
 .tableInstance {
-  // overflow-y: auto;
-  // overflow-x: hidden;
-
-  table {
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-  }
-
   td,
   th {
     background-color: white;
@@ -82,12 +78,64 @@
     color: white;
   }
 
-  &.noVerticalBorders {
-    table {
+  // &.noVerticalBorders {
+  //   table {
+  //     th,
+  //     td {
+  //       border-width: 0 0 1px 0 !important;
+  //     }
+  //   }
+  // }
+
+  // copied styles from smart table
+  // table styling //
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    tr {
       th,
       td {
-        border-width: 0 0 1px 0 !important;
+        padding: 10px 20px;
+        border: 1px solid #ddd;
+        border-width: 1px 0;
+      }
+      td {
+        background-color: white;
+      }
+      th {
+        background-color: #efefef;
+        border-bottom-width: 0;
+        cursor: pointer;
+      }
+
+      // first table row styles
+      &:first-child td {
+        border-top: none;
+      }
+
+      // "except last" table row styles
+      &:not(:last-child) td {
+        border-bottom-width: 0;
+      }
+
+      // first and last col styles
+      td,
+      th {
+        &:first-child {
+          border-left-width: 1px;
+        }
+        &:last-child {
+          border-right-width: 1px;
+        }
       }
     }
+  }
+  // header row styling
+  table tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+  }
+
+  table tr:first-child th:last-child {
+    border-top-right-radius: 10px;
   }
 }
