@@ -10,6 +10,16 @@
     $cardSize: 420px;
     @include spaceChildrenVert(30px);
     .title {
+      // a {
+      //   display: inline-flex;
+      //   align-items: center;
+      // }
+      i {
+        vertical-align: middle;
+        margin-right: 1rem;
+        top: -0.1rem;
+        position: relative;
+      }
       font-family: "Rawline", serif;
       color: $outbreak-blue-2;
       font-weight: 700;
