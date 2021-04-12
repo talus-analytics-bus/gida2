@@ -17,14 +17,14 @@ const API_URL = process.env.REACT_APP_API_URL
  *                   the filters (if any) indexed by flow type, e.g.,
  *                   `disbursed_funds`.
  */
-export const FlowSums = async function({ filters }) {
+export const FlowSums = async function({ direction = "origin", filters }) {
   // Send request
   // Await response
   const res = await axios({
     method: "post",
     url: `${API_URL}/post/flow_sums`,
     data: { filters },
-    params: {},
+    params: { direction },
   })
   return res.data
 }

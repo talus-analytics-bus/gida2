@@ -61,6 +61,7 @@ const EventNumberTotals = ({
 
         const queries = {
           byYear: FlowSums({
+            direction: role === "funder" ? "origin" : "target",
             filters,
           }),
         }
