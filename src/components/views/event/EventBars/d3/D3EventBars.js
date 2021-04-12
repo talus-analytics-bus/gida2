@@ -3,7 +3,10 @@ import Chart from "../../../../chart/Chart.js"
 import Util, { formatRegion } from "../../../../misc/Util.js"
 import styles from "./d3eventbars.module.scss"
 import ReactTooltip from "react-tooltip"
-import { FLAG_BASE_URL_64 } from "../../../../views/explore/content/Orgs/Flag"
+import {
+  FLAG_BASE_URL_64,
+  getFlagPath,
+} from "../../../../views/explore/content/Orgs/Flag"
 
 // colors
 import {
@@ -527,7 +530,10 @@ class D3EventBars extends Chart {
             if (showFlag) {
               iconGroup
                 .append("image")
-                .attr("href", FLAG_BASE_URL_64 + dataByName[d].flag_url)
+                .attr(
+                  "href",
+                  getFlagPath(dataByName[d].flag_url, FLAG_BASE_URL_64),
+                )
                 .attr("width", badgeDim.width)
                 .attr("height", badgeDim.height)
                 .attr("x", badgeDim.x)
@@ -537,13 +543,16 @@ class D3EventBars extends Chart {
                 })
                 .on("error", function onError(d) {
                   // nudge label to right to fill empty flag space
-                  // nudge y-axis tick label to accomodate flag
                   g.select("text").attr("x", -10)
-                  // // show org flag (generic)
+
+                  // old code below
+                  // show "other" flag (generic)
+                  // const subcat = dataByName[d].children[0][params.direction].subcat;
+                  // if (subcat === 'region')
                   // d3.select(this).attr(
                   //   "href",
-                  //   "https://flags.talusanalytics.com/64px/org.png"
-                  // );
+                  //   "https://flags.talusanalytics.com/64px/org.png",
+                  // )
                 })
               g.select("text").attr("x", -50)
             }

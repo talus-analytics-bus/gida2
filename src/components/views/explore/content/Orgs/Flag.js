@@ -2,6 +2,11 @@ import React from "react"
 import classNames from "classnames"
 import styles from "./flag.module.scss"
 
+// local flags
+import orgFlag from "./images/org.png"
+import otherFlag from "./images/other.png"
+import regionFlag from "./images/rgn.png"
+
 export const FLAG_BASE_URL = "https://flags.talusanalytics.com/shiny_1000px/"
 export const FLAG_BASE_URL_64 = "https://flags.talusanalytics.com/shiny_64px/"
 
@@ -19,7 +24,9 @@ export function Flag({
     const addDefaultSrc = ev => {
       ev.target.src = "/flags/unspecified.png"
     }
-    const flagSrc = localFile ? "/flags/" + filename : `${baseUrl}${filename}`
+    const flagSrc = localFile
+      ? "/flags/" + filename
+      : getFlagPath(filename, baseUrl)
     const flag = (
       <div className={classNames(styles.flag, { [styles.big]: big })}>
         <img
@@ -33,4 +40,16 @@ export function Flag({
     )
     return flag
   }
+}
+
+export function getFlagPath(flagFn, baseUrl) {
+  const flagPaths = {
+    "org.png": orgFlag,
+    "other.png": otherFlag,
+    "rgn.png": regionFlag,
+  }
+  const localFlags = Object.keys(flagPaths)
+
+  if (localFlags.includes(flagFn)) return flagPaths[flagFn]
+  else return baseUrl + flagFn
 }
