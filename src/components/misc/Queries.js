@@ -10,6 +10,25 @@ const NONE_VALS = [null, undefined]
 const GOAL_API_URL = "https://goal-api.talusanalytics.com"
 const API_URL = process.env.REACT_APP_API_URL
 
+/**
+ * FlowSums
+ * @param {Object} filters A set of filters to apply, if any.
+ * @returns {Object} The response data, which is the totals of flows matching
+ *                   the filters (if any) indexed by flow type, e.g.,
+ *                   `disbursed_funds`.
+ */
+export const FlowSums = async function({ filters }) {
+  // Send request
+  // Await response
+  const res = await axios({
+    method: "post",
+    url: `${API_URL}/post/flow_sums`,
+    data: { filters },
+    params: {},
+  })
+  return res.data
+}
+
 export const NodeSums = async function({
   format,
   direction = "origin",
@@ -56,7 +75,7 @@ export const Chords = async function({
       ["group_by", group_by],
       ["stack_by", stackBy],
     ],
-  });
+  })
 
   // Send request
   // Await response
@@ -101,12 +120,12 @@ const Flow = async function({
     ["is_desc", [isDesc]],
     ["search_text", [searchText]],
     ["fields", fields],
-  ];
+  ]
   toAdd.forEach(([key, values]) => {
     if (values !== undefined && values.length > 0) {
       values.forEach(v => {
-        if (v !== null) params.append(key, v);
-      });
+        if (v !== null) params.append(key, v)
+      })
     }
   })
 
@@ -244,23 +263,23 @@ export const Stakeholder = async function({
  * Perform search and get results (stakeholders and events)
  */
 export const SearchResults = async function({ search, limit, filters }) {
-  const params = new URLSearchParams();
-  const toCheck = [["search", search], ["limit", limit]];
+  const params = new URLSearchParams()
+  const toCheck = [["search", search], ["limit", limit]]
   toCheck.forEach(([k, v]) => {
     if (![undefined, null, ""].includes(v)) {
-      params.append(k, v);
+      params.append(k, v)
     }
-  });
+  })
 
   const res = await axios.post(
     `${API_URL}/post/search`,
     { filters },
     {
       params,
-    }
-  );
-  return res.data;
-};
+    },
+  )
+  return res.data
+}
 
 /**
  * Get outbreak data from API.
@@ -304,8 +323,8 @@ export const CumulativeCasesOrDeaths = async ({ casesOrDeaths, eventData }) => {
       return "Unavailable"
     } else {
       return eventData.cases_and_deaths_json.map(d => {
-        return { value: d[casesOrDeaths], iso3: d.iso3 };
-      });
+        return { value: d[casesOrDeaths], iso3: d.iso3 }
+      })
     }
   } else {
     const res = await ObservationQuery({
