@@ -28,7 +28,7 @@ const JeeMapEntryCard = () => {
               }
             />
           ),
-          title: "JEE map",
+          title: "JEE scores",
           className: undefined,
           description: (
             <>

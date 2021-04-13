@@ -5,7 +5,6 @@ import JeeMapEntryCard from "./content/JeeMapEntryCard"
 import React from "react"
 import classNames from "classnames"
 import styles from "./home.module.scss"
-import { SlideUp } from "../../common"
 
 // JSX for home page
 const Home = () => {
