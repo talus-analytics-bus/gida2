@@ -56,7 +56,8 @@
   }
   .results {
     flex-flow: column;
-    width: 275px;
+    width: 100%;
+
     position: absolute;
     background-color: white;
     border-radius: $border-radius;

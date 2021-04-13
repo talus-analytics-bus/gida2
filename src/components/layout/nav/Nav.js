@@ -39,7 +39,13 @@ const Nav = ({ page, ...props }) => {
           <img src={logo} className={styles.logo} alt="GIDA - Tracker" />
         </Link>
         <div className={styles.links}>
-          {/* <GhsaButton {...{ active: page === "ghsa", isDark: props.isDark }} /> */}
+          <Search
+            {...{
+              isDark: props.isDark,
+              name: "nav",
+              expandedDefault: false,
+            }}
+          />
           <Link
             className={
               page === "explore-map" || page === "details-country"
@@ -104,13 +110,6 @@ const Nav = ({ page, ...props }) => {
               }}
             />
           </div>
-          <Search
-            {...{
-              isDark: props.isDark,
-              name: "nav",
-              expandedDefault: page !== "home" && page !== '',
-            }}
-          />
         </div>
       </div>
     </div>
