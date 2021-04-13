@@ -1,11 +1,11 @@
-import React from "react";
-import classNames from "classnames";
-import { Link } from "react-router-dom";
-import styles from "./nav.module.scss";
-import logoLight from "../../../assets/images/tracking.png";
-import logoDark from "../../../assets/images/tracking-dark-mode.png";
-import Menu from "./content/Menu/Menu.js";
-import { Search } from "../../common";
+import React from "react"
+import classNames from "classnames"
+import { Link } from "react-router-dom"
+import styles from "./nav.module.scss"
+import logoLight from "../../../assets/images/tracking.png"
+import logoDark from "../../../assets/images/tracking-dark-mode.png"
+import Menu from "./content/Menu/Menu.js"
+import { Search } from "../../common"
 
 const Nav = ({ page, ...props }) => {
   const logo = props.isDark ? logoDark : logoLight
@@ -48,7 +48,7 @@ const Nav = ({ page, ...props }) => {
             }
             to="/map"
           >
-            Countries
+            Map
           </Link>
           <Link
             className={
