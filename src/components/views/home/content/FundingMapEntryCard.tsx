@@ -4,6 +4,7 @@ import { Redirect } from "react-router-dom"
 // local components
 import { EntryCard } from "../EntryCard/EntryCard"
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker"
+import { SlideUp } from "../../../common"
 
 // assets and styles
 import styles from "./pheicentrycard.module.scss"
@@ -15,35 +16,37 @@ import { Button } from "../../../common"
  */
 const FundingMapEntryCard = () => {
   return (
-    <EntryCard
-      {...{
-        graphic: (
-          <img
-            style={{ height: 80 }}
-            src={pngSrc}
-            alt={
-              "Map of countries shaded in purple with higher-funding darker purple"
-            }
-          />
-        ),
-        title: "Funding map",
-        className: undefined,
-        description:
-          "Track global health security funding by funder or recipient country.",
-        actions: [
-          <Button
-            {...{
-              type: "primary",
-              label: "View funding map",
-              linkTo: "/map",
-              url: undefined,
-              disabled: false,
-              iconName: null,
-            }}
-          />,
-        ],
-      }}
-    />
+    <SlideUp>
+      <EntryCard
+        {...{
+          graphic: (
+            <img
+              style={{ height: 80 }}
+              src={pngSrc}
+              alt={
+                "Map of countries shaded in purple with higher-funding darker purple"
+              }
+            />
+          ),
+          title: "Funding map",
+          className: undefined,
+          description:
+            "Track global health security funding by funder or recipient country.",
+          actions: [
+            <Button
+              {...{
+                type: "primary",
+                label: "View funding map",
+                linkTo: "/map",
+                url: undefined,
+                disabled: false,
+                iconName: null,
+              }}
+            />,
+          ],
+        }}
+      />
+    </SlideUp>
   )
 }
 

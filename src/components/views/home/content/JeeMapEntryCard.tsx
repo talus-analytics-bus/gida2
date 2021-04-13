@@ -4,6 +4,7 @@ import { Redirect } from "react-router-dom"
 // local components
 import { EntryCard } from "../EntryCard/EntryCard"
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker"
+import { SlideUp } from "../../../common"
 
 // assets and styles
 import styles from "./pheicentrycard.module.scss"
@@ -15,47 +16,49 @@ import { Button } from "../../../common"
  */
 const JeeMapEntryCard = () => {
   return (
-    <EntryCard
-      {...{
-        graphic: (
-          <img
-            style={{ height: 80 }}
-            src={pngSrc}
-            alt={
-              "Map of countries shaded in purple with higher-funding darker purple"
-            }
-          />
-        ),
-        title: "JEE map",
-        className: undefined,
-        description: (
-          <>
-            View{" "}
-            <a
-              href={
-                "https://www.who.int/ihr/procedures/joint-external-evaluations/en/"
+    <SlideUp delayFactor={10}>
+      <EntryCard
+        {...{
+          graphic: (
+            <img
+              style={{ height: 80 }}
+              src={pngSrc}
+              alt={
+                "Map of countries shaded in purple with higher-funding darker purple"
               }
-              target={"_blank"}
-            >
-              Joint External Evaluation (JEE)
-            </a>{" "}
-            scores for each country that has completed the assessment.
-          </>
-        ),
-        actions: [
-          <Button
-            {...{
-              type: "primary",
-              label: "View JEE scores",
-              linkTo: "/map?supportType=jee",
-              url: undefined,
-              disabled: false,
-              iconName: null,
-            }}
-          />,
-        ],
-      }}
-    />
+            />
+          ),
+          title: "JEE map",
+          className: undefined,
+          description: (
+            <>
+              View{" "}
+              <a
+                href={
+                  "https://www.who.int/ihr/procedures/joint-external-evaluations/en/"
+                }
+                target={"_blank"}
+              >
+                Joint External Evaluation (JEE)
+              </a>{" "}
+              scores for each country that has completed the assessment.
+            </>
+          ),
+          actions: [
+            <Button
+              {...{
+                type: "primary",
+                label: "View JEE scores",
+                linkTo: "/map?supportType=jee",
+                url: undefined,
+                disabled: false,
+                iconName: null,
+              }}
+            />,
+          ],
+        }}
+      />
+    </SlideUp>
   )
 }
 

@@ -4,6 +4,7 @@ import { Redirect } from "react-router-dom"
 // local components
 import { EntryCard } from "../EntryCard/EntryCard"
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker"
+import { SlideUp } from "../../../common"
 
 // contexts
 import OutbreakContext from "../../../context/OutbreakContext"
@@ -20,26 +21,28 @@ const PheicEntryCard = () => {
   const outbreaks = useContext(OutbreakContext)
 
   return (
-    <EntryCard
-      {...{
-        graphic: <img src={virionSvg} alt={"A virion (virus particle)"} />,
-        title: "Funding by PHEIC",
-        className: styles.pheicEntryCard,
-        description: (
-          <>
-            View response funding for the six{" "}
-            <a
-              href={"https://www.who.int/ihr/procedures/pheic/en/"}
-              target={"_blank"}
-            >
-              public health emergencies of international concern (PHEICs)
-            </a>
-            .
-          </>
-        ),
-        actions: [<PheicSelectpicker {...{ outbreaks }} />],
-      }}
-    />
+    <SlideUp>
+      <EntryCard
+        {...{
+          graphic: <img src={virionSvg} alt={"A virion (virus particle)"} />,
+          title: "Funding by PHEIC",
+          className: styles.pheicEntryCard,
+          description: (
+            <>
+              View response funding for the six{" "}
+              <a
+                href={"https://www.who.int/ihr/procedures/pheic/en/"}
+                target={"_blank"}
+              >
+                public health emergencies of international concern (PHEICs)
+              </a>
+              .
+            </>
+          ),
+          actions: [<PheicSelectpicker {...{ outbreaks }} />],
+        }}
+      />
+    </SlideUp>
   )
 }
 
