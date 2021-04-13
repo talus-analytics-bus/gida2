@@ -4,7 +4,19 @@
   font-size: 16px; // base font size
   max-width: 290px;
   position: relative;
+
+  &.wide {
+    max-width: unset;
+    width: 100%;
+  }
+
   .searchBar {
+    &.expandedByDefault .field i {
+      cursor: default;
+      &:hover {
+        color: inherit;
+      }
+    }
     &.expanded .field {
       input {
         width: 270px;
@@ -29,6 +41,7 @@
           color: darken($grey, 10%);
         }
       }
+
       input {
         transition: 0.5s width;
         cursor: text !important;

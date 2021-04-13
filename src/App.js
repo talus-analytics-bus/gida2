@@ -8,7 +8,10 @@ import Nav from "./components/layout/nav/Nav.js"
 import Footer from "./components/layout/footer/Footer.js"
 
 // queries
-import { execute, FlowType, Version } from "./components/misc/Queries"
+import { execute, FlowType, Outbreak, Version } from "./components/misc/Queries"
+
+// contexts
+import { OutbreakProvider } from "./components/context/OutbreakContext"
 
 // views
 import Home from "./components/views/home/Home.js"
@@ -40,6 +43,7 @@ const App = () => {
   const [loading, setLoading] = useState(true)
   const [flowTypeInfo, setFlowTypeInfo] = useState([])
   const [versionData, setVersionData] = useState([])
+  const [outbreakData, setOutbreakData] = useState([])
 
   // Try components
   const [detailsComponent, setDetailsComponent] = useState(null)
@@ -86,11 +90,14 @@ const App = () => {
     const queries = {
       flowTypeInfo: FlowType({}),
       versions: Version(),
+      outbreaks: Outbreak({}),
     }
 
     const results = await execute({ queries })
     setFlowTypeInfo(results.flowTypeInfo)
     setVersionData(results.versions)
+    setOutbreakData(results.outbreaks)
+
     setLoading(false)
   }
 
@@ -442,7 +449,11 @@ const App = () => {
                 path="/"
                 render={d => {
                   setPage("home")
-                  return <Home />
+                  return (
+                    <OutbreakProvider value={outbreakData}>
+                      <Home />
+                    </OutbreakProvider>
+                  )
                 }}
               />
             </div>

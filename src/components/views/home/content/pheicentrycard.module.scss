@@ -1,0 +1,23 @@
+@import "src/assets/styles/colors.scss";
+.pheicEntryCard {
+    .dropdowns {
+        display: flex;
+        align-items: flex-end;
+        > div,
+        form label {
+            margin: 0;
+        }
+        @include spaceChildrenHoriz(10px);
+        > div {
+            @include dropdown();
+            :after {
+                top: 10px;
+            }
+            select {
+                font-family: "open_sanssemibold", sans-serif;
+                font-weight: 600;
+                font-size: 1.6rem;
+            }
+        }
+    }
+}

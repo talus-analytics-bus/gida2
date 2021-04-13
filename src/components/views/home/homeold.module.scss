@@ -1,0 +1,117 @@
+@import "../../../assets/styles/colors.scss";
+
+.home {
+    display: grid;
+    grid-template-columns: 34% 64%;
+    column-gap: 2%;
+    grid-template-rows: 100%;
+    padding: 0 !important;
+
+    p {
+        &:not(:last-child) {
+            margin-bottom: 20px;
+        }
+        &.instructions {
+            font-style: italic;
+        }
+    }
+
+    .title {
+        font-weight: 600;
+        font-size: 22px;
+        color: $black;
+        font-family: "Raleway", sans-serif;
+    }
+
+    .buttons {
+        display: flex;
+        flex-flow: row;
+        > * {
+            margin-right: 30px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+    }
+
+    .rightPane {
+        background-color: #f2f2f2;
+        height: 100%;
+        .content {
+            height: 100%;
+        }
+
+        .title,
+        .buttons {
+            padding: 20px 40px 0;
+            &.title {
+                padding-top: 30px;
+            }
+        }
+        .map {
+            height: 100%;
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
+            img {
+                width: 100%;
+                margin-top: 60px;
+                margin-bottom: auto;
+            }
+        }
+    }
+
+    > div {
+        display: flex;
+        flex-flow: column;
+    }
+    height: 100%;
+
+    > div:first-child {
+        display: flex;
+        flex-flow: column;
+        // justify-content: space-between;
+        min-height: 80vh;
+        height: 100%;
+        margin-right: 20px;
+
+        > div:first-child {
+            .welcomeText {
+                margin: 30px 0 20px;
+                font-weight: 700;
+                font-size: 28px;
+                line-height: 33px;
+                color: $black;
+                &.dark {
+                    color: white;
+                }
+                font-family: "Raleway", sans-serif;
+            }
+            .welcomeDesc {
+                font-size: 16px;
+                font-family: "Open Sans", sans-serif;
+                color: $black;
+                &.dark {
+                    color: #eee;
+                }
+            }
+            .instructions {
+                margin-bottom: 30px;
+            }
+        }
+
+        .searchContainer {
+            display: flex;
+            flex-flow: column;
+            justify-content: space-between;
+            margin-top: 30px;
+            margin-bottom: 100px;
+            .content {
+                > div,
+                a {
+                    margin: 10px 0;
+                }
+            }
+        }
+    }
+}

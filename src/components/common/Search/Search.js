@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import classNames from "classnames";
-import styles from "./search.module.scss";
-import { SearchResults } from "../../misc/Queries";
-import Util from "../../misc/Util.js";
+import React, { useState, useRef } from "react"
+import { Link } from "react-router-dom"
+import classNames from "classnames"
+import styles from "./search.module.scss"
+import { SearchResults } from "../../misc/Queries"
+import Util from "../../misc/Util.js"
 
 export const searchableSubcats = [
   "academia",
@@ -23,13 +23,21 @@ export const searchableSubcats = [
   // "state_/_department_/_territory",
   // "sub-organization",
   "world",
-];
+]
 /**
  * Generic radio toggle
  * TODO implement tooltip
  * @method Search
  */
-const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
+const Search = ({
+  callback,
+  name,
+  top = false,
+  limit = 5,
+  wide = false,
+  includePheics = true,
+  ...props
+}) => {
   // REFS //
   const resultsRef = useRef(null)
 
@@ -44,21 +52,10 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
     if (val === "") {
       setResults(null)
     } else {
-      // Find country or org matches
-      // Return them by setting the country values
-      // const searchableSubcats = [
-      //   "country",
-      //   "government",
-      //   "organization",
-      //   // "region",
-      //   "state_/_department_/_territory",
-      //   "agency",
-      //   "other",
-      //   "sub-organization",
-      // ];
       const results = await SearchResults({
         search: val,
         limit: limit || 5,
+        includePheics,
         filters: {
           "Stakeholder.subcat": [
             [
@@ -121,15 +118,15 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   const getResults = results => {
     if (callback === undefined) {
       return results.map(d => {
-        const pheic = d.was_pheic !== undefined;
-        const defaultCat = pheic ? "PHEIC" : "Stakeholder";
+        const pheic = d.was_pheic !== undefined
+        const defaultCat = pheic ? "PHEIC" : "Stakeholder"
         const url = pheic
           ? `/events/${d.slug}`
-          : `/details/${d.id}/${d.primary_role}`;
-        d = { cat: defaultCat, ...d };
-        let catTmp = d["cat"];
-        if (catTmp.startsWith("ngo")) catTmp = "NGO";
-        const cat = catTmp.replaceAll("_", " ").trim();
+          : `/details/${d.id}/${d.primary_role}`
+        d = { cat: defaultCat, ...d }
+        let catTmp = d["cat"]
+        if (catTmp.startsWith("ngo")) catTmp = "NGO"
+        const cat = catTmp.replaceAll("_", " ").trim()
         return (
           <Link tabindex={0} onClick={unset} to={url}>
             <div className={styles.result}>
@@ -168,7 +165,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       className={"dark-bg-allowed"}
       id={"placeSearch-" + name}
       type="text"
-      placeholder="search for a country, org, or PHEIC"
+      placeholder={getPlaceholderText({ includePheics })}
       onChange={handleInputChange}
       onKeyDown={handleKeyPress}
     />
@@ -178,11 +175,15 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   return (
     <div
       onClick={() => setShowResults(true)}
-      className={classNames(styles.search, { [styles.top]: top })}
+      className={classNames(styles.search, {
+        [styles.top]: top,
+        [styles.wide]: wide,
+      })}
     >
       <div
         className={classNames(styles.searchBar, {
           [styles.expanded]: expanded,
+          [styles.expandedByDefault]: props.expandedDefault === true,
           [styles.dark]: props.isDark,
         })}
       >
@@ -226,3 +227,12 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
 }
 
 export default Search
+
+/**
+ * Return placeholder text based on which entities will be searched for.
+ */
+const getPlaceholderText = ({ includePheics }) => {
+  if (includePheics) {
+    return "search for a country, org, or PHEIC"
+  } else return "search for a country or organization"
+}

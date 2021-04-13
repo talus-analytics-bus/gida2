@@ -262,9 +262,18 @@ export const Stakeholder = async function({
 /**
  * Perform search and get results (stakeholders and events)
  */
-export const SearchResults = async function({ search, limit, filters }) {
+export const SearchResults = async function({
+  search,
+  limit,
+  filters,
+  includePheics,
+}) {
   const params = new URLSearchParams()
-  const toCheck = [["search", search], ["limit", limit]]
+  const toCheck = [
+    ["search", search],
+    ["limit", limit],
+    ["include_pheics", includePheics],
+  ]
   toCheck.forEach(([k, v]) => {
     if (![undefined, null, ""].includes(v)) {
       params.append(k, v)

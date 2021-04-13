@@ -105,7 +105,7 @@ const Nav = ({ page, ...props }) => {
             />
           </div>
           <Search
-            {...{ isDark: props.isDark, name: "nav", expandedDefault: true }}
+            {...{ isDark: props.isDark, name: "nav", expandedDefault: false }}
           />
         </div>
       </div>

@@ -12,17 +12,17 @@ import {
   NodeSums,
   Assessment,
   Outbreak,
-} from "../../../../misc/Queries";
-import TimeSlider from "../../../../misc/TimeSlider.js";
+} from "../../../../misc/Queries"
+import TimeSlider from "../../../../misc/TimeSlider.js"
 import {
   FilterDropdown,
   FilterSelections,
   Loading,
   SlideToggle,
-} from "../../../../common";
-import Tab from "../../../../misc/Tab.js";
-import { core_capacities } from "../../../../misc/Data.js";
-import { Toggle } from "react-toggle-component";
+} from "../../../../common"
+import Tab from "../../../../misc/Tab.js"
+import { core_capacities } from "../../../../misc/Data.js"
+import { Toggle } from "react-toggle-component"
 
 // Local content components
 import Map from "./content/Map.js"
@@ -38,7 +38,6 @@ const MapViewer = ({
   isDark,
   setIsDark,
   setPage,
-  ...props
 }) => {
   // CONSTANTS //
   const jeeLastUpdatedDateStr = getLastUpdatedDate({
@@ -283,8 +282,8 @@ const MapViewer = ({
           break
         case "event":
           text.fund =
-            " of PHEIC" + (entityRole === "recipient" ? " funding" : "s");
-          break;
+            " of PHEIC" + (entityRole === "recipient" ? " funding" : "s")
+          break
         case "capacity":
           text.fund =
             " of capacity building (IHR)" +
