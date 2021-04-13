@@ -45,6 +45,7 @@ const Search = ({
   const [expanded, setExpanded] = useState(props.expandedDefault || false)
   const [showResults, setShowResults] = useState(false)
   const [results, setResults] = useState(null)
+  const [allowAnimation, setAllowAnimation] = useState(false)
 
   const handleInputChange = async e => {
     const val = e.target.value
@@ -171,6 +172,11 @@ const Search = ({
     />
   )
 
+  useEffect(() => {
+    // toggle expand/collapse if default value is changed
+    setExpanded(props.expandedDefault)
+  }, [props.expandedDefault])
+
   // JSX //
   return (
     <div
@@ -178,6 +184,7 @@ const Search = ({
       className={classNames(styles.search, {
         [styles.top]: top,
         [styles.wide]: wide,
+        [styles.allowAnimation]: allowAnimation,
       })}
     >
       <div
@@ -196,7 +203,13 @@ const Search = ({
                 e.stopPropagation()
                 setShowResults(false)
               }
-              if (props.expandedDefault !== true) setExpanded(!expanded)
+              if (props.expandedDefault !== true) {
+                setAllowAnimation(true)
+                setExpanded(!expanded)
+                setTimeout(() => {
+                  setAllowAnimation(false)
+                }, 500)
+              }
             }}
             className={"material-icons"}
           >

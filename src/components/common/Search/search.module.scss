@@ -10,6 +10,10 @@
     width: 100%;
   }
 
+  &:not(.allowAnimation) * {
+    transition: none !important;
+  }
+
   .searchBar {
     &.expandedByDefault .field i {
       cursor: default;

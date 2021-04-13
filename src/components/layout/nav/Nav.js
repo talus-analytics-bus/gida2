@@ -39,13 +39,6 @@ const Nav = ({ page, ...props }) => {
           <img src={logo} className={styles.logo} alt="GIDA - Tracker" />
         </Link>
         <div className={styles.links}>
-          <Search
-            {...{
-              isDark: props.isDark,
-              name: "nav",
-              expandedDefault: false,
-            }}
-          />
           <Link
             className={
               page === "explore-map" || page === "details-country"
@@ -110,6 +103,13 @@ const Nav = ({ page, ...props }) => {
               }}
             />
           </div>
+          <Search
+            {...{
+              isDark: props.isDark,
+              name: "nav",
+              expandedDefault: page !== "home",
+            }}
+          />
         </div>
       </div>
     </div>
