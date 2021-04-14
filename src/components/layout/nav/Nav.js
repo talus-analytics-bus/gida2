@@ -6,7 +6,7 @@ import logoLight from "../../../assets/images/tracking.png"
 import logoDark from "../../../assets/images/tracking-dark-mode.png"
 import Menu from "./content/Menu/Menu.js"
 import { Search } from "../../common"
-import Flag from "../../views/explore/content/Orgs/Flag"
+import { Flag } from "../../views/explore/content/Orgs/Flag"
 import { searchableSubcats } from "../../common/Search/Search"
 
 // utilities
@@ -128,7 +128,13 @@ const Nav = ({ page, isDark, ...props }) => {
                           [styles.activeSubpage]: subPageName === d.name,
                         })}
                       >
-                        {d.name}
+                        <Flag
+                          {...{
+                            show: true,
+                            filename: `${(d.iso2 || "").toLowerCase()}.png`,
+                          }}
+                        />
+                        <span>{d.name}</span>
                       </Link>
                     ))}
                   </SubMenu>,

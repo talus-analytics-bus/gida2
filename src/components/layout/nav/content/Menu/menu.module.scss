@@ -22,6 +22,8 @@
 
     > a,
     > section > div:first-child {
+      display: flex;
+      align-items: center;
       color: $black;
       // background: #fff;
       text-decoration: none;
