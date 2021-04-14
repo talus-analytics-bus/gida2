@@ -22,6 +22,7 @@ import {
 // contexts
 import { OutbreakProvider } from "./components/context/OutbreakContext"
 import { StakeholderProvider } from "./components/context/StakeholderContext"
+import { FlowTypeProvider } from "./components/context/FlowTypeContext"
 
 // views
 import Home from "./components/views/home/Home.js"
@@ -323,13 +324,15 @@ const App = () => {
                     setPage("event")
                     const slug = d.match.params.slug
                     return (
-                      <Event
-                        {...{
-                          key: slug,
-                          slug, // id
-                          flowTypeInfo,
-                        }}
-                      />
+                      <FlowTypeProvider value={flowTypeInfo}>
+                        <Event
+                          {...{
+                            key: slug,
+                            slug, // id
+                            flowTypeInfo,
+                          }}
+                        />
+                      </FlowTypeProvider>
                     )
                   }}
                 />

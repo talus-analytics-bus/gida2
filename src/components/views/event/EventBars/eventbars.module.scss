@@ -31,14 +31,23 @@
         height: 102px; // required so that secondary chart aligns with main
         .dropdowns {
           display: flex;
-          align-items: flex-end;
-          > div,
-          form label {
+          // align-items: flex-end;
+          > div {
             margin: 0;
           }
-          @include spaceChildrenHoriz(10px);
+          @include spaceChildrenHoriz(40px);
           > div {
-            @include dropdown();
+            @include dropdown(33px);
+            select::after {
+              top: 35px !important;
+            }
+          }
+          > div,
+          > form {
+            margin-top: 0;
+          }
+          > div select {
+            margin-top: 9px;
           }
         }
         form {

@@ -1,0 +1,18 @@
+.toggleFlowType {
+    display: flex;
+    flex-flow: column;
+
+    .label {
+        margin-bottom: 7px;
+        text-transform: uppercase;
+    }
+    > label:first-of-type {
+        margin-bottom: 5px;
+    }
+    input:checked + span {
+        font-family: "open_sanssemibold", sans-serif;
+    }
+    * {
+        text-transform: none;
+    }
+}

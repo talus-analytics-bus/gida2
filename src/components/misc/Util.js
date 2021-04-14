@@ -1165,4 +1165,11 @@ export function isOtherStakeholder(d) {
   return ["other"].includes(d.cat)
 }
 
+export function getFlowTypeLabel(flowType, flowTypeInfo) {
+  if (!flowTypeInfo) return ""
+  const match = flowTypeInfo.find(d => d.name === flowType)
+  if (match) return match.display_name
+  return ""
+}
+
 export default Util

@@ -1,10 +1,16 @@
 // 3rd party libs
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import ReactTooltip from "react-tooltip"
 
 // styles
 import styles from "./eventbars.module.scss"
 import classNames from "classnames"
+
+// utilities
+import { getFlowTypeLabel } from "../../../misc/Util"
+
+// contexts
+import FlowTypeContext from "../../../context/FlowTypeContext"
 
 // local libs
 import D3EventBars from "./d3/D3EventBars"
@@ -13,10 +19,12 @@ import { execute, Chords } from "../../../misc/Queries"
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker"
 import { Loading, Checkbox, Popup, popupStyles } from "../../../common"
 import { FLAG_BASE_URL_64 } from "../../../views/explore/content/Orgs/Flag"
+import { ToggleFlowType } from "../../../views/details/content/ToggleFlowType"
 
 const EventBars = ({
   eventId,
   curFlowType,
+  setCurFlowType,
   caseData,
   deathData,
   stakeholders,
@@ -31,6 +39,9 @@ const EventBars = ({
   const [loaded, setLoaded] = useState(false)
   const [tooltipData, setTooltipData] = useState(false)
   const [noFilteredData, setNoFilteredData] = useState(false)
+
+  // CONTEXT ACCESSORS
+  const flowTypeInfo = useContext(FlowTypeContext)
 
   // "Event impact by"
   const [impact, setImpact] = useState("cases")
@@ -413,6 +424,20 @@ const EventBars = ({
             <div className={styles.chart}>
               <div className={styles.controls}>
                 <div className={styles.dropdowns}>
+                  <ToggleFlowType
+                    {...{
+                      label: "Type of funds",
+                      onChange: e => {
+                        const input = e.target
+                          .closest("label")
+                          .querySelector("input")
+                        setCurFlowType(input.value)
+                      },
+                      getFlowTypeLabel,
+                      curFlowType,
+                      flowTypeInfo,
+                    }}
+                  />
                   <Selectpicker
                     {...{
                       label: "Funds by",

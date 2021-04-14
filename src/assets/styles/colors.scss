@@ -166,7 +166,7 @@ $phone-width-narrow: 375px;
 
 // adapted from:
 // https://fabriceleven.com/design/clever-way-to-change-the-drop-down-selector-arrow-icon/
-@mixin dropdown() {
+@mixin dropdown($afterTop: 30px) {
   position: relative;
   > select::-ms-expand {
     display: none;
@@ -181,7 +181,7 @@ $phone-width-narrow: 375px;
 
     color: #333;
     right: 5px;
-    top: 30px;
+    top: $afterTop;
     padding: 0 0 2px;
     position: absolute;
     pointer-events: none;
@@ -222,9 +222,9 @@ $phone-width-narrow: 375px;
     border: 1px solid $outbreak-gray-3;
     -ms-word-break: normal;
     word-break: normal;
-    font-family: "Rawline", serif;
-    font-weight: 700;
-    font-size: 1.8rem;
+    font-family: "open_sanssemibold", sans-serif;
+    font-weight: normal;
+    font-size: 1.6rem;
   }
 }
 

@@ -75,6 +75,7 @@ const Event = ({ slug, flowTypeInfo }) => {
     })
 
   const eventBars = dataLoaded && {
+    toggleFlowType: false,
     header: (
       <h2>
         Funders and recipients <h4>for {data.name}</h4>
@@ -91,10 +92,11 @@ const Event = ({ slug, flowTypeInfo }) => {
       <EventBars
         {...{
           eventId: data.id,
-          curFlowType,
           caseData,
           deathData,
           stakeholders,
+          curFlowType,
+          setCurFlowType,
           hasImpactsData:
             data.source_of_cases_and_deaths !== "Static CSV" ||
             data.cases_and_deaths_json.some(d => d.iso3 !== "GLB"),
