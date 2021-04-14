@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useState, useContext } from "react"
 import classNames from "classnames"
 import { Link } from "react-router-dom"
 import styles from "./nav.module.scss"
@@ -16,6 +16,7 @@ import { SubMenu } from "./content/Menu/SubMenu/SubMenu"
 const Nav = ({ page, isDark, ...props }) => {
   const logo = isDark ? logoDark : logoLight
   const [openMenu, setOpenMenu] = React.useState("")
+  const [openSubMenu, setOpenSubMenu] = useState("")
   const toggleMenu = name => {
     setOpenMenu(openMenu !== name ? name : "")
   }
@@ -103,7 +104,13 @@ const Nav = ({ page, isDark, ...props }) => {
                     Overview
                   </Link>,
                   <SubMenu
-                    {...{ name: "countries", label: "Countries", isDark }}
+                    {...{
+                      name: "countries",
+                      label: "Countries",
+                      openMenu: openSubMenu,
+                      setOpenMenu: setOpenSubMenu,
+                      isDark,
+                    }}
                   >
                     {countries.map(d => (
                       <Link to={`/details/${d.id}/${d.primary_role}`}>
@@ -115,6 +122,8 @@ const Nav = ({ page, isDark, ...props }) => {
                     {...{
                       name: "organizations",
                       label: "Organizations",
+                      openMenu: openSubMenu,
+                      setOpenMenu: setOpenSubMenu,
                       isDark,
                     }}
                   >
@@ -128,6 +137,8 @@ const Nav = ({ page, isDark, ...props }) => {
                     {...{
                       name: "other",
                       label: "Other entities",
+                      openMenu: openSubMenu,
+                      setOpenMenu: setOpenSubMenu,
                       isDark,
                     }}
                   >
