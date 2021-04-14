@@ -1,0 +1,18 @@
+.subMenu {
+    height: auto;
+    position: relative;
+
+    > div:first-child {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: space-between;
+        span {
+            margin: 0 !important;
+        }
+        i {
+            width: 17px;
+            margin-left: 10px;
+        }
+    }
+}

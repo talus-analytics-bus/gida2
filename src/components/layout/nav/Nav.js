@@ -6,12 +6,15 @@ import logoLight from "../../../assets/images/tracking.png"
 import logoDark from "../../../assets/images/tracking-dark-mode.png"
 import Menu from "./content/Menu/Menu.js"
 import { Search } from "../../common"
+import { searchableSubcats } from "../../common/Search/Search"
 
 // contexts
 import OutbreakContext from "../../context/OutbreakContext"
+import StakeholderContext from "../../context/StakeholderContext"
+import { SubMenu } from "./content/Menu/SubMenu/SubMenu"
 
-const Nav = ({ page, ...props }) => {
-  const logo = props.isDark ? logoDark : logoLight
+const Nav = ({ page, isDark, ...props }) => {
+  const logo = isDark ? logoDark : logoLight
   const [openMenu, setOpenMenu] = React.useState("")
   const toggleMenu = name => {
     setOpenMenu(openMenu !== name ? name : "")
@@ -19,6 +22,16 @@ const Nav = ({ page, ...props }) => {
 
   // CONTEXT ACCESSORS
   const outbreaks = useContext(OutbreakContext)
+  const stakeholders = useContext(StakeholderContext).filter(d =>
+    searchableSubcats.includes(d.subcat),
+  )
+  const countries = stakeholders.filter(
+    d => d.cat === "government" && d.subcat !== "agency",
+  )
+  const organizations = stakeholders.filter(
+    d => !["government", "other"].includes(d.cat) && d.subcat !== "sub-agency",
+  )
+  const other = stakeholders.filter(d => ["other"].includes(d.cat))
 
   // CONSTANTS
   // define about menu links
@@ -36,7 +49,7 @@ const Nav = ({ page, ...props }) => {
         "dark-bg-allowed",
         {
           [styles.loading]: props.loadingNav,
-          [styles.dark]: props.isDark,
+          [styles.dark]: isDark,
           [styles.wide]: page === "explore-map",
         },
         styles[page],
@@ -64,16 +77,83 @@ const Nav = ({ page, ...props }) => {
           >
             Map
           </Link>
-          <Link
-            className={
-              page === "funders-and-recipients" || page === "details"
-                ? styles.active
-                : ""
-            }
-            to="/funders-and-recipients"
-          >
-            Funders and recipients
-          </Link>
+          <div>
+            <Link
+              className={
+                page === "funders-and-recipients" || page === "details"
+                  ? styles.active
+                  : ""
+              }
+              onClick={() => toggleMenu("far")}
+            >
+              Funders and recipients
+              <span className={"caret"} />
+            </Link>
+            <Menu
+              {...{
+                name: "far",
+
+                links: [
+                  <Link
+                    to={"/funders-and-recipients"}
+                    className={classNames({
+                      [styles.active]: page === "funders-and-recipients",
+                    })}
+                  >
+                    Overview
+                  </Link>,
+                  <SubMenu
+                    {...{ name: "countries", label: "Countries", isDark }}
+                  >
+                    {countries.map(d => (
+                      <Link to={`/details/${d.id}/${d.primary_role}`}>
+                        {d.name}
+                      </Link>
+                    ))}
+                  </SubMenu>,
+                  <SubMenu
+                    {...{
+                      name: "organizations",
+                      label: "Organizations",
+                      isDark,
+                    }}
+                  >
+                    {organizations.map(d => (
+                      <Link to={`/details/${d.id}/${d.primary_role}`}>
+                        {d.name}
+                      </Link>
+                    ))}
+                  </SubMenu>,
+                  <SubMenu
+                    {...{
+                      name: "other",
+                      label: "Other entities",
+                      isDark,
+                    }}
+                  >
+                    {other.map(d => (
+                      <Link to={`/details/${d.id}/${d.primary_role}`}>
+                        {d.name}
+                      </Link>
+                    ))}
+                  </SubMenu>,
+                ],
+                // links: outbreaks.map(({ slug, name }) => (
+                //   <Link
+                //     className={classNames({
+                //       [styles.active]: curUrlPathnameContains(slug),
+                //     })}
+                //     to={"/events/" + slug}
+                //   >
+                //     {name}
+                //   </Link>
+                // )),
+                openMenu,
+                setOpenMenu,
+                isDark,
+              }}
+            />
+          </div>
           <div>
             <Link
               className={classNames({
@@ -100,7 +180,7 @@ const Nav = ({ page, ...props }) => {
                 )),
                 openMenu,
                 setOpenMenu,
-                isDark: props.isDark,
+                isDark: isDark,
               }}
             />
           </div>
@@ -140,13 +220,13 @@ const Nav = ({ page, ...props }) => {
                 )),
                 openMenu,
                 setOpenMenu,
-                isDark: props.isDark,
+                isDark: isDark,
               }}
             />
           </div>
           <Search
             {...{
-              isDark: props.isDark,
+              isDark: isDark,
               name: "nav",
               expandedDefault: page !== "home",
             }}

@@ -8,10 +8,17 @@ import Nav from "./components/layout/nav/Nav.js"
 import Footer from "./components/layout/footer/Footer.js"
 
 // queries
-import { execute, FlowType, Outbreak, Version } from "./components/misc/Queries"
+import {
+  execute,
+  FlowType,
+  Outbreak,
+  Stakeholder,
+  Version,
+} from "./components/misc/Queries"
 
 // contexts
 import { OutbreakProvider } from "./components/context/OutbreakContext"
+import { StakeholderProvider } from "./components/context/StakeholderContext"
 
 // views
 import Home from "./components/views/home/Home.js"
@@ -44,6 +51,7 @@ const App = () => {
   const [flowTypeInfo, setFlowTypeInfo] = useState([])
   const [versionData, setVersionData] = useState([])
   const [outbreakData, setOutbreakData] = useState([])
+  const [stakeholderData, setStakeholderData] = useState([])
 
   // Try components
   const [detailsComponent, setDetailsComponent] = useState(null)
@@ -91,12 +99,14 @@ const App = () => {
       flowTypeInfo: FlowType({}),
       versions: Version(),
       outbreaks: Outbreak({}),
+      stakeholders: Stakeholder({}),
     }
 
     const results = await execute({ queries })
     setFlowTypeInfo(results.flowTypeInfo)
     setVersionData(results.versions)
     setOutbreakData(results.outbreaks)
+    setStakeholderData(results.stakeholders)
 
     setLoading(false)
   }
@@ -106,10 +116,6 @@ const App = () => {
     const envName = process.env.REACT_APP_ENV_NAME
     console.log("[INFO] Environment name: " + envName)
   }, [])
-
-  // Define what columns to show in tables
-  const valueColsInkind = ["provided_inkind", "committed_inkind"]
-  const valueColsFinancial = ["disbursed_funds", "committed_funds"]
 
   // Track the current page.
   const [page, setPage] = useState(undefined)
@@ -162,9 +168,11 @@ const App = () => {
     return (
       <div className={isDark ? "dark" : ""}>
         <BrowserRouter>
-          <OutbreakProvider value={outbreakData}>
-            <Nav {...{ isDark, page }} />
-          </OutbreakProvider>
+          <StakeholderProvider value={stakeholderData}>
+            <OutbreakProvider value={outbreakData}>
+              <Nav {...{ isDark, page }} />
+            </OutbreakProvider>
+          </StakeholderProvider>
           <Switch>
             <div>
               <Route
