@@ -136,6 +136,15 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
     }
   }, [exportAction, exportBody])
 
+  const orderedStakeholders = Object.values(data.stakeholders)
+    .filter(d => searchableSubcats.includes(d.subcat))
+    .map(d => {
+      return { value: d.id, label: d.name, labelLower: d.name.toLowerCase() }
+    })
+    .sort(function(a, b) {
+      if (a.labelLower > b.labelLower) return 1
+      else return -1
+    })
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.export)}>
@@ -183,11 +192,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: Object.values(data.stakeholders)
-                      .filter(d => searchableSubcats.includes(d.subcat))
-                      .map(d => {
-                        return { value: d.id, label: d.name }
-                      }),
+                    options: orderedStakeholders,
                     placeholder: "Funder",
                     onChange: setFunders,
                     curValues: funders,
@@ -196,11 +201,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: Object.values(data.stakeholders)
-                      .filter(d => searchableSubcats.includes(d.subcat))
-                      .map(d => {
-                        return { value: d.id, label: d.name }
-                      }),
+                    options: orderedStakeholders,
                     placeholder: "Recipient",
                     onChange: setRecipients,
                     curValues: recipients,
