@@ -14,5 +14,8 @@
             width: 17px;
             margin-left: 10px;
         }
+        > section > div:hover {
+            color: blue !important;
+        }
     }
 }

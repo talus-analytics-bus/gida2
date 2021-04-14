@@ -44,7 +44,8 @@
   &.dark {
     background-color: #222;
     border: 1px solid #ccc;
-    a {
+    a,
+    section > div:first-child {
       &:hover,
       &.active {
         background-color: #333;
