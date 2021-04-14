@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import classNames from "classnames"
 import { Link } from "react-router-dom"
 import styles from "./nav.module.scss"
@@ -7,12 +7,27 @@ import logoDark from "../../../assets/images/tracking-dark-mode.png"
 import Menu from "./content/Menu/Menu.js"
 import { Search } from "../../common"
 
+// contexts
+import OutbreakContext from "../../context/OutbreakContext"
+
 const Nav = ({ page, ...props }) => {
   const logo = props.isDark ? logoDark : logoLight
   const [openMenu, setOpenMenu] = React.useState("")
   const toggleMenu = name => {
     setOpenMenu(openMenu !== name ? name : "")
   }
+
+  // CONTEXT ACCESSORS
+  const outbreaks = useContext(OutbreakContext)
+
+  // CONSTANTS
+  // define about menu links
+  const aboutLinkData = [
+    { pathname: "/about/background", label: "Background" },
+    { pathname: "/about/data", label: "Data sources" },
+    { pathname: "/about/citations", label: "Citations" },
+    { pathname: "/about/submit", label: "Submit data" },
+  ]
 
   return (
     <div
@@ -59,14 +74,36 @@ const Nav = ({ page, ...props }) => {
           >
             Funders and recipients
           </Link>
-          <Link
-            className={
-              page === "events" || page === "event" ? styles.active : ""
-            }
-            to="/events"
-          >
-            PHEICs
-          </Link>
+          <div>
+            <Link
+              className={classNames({
+                [styles.active]: page === "events" || page === "event",
+              })}
+              onClick={() => toggleMenu("events")}
+            >
+              PHEICs
+              <span className={"caret"} />
+            </Link>
+            <Menu
+              {...{
+                name: "events",
+
+                links: outbreaks.map(({ slug, name }) => (
+                  <Link
+                    className={classNames({
+                      [styles.active]: curUrlPathnameContains(slug),
+                    })}
+                    to={"/events/" + slug}
+                  >
+                    {name}
+                  </Link>
+                )),
+                openMenu,
+                setOpenMenu,
+                isDark: props.isDark,
+              }}
+            />
+          </div>
           {
             // Analysis page commented out until more content is developed,
             // e.g., a Sankey diagram
@@ -91,12 +128,16 @@ const Nav = ({ page, ...props }) => {
             <Menu
               {...{
                 name: "about",
-                links: [
-                  <Link to="/about/background">Background</Link>,
-                  <Link to="/about/data">Data sources</Link>,
-                  <Link to="/about/citations">Citations</Link>,
-                  <Link to="/about/submit">Submit data</Link>,
-                ],
+                links: aboutLinkData.map(({ pathname, label }) => (
+                  <Link
+                    to={pathname}
+                    className={classNames({
+                      [styles.active]: curUrlPathnameContains(pathname),
+                    })}
+                  >
+                    {label}
+                  </Link>
+                )),
                 openMenu,
                 setOpenMenu,
                 isDark: props.isDark,
@@ -117,3 +158,13 @@ const Nav = ({ page, ...props }) => {
 }
 
 export default Nav
+
+/**
+ * Return `true` if the current URL contains the text, and `false` otherwise.
+ */
+function curUrlPathnameContains(text) {
+  const unknown =
+    typeof window === "undefined" || typeof window.location === "undefined"
+  if (!unknown) return window.location.pathname.includes(text)
+  else return false
+}

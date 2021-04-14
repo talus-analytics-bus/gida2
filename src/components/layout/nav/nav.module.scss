@@ -42,8 +42,9 @@
         }
       }
       > a,
-      > div > a {
+      > div a {
         color: $black;
+        // color: $black;
         &:hover:not(.active) {
           color: $primary-light-blue;
         }
@@ -53,6 +54,7 @@
         }
         &.active {
           font-family: "open_sanssemibold", sans-serif;
+          color: $primary-light-blue;
         }
       }
       align-items: center;

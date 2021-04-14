@@ -162,7 +162,9 @@ const App = () => {
     return (
       <div className={isDark ? "dark" : ""}>
         <BrowserRouter>
-          <Nav {...{ isDark, page }} />
+          <OutbreakProvider value={outbreakData}>
+            <Nav {...{ isDark, page }} />
+          </OutbreakProvider>
           <Switch>
             <div>
               <Route
