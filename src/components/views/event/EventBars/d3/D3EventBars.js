@@ -29,7 +29,7 @@ class D3EventBars extends Chart {
     // Set dimensions
     this.width = this.containerwidth
     this.height = this.containerheight
-    this.margin = { top: 50, right: 70, bottom: 35, left: 0 }
+    this.margin = { top: 50 + 30, right: 70, bottom: 35, left: 0 }
 
     // Initialize chart
     this.init()
@@ -112,7 +112,7 @@ class D3EventBars extends Chart {
     const xLabel = chart
       .append("text")
       .attr("x", width / 2)
-      .attr("y", -30)
+      .attr("y", -30 - 30)
       .style("font-weight", 600)
       .style("text-anchor", "middle")
       .attr("class", styles["axis-label"])

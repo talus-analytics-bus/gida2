@@ -1,8 +1,7 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import RadioToggle from "./RadioToggle.js";
-import styles from "./entityroletoggle.module.scss";
-import classNames from "classnames";
+import React from "react"
+import { Link } from "react-router-dom"
+import styles from "./entityroletoggle.module.scss"
+import classNames from "classnames"
 
 const defs = (
   <defs>
@@ -52,17 +51,17 @@ const defs = (
       />
     </filter>
   </defs>
-);
+)
 /**
  * Generic radio toggle
  * TODO implement tooltip
  * @method EntityRoleToggle
  */
 const EntityRoleToggle = ({ entityRole, redirectUrlFunc, callback }) => {
-  if (redirectUrlFunc === undefined) redirectUrlFunc = v => null;
+  if (redirectUrlFunc === undefined) redirectUrlFunc = v => null
   const onClick = (v, jsx) => {
-    return <Link to={redirectUrlFunc(v)}>{jsx}</Link>;
-  };
+    return <Link to={redirectUrlFunc(v)}>{jsx}</Link>
+  }
 
   const newOne = (
     <svg className={styles.entityRoleToggle}>
@@ -72,7 +71,7 @@ const EntityRoleToggle = ({ entityRole, redirectUrlFunc, callback }) => {
           "funder",
           <g
             onClick={() => {
-              if (callback) callback("funder");
+              if (callback) callback("funder")
             }}
             className={classNames(styles.funder, {
               [styles.active]: entityRole === "funder",
@@ -85,13 +84,13 @@ const EntityRoleToggle = ({ entityRole, redirectUrlFunc, callback }) => {
             <g class="label" transform="translate(7, 22)">
               <text>$ Funder</text>
             </g>
-          </g>
+          </g>,
         )}
         {onClick(
           "recipient",
           <g
             onClick={() => {
-              if (callback) callback("recipient");
+              if (callback) callback("recipient")
             }}
             className={classNames(styles.recipient, {
               [styles.active]: entityRole === "recipient",
@@ -105,14 +104,14 @@ const EntityRoleToggle = ({ entityRole, redirectUrlFunc, callback }) => {
             <g class="label" transform="translate(24, 22)">
               <text>$ Recipient</text>
             </g>
-          </g>
+          </g>,
         )}
       </g>
     </svg>
-  );
+  )
 
-  return newOne;
-};
+  return newOne
+}
 
 export const FunderIcon = () => {
   return (
@@ -134,8 +133,8 @@ export const FunderIcon = () => {
         </g>
       </g>
     </svg>
-  );
-};
+  )
+}
 
 export const RecipientIcon = () => {
   return (
@@ -157,7 +156,7 @@ export const RecipientIcon = () => {
         </g>
       </g>
     </svg>
-  );
-};
+  )
+}
 
-export default EntityRoleToggle;
+export default EntityRoleToggle

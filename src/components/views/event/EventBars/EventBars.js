@@ -2,9 +2,11 @@
 import React, { useState, useEffect, useContext } from "react"
 import ReactTooltip from "react-tooltip"
 
-// styles
+// styles and assets
 import styles from "./eventbars.module.scss"
 import classNames from "classnames"
+import funderSvg from "../../home/content/images/funder.svg"
+import recipientSvg from "../../home/content/images/recipient.svg"
 
 // utilities
 import { getFlowTypeLabel } from "../../../misc/Util"
@@ -18,7 +20,6 @@ import D3ImpactBars from "./d3/D3ImpactBars"
 import { execute, Chords } from "../../../misc/Queries"
 import Selectpicker from "../../../chart/Selectpicker/Selectpicker"
 import { Loading, Checkbox, Popup, popupStyles } from "../../../common"
-import { FLAG_BASE_URL_64 } from "../../../views/explore/content/Orgs/Flag"
 import { ToggleFlowType } from "../../../views/details/content/ToggleFlowType"
 
 const EventBars = ({
@@ -39,6 +40,7 @@ const EventBars = ({
   const [loaded, setLoaded] = useState(false)
   const [tooltipData, setTooltipData] = useState(false)
   const [noFilteredData, setNoFilteredData] = useState(false)
+  const [funderRecipientLabel, setFunderRecipientLabel] = useState("")
 
   // CONTEXT ACCESSORS
   const flowTypeInfo = useContext(FlowTypeContext)
@@ -47,7 +49,7 @@ const EventBars = ({
   const [impact, setImpact] = useState("cases")
 
   // "Funds by"
-  const [funds, setFunds] = useState("recipient_all")
+  const [funds, setFunds] = useState("recipient_country")
 
   // "Filter recipients/funders"
   const [region, setRegion] = useState("")
@@ -397,6 +399,47 @@ const EventBars = ({
     }
   }, [impact])
 
+  const recipientOptions = [
+    {
+      value: "recipient_all",
+      label: "Recipient (all types)",
+    },
+    {
+      value: "recipient_country",
+      label: "Recipient (country)",
+    },
+    {
+      value: "recipient_region",
+      label: "Recipient (region)",
+    },
+    {
+      value: "recipient_org",
+      label: "Recipient (organization)",
+    },
+  ]
+  const funderOptions = [
+    {
+      value: "funder_all",
+      label: "Funder (all types)",
+    },
+    {
+      value: "funder_country",
+      label: "Funder (country)",
+    },
+    {
+      value: "funder_org",
+      label: "Funder (organization)",
+    },
+  ]
+
+  // update chart funder/recipient label
+  useEffect(() => {
+    const match = recipientOptions
+      .concat(funderOptions)
+      .find(d => d.value === funds)
+    setFunderRecipientLabel(match.label)
+  }, [funds])
+
   const top10Checkbox = funds !== "recipient_region" &&
     dataForChart !== null &&
     moreThan10Bars && (
@@ -410,6 +453,7 @@ const EventBars = ({
         }}
       />
     )
+
   // JSX //
   return (
     <>
@@ -446,38 +490,8 @@ const EventBars = ({
                       curSelection: funds,
                       setOption: setFunds,
                       optionGroups: {
-                        Recipient: [
-                          {
-                            value: "recipient_all",
-                            label: "Recipient (all types)",
-                          },
-                          {
-                            value: "recipient_country",
-                            label: "Recipient (country)",
-                          },
-                          {
-                            value: "recipient_region",
-                            label: "Recipient (region)",
-                          },
-                          {
-                            value: "recipient_org",
-                            label: "Recipient (organization)",
-                          },
-                        ],
-                        Funder: [
-                          {
-                            value: "funder_all",
-                            label: "Funder (all types)",
-                          },
-                          {
-                            value: "funder_country",
-                            label: "Funder (country)",
-                          },
-                          {
-                            value: "funder_org",
-                            label: "Funder (organization)",
-                          },
-                        ],
+                        Recipient: recipientOptions,
+                        Funder: funderOptions,
                       },
                     }}
                   />
@@ -515,6 +529,17 @@ const EventBars = ({
                     />
                   )}
                 </div>
+                {!noFilteredData && (
+                  <div className={styles.funderRecipientLabel}>
+                    <span>{funderRecipientLabel}</span>
+                    <img
+                      src={
+                        params.direction === "target" ? recipientSvg : funderSvg
+                      }
+                      alt={"Funder or recipient icon"}
+                    />
+                  </div>
+                )}
                 {top10Checkbox}
               </div>
               <div

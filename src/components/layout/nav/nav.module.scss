@@ -55,7 +55,9 @@
         &.active,
         &.activeSubpage {
           font-family: "open_sanssemibold", sans-serif;
-          color: $primary-light-blue;
+          &.activeSubpage {
+            color: $primary-light-blue;
+          }
         }
         // highlight in gray any submenu items
         &.activeSubpage {

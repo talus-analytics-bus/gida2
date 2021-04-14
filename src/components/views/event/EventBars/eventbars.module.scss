@@ -6,6 +6,7 @@
   .charts {
     display: grid;
     width: 100%;
+
     &.two {
       grid-template-columns: 3fr 1fr;
     }
@@ -59,6 +60,7 @@
       .impacts {
         height: auto;
         width: 100%;
+        margin-top: 50px;
         &.hidden {
           display: none;
         }
@@ -73,9 +75,13 @@
             fill: $outbreak-blue-2;
           }
         }
-        g[class="x axis"] text,
-        text[class*="axis-title"] {
+        g[class="x axis"] text {
           font-size: 1.4rem;
+        }
+        text[class*="axis-title"] {
+          font-family: "rawline", serif;
+          font-size: 1.8rem;
+          font-weight: 700;
         }
         circle {
           fill: $outbreak-blue-2;
@@ -92,5 +98,30 @@
         }
       }
     }
+  }
+  .funderRecipientLabel {
+    position: relative;
+    top: calc(22px + 50px);
+    span {
+      text-transform: none;
+      font-family: "rawline", serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    img {
+      margin-left: 10px;
+      height: 25px;
+      position: relative;
+      top: -2px;
+    }
+  }
+}
+
+.checkbox {
+  position: relative;
+  top: calc(15px + 50px);
+  text-transform: none;
+  span {
+    color: $outbreak-gray-1;
   }
 }
