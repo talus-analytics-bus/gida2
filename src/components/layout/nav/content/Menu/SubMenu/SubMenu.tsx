@@ -1,3 +1,4 @@
+import classNames from "classnames"
 import React from "react"
 import Menu from "../Menu"
 
@@ -11,6 +12,7 @@ type SubMenuProps = {
   openMenu: string
   setOpenMenu: Function
   isDark: boolean
+  active: boolean
 }
 
 /**
@@ -24,6 +26,7 @@ export const SubMenu = ({
   openMenu,
   setOpenMenu,
   isDark = false,
+  active = false,
 }: SubMenuProps) => {
   // FUNCTIONS
   const toggleMenu = (name: string) => {
@@ -49,7 +52,10 @@ export const SubMenu = ({
 
   // JSX
   return (
-    <section id={"submenu-" + name} className={styles.subMenu}>
+    <section
+      id={"submenu-" + name}
+      className={classNames(styles.subMenu, { [styles.active]: active })}
+    >
       <div onMouseEnter={onMouseEnterOrLeave} onMouseLeave={handleMoveOutside}>
         <span>{label}</span>
         <i className="material-icons">chevron_right</i>

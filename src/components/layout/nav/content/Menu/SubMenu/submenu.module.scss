@@ -1,3 +1,4 @@
+@import "src/assets/styles/colors.scss";
 .subMenu {
     height: auto;
     position: relative;
@@ -14,8 +15,15 @@
             width: 17px;
             margin-left: 10px;
         }
-        > section > div:hover {
-            color: blue !important;
+    }
+    &.active > div:first-child {
+        background-color: #f5f5f5;
+        > span,
+        > i {
+            color: $selected-blue;
+        }
+        > span {
+            font-family: "open_sanssemibold", sans-serif;
         }
     }
 }

@@ -1,7 +1,8 @@
 import React from "react"
 import classNames from "classnames"
 import styles from "./menu.module.scss"
-
+import PerfectScrollbar from "react-perfect-scrollbar"
+import "react-perfect-scrollbar/dist/css/styles.css"
 /**
  * Create a nav bar menu.
  */
@@ -31,6 +32,8 @@ const Menu = ({
       document.removeEventListener("mouseup", handleClickOutside)
     }
   })
+
+  const Wrapper = inSubMenu ? PerfectScrollbar : React.Fragment
   return (
     <div
       style={{ display: openMenu === name ? "flex" : "none" }}
@@ -39,13 +42,15 @@ const Menu = ({
         [styles.dark]: isDark,
       })}
     >
-      <div
-        id={"links-" + name}
-        onClick={() => setOpenMenu("")}
-        className={styles.links}
-      >
-        {links}
-      </div>
+      <Wrapper>
+        <div
+          id={"links-" + name}
+          onClick={() => setOpenMenu("")}
+          className={styles.links}
+        >
+          {links}
+        </div>
+      </Wrapper>
     </div>
   )
 }

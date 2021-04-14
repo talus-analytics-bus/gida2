@@ -6,7 +6,15 @@ import logoLight from "../../../assets/images/tracking.png"
 import logoDark from "../../../assets/images/tracking-dark-mode.png"
 import Menu from "./content/Menu/Menu.js"
 import { Search } from "../../common"
+import Flag from "../../views/explore/content/Orgs/Flag"
 import { searchableSubcats } from "../../common/Search/Search"
+
+// utilities
+import {
+  isCountryStakeholder,
+  isOrgStakeholder,
+  isOtherStakeholder,
+} from "../../misc/Util"
 
 // contexts
 import OutbreakContext from "../../context/OutbreakContext"
@@ -26,13 +34,9 @@ const Nav = ({ page, isDark, ...props }) => {
   const stakeholders = useContext(StakeholderContext).filter(d =>
     searchableSubcats.includes(d.subcat),
   )
-  const countries = stakeholders.filter(
-    d => d.cat === "government" && d.subcat !== "agency",
-  )
-  const organizations = stakeholders.filter(
-    d => !["government", "other"].includes(d.cat) && d.subcat !== "sub-agency",
-  )
-  const other = stakeholders.filter(d => ["other"].includes(d.cat))
+  const countries = stakeholders.filter(isCountryStakeholder)
+  const organizations = stakeholders.filter(isOrgStakeholder)
+  const other = stakeholders.filter(isOtherStakeholder)
 
   // CONSTANTS
   // define about menu links
@@ -42,6 +46,10 @@ const Nav = ({ page, isDark, ...props }) => {
     { pathname: "/about/citations", label: "Citations" },
     { pathname: "/about/submit", label: "Submit data" },
   ]
+
+  // define page and subpage (if any)
+  const [pageName, subPageType, subPageName] =
+    page !== undefined ? page.split("_") : ["", "", ""]
 
   return (
     <div
@@ -81,7 +89,7 @@ const Nav = ({ page, isDark, ...props }) => {
           <div>
             <Link
               className={
-                page === "funders-and-recipients" || page === "details"
+                pageName === "funders-and-recipients" || pageName === "details"
                   ? styles.active
                   : ""
               }
@@ -98,7 +106,7 @@ const Nav = ({ page, isDark, ...props }) => {
                   <Link
                     to={"/funders-and-recipients"}
                     className={classNames({
-                      [styles.active]: page === "funders-and-recipients",
+                      [styles.active]: pageName === "funders-and-recipients",
                     })}
                   >
                     Overview
@@ -109,11 +117,17 @@ const Nav = ({ page, isDark, ...props }) => {
                       label: "Countries",
                       openMenu: openSubMenu,
                       setOpenMenu: setOpenSubMenu,
+                      active: subPageType === "countries",
                       isDark,
                     }}
                   >
                     {countries.map(d => (
-                      <Link to={`/details/${d.id}/${d.primary_role}`}>
+                      <Link
+                        to={`/details/${d.id}/${d.primary_role}`}
+                        className={classNames({
+                          [styles.activeSubpage]: subPageName === d.name,
+                        })}
+                      >
                         {d.name}
                       </Link>
                     ))}
@@ -124,11 +138,17 @@ const Nav = ({ page, isDark, ...props }) => {
                       label: "Organizations",
                       openMenu: openSubMenu,
                       setOpenMenu: setOpenSubMenu,
+                      active: subPageType === "organizations",
                       isDark,
                     }}
                   >
                     {organizations.map(d => (
-                      <Link to={`/details/${d.id}/${d.primary_role}`}>
+                      <Link
+                        to={`/details/${d.id}/${d.primary_role}`}
+                        className={classNames({
+                          [styles.activeSubpage]: subPageName === d.name,
+                        })}
+                      >
                         {d.name}
                       </Link>
                     ))}
@@ -139,11 +159,17 @@ const Nav = ({ page, isDark, ...props }) => {
                       label: "Other entities",
                       openMenu: openSubMenu,
                       setOpenMenu: setOpenSubMenu,
+                      active: subPageType === "other",
                       isDark,
                     }}
                   >
                     {other.map(d => (
-                      <Link to={`/details/${d.id}/${d.primary_role}`}>
+                      <Link
+                        to={`/details/${d.id}/${d.primary_role}`}
+                        className={classNames({
+                          [styles.activeSubpage]: subPageName === d.name,
+                        })}
+                      >
                         {d.name}
                       </Link>
                     ))}
@@ -182,7 +208,7 @@ const Nav = ({ page, isDark, ...props }) => {
                 links: outbreaks.map(({ slug, name }) => (
                   <Link
                     className={classNames({
-                      [styles.active]: curUrlPathnameContains(slug),
+                      [styles.activeSubpage]: curUrlPathnameContains(slug),
                     })}
                     to={"/events/" + slug}
                   >

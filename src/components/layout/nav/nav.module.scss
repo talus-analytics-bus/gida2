@@ -52,11 +52,17 @@
         &:focus {
           text-decoration: none;
         }
-        &.active {
+        &.active,
+        &.activeSubpage {
           font-family: "open_sanssemibold", sans-serif;
           color: $primary-light-blue;
         }
+        // highlight in gray any submenu items
+        &.activeSubpage {
+          background-color: #f5f5f5;
+        }
       }
+
       align-items: center;
     }
   }

@@ -8,9 +8,7 @@
   z-index: 1000;
 
   &.inSubMenu {
-    max-height: 400px;
     max-width: 250px;
-    overflow-y: scroll;
     left: calc(100% - 2px);
     top: 0;
     a {
@@ -52,4 +50,14 @@
       }
     }
   }
+}
+
+[class^="scrollbar-container"] {
+  max-height: 400px; // TODO elegantly
+}
+[class="ps__rail-y"] {
+  opacity: 0.6 !important;
+}
+[class="ps__rail-x"] {
+  display: none;
 }

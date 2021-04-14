@@ -7,6 +7,9 @@ import BrowserDetection from "react-browser-detection"
 import Nav from "./components/layout/nav/Nav.js"
 import Footer from "./components/layout/footer/Footer.js"
 
+// utilities
+import { getSubPageType } from "./components/misc/Util"
+
 // queries
 import {
   execute,
@@ -52,6 +55,7 @@ const App = () => {
   const [versionData, setVersionData] = useState([])
   const [outbreakData, setOutbreakData] = useState([])
   const [stakeholderData, setStakeholderData] = useState([])
+  const [stakeholderDataById, setStakeholderDataById] = useState({})
 
   // Try components
   const [detailsComponent, setDetailsComponent] = useState(null)
@@ -107,6 +111,11 @@ const App = () => {
     setVersionData(results.versions)
     setOutbreakData(results.outbreaks)
     setStakeholderData(results.stakeholders)
+    const newStakeholderDataById = {}
+    results.stakeholders.forEach(d => {
+      newStakeholderDataById[d.id] = d
+    })
+    setStakeholderDataById(newStakeholderDataById)
 
     setLoading(false)
   }
@@ -269,7 +278,9 @@ const App = () => {
                 render={d => {
                   const id = parseInt(d.match.params.id)
                   const entityRole = d.match.params.entityRole
-                  setPage("details")
+                  const shData = stakeholderDataById[id]
+                  const subPageType = getSubPageType(shData)
+                  setPage(`details_${subPageType}_${shData.name}`)
                   return (
                     <Details
                       {...{
