@@ -118,7 +118,7 @@ const EventBars = ({
     const showFlag =
       name !== "General Global Benefit" && name !== "Not reported"
     if (showFlag) {
-      return `${FLAG_BASE_URL_64}${iso2}.png`
+      return `${iso2}.png`
     } else return null
   }
 
@@ -348,8 +348,10 @@ const EventBars = ({
             newDataForChart[curFlowType].find(d => d.iso2 === iso2) ===
             undefined
           ) {
+            const d = newCaseDeathDataForChartTmpByIso2[iso2]
             newDataForChart[curFlowType].push({
               ...newCaseDeathDataForChartTmpByIso2[iso2],
+              flag_url: getFlagUrl(d.name, iso2),
               value: null,
               sort: null,
             })
