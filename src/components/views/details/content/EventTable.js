@@ -232,7 +232,7 @@ const EventTable = ({
     if (forExport) {
       // download excel
       const { data, params } = await queries.flows
-      data.cols = cols
+      data.cols = cols.filter(d => d[0] !== "years_response")
       await Excel({ method: "post", data, params })
     } else {
       setFetchingRows(true)

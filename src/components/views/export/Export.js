@@ -277,9 +277,12 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                                 const data = {
                                   filters: paramsTmp.data.filters,
                                 }
-                                data.cols = cols.filter(d =>
-                                  exportCols.includes(d[0]),
-                                )
+                                data.cols = cols.filter(d => {
+                                  return (
+                                    exportCols.includes(d[0]) &&
+                                    d[0] !== "years_response"
+                                  )
+                                })
 
                                 Excel({
                                   method: "post",
