@@ -87,19 +87,19 @@ const Citations = () => {
 
               <tr>
                 <td>
-                  Global Health Center report on Financing National Preparedness
-                  for Outbreaks
+                  Analysis of funding for the Ebola epidemic and Zika outbreak
+                  between 2014 and 2019
                 </td>
                 <td>
                   <a
+                    href={"https://gh.bmj.com/content/6/4/e003923"}
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://repository.graduateinstitute.ch/record/296613/files/wp_0018_v3.pdf"
                   >
-                    Moon, S; and Vaidya, R. &ldquo;Investing for a Rainy Day:
-                    Challenges in Financing National Preparedness for
-                    Outbreaks.&rdquo;{" "}
-                    <em>Global Health Centre Working Paper No. 18</em>, 2018.
+                    Quirk, EJ; Gheorghe, A; Hauck, K. "A systematic examination
+                    of international funding flows for Ebola virus and Zika
+                    virus outbreaks 2014–2019: donors, recipients and funding
+                    purposes." <em>BMJ Global Health, 6</em>(4), e003923, 2021.
                   </a>
                 </td>
               </tr>
@@ -142,19 +142,19 @@ const Citations = () => {
               </tr>
               <tr>
                 <td>
-                  Analysis of funding for the Ebola epidemic and Zika outbreak
-                  between 2014 and 2019
+                  Global Health Center report on Financing National Preparedness
+                  for Outbreaks
                 </td>
                 <td>
                   <a
-                    href={"https://gh.bmj.com/content/6/4/e003923"}
                     target="_blank"
                     rel="noopener noreferrer"
+                    href="https://repository.graduateinstitute.ch/record/296613/files/wp_0018_v3.pdf"
                   >
-                    Quirk, EJ; Gheorghe, A; Hauck, K. "A systematic examination
-                    of international funding flows for Ebola virus and Zika
-                    virus outbreaks 2014–2019: donors, recipients and funding
-                    purposes." <em>BMJ Global Health, 6</em>(4), e003923, 2021.
+                    Moon, S; and Vaidya, R. &ldquo;Investing for a Rainy Day:
+                    Challenges in Financing National Preparedness for
+                    Outbreaks.&rdquo;{" "}
+                    <em>Global Health Centre Working Paper No. 18</em>, 2018.
                   </a>
                 </td>
               </tr>
