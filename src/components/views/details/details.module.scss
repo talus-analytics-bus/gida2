@@ -122,6 +122,9 @@
       flex-flow: row;
       justify-content: space-between;
     }
+    &.invis {
+      visibility: hidden;
+    }
   }
   .select {
     display: flex;

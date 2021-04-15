@@ -24,9 +24,6 @@ import TopTable from "../../chart/TopTable/TopTable"
 import EventTable from "./content/EventTable"
 import { Flag } from "../../views/explore/content/Orgs/Flag"
 
-// Constants
-import { FLAG_BASE_URL } from "../../views/explore/content/Orgs/Flag"
-
 // FC for Details.
 const Details = ({
   id,
@@ -323,6 +320,8 @@ const Details = ({
     eventTotalsData !== null ? eventTotalsData.length !== 0 : false
   const haveAny = havePvs || haveAssistance || haveEvent
 
+  const noEventTotalsRecords =
+    eventTotalsData !== null && eventTotalsData.length === 0
   const tabSections = showTabs
     ? [
         {
@@ -419,10 +418,7 @@ const Details = ({
         {
           slug: "event",
           header: "PHEIC funding",
-          hide:
-            noData ||
-            (eventTotalsData !== null && eventTotalsData.length === 0),
-          invis: eventTotalsData === null, // not yet loaded
+          invis: eventTotalsData === null || eventTotalsData.length === 0, // not yet loaded
           content: [
             {
               header: (
@@ -447,7 +443,7 @@ const Details = ({
                 </div>
               ),
               content: (
-                <div>
+                <div key={`${id}-${direction}`}>
                   <EventNumberTotals
                     {...{
                       key: `${id}-${entityRole}`,
@@ -464,8 +460,6 @@ const Details = ({
                       otherDirection,
                       entityRole,
                       otherEntityRole,
-                      // curFlowType,
-                      // curFlowTypeName,
                       setEventTotalsData, // set flows to var. for totals
                       isGhsaPage: id === "ghsa",
                       sortByProp: `amount-${curFlowType}`,
@@ -474,7 +468,7 @@ const Details = ({
                 </div>
               ),
               toggleFlowType: false,
-              hide: noData || noFinancialData,
+              hide: noData || noFinancialData || noEventTotalsRecords,
             },
           ],
         },
@@ -553,8 +547,7 @@ const Details = ({
 
   // if no PHEIC data then set current tab to IHR
   useEffect(() => {
-    if (eventTotalsData !== null && eventTotalsData.length === 0)
-      setCurTab("ihr")
+    if (noEventTotalsRecords) setCurTab("ihr")
   }, [eventTotalsData])
 
   useLayoutEffect(() => {
@@ -640,8 +633,12 @@ const Details = ({
           }
         </div>
       )}
-      {showTabs && haveAny && (
-        <div className={styles.tabContent}>
+      {showTabs && (
+        <div
+          className={classNames(styles.tabContent, {
+            [styles.invis]: !haveAny,
+          })}
+        >
           {tabSections
             .filter(s => s.hide !== true)
             .map(
