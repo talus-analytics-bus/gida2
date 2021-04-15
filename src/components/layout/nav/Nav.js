@@ -255,7 +255,7 @@ const Nav = ({ page, isDark, ...props }) => {
                   <Link
                     to={pathname}
                     className={classNames({
-                      [styles.active]: curUrlPathnameContains(pathname),
+                      [styles.activeSubpage]: curUrlPathnameContains(pathname),
                     })}
                   >
                     {label}
