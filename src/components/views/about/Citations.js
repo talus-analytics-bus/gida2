@@ -1,11 +1,11 @@
-import React from "react";
-import styles from "./about.module.scss";
-import classNames from "classnames";
+import React from "react"
+import styles from "./about.module.scss"
+import classNames from "classnames"
 
 // JSX for about page.
 const Citations = () => {
   // Scroll to top of window afer loading.
-  React.useEffect(() => window.scrollTo(0, 0), []);
+  React.useEffect(() => window.scrollTo(0, 0), [])
   return (
     <div className={classNames(styles.about, "pageContainer")}>
       <div className={styles.aboutContainer}>
@@ -17,6 +17,7 @@ const Citations = () => {
             A peer-reviewed paper describing this dashboard project is available{" "}
             <a
               target="_blank"
+              rel="noopener noreferrer"
               href="https://link.springer.com/article/10.1007%2Fs10393-019-01402-w"
             >
               here
@@ -42,7 +43,11 @@ const Citations = () => {
           <p>
             We ask that you let us know if you publish anything using data from
             this site, so we can link to it. Contact us at{" "}
-            <a target="_blank" href="mailto:outbreaks@georgetown.edu">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="mailto:outbreaks@georgetown.edu"
+            >
               outbreaks@georgetown.edu
             </a>
             .
@@ -52,6 +57,7 @@ const Citations = () => {
             Creative Commons Attribution By License agreement (
             <a
               target="_blank"
+              rel="noopener noreferrer"
               href="https://creativecommons.org/licenses/by/4.0/"
             >
               https://creativecommons.org/licenses/by/4.0/
@@ -63,7 +69,11 @@ const Citations = () => {
             In addition to direct downloads from the sites, we are happy to work
             with your team to provide automated access via API or other data
             sharing method. Please contact us at{" "}
-            <a target="_blank" href="mailto:outbreaks@georgetown.edu">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="mailto:outbreaks@georgetown.edu"
+            >
               outbreaks@georgetown.edu
             </a>{" "}
             for more information.
@@ -83,6 +93,7 @@ const Citations = () => {
                 <td>
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     href="https://repository.graduateinstitute.ch/record/296613/files/wp_0018_v3.pdf"
                   >
                     Moon, S; and Vaidya, R. &ldquo;Investing for a Rainy Day:
@@ -114,6 +125,7 @@ const Citations = () => {
                 <td>
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     href="https://www.tropicalmedicine.ox.ac.uk/news/the-global-preparedness-monitoring-board-publish-their-annual-report"
                   >
                     University of Oxford, Oxford UK. &ldquo;The state of
@@ -128,12 +140,30 @@ const Citations = () => {
                   </a>
                 </td>
               </tr>
+              <tr>
+                <td>
+                  Analysis of funding for the Ebola epidemic and Zika outbreak
+                  between 2014 and 2019
+                </td>
+                <td>
+                  <a
+                    href={"https://gh.bmj.com/content/6/4/e003923"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Quirk, EJ; Gheorghe, A; Hauck, K. "A systematic examination
+                    of international funding flows for Ebola virus and Zika
+                    virus outbreaks 2014–2019: donors, recipients and funding
+                    purposes." <em>BMJ Global Health, 6</em>(4), e003923, 2021.
+                  </a>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Citations;
+export default Citations
