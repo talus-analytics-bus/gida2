@@ -418,7 +418,8 @@ const Details = ({
         {
           slug: "event",
           header: "PHEIC funding",
-          invis: eventTotalsData === null || eventTotalsData.length === 0, // not yet loaded
+          invis: eventTotalsData === null, // not yet loaded
+          hide: noData || noFinancialData || noEventTotalsRecords,
           content: [
             {
               header: (
@@ -468,7 +469,6 @@ const Details = ({
                 </div>
               ),
               toggleFlowType: false,
-              hide: noData || noFinancialData || noEventTotalsRecords,
             },
           ],
         },
@@ -614,6 +614,7 @@ const Details = ({
             .filter(s => s.hide !== true)
             .map(s => (
               <button
+                key={s.slug}
                 className={classNames(styles.tabToggle, {
                   [styles.selected]: s.slug === curTab,
                   [styles.invis]: s.invis,
