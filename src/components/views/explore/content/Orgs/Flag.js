@@ -49,7 +49,15 @@ const flagPaths = {
 }
 export const localFlags = Object.keys(flagPaths)
 
-export function getFlagPath(flagFn, baseUrl) {
+/**
+ * Given a flag filename and the base URL for it, returns the full path to the
+ * flag image.
+ * @param {string} flagFn The filename of a flag, e.g., `af.png`
+ * @param {string} baseS3Url The base URL to the S3 bucket containing flag
+images that should be used
+ * @returns {string} The full path to the flag image.
+ */
+export function getFlagPath(flagFn, baseS3Url) {
   if (localFlags.includes(flagFn)) return flagPaths[flagFn]
-  else return baseUrl + flagFn
+  else return baseS3Url + flagFn
 }
