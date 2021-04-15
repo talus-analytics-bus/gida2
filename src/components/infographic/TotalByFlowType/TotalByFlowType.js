@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
-import classNames from "classnames";
-import Util, { getInitCap } from "../../misc/Util.js";
-import { Loading } from "../../common";
-import styles from "./totalbyflowtype.module.scss";
+import React, { useState, useEffect } from "react"
+import classNames from "classnames"
+import Util, { getInitCap } from "../../misc/Util.js"
+import { Loading } from "../../common"
+import styles from "./totalbyflowtype.module.scss"
 
 // local components
-import ObservationQuery from "../../misc/ObservationQuery";
+import ObservationQuery from "../../misc/ObservationQuery"
 
 // FC for Details.
 const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
   const key = ["total_cases", "total_deaths"].includes(flowType)
     ? "value"
-    : flowType;
+    : flowType
 
   // STATE //
   // const amount = "Unavailable";
-  const amount = getAmountByFlowType(key, data);
+  const amount = getAmountByFlowType(key, data)
 
   // FUNCTIONS //
   const getData = async () => {
-    if (dataFunc !== undefined) await dataFunc();
-  };
+    if (dataFunc !== undefined) await dataFunc()
+  }
 
   // // FUNCTIONS //
   // // get data
@@ -44,9 +44,9 @@ const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
   // EFFECT HOOKS //
   useEffect(() => {
     if (data === null) {
-      getData();
+      getData()
     }
-  }, [data]);
+  }, [data])
 
   // JSX //
   return (
@@ -74,36 +74,40 @@ const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
         )}
       </div>
     )
-  );
-};
+  )
+}
+
+const financialFlowTypes = ["disbursed_funds", "committed_funds"]
 
 const getAmountByFlowType = (flowType, data) => {
-  if (data === undefined || data === null) return 0;
-  else if (data === "Unavailable") return "Unavailable";
+  if (data === undefined || data === null) return 0
+  else if (data === "Unavailable") return "Unavailable"
   else {
     if (data.length !== undefined) {
       // Add them up
-      let total;
+      let total
       if (!data.some(d => typeof d.value !== "string")) {
-        return getInitCap(data[0].value);
+        return getInitCap(data[0].value)
       }
       data.forEach(d => {
-        if (d[flowType] === undefined || d[flowType] === null) return;
+        if (d[flowType] === undefined || d[flowType] === null) return
         else {
-          const curVal = d[flowType];
-          if (total === undefined) total = curVal;
-          else if (curVal !== "unknown") total += curVal;
+          const curVal = d[flowType]
+          if (total === undefined) total = curVal
+          else if (curVal !== "unknown") total += curVal
         }
-      });
-      if (total === undefined) return "Unavailable";
-      else return total;
+      })
+      if (total === undefined) {
+        if (financialFlowTypes.includes(flowType)) return 0
+        else return "Unavailable"
+      } else return total
     } else {
-      const flowTypeData = data[flowType];
+      const flowTypeData = data[flowType]
       if (flowTypeData !== undefined) {
-        return flowTypeData;
-      } else return 0;
+        return flowTypeData
+      } else return 0
     }
   }
-};
+}
 
-export default TotalByFlowType;
+export default TotalByFlowType
