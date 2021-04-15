@@ -801,13 +801,15 @@ Util.sortByName = (a, b) => {
   if (a.name < b.name) return 1
   return 0
 }
-Util.sortByField = field => {
+Util.sortByField = (field) => {
   return (a, b) => {
-    if (a[field] > b[field]) return -1
-    if (a[field] < b[field]) return 1
+    if (a[field] > b[field]) return 1
+    if (a[field] < b[field]) return -1
     return 0
   }
 }
+
+export const sortByField = Util.sortByField
 
 // Percentize number
 Util.percentize = val => {

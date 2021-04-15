@@ -14,6 +14,7 @@ import {
   isCountryStakeholder,
   isOrgStakeholder,
   isOtherStakeholder,
+  sortByField,
 } from "../../misc/Util"
 
 // contexts
@@ -37,6 +38,11 @@ const Nav = ({ page, isDark, ...props }) => {
   const countries = stakeholders.filter(isCountryStakeholder)
   const organizations = stakeholders.filter(isOrgStakeholder)
   const other = stakeholders.filter(isOtherStakeholder)
+  other.push({
+    id: "ghsa",
+    name: "GHSA",
+  })
+  other.sort(sortByField("name"))
 
   // CONSTANTS
   // define about menu links
@@ -169,28 +175,9 @@ const Nav = ({ page, isDark, ...props }) => {
                       isDark,
                     }}
                   >
-                    {other.map(d => (
-                      <Link
-                        to={`/details/${d.id}/${d.primary_role}`}
-                        className={classNames({
-                          [styles.activeSubpage]: subPageName === d.name,
-                        })}
-                      >
-                        {d.name}
-                      </Link>
-                    ))}
+                    {getStakeholderNavLinks(other, subPageName)}
                   </SubMenu>,
                 ],
-                // links: outbreaks.map(({ slug, name }) => (
-                //   <Link
-                //     className={classNames({
-                //       [styles.active]: curUrlPathnameContains(slug),
-                //     })}
-                //     to={"/events/" + slug}
-                //   >
-                //     {name}
-                //   </Link>
-                // )),
                 openMenu,
                 setOpenMenu,
                 isDark,
@@ -281,6 +268,30 @@ const Nav = ({ page, isDark, ...props }) => {
 }
 
 export default Nav
+
+/**
+ *
+ * @param {Array[Object]} stakeholders Array of stakeholder data records
+ * @param {string} subPageName The name of the currently active subpage
+ * @returns {Array[JSX]} Array of nav links for stakeholders
+ */
+function getStakeholderNavLinks(stakeholders, subPageName) {
+  return stakeholders.map(d => {
+    const ghsa = d.id === "ghsa"
+    const url = !ghsa ? `/details/${d.id}/${d.primary_role}` : "/details/ghsa"
+    const isActiveSubpage = subPageName === d.name
+    return (
+      <Link
+        to={url}
+        className={classNames({
+          [styles.activeSubpage]: isActiveSubpage,
+        })}
+      >
+        {d.name}
+      </Link>
+    )
+  })
+}
 
 /**
  * Return `true` if the current URL contains the text, and `false` otherwise.
