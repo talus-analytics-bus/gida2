@@ -801,7 +801,7 @@ Util.sortByName = (a, b) => {
   if (a.name < b.name) return 1
   return 0
 }
-Util.sortByField = (field) => {
+Util.sortByField = field => {
   return (a, b) => {
     if (a[field] > b[field]) return 1
     if (a[field] < b[field]) return -1
@@ -1164,7 +1164,10 @@ export function isOrgStakeholder(d) {
  * Returns `true` if stakeholder is type "other", false otherwise.
  */
 export function isOtherStakeholder(d) {
-  return ["other"].includes(d.cat)
+  return (
+    ["other"].includes(d.cat) ||
+    ["state_/_department_/_territory"].includes(d.subcat)
+  )
 }
 
 export function getFlowTypeLabel(flowType, flowTypeInfo) {

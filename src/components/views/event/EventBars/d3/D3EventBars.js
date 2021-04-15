@@ -7,6 +7,7 @@ import {
   FLAG_BASE_URL_64,
   getFlagPath,
 } from "../../../../views/explore/content/Orgs/Flag"
+import { nonUrlSubcats } from "../../../../misc/Data"
 
 // colors
 import {
@@ -467,22 +468,13 @@ class D3EventBars extends Chart {
       // get URL for bar label
       const urlFormat = d => {
         const subcat = dataByName[d].children[0][params.direction].subcat
-        const noUrlSubcats = ["region", "state_/_department_/_territory"]
-        const noUrl = params.byRegion || noUrlSubcats.includes(subcat)
+        const noUrl = params.byRegion || nonUrlSubcats.includes(subcat)
         if (noUrl) return `<tspan>${tickFormat(d)}</tspan>`
         else
           return `<a href="/details/${dataByName[d].children[0].id}/${
             params.role
           }">${tickFormat(d)}</a>`
       }
-
-      // // get URL for bar label
-      // const urlFormat = params.stack
-      //   ? d => `<tspan>${tickFormat(d)}</tspan>`
-      //   : d =>
-      //       `<a href="/details/${dataByName[d].id}/${params.role}">${tickFormat(
-      //         d,
-      //       )}</a>`
 
       yAxisG
         .call(yAxis)

@@ -22,7 +22,7 @@ import ReactTooltip from "react-tooltip"
 import tooltipStyles from "../../common/tooltip.module.scss"
 import TopTable from "../../chart/TopTable/TopTable"
 import EventTable from "./content/EventTable"
-import { Flag } from "../../views/explore/content/Orgs/Flag"
+import { Flag, localFlags } from "../../views/explore/content/Orgs/Flag"
 
 // FC for Details.
 const Details = ({
@@ -109,7 +109,9 @@ const Details = ({
   }
 
   const [curTab, setCurTab] = useState("ihr")
-  const [showFlag, setShowFlag] = useState(nodeData.subcat === "country")
+  const defaultShowFlag = shouldShowFlag(nodeData)
+  const [showFlag, setShowFlag] = useState(defaultShowFlag)
+  // const [showFlag, setShowFlag] = useState(nodeData.subcat === "country")
   const [curPvsEdition, setCurPvsEdition] = useState(pvs.eds[0] || {})
 
   // Get display name for current flow type
@@ -557,7 +559,8 @@ const Details = ({
   // when node data are updated, update flag show/hide
   useLayoutEffect(() => {
     if (!isEmpty(nodeData)) {
-      setShowFlag(ghsa || nodeData.subcat === "country")
+      setShowFlag(ghsa || shouldShowFlag(nodeData))
+      // setShowFlag(ghsa || nodeData.subcat === "country")
     }
   }, [nodeData])
 
@@ -728,3 +731,8 @@ const Details = ({
 }
 
 export default Details
+function shouldShowFlag(nodeData) {
+  return (
+    nodeData.flag_url !== undefined && !localFlags.includes(nodeData.flag_url)
+  )
+}

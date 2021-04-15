@@ -20,7 +20,7 @@ export const searchableSubcats = [
   "private_sector",
   "public_private_partnership",
   // "region",
-  // "state_/_department_/_territory",
+  "state_/_department_/_territory",
   // "sub-organization",
   "world",
 ]
@@ -62,7 +62,7 @@ const Search = ({
             [
               "neq",
               [
-                "state_/_department_/_territory",
+                // "state_/_department_/_territory",
                 "region",
                 "agency",
                 "sub-organization",

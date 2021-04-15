@@ -42,14 +42,14 @@ export function Flag({
   }
 }
 
-export function getFlagPath(flagFn, baseUrl) {
-  const flagPaths = {
-    "org.png": orgFlag,
-    "other.png": otherFlag,
-    "rgn.png": regionFlag,
-  }
-  const localFlags = Object.keys(flagPaths)
+const flagPaths = {
+  "org.png": orgFlag,
+  "other.png": otherFlag,
+  "rgn.png": regionFlag,
+}
+export const localFlags = Object.keys(flagPaths)
 
+export function getFlagPath(flagFn, baseUrl) {
   if (localFlags.includes(flagFn)) return flagPaths[flagFn]
   else return baseUrl + flagFn
 }
