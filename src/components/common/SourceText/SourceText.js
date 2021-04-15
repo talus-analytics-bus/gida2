@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import moment from "moment";
-import styles from "./sourcetext.module.scss";
-import classNames from "classnames";
+import React, { useState } from "react"
+import { Link } from "react-router-dom"
+import moment from "moment"
+import styles from "./sourcetext.module.scss"
+import classNames from "classnames"
 
 const SourceText = ({
   label = "Data sources",
@@ -16,9 +16,9 @@ const SourceText = ({
       </Link>
     ) : (
       <div className={styles.custom}>{children}</div>
-    );
-  return component;
-};
+    )
+  return component
+}
 
 const Website = ({
   url,
@@ -29,11 +29,11 @@ const Website = ({
   linksOnly = true,
 }) => {
   // CONSTANTS //
-  const notesJsx = notes !== "" ? <>. {notes} </> : null;
+  const notesJsx = notes !== "" ? <>. {notes} </> : null
   const dateJsx =
     date_published !== null ? (
       <> {moment(date_published).format("MMM D, YYYY")}. </>
-    ) : null;
+    ) : null
   if (linksOnly) {
     return (
       <>
@@ -42,7 +42,7 @@ const Website = ({
         </a>
         <>{notesJsx}</>
       </>
-    );
+    )
   } else
     return (
       <span>
@@ -54,23 +54,23 @@ const Website = ({
         }
         {notesJsx}
       </span>
-    );
-};
+    )
+}
 
 export const WebsiteList = ({ websites, linksOnly }) => {
-  const limit = 2;
-  const withinLimit = websites.length <= limit;
-  const [showAll, setShowAll] = useState(withinLimit);
+  const limit = 1
+  const withinLimit = websites.length <= limit
+  const [showAll, setShowAll] = useState(withinLimit)
   if (linksOnly) {
     return websites.map((d, i) => {
-      const comma = i !== websites.length - 1 ? ", " : null;
+      const comma = i !== websites.length - 1 ? ", " : null
       return (
         <>
           <Website {...{ ...d, linksOnly }} />
           {comma}
         </>
-      );
-    });
+      )
+    })
   } else {
     if (websites.length === 1)
       return (
@@ -78,7 +78,7 @@ export const WebsiteList = ({ websites, linksOnly }) => {
           {": "}
           <Website {...{ ...websites[0], linksOnly }} />
         </>
-      );
+      )
     else
       return (
         <>
@@ -103,8 +103,8 @@ export const WebsiteList = ({ websites, linksOnly }) => {
             </span>
           )}
         </>
-      );
+      )
   }
-};
-SourceText.Website = Website;
-export default SourceText;
+}
+SourceText.Website = Website
+export default SourceText
