@@ -108,26 +108,28 @@ jobs:
           command: rm yarn.lock; yarn install --network-timeout 1000000
 
       - run:
-          name: Deploy to second dev site
-          command: yarn run deploy-dev2
+          name: Deploy to first dev site
+          command: yarn run deploy-dev
 
       - run:
-          name: Deploy to third dev site
-          command: yarn run deploy-dev3
-
-      - run:
-          name: Invalidate CloudFront cache for second dev site
+          name: Invalidate CloudFront cache for first dev site
           command: |
             aws cloudfront create-invalidation \
-            --distribution-id E51RCTR83HBYL \
+            --distribution-id E375JMTWL12BHY \
             --paths "/*"
 
-      - run:
-          name: Invalidate CloudFront cache for third dev site
-          command: |
-            aws cloudfront create-invalidation \
-            --distribution-id E2FFGJGPGYWRIT \
-            --paths "/*"
+      # - run:
+      #     name: Invalidate CloudFront cache for second dev site
+      #     command: |
+      #       aws cloudfront create-invalidation \
+      #       --distribution-id E51RCTR83HBYL \
+      #       --paths "/*"
+      # - run:
+      #     name: Invalidate CloudFront cache for third dev site
+      #     command: |
+      #       aws cloudfront create-invalidation \
+      #       --distribution-id E2FFGJGPGYWRIT \
+      #       --paths "/*"
 
 workflows:
   version: 2
