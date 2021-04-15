@@ -1148,7 +1148,7 @@ export const getSubPageType = shData => {
  * Returns `true` if stakeholder is a country, false otherwise.
  */
 export function isCountryStakeholder(d) {
-  return d.cat === "government" && d.subcat !== "agency"
+  return d.cat === "government" && d.subcat === "country"
 }
 
 /**
