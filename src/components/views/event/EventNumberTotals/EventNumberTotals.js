@@ -57,7 +57,10 @@ const EventNumberTotals = ({
           "Flow.response_or_capacity": ["response"],
         }
         if (hasEventData) filters["Flow.events"] = [["has", [eventData.id]]]
-        if (id !== undefined) filters["Stakeholder.id"] = [id]
+        const hasId = id !== undefined
+        const ghsa = id === "ghsa"
+        if (ghsa) filters["Flow.is_ghsa"] = [true]
+        else if (hasId) filters["Stakeholder.id"] = [id]
 
         const queries = {
           byYear: FlowSums({
