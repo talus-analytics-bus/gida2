@@ -496,7 +496,7 @@ const App = () => {
               [styles.on]: page !== "home" && page !== "about" && spinnerOn,
             })}
           >
-            <img src={spinnerImg} />
+            <img src={spinnerImg} alt={"Loading spinner"} />
             <div>Loading...</div>
           </div>
         }
