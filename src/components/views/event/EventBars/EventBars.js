@@ -1,5 +1,5 @@
 // 3rd party libs
-import React, { useState, useEffect, useContext } from "react"
+import React, { useState, useEffect, useContext, useRef } from "react"
 import ReactTooltip from "react-tooltip"
 
 // styles and assets
@@ -41,6 +41,12 @@ const EventBars = ({
   const [tooltipData, setTooltipData] = useState(false)
   const [noFilteredData, setNoFilteredData] = useState(false)
   const [funderRecipientLabel, setFunderRecipientLabel] = useState("")
+  const [leftLabelPos, setLeftLabelPos] = useState(null)
+  const [checkboxRight, setCheckboxRight] = useState(null)
+
+  // REFS
+  const funderRecipientLabelRef = useRef(null)
+  const checkboxRef = useRef(null)
 
   // CONTEXT ACCESSORS
   const flowTypeInfo = useContext(FlowTypeContext)
@@ -49,7 +55,7 @@ const EventBars = ({
   const [impact, setImpact] = useState("cases")
 
   // "Funds by"
-  const [funds, setFunds] = useState("recipient_all")
+  const [funds, setFunds] = useState("funder_all")
 
   // "Filter recipients/funders"
   const [region, setRegion] = useState("")
@@ -69,6 +75,7 @@ const EventBars = ({
     noStackField: "No WHO region", // TODO dynamically
     byRegion: funds.includes("region"),
     showFlags: !funds.includes("region"),
+    setLeftLabelPos,
   }
   params.direction = params.role === "recipient" ? "target" : "origin"
   params.otherRole = params.role === "recipient" ? "funder" : "recipient"
@@ -378,7 +385,7 @@ const EventBars = ({
     } else if (data === null) {
       getData()
     }
-  }, [caseDeathDataForChart])
+  }, [])
 
   // update charts if fund type is changed
   useEffect(() => {
@@ -398,6 +405,22 @@ const EventBars = ({
       })
     }
   }, [impact])
+
+  // // when funder/recipient label for y-axis changed, update checkbox pos
+  // useEffect(() => {
+  //   if (
+  //     funderRecipientLabelRef.current !== null &&
+  //     checkboxRef.current !== null
+  //   ) {
+  //     // get label el
+  //     const labelEl = funderRecipientLabelRef.current
+  //     const labelWidth = labelEl.getBoundingClientRect().width
+  //     const checkboxEl = checkboxRef.current
+  //     const checkboxWidth = checkboxEl.getBoundingClientRect().width
+  //     const newCheckboxRight = leftLabelPos + (labelWidth - checkboxWidth)
+  //     setCheckboxRight(newCheckboxRight)
+  //   }
+  // }, [checkboxRef.current])
 
   const recipientOptions = [
     {
@@ -450,6 +473,8 @@ const EventBars = ({
           curChecked: top10Only,
           callback: () => setTop10Only(!top10Only),
           classes: [styles.checkbox],
+          ref: checkboxRef,
+          // style: { right: checkboxRight },
         }}
       />
     )
@@ -529,18 +554,30 @@ const EventBars = ({
                     />
                   )}
                 </div>
-                {!noFilteredData && (
-                  <div className={styles.funderRecipientLabel}>
-                    <span>{funderRecipientLabel}</span>
-                    <img
-                      src={
-                        params.direction === "target" ? recipientSvg : funderSvg
-                      }
-                      alt={"Funder or recipient icon"}
-                    />
+                {!noFilteredData && leftLabelPos !== null && (
+                  <div
+                    className={styles.funderRecipientLabel}
+                    style={{ right: leftLabelPos }}
+                  >
+                    <div className={styles.labelAndImageContainer}>
+                      <span ref={funderRecipientLabelRef}>
+                        {funderRecipientLabel}
+                      </span>
+                      <img
+                        src={
+                          params.direction === "target"
+                            ? recipientSvg
+                            : funderSvg
+                        }
+                        alt={"Funder or recipient icon"}
+                      />
+                    </div>
+
+                    <div className={styles.checkboxContainer}>
+                      {top10Checkbox}
+                    </div>
                   </div>
                 )}
-                {top10Checkbox}
               </div>
               <div
                 className={classNames(styles.bars, {

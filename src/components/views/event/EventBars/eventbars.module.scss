@@ -82,6 +82,7 @@
           font-family: "rawline", serif;
           font-size: 1.8rem;
           font-weight: 700;
+          fill: #303434;
         }
         circle {
           fill: $outbreak-blue-2;
@@ -101,26 +102,37 @@
   }
   .funderRecipientLabel {
     position: relative;
-    top: calc(22px + 50px);
-    span {
-      text-transform: none;
-      font-family: "rawline", serif;
-      font-size: 1.8rem;
-      font-weight: 600;
+    top: calc(22px + 52px);
+
+    .labelAndImageContainer {
+      text-align: right;
+      span {
+        text-transform: none;
+        font-family: "rawline", serif;
+        font-size: 1.8rem;
+        font-weight: 600;
+      }
+      img {
+        margin-left: 10px;
+        height: 25px;
+        position: relative;
+        top: -2px;
+      }
     }
-    img {
-      margin-left: 10px;
-      height: 25px;
+    .checkboxContainer {
+      height: auto;
+      float: right;
       position: relative;
-      top: -2px;
+      top: -10px;
     }
   }
 }
 
 .checkbox {
-  position: relative;
-  top: calc(15px + 50px);
+  // position: relative;
+  // top: calc(15px + 50px);
   text-transform: none;
+  // margin-left: auto;
   span {
     color: $outbreak-gray-1;
   }

@@ -31,6 +31,7 @@ class D3EventBars extends Chart {
     this.width = this.containerwidth
     this.height = this.containerheight
     this.margin = { top: 50 + 30, right: 70, bottom: 35, left: 0 }
+    this.params.xAxisGap = -7
 
     // Initialize chart
     this.init()
@@ -129,8 +130,10 @@ class D3EventBars extends Chart {
         .text(d => fmt(d.name))
         .attr("class", [styles.tick, styles.fakeText].join(" "))
       const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
+      const minMargin = 240 - (padding + badgeWidth) // TODO dynamically
+      const leftMargin = d3.max([minMargin, maxLabelWidth])
       fakeText.remove()
-      return maxLabelWidth + padding + badgeWidth
+      return leftMargin + padding + badgeWidth
     }
 
     function setRunningValues(data, sortKey) {
@@ -220,7 +223,7 @@ class D3EventBars extends Chart {
         if (d.children && d.children.length > 0)
           d.flag_url = d.children[0].flag_url
         if (params.stack) {
-          if (params.stackField == "region_who") {
+          if (params.stackField === "region_who") {
             if (dataByRegionAndStakeholder[d.name] === undefined) {
               dataByRegionAndStakeholder[d.name] = {}
               d.children.forEach(dd => {
@@ -282,8 +285,14 @@ class D3EventBars extends Chart {
             const otherSh = dTmp[params.otherDirection]
             const title = otherSh.name
             const header = [
-              { title, label: params.otherRole },
-              { title: dTmp.name, label: params.role },
+              {
+                title,
+                label: params.otherRole,
+              },
+              {
+                title: dTmp.name,
+                label: params.role,
+              },
             ]
             const tooltipData = {
               header,
@@ -319,7 +328,12 @@ class D3EventBars extends Chart {
         } else {
           const title = dataByName[d].name
           const tooltipData = {
-            header: [{ title, label: params.direction }],
+            header: [
+              {
+                title,
+                label: params.direction,
+              },
+            ],
             body: [
               {
                 field: xLabel.text().replace(" (USD)", ""),
@@ -511,11 +525,10 @@ class D3EventBars extends Chart {
           .selectAll(".y.axis .tick:not(.iconned)")
           .each(function addIcons(d) {
             const g = d3.select(this).classed("iconned", true)
-            const axisGap = -7
             const iconGroup = g
               .append("g")
               .attr("class", "icon")
-              .attr("transform", `translate(${axisGap}, 0)`)
+              .attr("transform", `translate(${params.xAxisGap}, 0)`)
 
             const flagUrl = dataByName[d].flag_url
             const showFlag = flagUrl !== null && flagUrl !== ""
@@ -536,26 +549,16 @@ class D3EventBars extends Chart {
                 .on("error", function onError(d) {
                   // nudge label to right to fill empty flag space
                   g.select("text").attr("x", -10)
-
-                  // old code below
-                  // show "other" flag (generic)
-                  // const subcat = dataByName[d].children[0][params.direction].subcat;
-                  // if (subcat === 'region')
-                  // d3.select(this).attr(
-                  //   "href",
-                  //   "https://flags.talusanalytics.com/64px/org.png",
-                  // )
                 })
               g.select("text").attr("x", -50)
             }
-            // else {
-            //   // nudge y-axis tick label to right to occupy space where flag
-            //   // would be
-            //   g.select("text").attr("x", -10);
-            // }
           })
       }
 
+      // update position of left x-axis label to align with x-axis
+      const rightMargin = this.margin.right
+      const newLeftLabelPos = rightMargin + this.width - params.xAxisGap + 2
+      params.setLeftLabelPos(newLeftLabelPos)
       ReactTooltip.rebuild()
     }
     if (this.initialized !== true) {
