@@ -105,6 +105,13 @@
         margin-right: 0;
       }
     }
+    // styling sort icons
+    [class*="sort-descending"],
+    [class*="sort-ascending"] {
+      &::after {
+        color: #a0c4e4 !important;
+      }
+    }
   }
   // footer containing symbol definitions and source text
   .tableFooter {

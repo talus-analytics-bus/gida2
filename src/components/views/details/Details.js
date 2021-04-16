@@ -572,7 +572,9 @@ const Details = ({
           <div
             style={{
               backgroundColor:
-                entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)",
+                entityRole === "funder"
+                  ? Settings.funderGreen
+                  : Settings.recipientPurple,
             }}
             className={styles.entityRole}
           >

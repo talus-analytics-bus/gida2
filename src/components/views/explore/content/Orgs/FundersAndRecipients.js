@@ -15,7 +15,6 @@ import FilterSelections from "../../../../common/FilterSelections/FilterSelectio
 import Loading from "../../../../common/Loading/Loading"
 import Chevron from "../../../../common/Chevron/Chevron.js"
 import Drawer from "../../../../common/Drawer/Drawer.js"
-import { greens, purples } from "../../../../map/MapUtil.js"
 import {
   execute,
   NodeSums,
@@ -362,8 +361,8 @@ const FundersAndRecipients = ({
               jeeScores: [],
               coreCapacities: [],
               colorScale: () => {
-                if (nodeType === "origin") return greens[greens.length - 1]
-                else return purples[purples.length - 1]
+                if (nodeType === "origin") return Settings.funderGreen
+                else return Settings.recipientPurple
               },
               entityRole: nodeType === "origin" ? "funder" : "recipient",
               minYear,
