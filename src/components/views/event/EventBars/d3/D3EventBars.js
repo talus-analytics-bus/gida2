@@ -481,7 +481,12 @@ class D3EventBars extends Chart {
 
       // get URL for bar label
       const urlFormat = d => {
-        const subcat = dataByName[d].children[0][params.direction].subcat
+        const datumTmp = dataByName[d].children[0]
+        const datum =
+          datumTmp[params.direction] !== undefined
+            ? datumTmp[params.direction]
+            : datumTmp
+        const subcat = datum.subcat
         const noUrl = params.byRegion || nonUrlSubcats.includes(subcat)
         if (noUrl) return `<tspan>${tickFormat(d)}</tspan>`
         else

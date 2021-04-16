@@ -42,7 +42,6 @@ const EventBars = ({
   const [noFilteredData, setNoFilteredData] = useState(false)
   const [funderRecipientLabel, setFunderRecipientLabel] = useState("")
   const [leftLabelPos, setLeftLabelPos] = useState(null)
-  const [checkboxRight, setCheckboxRight] = useState(null)
 
   // REFS
   const funderRecipientLabelRef = useRef(null)
@@ -254,6 +253,8 @@ const EventBars = ({
           d.iso2 = curShInfo.iso2
           d.region_who = curShInfo.region_who
           d.name = curShInfo.name
+          d.cat = curShInfo.cat
+          d.subcat = curShInfo.subcat
         }
         const name = d.place_name || d.name
         const iso2 = (d.iso2 || d.place_iso || "none").toLowerCase()
@@ -263,6 +264,8 @@ const EventBars = ({
           name,
           bar_id: `${iso2}-${curFlowType}-${impact}`,
           region_who: d.region_who,
+          cat: d.cat,
+          subcat: d.subcat,
         }
       })
 
@@ -358,12 +361,13 @@ const EventBars = ({
             undefined
           ) {
             const d = newCaseDeathDataForChartTmpByIso2[iso2]
-            newDataForChart[curFlowType].push({
-              ...newCaseDeathDataForChartTmpByIso2[iso2],
-              flag_url: getFlagUrl(d.name, iso2),
-              value: null,
-              sort: null,
-            })
+            if (d[params.direction] !== undefined)
+              newDataForChart[curFlowType].push({
+                ...newCaseDeathDataForChartTmpByIso2[iso2],
+                flag_url: getFlagUrl(d.name, iso2),
+                value: null,
+                sort: null,
+              })
           }
         }
       setDataForChart(newDataForChart)
