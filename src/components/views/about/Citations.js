@@ -1,11 +1,11 @@
-import React from "react";
-import styles from "./about.module.scss";
-import classNames from "classnames";
+import React from "react"
+import styles from "./about.module.scss"
+import classNames from "classnames"
 
 // JSX for about page.
 const Citations = () => {
   // Scroll to top of window afer loading.
-  React.useEffect(() => window.scrollTo(0, 0), []);
+  React.useEffect(() => window.scrollTo(0, 0), [])
   return (
     <div className={classNames(styles.about, "pageContainer")}>
       <div className={styles.aboutContainer}>
@@ -85,7 +85,7 @@ const Citations = () => {
                 <td>Reference</td>
               </tr>
 
-              {/* <tr>
+              <tr>
                 <td>
                   Analysis of funding for the Ebola epidemic and Zika outbreak
                   between 2014 and 2019
@@ -102,7 +102,7 @@ const Citations = () => {
                     purposes." <em>BMJ Global Health, 6</em>(4), e003923, 2021.
                   </a>
                 </td>
-              </tr> */}
+              </tr>
               <tr>
                 <td>
                   Georgetown Center for Global Health Science and Security and
@@ -163,7 +163,7 @@ const Citations = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Citations;
+export default Citations
