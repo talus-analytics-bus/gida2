@@ -10,27 +10,26 @@ import { popupStyles } from "../../../common"
 import arrowSvg from "./svg/arrow.svg"
 
 // utility
-import { floatToPctString } from "../../../misc/Util"
+import { floatToPctString, formatDate } from "../../../misc/Util"
 
 // local components
 import Dot from "./Dot/Dot"
+import { TimelineSegment } from "./TimelineSegment/TimelineSegment"
 
 const DurationTimeline = ({ points, isOngoing }) => {
   // convert string dates into moments
   points.forEach(p => (p.m = moment(p.date)))
 
   // get min and max
-  const min = getMin(points)
-  const max = getMax(points)
-  adjustMinMax(min, max)
+  const minTmp = getMin(points)
+  const maxTmp = getMax(points)
+  const [min, max] = adjustMinMax(minTmp, maxTmp)
 
   // define timeline bounds
   const left = moment(min).startOf("year")
 
   const getRightLimit = (isOngoing, max) => {
-    if (!isOngoing) {
-      return moment(max).endOf("year")
-    } else return moment().endOf("year")
+    return moment(max).endOf("year")
   }
   const right = getRightLimit(isOngoing, max)
 
@@ -62,17 +61,8 @@ const DurationTimeline = ({ points, isOngoing }) => {
       if (isOngoing) ysData.push(moment().year())
       const ysTmp = [...new Set(ysData)].sort()
 
-      // // if there is one year, add one in the future and one in the past
-      // const nYsTmp = ysTmp.length
-      // if (nYsTmp === 1) {
-      //   ysTmp.unshift(ysTmp[0] - 1)
-      //   ysTmp.push(ysTmp[1] + 1)
-      // } else if (nYsTmp === 2) {
-      //   ysTmp.push(ysTmp[1] + 1)
-      // }
-
-      const ys = []
       // fill in any missing years
+      const ys = []
       let prvY = ysTmp[0] - 1
       ysTmp.forEach(y => {
         if (y === prvY - 1) {
@@ -146,11 +136,11 @@ const DurationTimeline = ({ points, isOngoing }) => {
       const [s, e] = [ps[0].x, ps[ps.length - 1].x]
       const l = !isOngoing ? e - s : r - s
       const w = floatToPctString(l)
-      const arrowStart = floatToPctString(l + s)
-      return [floatToPctString(s), w, arrowStart]
+      // const arrowStart = floatToPctString(l + s)
+      return [floatToPctString(s), w]
     }
   }
-  const [thickStart, thickWidth, arrowStart] = getThickStartEndFromPoints(
+  const [thickStart, thickWidth] = getThickStartEndFromPoints(
     dots,
     getRelPos({ m: moment() }, left),
   )
@@ -170,31 +160,37 @@ const DurationTimeline = ({ points, isOngoing }) => {
               <div style={{ left: t.left }} className={styles.tick} />
             ))}
           </div>
-          <div
-            style={{ left: thickStart, width: thickWidth }}
-            className={styles.thickTrack}
-          />
-          {isOngoing && (
-            <>
-              <div
-                style={{ left: `calc(${arrowStart} - 32px)` }}
-                className={styles.ongoingLabel}
-              >
-                Ongoing
-              </div>
-              <img
-                style={{ left: arrowStart }}
-                src={arrowSvg}
-                className={styles.arrow}
-                alt={"Arrow head"}
-              />
-            </>
-          )}
-          <div className={styles.dots}>
-            {dots.map(d => (
-              <Dot {...{ ...d, key: d.date }} />
-            ))}
-          </div>
+          <TimelineSegment
+            {...{
+              title: "WHO PHEIC declaration",
+              value: getSegmentValue(points),
+              style: { left: thickStart, width: thickWidth },
+            }}
+          >
+            <div className={styles.thickTrack} />
+            {isOngoing && (
+              <>
+                <div className={styles.ongoingLabel}>Ongoing</div>
+                <img
+                  style={{ left: "100%" }}
+                  src={arrowSvg}
+                  className={styles.arrow}
+                  alt={"Arrow head"}
+                />
+              </>
+            )}
+            <div className={styles.dots}>
+              {dots.map((d, i) => (
+                <Dot
+                  {...{
+                    left: i === 0 ? 0 : undefined,
+                    right: i === 0 ? undefined : 0,
+                    key: d.date,
+                  }}
+                />
+              ))}
+            </div>
+          </TimelineSegment>
         </div>
         <div className={styles.years}>
           {years.map(t => (
@@ -205,9 +201,10 @@ const DurationTimeline = ({ points, isOngoing }) => {
         </div>
       </div>
       {
-        // Info tooltip that is displayed whenever a dot is hovered
+        // Info tooltip that is displayed whenever hovering on timeline (dot
+        // or track)
         <ReactTooltip
-          id={"dotTip"}
+          id={"segmentTip"}
           class={popupStyles.container}
           type="light"
           effect="float"
@@ -239,6 +236,24 @@ function adjustMinMax(min, max) {
       min.subtract(1, "year")
     } else if (consecYears) {
       max.add(1, "year")
+    }
+  } else {
+    max = moment()
+    const addYear = moment().year() - min.year() < 3
+    if (addYear) max.add(1, "year")
+  }
+  return [min, max]
+}
+
+const getSegmentValue = ps => {
+  if (ps.length === 0) return "Unknown"
+  else {
+    const startStr = formatDate(new Date(ps[0].date))
+    if (ps.length === 1) {
+      return `${startStr} - present`
+    } else {
+      const endStr = formatDate(new Date(ps[ps.length - 1].date))
+      return `${startStr} - ${endStr}`
     }
   }
 }

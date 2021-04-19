@@ -1,0 +1,11 @@
+// encloses the segments of the timeline, used for popup
+.timelineSegment {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    position: relative;
+    .popupZone {
+        position: relative;
+        width: 100%;
+    }
+}

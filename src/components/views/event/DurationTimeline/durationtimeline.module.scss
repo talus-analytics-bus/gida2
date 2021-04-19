@@ -45,10 +45,12 @@
     position: absolute;
     height: 15px;
     transform: translate(-1px);
+    top: -5px;
   }
   .ongoingLabel {
     position: absolute;
     top: -2em;
+    right: -35px;
     font-size: 1em;
     text-align: center;
     text-transform: uppercase;
