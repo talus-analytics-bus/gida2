@@ -967,7 +967,7 @@ export const formatRegion = v => {
   return regionsByValue[v] || v
 }
 
-Util.formatSIInteger = val => {
+export const formatSIInteger = val => {
   if (val === 0) return "0"
   else if (val <= 999) return comma(val)
   else
@@ -975,6 +975,7 @@ Util.formatSIInteger = val => {
       .format(".2s")(val)
       .replace(/G/, "B")
 }
+Util.formatSIInteger = formatSIInteger
 
 // Format using standard suffixes
 Util.formatSI = val => {

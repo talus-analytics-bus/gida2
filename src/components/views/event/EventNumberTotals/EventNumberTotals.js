@@ -16,7 +16,7 @@ import {
   CumulativeCasesOrDeaths,
   FlowSums,
 } from "../../../misc/Queries"
-import { comma } from "../../../misc/Util"
+import { comma, formatSIInteger } from "../../../misc/Util"
 import { WebsiteList } from "../../../common/SourceText/SourceText"
 
 const EventNumberTotals = ({
@@ -159,6 +159,7 @@ const EventNumberTotals = ({
           <img
             className={type === "funding" ? styles.money : ""}
             src={getIcon(type)}
+            alt={type === "funding" ? "Currency bill icon" : "Person icon"}
           />
         </div>
         <div className={styles.rows}>
@@ -173,6 +174,8 @@ const EventNumberTotals = ({
                     data,
                     dataFunc: getDataFunc(flowType),
                     format: "event",
+                    formatFunc:
+                      type === "funding" ? formatEventFunding : undefined,
                   }}
                 />
               </div>
@@ -198,19 +201,6 @@ const EventNumberTotals = ({
               />
             </SourceText>
           )}
-          {/* {
-          hasImpactDataSources && (
-            <SourceText>
-              {impactDataSourcesNoun}:{" "}
-              {eventData.cases_and_deaths_refs.map(d => (
-                <>
-                  <SourceText.Website {...{ ...d }} />
-                  {d.notes === "" ? ". " : ""}
-                </>
-              ))}
-            </SourceText>
-          )
-          } */}
           {!isImpacts && (
             <SourceText>
               Source: <Link to={"/about/data"}>View sources</Link>
@@ -222,3 +212,8 @@ const EventNumberTotals = ({
   )
 }
 export default EventNumberTotals
+
+const formatEventFunding = v => {
+  if (typeof v === "number") return `${formatSIInteger(v)} USD`
+  else return v
+}

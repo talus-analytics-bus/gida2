@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect } from "react"
 import classNames from "classnames"
 import Util, { getInitCap } from "../../misc/Util.js"
 import { Loading } from "../../common"
 import styles from "./totalbyflowtype.module.scss"
 
-// local components
-import ObservationQuery from "../../misc/ObservationQuery"
-
 // FC for Details.
-const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
+const TotalByFlowType = ({
+  flowType,
+  data,
+  format,
+  dataFunc,
+  formatFunc = value => {
+    return Util.formatValue(value, flowType)
+  },
+  ...props
+}) => {
   const key = ["total_cases", "total_deaths"].includes(flowType)
     ? "value"
     : flowType
@@ -21,25 +27,6 @@ const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
   const getData = async () => {
     if (dataFunc !== undefined) await dataFunc()
   }
-
-  // // FUNCTIONS //
-  // // get data
-  // const getData = async () => {
-  //   // TODO replace with `dataFunc`
-  //   const metric_id = 75;
-  //   const queries = {
-  //     chartData: ObservationQuery({
-  //       metric_id,
-  //       temporal_resolution: "daily",
-  //       start_date: "2020-07-12",
-  //       end_date: "2020-07-12",
-  //       spatial_resolution: "country",
-  //       place_name: "Italy",
-  //     }),
-  //   };
-  //   const results = await execute({ queries });
-  //   setChartData(results.chartData);
-  // };
 
   // EFFECT HOOKS //
   useEffect(() => {
@@ -62,9 +49,7 @@ const TotalByFlowType = ({ flowType, data, format, dataFunc, ...props }) => {
             [styles.unknown]: amount === "unknown",
           })}
         >
-          <Loading loaded={data !== null}>
-            {Util.formatValue(amount, flowType)}
-          </Loading>
+          <Loading loaded={data !== null}>{formatFunc(amount)}</Loading>
         </div>
         {format !== "event" && (
           <div className={styles.label}>
