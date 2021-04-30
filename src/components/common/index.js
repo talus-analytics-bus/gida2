@@ -15,6 +15,7 @@ import Popup from "./Popup/Popup.js"
 import SmartTable from "./SmartTable/SmartTable.js"
 import ShowMore from "./ShowMore/ShowMore.js"
 import SlideUp from "./SlideUp/SlideUp.tsx"
+import Modal from "./Modal/Modal.tsx"
 import popupStyles from "./Popup/popup.module.scss"
 export {
   Button,
@@ -33,6 +34,7 @@ export {
   Popup,
   SmartTable,
   ShowMore,
+  Modal,
   popupStyles,
   SlideUp,
 }
