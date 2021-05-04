@@ -491,42 +491,52 @@ export const getNodeLinkList = ({
     const doUrl =
       !nonUrlTypes.includes(type) &&
       !nonUrlSubcats.includes(subcat) &&
-      !doParentUrl &&
       node.slug !== "not-reported"
     const url = !doParentUrl ? urlFunc(node.id) : urlFunc(node.parent.id)
 
     const skipUrlBecauseIsTargetInRecipientCol =
       otherId && node.id === otherId && entityRole === "recipient"
+
+    const idMatchesSelfOrParent =
+      (id && node.id === id) || (node.parent && node.parent.id === id)
+
     const skipUrlBecauseIsSourceInFunderCol =
-      id && node.id === id && entityRole === "funder"
+      idMatchesSelfOrParent && entityRole === "funder"
     const skipUrlBecauseIsOnlyNode =
       otherId === undefined && id && node.id === id
+    const showAsLink =
+      doUrl &&
+      !skipUrlBecauseIsOnlyNode &&
+      !skipUrlBecauseIsTargetInRecipientCol &&
+      !skipUrlBecauseIsSourceInFunderCol
+
+    const parentIsUnlinkable =
+      node.parent &&
+      (nonUrlTypes.includes(node.parent.cat) ||
+        nonUrlSubcats.includes(node.parent.subcat))
     return (
       <span>
-        {doUrl &&
-          !skipUrlBecauseIsOnlyNode &&
-          !skipUrlBecauseIsTargetInRecipientCol &&
-          !skipUrlBecauseIsSourceInFunderCol && (
-            <span>
-              <Link to={url}>{node.name}</Link>
-              {i !== nodeList.length - 1 && <span>; </span>}
-            </span>
-          )}
-        {doParentUrl &&
-          !skipUrlBecauseIsOnlyNode &&
-          !skipUrlBecauseIsTargetInRecipientCol &&
-          !skipUrlBecauseIsSourceInFunderCol && (
-            <span>
-              <Link to={url}>{node.parent.name}</Link> (via {node.name})
-              {i !== nodeList.length - 1 && <span>; </span>}
-            </span>
-          )}
-        {((!doUrl && !doParentUrl) ||
-          skipUrlBecauseIsOnlyNode ||
-          skipUrlBecauseIsTargetInRecipientCol ||
-          skipUrlBecauseIsSourceInFunderCol) && (
+        {!doParentUrl && showAsLink && (
+          <span>
+            <Link to={url}>{node.name}</Link>
+            {i !== nodeList.length - 1 && <span>; </span>}
+          </span>
+        )}
+        {!doParentUrl && (parentIsUnlinkable || !showAsLink) && (
           <span>
             <span>{node.name}</span>
+            {i !== nodeList.length - 1 && <span>; </span>}
+          </span>
+        )}
+        {doParentUrl && !parentIsUnlinkable && showAsLink && (
+          <span>
+            <Link to={url}>{node.parent.name}</Link> (via {node.name})
+            {i !== nodeList.length - 1 && <span>; </span>}
+          </span>
+        )}
+        {doParentUrl && (parentIsUnlinkable || !showAsLink) && (
+          <span>
+            {node.parent.name} (via {node.name})
             {i !== nodeList.length - 1 && <span>; </span>}
           </span>
         )}
