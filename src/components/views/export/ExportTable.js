@@ -105,7 +105,7 @@ const ExportTable = ({
       func: d => (d.core_capacities ? d.core_capacities.join("; ") : ""),
     },
     {
-      title: "PHEICs",
+      title: "PHEICs (response funding)",
       prop: "events",
       entity: "project_constants",
       type: "text",

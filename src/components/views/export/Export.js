@@ -19,7 +19,7 @@ export const cols = [
   ["desc", "Project description"],
   ["sources", "Data source"],
   ["core_capacities", "Core capacities"],
-  ["events", "PHEICs"],
+  ["events", "PHEICs (response funding)"],
   ["origins", "Funder"],
   ["targets", "Recipient"],
   ["assistance_type_project", "Support type"],
