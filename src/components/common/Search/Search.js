@@ -28,7 +28,8 @@ export const searchableSubcats = [
  * Search bar displaying stakeholders and (optionally) PHEICs that match the
  * keywords entered.
  *
- * @param {Function} callback Function to be called after search finished
+ * @param {Function | undefined} callback Function to be called after
+ *                                        search finished
  * @param {string} name Unique name of search bar
  * @param {boolean} top True if search results should show on top, false if btm
  * @param {numeric} limit Max number of search results to display
