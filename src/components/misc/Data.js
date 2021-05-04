@@ -482,7 +482,6 @@ export const getNodeLinkList = ({
 
   // Do not list URLs unless the node belongs to any of these types
   const nonUrlTypes = ["region"]
-  // const nonUrlTypes = ["region", "state_/_department_/_territory"];
   const parentUrlSubcats = ["agency", "sub-organization"]
   return nodeList.map((node, i) => {
     const type = node.cat
