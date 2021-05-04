@@ -29,7 +29,7 @@ export const searchableSubcats = [
  * keywords entered.
  *
  * @param {Object} SearchProps  Search component properties object
- * @param {Function}  [SearchProps.callback] Function to be called after
+ * @param {Function|undefined}  [SearchProps.callback] Function to be called after
  *                              search finished
  * @param {string} SearchProps.name Unique name of search bar
  * @param {boolean} [SearchProps.top] True if search results should show on top, false if btm
