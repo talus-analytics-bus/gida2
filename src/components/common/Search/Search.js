@@ -68,6 +68,7 @@ const Search = ({
         limit: limit || 5,
         includePheics,
         filters: {
+          "Stakeholder.show": [true],
           "Stakeholder.subcat": [
             [
               "neq",
