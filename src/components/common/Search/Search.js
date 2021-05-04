@@ -28,14 +28,15 @@ export const searchableSubcats = [
  * Search bar displaying stakeholders and (optionally) PHEICs that match the
  * keywords entered.
  *
- * @param {Function | undefined} callback Function to be called after
- *                                        search finished
- * @param {string} name Unique name of search bar
- * @param {boolean} top True if search results should show on top, false if btm
- * @param {numeric} limit Max number of search results to display
- * @param {boolean} wide True if bar should occupy 100% of container width,
+ * @param {Object} SearchProps  Search component properties object
+ * @param {Function}  [SearchProps.callback] Function to be called after
+ *                              search finished
+ * @param {string} SearchProps.name Unique name of search bar
+ * @param {boolean} [SearchProps.top] True if search results should show on top, false if btm
+ * @param {number} [SearchProps.limit] Max number of search results to display
+ * @param {boolean} [SearchProps.wide] True if bar should occupy 100% of container width,
  *                       false if it should occupy only as much as needed
- * @param {boolean} includePheics True if PHEICs should be included in search
+ * @param {boolean} [SearchProps.includePheics] True if PHEICs should be included in search
  *                                results, false if only stakeholders
  * @param  {...any} props Additional properties
  * @returns
