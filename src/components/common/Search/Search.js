@@ -25,9 +25,19 @@ export const searchableSubcats = [
   "world",
 ]
 /**
- * Generic radio toggle
- * TODO implement tooltip
- * @method Search
+ * Search bar displaying stakeholders and (optionally) PHEICs that match the
+ * keywords entered.
+ *
+ * @param {Function} callback Function to be called after search finished
+ * @param {string} name Unique name of search bar
+ * @param {boolean} top True if search results should show on top, false if btm
+ * @param {numeric} limit Max number of search results to display
+ * @param {boolean} wide True if bar should occupy 100% of container width,
+ *                       false if it should occupy only as much as needed
+ * @param {boolean} includePheics True if PHEICs should be included in search
+ *                                results, false if only stakeholders
+ * @param  {...any} props Additional properties
+ * @returns
  */
 const Search = ({
   callback,
