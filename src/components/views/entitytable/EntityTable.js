@@ -817,7 +817,7 @@ const getComponentData = async ({
     flowFilters["Project_Constants.is_ghsa"] = [true]
   } else if (ghsaOnly === "event") {
     nodeSumsFilters["Flow.response_or_capacity"] = ["response"]
-    flowFilters["Project_Constants.response_or_capacity"] = ["response"]
+    flowFilters["Project.events"] = [["not_empty"]]
   } else if (ghsaOnly === "capacity") {
     nodeSumsFilters["Flow.response_or_capacity"] = ["capacity"]
     flowFilters["Project_Constants.response_or_capacity"] = ["capacity"]

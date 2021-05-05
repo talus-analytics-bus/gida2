@@ -200,7 +200,7 @@ const EventTable = ({
 
     // define filters
     const flowFilters = {
-      "Project_Constants.response_or_capacity": ["both", "response"],
+      "Project.events": [["not_empty"]],
     }
     // Add event ID filter if defined
     if (eventId !== undefined)
