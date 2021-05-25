@@ -19,7 +19,7 @@ export const cols = [
   ["desc", "Project description"],
   ["sources", "Data source"],
   ["core_capacities", "Core capacities"],
-  ["events", "PHEICs (response funding)"],
+  // ["events", "PHEICs (response funding)"],
   ["origins", "Funder"],
   ["targets", "Recipient"],
   ["assistance_type_project", "Support type"],
@@ -207,17 +207,19 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                     curValues: recipients,
                   }}
                 />
-                <FilterDropdown
-                  {...{
-                    label: "",
-                    options: data.outbreaks.map(d => {
-                      return { value: d.id, label: d.name }
-                    }),
-                    placeholder: "PHEIC",
-                    onChange: setOutbreaks,
-                    curValues: outbreaks,
-                  }}
-                />
+                {
+                  // <FilterDropdown
+                  //   {...{
+                  //     label: "",
+                  //     options: data.outbreaks.map(d => {
+                  //       return { value: d.id, label: d.name }
+                  //     }),
+                  //     placeholder: "PHEIC",
+                  //     onChange: setOutbreaks,
+                  //     curValues: outbreaks,
+                  //   }}
+                  // />
+                }
               </div>
             </div>,
             <div>
@@ -272,6 +274,10 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                               }).then(paramsTmp => {
                                 // URL query params
                                 const params = paramsTmp.params
+                                params.append(
+                                  "include_response_subtotals",
+                                  false,
+                                )
 
                                 // POST body JSON
                                 const data = {

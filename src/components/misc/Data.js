@@ -5,7 +5,6 @@ import * as d3 from "d3/dist/d3.min"
 import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
-  getMapColorScale,
   getMapMetricValue,
 } from "../map/MapUtil.js"
 
@@ -273,7 +272,6 @@ export const getJeeScores = ({ scores, iso3, coreCapacities }) => {
  * @param  {[type]}          avgCapScores           [description]
  * @return {[type]}                                 [description]
  */
-const debugNeedsMet = false
 // TODO move to API
 export const calculateNeedsMet = ({ datum, avgCapScores }) => {
   // Get the disbursed funds received for this datum.
@@ -620,7 +618,7 @@ export const getTableRowData = ({
  */
 export const isUnknownDataOnly = ({ masterSummary }) => {
   let unknownOnly = true
-  for (let [k, v] of Object.entries(masterSummary.flow_types)) {
+  for (let [, v] of Object.entries(masterSummary.flow_types)) {
     if (v.focus_node_weight !== "unknown") {
       unknownOnly = false
     }
@@ -879,11 +877,11 @@ export const getWeightsBySummaryAttribute = ({
 
   // Organize the output as an array of objects rather than as a single object
   // For each key/val pair in the current output object,
-  for (let [k, v] of Object.entries(output)) {
+  for (let [, v] of Object.entries(output)) {
     // if we are counting target/source node,
     if (byOtherNode) {
       // For each key/val pair in that target/source node entry,
-      for (let [k2, v2] of Object.entries(v)) {
+      for (let [, v2] of Object.entries(v)) {
         // add the value to the output array
         outputArr.push(v2)
       }
