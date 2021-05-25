@@ -8,6 +8,9 @@ node_modules/*
 # Build files
 build/*
 
+# VSCode files
+.vscode
+
 # Environment variables
 .env
 *.sh

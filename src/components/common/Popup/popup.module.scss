@@ -1,0 +1,78 @@
+@import "src/assets/styles/colors.scss";
+[class*="__react_component_tooltip"].show {
+  opacity: 1 !important;
+}
+[class*="__react_component_tooltip"].container {
+  padding: 0;
+  opacity: 1 !important;
+  $padding: 15px;
+  $grid-gap: 1rem 2rem;
+  &,
+  > .popup {
+    border-radius: $border-radius;
+  }
+  background-color: none;
+  @include shadow();
+  .popup {
+    $font-size-popup: 1.6rem;
+    opacity: 1;
+    max-width: 25vw;
+    min-width: 400px;
+    .header,
+    .body {
+      padding: $padding;
+    }
+    .header {
+      background-color: $light-grey-3;
+      border-bottom: 1px solid $outbreak-gray-3;
+      display: grid;
+      grid-template-columns: auto auto;
+      grid-gap: $grid-gap;
+      align-items: center;
+      .label {
+        // "Funder" and "Recipient" SVG has specific fixed size
+        justify-self: flex-end;
+        &.isRole {
+          height: 30px;
+          &.funder {
+            width: 105px;
+          }
+          &.recipient {
+            width: 120px;
+          }
+        }
+      }
+      .title {
+        font-size: $font-size-popup;
+        font-family: "open_sanssemibold", sans-serif;
+      }
+    }
+    .body {
+      display: grid;
+      grid-template-columns: auto auto;
+      grid-gap: $grid-gap;
+      font-size: $font-size-popup;
+
+      .label {
+        color: $outbreak-gray-2;
+        font-family: "open_sanssemibold", sans-serif;
+        text-align: right;
+      }
+      .value {
+        color: black;
+        font-weight: normal;
+        font-family: "open_sanssemibold", sans-serif;
+      }
+    }
+
+    &.left {
+      .body,
+      .header {
+        display: flex;
+      }
+      .body .label {
+        text-align: left;
+      }
+    }
+  }
+}

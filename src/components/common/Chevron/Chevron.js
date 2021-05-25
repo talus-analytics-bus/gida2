@@ -1,6 +1,5 @@
-import React from "react";
-// import classNames from "classnames";
-import styles from "./chevron.module.scss";
+import React from "react"
+import styles from "./chevron.module.scss"
 
 /**
  * Generic radio toggle
@@ -16,7 +15,7 @@ const Chevron = ({ type, ...props }) => {
       />
       <text transform="translate(5, 19)">$</text>
     </svg>
-  );
+  )
   const recipient = (
     <svg width="30px" height="30px" className={styles.chevron}>
       <path
@@ -25,7 +24,7 @@ const Chevron = ({ type, ...props }) => {
       />
       <text transform="translate(12, 19)">$</text>
     </svg>
-  );
-  return type === "funder" ? funder : recipient;
-};
-export default Chevron;
+  )
+  return type === "funder" ? funder : recipient
+}
+export default Chevron

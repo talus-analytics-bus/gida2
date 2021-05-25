@@ -17,3 +17,18 @@
   margin-top: 10px;
   color: #828282;
 }
+.showAll {
+  text-align: center;
+  margin: 0 auto;
+  color: $outbreak-blue-2;
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  span.flipped {
+    transform: rotate(180deg);
+  }
+}
+.url {
+  word-break: break-all;
+}

@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
-import Util, { isEmpty } from "../../misc/Util";
-import { getNodeLinkList, parseIdsAsNames } from "../../misc/Data";
-import Loading from "../../common/Loading/Loading";
-import { execute, NodeSums, Stakeholder } from "../../misc/Queries";
-import TableInstance from "../table/TableInstance";
-import { Settings } from "../../../App.js";
-// import { appContext, defaultContext } from "../../misc/ContextProvider";
+import React, { useState, useEffect } from "react"
+import Util from "../../misc/Util"
+import { getNodeLinkList } from "../../misc/Data"
+import { Loading } from "../../common"
+import { execute, NodeSums, Stakeholder } from "../../misc/Queries"
+import TableInstance from "../table/TableInstance"
+import { Settings } from "../../../App.js"
 
 // FC for TopTable.
 const TopTable = ({
@@ -15,28 +14,25 @@ const TopTable = ({
   otherNodeType,
   direction,
   staticStakeholders,
-  ...props
 }) => {
   // CONSTANTS // ---------------------------------------------------------- //
-  const isGhsaPage = id === "ghsa";
+  const isGhsaPage = id === "ghsa"
 
-  // // CONTEXT //
-  // const context = useContext(appContext) || defaultContext;
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(null)
   const [stakeholders, setStakeholders] = useState(
-    staticStakeholders !== undefined ? staticStakeholders : null
-  );
+    staticStakeholders !== undefined ? staticStakeholders : null,
+  )
   const getData = async () => {
     const filters = {
       "Flow.flow_type": ["disbursed_funds", "committed_funds"],
       "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
       "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
-    };
+    }
 
     if (!isGhsaPage) {
-      filters["OtherStakeholder.id"] = [id];
+      filters["OtherStakeholder.id"] = [id]
     } else {
-      filters["Flow.is_ghsa"] = [true];
+      filters["Flow.is_ghsa"] = [true]
     }
 
     // top funder / recipient table
@@ -47,24 +43,24 @@ const TopTable = ({
         group_by: "Core_Element.name",
         filters,
       }),
-    };
-    if (staticStakeholders === undefined)
-      queries.stakeholders = Stakeholder({ by: "id" });
-    const results = await execute({ queries });
-    setData(results.data);
-    if (staticStakeholders === undefined) {
-      setStakeholders(results.stakeholders);
     }
-  };
+    if (staticStakeholders === undefined)
+      queries.stakeholders = Stakeholder({ by: "id" })
+    const results = await execute({ queries })
+    setData(results.data)
+    if (staticStakeholders === undefined) {
+      setStakeholders(results.stakeholders)
+    }
+  }
 
   useEffect(() => {
-    if (data === null) getData();
-  }, [data]);
+    if (data === null) getData()
+  }, [data])
 
   // when certain selections change, retrieve updated data
   useEffect(() => {
-    setData(null);
-  }, [id, direction]);
+    setData(null)
+  }, [id, direction])
 
   // CONSTANTS // ---------------------------------------------------------- //
   // Define standard colums for Top Funders and Top Recipients tables.
@@ -95,12 +91,12 @@ const TopTable = ({
         title: c[1],
         prop: c[1],
         render: v => Util.formatValue(v, "disbursed_funds"),
-      };
-    })
-  );
+      }
+    }),
+  )
 
   const loaded =
-    data !== null && (data.length === 0 || data[0][direction] !== undefined);
+    data !== null && (data.length === 0 || data[0][direction] !== undefined)
   return (
     <Loading loaded={loaded}>
       {loaded && (
@@ -113,12 +109,12 @@ const TopTable = ({
                 Util.getRoleTerm({
                   type: "noun",
                   role: otherEntityRole,
-                })
+                }),
               ),
               prop: otherNodeType,
               type: "text",
               func: d => {
-                return JSON.stringify(d[otherNodeType]);
+                return JSON.stringify(d[otherNodeType])
               },
               render: d => {
                 return getNodeLinkList({
@@ -126,7 +122,7 @@ const TopTable = ({
                   nodeList: JSON.parse(d),
                   entityRole: otherEntityRole,
                   id: id,
-                });
+                })
               },
             },
           ].concat(topTableCols)}
@@ -134,7 +130,7 @@ const TopTable = ({
         />
       )}
     </Loading>
-  );
-};
+  )
+}
 
-export default TopTable;
+export default TopTable

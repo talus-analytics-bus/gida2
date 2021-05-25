@@ -2,12 +2,28 @@
 
 .search {
   font-size: 16px; // base font size
-  max-width: 275px;
+  max-width: 290px;
   position: relative;
+
+  &.wide {
+    max-width: unset;
+    width: 100%;
+  }
+
+  &:not(.allowAnimation) * {
+    transition: none !important;
+  }
+
   .searchBar {
+    &.expandedByDefault .field i {
+      cursor: default;
+      &:hover {
+        color: inherit;
+      }
+    }
     &.expanded .field {
       input {
-        width: 240px;
+        width: 270px;
         transition: 0.5s width;
       }
       border: none;
@@ -29,8 +45,8 @@
           color: darken($grey, 10%);
         }
       }
-      input,
-      input::placeholder {
+
+      input {
         transition: 0.5s width;
         cursor: text !important;
         width: 0;
@@ -44,7 +60,8 @@
   }
   .results {
     flex-flow: column;
-    width: 275px;
+    width: 100%;
+
     position: absolute;
     background-color: white;
     border-radius: $border-radius;

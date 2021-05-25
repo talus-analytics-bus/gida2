@@ -1,0 +1,159 @@
+@import "../../../../../assets/styles/colors.scss";
+.orgs {
+  height: 100%;
+  min-height: 80vh;
+  .title {
+    @include title;
+    margin: 0;
+  }
+  .header {
+    margin-top: 10px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .subtitle {
+    @include subtitle;
+    svg {
+      top: unset;
+    }
+  }
+  .introduction {
+    margin-bottom: 20px;
+    max-width: 850px;
+    font-size: 1.6rem;
+    line-height: 1.4;
+    > span {
+      background-color: #e0e0e0;
+      padding: 1px 6px;
+      > span {
+        margin-left: 10px;
+        color: $caret-blue;
+      }
+    }
+  }
+  .instructions {
+    font-style: italic;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    // justify-content: center;
+    margin: 0px 0 10px;
+  }
+  .content {
+    display: flex;
+    flex-flow: column;
+  }
+  .hide {
+    display: none;
+  }
+  .filterContainer {
+    width: 400px;
+    @include spaceChildrenVert(20px);
+  }
+  .tables {
+    display: flex;
+    flex-flow: row;
+    table {
+      // fix width of second column
+      tr {
+        td,
+        th {
+          &:last-child {
+            width: 200px !important;
+          }
+        }
+      }
+
+      // No wrapping col labels on this page.
+      th[role="columnheader"] {
+        white-space: nowrap;
+      }
+      // td {
+      //   white-space: nowrap;
+      // }
+
+      td,
+      tr {
+        color: black;
+        &:hover {
+          transition-timing-function: linear;
+          transition: background 125ms, outline 125ms;
+          td {
+            background-color: #f9f9f9;
+            transition-timing-function: linear;
+            transition: background-color 125ms, border-color 125ms, font-weight 125ms;
+          }
+        }
+      }
+      .flagAndName {
+        display: grid;
+        // grid-template-columns: 30px 1fr;
+        grid-gap: 0 10px;
+        align-items: center;
+      }
+    }
+    > div {
+      margin: 0 10px;
+      width: 100%;
+      &:first-child {
+        margin-left: 0;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+    // styling sort icons
+    [class*="sort-descending"],
+    [class*="sort-ascending"] {
+      &::after {
+        color: #a0c4e4 !important;
+      }
+    }
+  }
+  // footer containing symbol definitions and source text
+  .tableFooter {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 10px;
+    > * {
+      margin: 0;
+    }
+  }
+  .menu {
+    display: flex;
+    flex-flow: column;
+    padding: 0 20px 20px;
+    .filterBadges {
+      font-weight: bold;
+      margin: 0 0 5px;
+    }
+    .subtitle {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .menuContent {
+      @include spaceChildrenHoriz(30px);
+      display: flex;
+      flex-flow: row nowrap;
+
+      > div {
+        margin-top: 20px;
+        width: max-content;
+      }
+      > div:last-child {
+        width: 100%;
+        max-width: 300px;
+      }
+      > div:first-child {
+        width: min-content;
+        min-width: 170px;
+      }
+    }
+  }
+}

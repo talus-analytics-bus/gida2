@@ -1,14 +1,13 @@
-import React from "react";
-import classNames from "classnames";
-import styles from "./footer.module.scss";
-import moment from "moment";
-import talus from "../../../assets/images/logo-talus.png";
-import talusDark from "../../../assets/images/logo-talus-dark.png";
-import gu from "../../../assets/images/logo-georgetown.png";
-import guDark from "../../../assets/images/logo-georgetown-dark.png";
-import idea from "../../../assets/images/logo-title.png";
-import ideaDark from "../../../assets/images/logo-idea-dark.png";
-import Util, { getLastUpdatedDate } from "../../misc/Util.js";
+import React from "react"
+import classNames from "classnames"
+import styles from "./footer.module.scss"
+import talus from "../../../assets/images/logo-talus.png"
+import talusDark from "../../../assets/images/logo-talus-dark.png"
+import gu from "../../../assets/images/logo-georgetown.png"
+import guDark from "../../../assets/images/logo-georgetown-dark.png"
+import idea from "../../../assets/images/logo-title.png"
+import ideaDark from "../../../assets/images/logo-idea-dark.png"
+import { getLastUpdatedDate } from "../../misc/Util.js"
 
 const Footer = ({ versionData, ...props }) => {
   // CONSTANTS //
@@ -16,7 +15,7 @@ const Footer = ({ versionData, ...props }) => {
   const lastedUpdatedDateStr = getLastUpdatedDate({
     versionType: "assistance",
     data: versionData,
-  });
+  })
   const images = [
     {
       imgSrc: props.isDark ? ideaDark : idea,
@@ -34,7 +33,7 @@ const Footer = ({ versionData, ...props }) => {
       url: "http://talusanalytics.com/",
       alt: "Talus Analytics, LLC",
     },
-  ];
+  ]
 
   return (
     <div
@@ -67,7 +66,7 @@ const Footer = ({ versionData, ...props }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

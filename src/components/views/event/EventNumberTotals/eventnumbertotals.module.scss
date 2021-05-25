@@ -1,0 +1,52 @@
+@import "../../../../assets/styles/colors.scss";
+.eventFundingTotals {
+  .content {
+    display: flex;
+    flex-flow: row;
+    .icon {
+      margin-right: 30px;
+      img {
+        transform-origin: top;
+        width: 40px;
+        height: 40px;
+        &.money {
+          height: 28px;
+        }
+        margin-top: 4px;
+      }
+    }
+
+    .rows {
+      display: grid;
+      grid-template-rows: auto auto;
+      width: 100%;
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        .title {
+          @include sectionTitle;
+        }
+      }
+    }
+  }
+
+  // alternate styling modes
+  &.compact {
+    .rows {
+      width: unset;
+      @include spaceChildrenHoriz(125px);
+
+      // TODO more elegantly add this spacing, should not
+      // be set in this styling file, in JS instead
+      margin-bottom: 20px;
+    }
+    .icon {
+      display: none;
+    }
+    // hide source text in compact mode
+    .cols + div {
+      display: none;
+    }
+  }
+}

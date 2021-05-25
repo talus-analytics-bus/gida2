@@ -1,0 +1,24 @@
+@import "src/assets/styles/colors.scss";
+.search {
+  &.right {
+    margin-left: auto;
+  }
+  position: relative;
+  input {
+    padding: 5px;
+    border: 1px solid $gray-2;
+    border-radius: 5px;
+    &::placeholder {
+      font-style: italic;
+    }
+  }
+
+  // magnifying glass
+  i {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    color: #4682b4;
+    font-weight: bold;
+  }
+}

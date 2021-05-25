@@ -1,22 +1,16 @@
-import React, { useState, useLayoutEffect } from "react";
-import styles from "../details.module.scss";
-import classNames from "classnames";
-import { Settings } from "../../../../App.js";
-import {
-  getNodeLinkList,
-  getWeightsBySummaryAttributeSimple,
-  getSummaryAttributeWeightsByNode,
-  isUnknownDataOnly,
-  parseIdsAsNames,
-} from "../../../misc/Data.js";
-import Util from "../../../misc/Util.js";
-import Loading from "../../../common/Loading/Loading";
+// 3rd party libs
+import React, { useState, useLayoutEffect } from "react"
 
-// local components
-import TableInstance from "../../../chart/table/TableInstance.js";
+// local
+import { EventLink } from "./../../events/EventLink"
+import { getNodeLinkList } from "../../../misc/Data.js"
+import Util from "../../../misc/Util.js"
+import { Loading, SmartTable } from "../../../common"
+import { PagesizePicker } from "../../../common/SmartTable/Paginator/Paginator"
+import { cols } from "../../export/Export"
 
 // queries
-import { execute, Outbreak, Flow } from "../../../misc/Queries";
+import { execute, Outbreak, Flow, Excel } from "../../../misc/Queries"
 
 // FC for EventTable.
 const EventTable = ({
@@ -32,171 +26,290 @@ const EventTable = ({
   curFlowType,
   curFlowTypeName,
   isGhsaPage = false,
-  setEventTotalsData,
-  ...props
+  setEventTotalsData = () => "",
+  setLoaded = () => "",
 }) => {
   // STATE //
-  const [outbreaks, setOutbreaks] = useState([]);
-  const [flows, setFlows] = useState([]);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [outbreaks, setOutbreaks] = useState([])
+  const [flows, setFlows] = useState([])
+  const [nTotalRecords, setNTotalRecords] = useState(0)
+  const [dataLoaded, setDataLoaded] = useState(false)
+  const [fetchingRows, setFetchingRows] = useState(false)
+  const [searchText, setSearchText] = useState("")
 
-  const getData = async () => {
+  // table state
+  const [pagesize, setPagesize] = useState(5)
+  const [curPage, setCurPage] = useState(1)
+  const [sortCol, setSortCol] = useState("Project.response_committed_funds")
+  const [isDesc, setIsDesc] = useState(true)
+
+  // CONSTANTS //
+  const showBothFlowTypes = curFlowType === undefined
+  const standardCols = [
+    {
+      title: "PHEIC",
+      prop: "events",
+      entity: "project_constants",
+      type: "text",
+      func: d => {
+        // get link to outbreak page
+        const matchingOutbreaks = outbreaks.filter(dd =>
+          d.events.includes(dd.id),
+        )
+
+        return matchingOutbreaks.map((dd, ii) => {
+          const comma = ii !== matchingOutbreaks.length - 1 ? ", " : null
+          return (
+            <span>
+              <EventLink {...{ name: dd.name, slug: dd.slug }} />
+              {comma}
+            </span>
+          )
+        })
+      },
+      render: d => d,
+      hide: hideName,
+    },
+    {
+      title: "Project name",
+      prop: "name",
+      entity: "Project",
+      type: "text",
+      func: d => d.name,
+      render: d => d,
+    },
+    {
+      title: Util.getInitCap(
+        Util.getRoleTerm({
+          type: "noun",
+          role: "funder",
+        }),
+      ),
+      prop: "origins",
+      entity: "project_constants",
+      type: "text",
+      func: d => JSON.stringify(d.origins),
+      render: d =>
+        getNodeLinkList({
+          urlType: "details",
+          nodeList: JSON.parse(d),
+          entityRole: "funder",
+          id,
+        }),
+    },
+    {
+      title: Util.getInitCap(
+        Util.getRoleTerm({
+          type: "noun",
+          role: "recipient",
+        }),
+      ),
+      prop: "targets",
+      entity: "project_constants",
+      type: "text",
+      func: d => JSON.stringify(d.targets),
+      render: d =>
+        getNodeLinkList({
+          urlType: "details",
+          nodeList: JSON.parse(d),
+          entityRole: "recipient",
+          id,
+        }),
+    },
+    {
+      title: "Funding year(s)",
+      prop: "years_response",
+      entity: "project_constants",
+      type: "text",
+      func: d => d.years_response,
+      render: d => d,
+    },
+  ]
+
+  // FUNCTIONS //
+  const getFlowTypeCol = (curFlowType, curFlowTypeName) => {
+    return {
+      title: curFlowTypeName + ' (or "In-kind support")',
+      prop: `response_${curFlowType}`,
+      entity: "Project",
+      type: "num",
+      className: d => (d > 0 ? "num" : "num-with-text"),
+      func: d => {
+        // Check whether the monetary amount is available
+        const ft = d["response_" + curFlowType]
+        const financial = !d.is_inkind
+        if (financial) return ft
+        else {
+          // If no financial, check for inkind
+          const inkindField =
+            curFlowType === "disbursed_funds"
+              ? "response_provided_inkind"
+              : "response_committed_inkind"
+          const inkind = d[inkindField] !== null
+          if (inkind) return -7777
+          else return -9999
+        }
+      },
+
+      render: d =>
+        d === -7777
+          ? Util.formatValue("In-kind support", "inkind")
+          : Util.formatValue(d, curFlowType),
+    }
+  }
+  const getTableColumns = (standardCols, showBothFlowTypes) => {
+    if (!showBothFlowTypes) {
+      const curFlowTypeCol = getFlowTypeCol(curFlowType, curFlowTypeName)
+      return standardCols.concat(curFlowTypeCol)
+    } else
+      return standardCols.concat([
+        getFlowTypeCol("committed_funds", "Committed funds"),
+        getFlowTypeCol("disbursed_funds", "Disbursed funds"),
+      ])
+  }
+
+  const exportExcel = async () => getData(true)
+
+  const getData = async (forExport = false) => {
     const queries = {
       outbreaks: Outbreak({}),
-    };
+    }
+
+    // define params for flow query
+    const flowParams = {
+      page: curPage,
+      pagesize,
+      isDesc,
+      sortCol,
+      searchText,
+      format: ["stakeholder_details"],
+      forExport,
+      fields: [
+        "Project.name",
+        "Project.response_disbursed_funds",
+        "Project.response_committed_funds",
+        "Project.response_provided_inkind",
+        "Project.response_committed_inkind",
+        "project_constants.targets",
+        "project_constants.origins",
+        "project_constants.events",
+        "project_constants.years_response",
+        "project_constants.is_inkind",
+      ],
+    }
 
     // define filters
     const flowFilters = {
-      "Project_Constants.response_or_capacity": ["response"],
-    };
+      "Project.events": [["not_empty"]],
+    }
     // Add event ID filter if defined
     if (eventId !== undefined)
-      flowFilters["Project_Constants.events"] = [["has", [eventId]]];
+      flowFilters["Project_Constants.events"] = [["has", [eventId]]]
 
     if (isGhsaPage) {
       // add GHSA filter
-      flowFilters["Project_Constants.is_ghsa"] = [true];
+      flowFilters["Project_Constants.is_ghsa"] = [true]
 
       // get flows for GHSA
       queries.flows = Flow({
-        format: ["stakeholder_details"],
+        ...flowParams,
         filters: flowFilters,
-      });
+      })
     } else {
       // get flows for defined target/origin
       queries.flows = Flow({
-        format: ["stakeholder_details"],
+        ...flowParams,
         filters: flowFilters,
         [direction + "Ids"]: [id],
         [otherDirection + "Ids"]: [],
-      });
+        page: curPage,
+        pagesize,
+        isDesc,
+        sortCol,
+      })
     }
 
-    const results = await execute({ queries });
+    if (forExport) {
+      // download excel
+      const { data, params } = await queries.flows
+      data.cols = cols.filter(d => d[0] !== "years_response")
+      await Excel({ method: "post", data, params })
+    } else {
+      setFetchingRows(true)
+      const results = await execute({ queries })
+      setFetchingRows(false)
 
-    // filter out flows with outbreaks not in database
-    const eventsNotNull = d => d.events.length !== 0 && d.events[0] !== null;
-    const newFlows = results.flows.data.filter(eventsNotNull);
-    setFlows(newFlows);
-    setOutbreaks(results.outbreaks);
-    setEventTotalsData(newFlows);
-    setDataLoaded(true);
-  };
+      // filter out flows with outbreaks not in database
+      const eventsNotNull = d => d.events.length !== 0 && d.events[0] !== null
+      const newFlows = results.flows.data.filter(eventsNotNull)
+      setFlows(newFlows)
+      setNTotalRecords(results.flows.paging.n_records)
+      setOutbreaks(results.outbreaks)
+      setEventTotalsData(newFlows)
+      setDataLoaded(true)
+      setLoaded(true)
+    }
+  }
 
+  // FUNCTION CALLS //
+  const tableColumns = getTableColumns(standardCols, showBothFlowTypes)
+
+  // EFFECT HOOKS //
   useLayoutEffect(() => {
     if (!dataLoaded) {
-      getData();
+      getData()
     }
-  }, [dataLoaded]);
+  }, [dataLoaded])
 
   useLayoutEffect(() => {
-    setFlows([]);
-    setDataLoaded(false);
-  }, [id, direction]);
+    if (dataLoaded) {
+      getData()
+    }
+  }, [curPage, pagesize])
+
+  useLayoutEffect(() => {
+    if (dataLoaded) {
+      if (curPage !== 1) setCurPage(1)
+      else getData()
+    }
+  }, [sortCol, isDesc, searchText])
+
+  useLayoutEffect(() => {
+    setFlows([])
+    setDataLoaded(false)
+  }, [id, direction, entityRole])
 
   return (
-    <Loading loaded={dataLoaded}>
-      <TableInstance
-        paging={true}
-        sortByProp={props.sortByProp || "years"}
-        tableColumns={[
-          {
-            title: "Event response",
-            prop: "event",
-            type: "text",
-            func: d => {
-              return outbreaks
-                .filter(dd => d.events.includes(dd.id))
-                .map(dd => dd.name)
-                .join("· ");
-            },
-            render: d => d,
-            hide: hideName,
-          },
-          {
-            title: "Project name",
-            prop: "project_name",
-            type: "text",
-            func: d => d.name,
-            render: d => d,
-          },
-          {
-            title: Util.getInitCap(
-              Util.getRoleTerm({
-                type: "noun",
-                role: "funder",
-              })
-            ),
-            prop: "origins",
-            type: "text",
-            func: d => JSON.stringify(d.origins),
-            render: d =>
-              getNodeLinkList({
-                urlType: "details",
-                nodeList: JSON.parse(d),
-                entityRole: "funder",
-                id,
-              }),
-          },
-          {
-            title: Util.getInitCap(
-              Util.getRoleTerm({
-                type: "noun",
-                role: "recipient",
-              })
-            ),
-            prop: "targets",
-            type: "text",
-            func: d => JSON.stringify(d.targets),
-            render: d =>
-              getNodeLinkList({
-                urlType: "details",
-                nodeList: JSON.parse(d),
-                entityRole: "recipient",
-                id,
-              }),
-          },
-          {
-            title: "Funding year(s)",
-            prop: "year_range_proj",
-            type: "text",
-            func: d => d.years,
-            render: d => d,
-          },
-          {
-            title: curFlowTypeName + ' (or "In-kind support")',
-            prop: "amount",
-            type: "num",
-            className: d => (d > 0 ? "num" : "num-with-text"),
-            func: d => {
-              // Check whether the monetary amount is available
-              const ft = d[curFlowType];
-              const financial = !d.is_inkind;
-              if (financial) return ft;
-              else {
-                // If no financial, check for inkind
-                const inkindField =
-                  curFlowType === "disbursed_funds"
-                    ? "provided_inkind"
-                    : "committed_inkind";
-                const inkind = d[inkindField] !== null;
-                if (inkind) return -7777;
-                else return -9999;
-              }
-            },
-            render: d =>
-              d === -7777
-                ? Util.formatValue("In-kind support", "inkind")
-                : Util.formatValue(d, curFlowType),
-          },
-        ]}
-        tableData={flows}
-        hide={r => r.amount === -9999}
+    <Loading {...{ loaded: dataLoaded, slideUp: true, top: "-20px" }}>
+      <SmartTable
+        {...{
+          data: flows,
+          columns: tableColumns.filter(d => d.hide !== true),
+          nTotalRecords,
+          loading: fetchingRows,
+          curPage,
+          pagesize,
+          sortCol,
+          isDesc,
+          searchText,
+          setPagesize,
+          setCurPage,
+          setSortCol,
+          setIsDesc,
+          setSearchText,
+          exportExcel,
+        }}
+      />
+      <PagesizePicker
+        {...{
+          pagesize,
+          setPagesize,
+          curPage,
+          nTotalRecords,
+        }}
       />
     </Loading>
-  );
+  )
+}
 
-  return <div />;
-};
-
-export default EventTable;
+export default EventTable

@@ -2,12 +2,12 @@
 .chevron {
   position: relative;
   .funder {
-    fill: rgb(89, 114, 81);
+    fill: $funder-green-2;
     stroke: white;
     stroke-width: 1px;
   }
   .recipient {
-    fill: rgb(98, 59, 99);
+    fill: $recipient-purple-2;
     stroke: white;
     stroke-width: 1px;
   }

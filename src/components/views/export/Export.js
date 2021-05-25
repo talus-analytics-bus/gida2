@@ -1,100 +1,91 @@
-import React, { useState } from "react";
-import classNames from "classnames";
-import styles from "./export.module.scss";
-import { Settings } from "../../../App.js";
-import Util from "../../misc/Util.js";
-import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries";
-import FlowQuery from "../../misc/FlowQuery.js";
-import NodeQuery from "../../misc/NodeQuery.js";
-import OutbreakQuery from "../../misc/OutbreakQuery.js";
-import Drawer from "../../common/Drawer/Drawer.js";
-import Checkbox from "../../common/Checkbox/Checkbox.js";
-import FilterDropdown from "../../common/FilterDropdown/FilterDropdown.js";
-import Loading from "../../common/Loading/Loading";
-import { core_capacities } from "../../misc/Data.js";
-import Button from "../../common/Button/Button.js";
-import { searchableSubcats } from "../../common/Search/Search.js";
-import axios from "axios";
+import React, { useState } from "react"
+import classNames from "classnames"
+import styles from "./export.module.scss"
+import Util from "../../misc/Util.js"
+import { execute, Stakeholder, Outbreak, Excel } from "../../misc/Queries"
+import { Drawer } from "../../common"
+import { Checkbox } from "../../common"
+import { FilterDropdown } from "../../common"
+import { Loading } from "../../common"
+import { core_capacities } from "../../misc/Data.js"
+import { Button } from "../../common"
+import { searchableSubcats } from "../../common/Search/Search"
 
 // Content components
-import ExportTable, { getFlowQuery } from "./ExportTable.js";
+import ExportTable, { getFlowQueryForDataPage } from "./ExportTable.js"
+
+export const cols = [
+  ["name", "Project name", true],
+  ["desc", "Project description"],
+  ["sources", "Data source"],
+  ["core_capacities", "Core capacities"],
+  ["events", "PHEICs (response funding)"],
+  ["origins", "Funder"],
+  ["targets", "Recipient"],
+  ["assistance_type_project", "Support type"],
+  ["years", "Transaction year range"],
+  ["years_response", "Response-specific transaction year range", true],
+  [
+    "committed_funds",
+    `Amount committed`,
+    // `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
+  ],
+  [
+    "disbursed_funds",
+    `Amount disbursed`,
+    // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
+  ],
+]
 
 // FC for Export.
 const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
-  const [coreCapacities, setCoreCapacities] = useState([]);
-  const [supportType, setSupportType] = useState([]);
-  const [funders, setFunders] = useState([]);
-  const [recipients, setRecipients] = useState([]);
-  const [outbreaks, setOutbreaks] = useState([]);
-  const [exportTable, setExportTable] = useState(null);
-  const [nRecords, setNRecords] = useState(0);
-  const [curPage, setCurPage] = useState(1);
-  const [exportAction, setExportAction] = useState(undefined);
-  const [exportBody, setExportBody] = useState(undefined);
-  const [downloading, setDownloading] = useState(false);
+  const [coreCapacities, setCoreCapacities] = useState([])
+  const [supportType, setSupportType] = useState([])
+  const [funders, setFunders] = useState([])
+  const [recipients, setRecipients] = useState([])
+  const [outbreaks, setOutbreaks] = useState([])
+  const [exportTable, setExportTable] = useState(null)
+  const [nRecords, setNRecords] = useState(0)
+  const [curPage, setCurPage] = useState(1)
+  const [exportAction, setExportAction] = useState(undefined)
+  const [exportBody, setExportBody] = useState(undefined)
+  const [downloading, setDownloading] = useState(false)
 
   // if page is changed, show pagination loading
-  const [pageLoading, setPageLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false)
+  const [searchText, setSearchText] = useState("")
+  const [sortCol, setSortCol] = useState("project_constants.committed_funds")
+  const [isDesc, setIsDesc] = useState(true)
+  const [pagesize, setPagesize] = useState(5)
 
   const showClear =
     coreCapacities.length > 0 ||
     supportType.length > 0 ||
     funders.length > 0 ||
     outbreaks.length > 0 ||
-    recipients.length > 0;
+    recipients.length > 0 ||
+    searchText !== ""
 
-  const cols = [
-    ["name", "Project name", true],
-    ["desc", "Project description"],
-    ["sources", "Data source"],
-    ["ccs", "Core capacities"],
-    ["origins", "Funder"],
-    ["targets", "Recipient"],
-    ["assistance_type", "Support type"],
-    ["years", "Transaction year range"],
-    [
-      "committed_funds",
-      `Amount committed`,
-      // `Amount committed (${Settings.startYear} - ${Settings.endYear})`,
-    ],
-    [
-      "disbursed_funds",
-      `Amount disbursed`,
-      // `Amount disbursed (${Settings.startYear} - ${Settings.endYear})`,
-    ],
-  ];
-
-  const [exportCols, setExportCols] = useState(cols.map(d => d[0]));
-  const remove = (arr, aTmp) => {
-    const a = aTmp;
-    let what,
-      L = a.length,
-      ax;
-    while (L > 1 && arr.length) {
-      what = a[--L];
-      while ((ax = arr.indexOf(what)) !== -1) {
-        arr.splice(ax, 1);
-      }
-    }
-    return arr;
-  };
+  const [exportCols, setExportCols] = useState(
+    cols.filter(d => d[0] !== "desc").map(d => d[0]),
+  )
 
   const updateExportCols = value => {
-    const shouldRemove = exportCols.includes(value);
-    const editableExportCols = [...exportCols];
+    const shouldRemove = exportCols.includes(value)
+    const editableExportCols = [...exportCols]
 
-    if (shouldRemove)
-      setExportCols(editableExportCols.filter(d => d !== value));
+    if (shouldRemove) setExportCols(editableExportCols.filter(d => d !== value))
     else {
-      editableExportCols.push(value);
-      setExportCols(editableExportCols.sort());
+      editableExportCols.push(value)
+      setExportCols(editableExportCols.sort())
     }
-  };
+  }
 
   const dataTable = (
     <ExportTable
       {...{
         outbreaks,
+        allOutbreaks: data.outbreaks,
         coreCapacities,
         supportType,
         funders,
@@ -105,105 +96,55 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
         setComponent: setExportTable,
         curPage,
         setCurPage,
+        pagesize,
+        setPagesize,
         stakeholders: data.stakeholders,
         pageLoading,
         setPageLoading,
+        searchText,
+        sortCol,
+        isDesc,
+        setSearchText,
+        setSortCol,
+        setIsDesc,
       }}
     />
-  );
-
-  const filterTest = (
-    <FilterDropdown
-      {...{
-        label: "",
-        options: core_capacities,
-        placeholder: "Funding by core capacity",
-        onChange: setCoreCapacities,
-      }}
-    />
-  );
+  )
 
   const clearSelections = () => {
-    setCoreCapacities([]);
-    setSupportType([]);
-    setFunders([]);
-    setRecipients([]);
-    setOutbreaks([]);
-  };
-
-  const download = () => {
-    // Erase download cookie.
-    Util.createCookie("download_completed", "no");
-    getFlowQuery({
-      curPage,
-      props: {
-        funders,
-        recipients,
-        coreCapacities,
-        outbreaks,
-        supportType,
-      },
-      forExport: true,
-      ...props,
-    }).then(paramsTmp => {
-      // URL query params
-      const params = paramsTmp.params;
-
-      // POST body JSON
-      const data = paramsTmp.data;
-      data.cols = cols.filter(d => exportCols.includes(d[0]));
-
-      const queryString = params.toString();
-
-      const exportBodyRows = [];
-      for (let key in data) {
-        const d = data[key];
-        exportBodyRows.push(
-          <div>
-            <input
-              {...{
-                name: key,
-                id: key,
-                value: JSON.stringify(d),
-              }}
-            />
-          </div>
-        );
-      }
-      const exportBody = exportBodyRows;
-      setExportAction(
-        process.env.REACT_APP_API_URL + "/post/export?" + queryString
-      );
-      setExportBody(exportBody);
-    });
-  };
-
-  const exportFlowJsx = (
-    <form action={exportAction} method="POST">
-      {exportBody}
-      <div>
-        <button id={"download"}>Send request to POST</button>
-      </div>
-      //{" "}
-    </form>
-  );
+    setCoreCapacities([])
+    setSupportType([])
+    setFunders([])
+    setRecipients([])
+    setOutbreaks([])
+    setSearchText("")
+  }
 
   // When download data button is pressed, and form data are updated,
   // perform the POST request.
   React.useEffect(() => {
     if (exportAction !== undefined && exportBody !== undefined) {
-      const el = document.getElementById("download");
+      const el = document.getElementById("download")
       if (el) {
-        el.click();
+        el.click()
         const downloadCompletedCheck = setInterval(() => {
           if (Util.readCookie("download_completed") === "yes") {
-            clearInterval(downloadCompletedCheck);
+            clearInterval(downloadCompletedCheck)
           }
-        }, 500);
+        }, 500)
       }
     }
-  }, [exportAction, exportBody]);
+  }, [exportAction, exportBody])
 
+  const orderedStakeholders = Object.values(data.stakeholders)
+    .filter(d => searchableSubcats.includes(d.subcat))
+    .map(d => {
+      return { value: d.id, label: d.name, labelLower: d.name.toLowerCase() }
+    })
+    .sort(function(a, b) {
+      if (a.labelLower > b.labelLower) return 1
+      else return -1
+    })
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.export)}>
@@ -251,11 +192,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: Object.values(data.stakeholders)
-                      .filter(d => searchableSubcats.includes(d.subcat))
-                      .map(d => {
-                        return { value: d.id, label: d.name };
-                      }),
+                    options: orderedStakeholders,
                     placeholder: "Funder",
                     onChange: setFunders,
                     curValues: funders,
@@ -264,11 +201,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                 <FilterDropdown
                   {...{
                     label: "",
-                    options: Object.values(data.stakeholders)
-                      .filter(d => searchableSubcats.includes(d.subcat))
-                      .map(d => {
-                        return { value: d.id, label: d.name };
-                      }),
+                    options: orderedStakeholders,
                     placeholder: "Recipient",
                     onChange: setRecipients,
                     curValues: recipients,
@@ -278,9 +211,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                   {...{
                     label: "",
                     options: data.outbreaks.map(d => {
-                      return { value: d.id, label: d.name };
+                      return { value: d.id, label: d.name }
                     }),
-                    placeholder: "Event response",
+                    placeholder: "PHEIC",
                     onChange: setOutbreaks,
                     curValues: outbreaks,
                   }}
@@ -305,7 +238,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                               callback: updateExportCols,
                             }}
                           />
-                        )
+                        ),
                     )}
                   </div>
                   <div>
@@ -320,8 +253,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                         !showClear
                           ? undefined
                           : () => {
-                              setDownloading(true);
-                              getFlowQuery({
+                              setDownloading(true)
+                              getFlowQueryForDataPage({
                                 curPage,
                                 props: {
                                   funders,
@@ -330,28 +263,35 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                                   outbreaks,
                                   supportType,
                                 },
+                                isDesc,
+                                sortCol,
+                                searchText,
+                                pagesize,
                                 forExport: true,
                                 ...props,
                               }).then(paramsTmp => {
                                 // URL query params
-                                const params = paramsTmp.params;
+                                const params = paramsTmp.params
 
                                 // POST body JSON
                                 const data = {
                                   filters: paramsTmp.data.filters,
-                                };
-                                data.cols = cols.filter(d =>
-                                  exportCols.includes(d[0])
-                                );
+                                }
+                                data.cols = cols.filter(d => {
+                                  return (
+                                    exportCols.includes(d[0]) &&
+                                    d[0] !== "years_response"
+                                  )
+                                })
 
                                 Excel({
                                   method: "post",
                                   data,
                                   params,
                                 }).then(() => {
-                                  setDownloading(false);
-                                });
-                              });
+                                  setDownloading(false)
+                                })
+                              })
                             }
                       }
                       disabled={downloading}
@@ -372,7 +312,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                           {!downloading && (
                             <span
                               className={classNames(
-                                "glyphicon glyphicon-download-alt"
+                                "glyphicon glyphicon-download-alt",
                               )}
                             />
                           )}
@@ -410,8 +350,8 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
       />
       {dataTable}
     </div>
-  );
-};
+  )
+}
 
 export const renderExport = ({
   component,
@@ -421,18 +361,18 @@ export const renderExport = ({
 }) => {
   // Get data
   if (loading) {
-    return <div className={"placeholder"} />;
+    return <div className={"placeholder"} />
   } else if (component === null) {
     getComponentData({
       setComponent: setComponent,
       setLoadingSpinnerOn,
-    });
+    })
 
-    return component ? component : <div className={"placeholder"} />;
+    return component ? component : <div className={"placeholder"} />
   } else {
-    return component;
+    return component
   }
-};
+}
 
 /**
  * Returns data for the details page given the entity type and id.
@@ -450,15 +390,15 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
       by: "id",
     }),
     outbreaks: Outbreak({}),
-  };
+  }
 
   // Get results in parallel
-  const results = await execute({ queries });
+  const results = await execute({ queries })
 
   // Set the component
   setComponent(
-    <Export data={results} setLoadingSpinnerOn={setLoadingSpinnerOn} />
-  );
-};
+    <Export data={results} setLoadingSpinnerOn={setLoadingSpinnerOn} />,
+  )
+}
 
-export default Export;
+export default Export
