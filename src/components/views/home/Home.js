@@ -1,4 +1,3 @@
-import PheicEntryCard from "./content/PheicEntryCard"
 import ProfileEntryCard from "./content/ProfileEntryCard"
 import FundingMapEntryCard from "./content/FundingMapEntryCard"
 import JeeMapEntryCard from "./content/JeeMapEntryCard"
@@ -14,10 +13,9 @@ const Home = () => {
       <h1>Georgetown Global Health Security Tracking</h1>
       <Introduction />
       <div className={styles.entryCards}>
-        <FundingMapEntryCard />
-        <PheicEntryCard />
-        <JeeMapEntryCard />
         <ProfileEntryCard />
+        <JeeMapEntryCard />
+        <FundingMapEntryCard />
       </div>
     </div>
   )

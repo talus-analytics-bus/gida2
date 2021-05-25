@@ -34,7 +34,7 @@ const ProfileEntryCard = () => {
                 expandedDefault: true,
                 wide: true,
                 includePheics: false,
-                top: true,
+                // top: true,
               }}
             />,
             <GhsaButton />,

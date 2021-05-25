@@ -6,8 +6,11 @@
   position: relative;
 
   &.wide {
-    max-width: unset;
-    width: 100%;
+    &,
+    .searchBar.expanded .field input {
+      max-width: unset;
+      width: 100%;
+    }
   }
 
   &:not(.allowAnimation) * {
