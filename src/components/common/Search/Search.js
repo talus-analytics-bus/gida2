@@ -47,7 +47,7 @@ const Search = ({
   top = false,
   limit = 5,
   wide = false,
-  includePheics = true,
+  includePheics = false,
   ...props
 }) => {
   // REFS //

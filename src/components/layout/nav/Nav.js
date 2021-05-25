@@ -184,36 +184,37 @@ const Nav = ({ page, isDark, ...props }) => {
               }}
             />
           </div>
-          <div>
-            <Link
-              className={classNames({
-                [styles.active]: page === "events" || page === "event",
-              })}
-              onClick={() => toggleMenu("events")}
-            >
-              PHEICs
-              <span className={"caret"} />
-            </Link>
-            <Menu
-              {...{
-                name: "events",
-
-                links: outbreaks.map(({ slug, name }) => (
-                  <Link
-                    className={classNames({
-                      [styles.activeSubpage]: curUrlPathnameContains(slug),
-                    })}
-                    to={"/events/" + slug}
-                  >
-                    {name}
-                  </Link>
-                )),
-                openMenu,
-                setOpenMenu,
-                isDark: isDark,
-              }}
-            />
-          </div>
+          {
+            // <div>
+            //   <Link
+            //     className={classNames({
+            //       [styles.active]: page === "events" || page === "event",
+            //     })}
+            //     onClick={() => toggleMenu("events")}
+            //   >
+            //     PHEICs
+            //     <span className={"caret"} />
+            //   </Link>
+            //   <Menu
+            //     {...{
+            //       name: "events",
+            //       links: outbreaks.map(({ slug, name }) => (
+            //         <Link
+            //           className={classNames({
+            //             [styles.activeSubpage]: curUrlPathnameContains(slug),
+            //           })}
+            //           to={"/events/" + slug}
+            //         >
+            //           {name}
+            //         </Link>
+            //       )),
+            //       openMenu,
+            //       setOpenMenu,
+            //       isDark: isDark,
+            //     }}
+            //   />
+            // </div>
+          }
           {
             // Analysis page commented out until more content is developed,
             // e.g., a Sankey diagram
