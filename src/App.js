@@ -46,6 +46,7 @@ import "./components/views/details/details.module.scss"
 
 // Misc
 import Modal from "reactjs-popup"
+import NotFound404 from "./components/views/404/NotFound404"
 
 //: FC
 const App = () => {
@@ -480,7 +481,13 @@ const App = () => {
             />
             {
               // TODO create 404 page
-              <Route path="/404" component={() => <div>Not found</div>} />
+              <Route
+                path="/404"
+                render={() => {
+                  setPage("")
+                  return <NotFound404 />
+                }}
+              />
             }
             <Redirect to="/404" />
           </Switch>
