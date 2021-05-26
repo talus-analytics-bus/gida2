@@ -298,6 +298,7 @@ const EventTable = ({
           setIsDesc,
           setSearchText,
           exportExcel,
+          allowExportExcel: false,
         }}
       />
       <PagesizePicker

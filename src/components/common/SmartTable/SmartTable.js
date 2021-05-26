@@ -18,6 +18,7 @@ export default function SmartTable({
   setSearchText,
   loading = false,
   exportExcel,
+  allowExportExcel = true,
 }) {
   const [downloading, setDownloading] = useState(false)
   // transform data into rowData array and colData array
@@ -39,7 +40,7 @@ export default function SmartTable({
               },
             }}
           />
-          {exportExcel && nTotalRecords !== 0 && (
+          {allowExportExcel && exportExcel && nTotalRecords !== 0 && (
             <div className={styles.exportExcel}>
               <Button
                 {...{
