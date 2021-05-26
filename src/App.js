@@ -22,7 +22,7 @@ import {
 // contexts
 import { OutbreakProvider } from "./components/context/OutbreakContext"
 import { StakeholderProvider } from "./components/context/StakeholderContext"
-import { FlowTypeProvider } from "./components/context/FlowTypeContext"
+// import { FlowTypeProvider } from "./components/context/FlowTypeContext"
 
 // views
 import Home from "./components/views/home/Home.js"
@@ -31,8 +31,8 @@ import { renderEntityTable } from "./components/views/entitytable/EntityTable.js
 import { renderExport } from "./components/views/export/Export.js"
 import FundersAndRecipients from "./components/views/explore/content/Orgs/FundersAndRecipients"
 import AnalysisData from "./components/views/analysis/AnalysisData.js"
-import Events from "./components/views/events/Events"
-import Event from "./components/views/event/Event"
+// import Events from "./components/views/events/Events"
+// import Event from "./components/views/event/Event"
 import Details from "./components/views/details/Details"
 import Background from "./components/views/about/Background.js"
 import DataSources from "./components/views/about/DataSources.js"
@@ -43,7 +43,6 @@ import spinnerImg from "./assets/images/spinner.svg"
 // styles
 import styles from "./App.module.scss"
 import "./components/views/details/details.module.scss"
-// import "material-design-icons/iconfont/material-icons.css";
 
 // Misc
 import Modal from "reactjs-popup"
@@ -184,308 +183,306 @@ const App = () => {
             </OutbreakProvider>
           </StakeholderProvider>
           <Switch>
-            <div>
-              <Route
-                exact
-                path="/explore/map"
-                render={d => {
-                  return <Redirect to="/map" />
-                }}
-              />
-              <Route
-                exact
-                path="/map"
-                render={d => {
-                  setPage("explore-map")
-                  setExploreComponent(null)
-                  // Get support type if specified.
-                  const urlParams = new URLSearchParams(d.location.search)
-                  const supportTypeDefault =
-                    urlParams.get("supportType") !== null
+            <Route
+              exact
+              path="/explore/map"
+              render={d => {
+                return <Redirect to="/map" />
+              }}
+            />
+            <Route
+              exact
+              path="/map"
+              render={d => {
+                setPage("explore-map")
+                setExploreComponent(null)
+                // Get support type if specified.
+                const urlParams = new URLSearchParams(d.location.search)
+                const supportTypeDefault =
+                  urlParams.get("supportType") !== null
+                    ? urlParams.get("supportType")
+                    : undefined
+                return (
+                  <MapViewer
+                    {...{
+                      ...d.match.params,
+                      versionData,
+                      component: exploreComponent,
+                      setComponent: setExploreComponent,
+                      loading: loading,
+                      setLoading: setLoading,
+                      flowTypeInfo,
+                      ghsaOnly: ghsaOnly,
+                      setGhsaOnly: setGhsaOnly,
+                      isDark: isDark,
+                      setIsDark: setIsDark,
+                      supportTypeDefault: supportTypeDefault,
+                      fundTypeDefault:
+                        supportTypeDefault !== undefined ? "" : "false",
+                      setLoadingSpinnerOn,
+                      setPage,
+                    }}
+                  />
+                )
+              }}
+            />
+            <Route
+              exact
+              path="/explore/org"
+              render={d => {
+                return <Redirect to="/funders-and-recipients" />
+              }}
+            />
+            <Route
+              exact
+              path="/funders-and-recipients"
+              render={d => {
+                setPage("funders-and-recipients")
+
+                // Get support type if specified.
+                const urlParams = new URLSearchParams(d.location.search)
+                const supportTypeDefault =
+                  d.match.params.activeTab === "map"
+                    ? urlParams.get("supportType") !== null
                       ? urlParams.get("supportType")
                       : undefined
-                  return (
-                    <MapViewer
-                      {...{
-                        ...d.match.params,
-                        versionData,
-                        component: exploreComponent,
-                        setComponent: setExploreComponent,
-                        loading: loading,
-                        setLoading: setLoading,
-                        flowTypeInfo,
-                        ghsaOnly: ghsaOnly,
-                        setGhsaOnly: setGhsaOnly,
-                        isDark: isDark,
-                        setIsDark: setIsDark,
-                        supportTypeDefault: supportTypeDefault,
-                        fundTypeDefault:
-                          supportTypeDefault !== undefined ? "" : "false",
-                        setLoadingSpinnerOn,
-                        setPage,
-                      }}
-                    />
-                  )
-                }}
-              />
-              <Route
-                exact
-                path="/explore/org"
-                render={d => {
-                  return <Redirect to="/funders-and-recipients" />
-                }}
-              />
-              <Route
-                exact
-                path="/funders-and-recipients"
-                render={d => {
-                  setPage("funders-and-recipients")
+                    : undefined
 
-                  // Get support type if specified.
-                  const urlParams = new URLSearchParams(d.location.search)
-                  const supportTypeDefault =
-                    d.match.params.activeTab === "map"
-                      ? urlParams.get("supportType") !== null
-                        ? urlParams.get("supportType")
-                        : undefined
-                      : undefined
+                return (
+                  <FundersAndRecipients
+                    {...{
+                      ...d.match.params,
+                      versionData,
+                      component: exploreComponent,
+                      setComponent: setExploreComponent,
+                      loading: loading,
+                      setLoading: setLoading,
+                      flowTypeInfo,
+                      ghsaOnly: ghsaOnly,
+                      setGhsaOnly: setGhsaOnly,
+                      isDark: isDark,
+                      setIsDark: setIsDark,
+                      supportTypeDefault: supportTypeDefault,
+                      fundTypeDefault:
+                        supportTypeDefault !== undefined ? "" : "false",
+                      setLoadingSpinnerOn,
+                    }}
+                  />
+                )
+              }}
+            />
+            <Route
+              exact
+              path="/details/:id/:entityRole"
+              render={d => {
+                const id = parseInt(d.match.params.id)
+                const entityRole = d.match.params.entityRole
+                const shData = stakeholderDataById[id]
+                const subPageType = getSubPageType(shData)
+                setPage(`details_${subPageType}_${shData.name}`)
+                return (
+                  <Details
+                    {...{
+                      key: id,
+                      // key: `${id}_${entityRole}`,
+                      id,
+                      entityRole,
+                      loading: loading,
+                      setLoading: setLoading,
+                      flowTypeInfo: flowTypeInfo,
+                      ghsaOnly: ghsaOnly,
+                      setGhsaOnly: setGhsaOnly,
+                      setLoadingSpinnerOn,
+                      setPage,
+                    }}
+                  />
+                )
+              }}
+            />
+            {
+              // <Route
+              //   exact
+              //   path="/events/"
+              //   render={d => {
+              //     setPage("events")
+              //     return (
+              //       <Events
+              //         {...{
+              //           flowTypeInfo,
+              //         }}
+              //       />
+              //     )
+              //   }}
+              // />
+            }
+            {
+              // <Route
+              //   path="/events/:slug"
+              //   render={d => {
+              //     setPage("event")
+              //     const slug = d.match.params.slug
+              //     return (
+              //       <FlowTypeProvider value={flowTypeInfo}>
+              //         <Event
+              //           {...{
+              //             key: slug,
+              //             slug, // id
+              //             flowTypeInfo,
+              //           }}
+              //         />
+              //       </FlowTypeProvider>
+              //     )
+              //   }}
+              // />
+            }
 
-                  return (
-                    <FundersAndRecipients
-                      {...{
-                        ...d.match.params,
-                        versionData,
-                        component: exploreComponent,
-                        setComponent: setExploreComponent,
-                        loading: loading,
-                        setLoading: setLoading,
-                        flowTypeInfo,
-                        ghsaOnly: ghsaOnly,
-                        setGhsaOnly: setGhsaOnly,
-                        isDark: isDark,
-                        setIsDark: setIsDark,
-                        supportTypeDefault: supportTypeDefault,
-                        fundTypeDefault:
-                          supportTypeDefault !== undefined ? "" : "false",
-                        setLoadingSpinnerOn,
-                      }}
-                    />
-                  )
-                }}
-              />
-              <Route
-                exact
-                path="/details/:id/:entityRole"
-                render={d => {
-                  const id = parseInt(d.match.params.id)
-                  const entityRole = d.match.params.entityRole
-                  const shData = stakeholderDataById[id]
-                  const subPageType = getSubPageType(shData)
-                  setPage(`details_${subPageType}_${shData.name}`)
+            <Route
+              exact
+              path="/table/:id/:entityRole"
+              render={d => {
+                setPage("data")
+                const defaultGhsaOnly =
+                  d.match.params.id === "ghsa" ? "false" : entityTableFundType
+                return renderEntityTable({
+                  ...d.match.params,
+                  component: entityTableComponent,
+                  setComponent: setEntityTableComponent,
+                  loading: loading,
+                  setLoading: setLoading,
+                  flowTypeInfo: flowTypeInfo,
+                  ghsaOnly: defaultGhsaOnly,
+                  setGhsaOnly: setEntityTableFundType,
+                  setLoadingSpinnerOn,
+                })
+              }}
+            />
+            <Route
+              exact
+              path="/data"
+              render={d => {
+                setPage("data")
+                return renderExport({
+                  ...d.match.params,
+                  component: exportComponent,
+                  setComponent: setExportComponent,
+                  setLoadingSpinnerOn,
+                })
+              }}
+            />
+            <Route
+              exact
+              path="/analysis"
+              render={d => {
+                setPage("analysis")
+                return (
+                  <AnalysisData
+                    {...{
+                      ...d.match.params,
+                      component: analysisDataComponent,
+                      setComponent: setAnalysisDataComponent,
+                      flowTypeInfo: flowTypeInfo,
+                      ghsaOnly: ghsaOnly,
+                      setGhsaOnly: setGhsaOnly,
+                      setLoadingSpinnerOn,
+                    }}
+                  />
+                )
+              }}
+            />
+            <Route
+              exact
+              path="/pair-table/:funderId/:recipientId"
+              render={d => {
+                setPage(undefined)
+                return renderEntityTable({
+                  id: parseInt(d.match.params.funderId),
+                  otherId: parseInt(d.match.params.recipientId),
+                  component: entityTableComponent,
+                  setComponent: setEntityTableComponent,
+                  loading: loading,
+                  setLoading: setLoading,
+                  flowTypeInfo: flowTypeInfo,
+                  ghsaOnly: entityTableFundType,
+                  setGhsaOnly: setEntityTableFundType,
+                  setLoadingSpinnerOn,
+                })
+              }}
+            />
+            <Route
+              exact
+              path="/details/:id"
+              render={d => {
+                const id = d.match.params.id
+                if (id === "ghsa") {
+                  setPage("ghsa")
                   return (
                     <Details
                       {...{
                         key: id,
-                        // key: `${id}_${entityRole}`,
                         id,
-                        entityRole,
+                        detailsComponent: detailsComponent,
+                        setDetailsComponent: setDetailsComponent,
                         loading: loading,
                         setLoading: setLoading,
                         flowTypeInfo: flowTypeInfo,
-                        ghsaOnly: ghsaOnly,
-                        setGhsaOnly: setGhsaOnly,
-                        setLoadingSpinnerOn,
-                        setPage,
-                      }}
-                    />
-                  )
-                }}
-              />
-              {
-                // <Route
-                //   exact
-                //   path="/events/"
-                //   render={d => {
-                //     setPage("events")
-                //     return (
-                //       <Events
-                //         {...{
-                //           flowTypeInfo,
-                //         }}
-                //       />
-                //     )
-                //   }}
-                // />
-              }
-              {
-                // <Route
-                //   path="/events/:slug"
-                //   render={d => {
-                //     setPage("event")
-                //     const slug = d.match.params.slug
-                //     return (
-                //       <FlowTypeProvider value={flowTypeInfo}>
-                //         <Event
-                //           {...{
-                //             key: slug,
-                //             slug, // id
-                //             flowTypeInfo,
-                //           }}
-                //         />
-                //       </FlowTypeProvider>
-                //     )
-                //   }}
-                // />
-              }
-
-              <Route
-                exact
-                path="/table/:id/:entityRole"
-                render={d => {
-                  setPage("data")
-                  const defaultGhsaOnly =
-                    d.match.params.id === "ghsa" ? "false" : entityTableFundType
-                  return renderEntityTable({
-                    ...d.match.params,
-                    component: entityTableComponent,
-                    setComponent: setEntityTableComponent,
-                    loading: loading,
-                    setLoading: setLoading,
-                    flowTypeInfo: flowTypeInfo,
-                    ghsaOnly: defaultGhsaOnly,
-                    setGhsaOnly: setEntityTableFundType,
-                    setLoadingSpinnerOn,
-                  })
-                }}
-              />
-              <Route
-                exact
-                path="/data"
-                render={d => {
-                  setPage("data")
-                  return renderExport({
-                    ...d.match.params,
-                    component: exportComponent,
-                    setComponent: setExportComponent,
-                    setLoadingSpinnerOn,
-                  })
-                }}
-              />
-              <Route
-                exact
-                path="/analysis"
-                render={d => {
-                  setPage("analysis")
-                  return (
-                    <AnalysisData
-                      {...{
-                        ...d.match.params,
-                        component: analysisDataComponent,
-                        setComponent: setAnalysisDataComponent,
-                        flowTypeInfo: flowTypeInfo,
-                        ghsaOnly: ghsaOnly,
-                        setGhsaOnly: setGhsaOnly,
+                        entityRole: "funder",
                         setLoadingSpinnerOn,
                       }}
                     />
                   )
-                }}
-              />
-              <Route
-                exact
-                path="/pair-table/:funderId/:recipientId"
-                render={d => {
-                  setPage(undefined)
-                  return renderEntityTable({
-                    id: parseInt(d.match.params.funderId),
-                    otherId: parseInt(d.match.params.recipientId),
-                    component: entityTableComponent,
-                    setComponent: setEntityTableComponent,
-                    loading: loading,
-                    setLoading: setLoading,
-                    flowTypeInfo: flowTypeInfo,
-                    ghsaOnly: entityTableFundType,
-                    setGhsaOnly: setEntityTableFundType,
-                    setLoadingSpinnerOn,
-                  })
-                }}
-              />
-              <Route
-                exact
-                path="/details/:id"
-                render={d => {
-                  const id = d.match.params.id
-                  if (id === "ghsa") {
-                    setPage("ghsa")
-                    return (
-                      <Details
-                        {...{
-                          key: id,
-                          id,
-                          detailsComponent: detailsComponent,
-                          setDetailsComponent: setDetailsComponent,
-                          loading: loading,
-                          setLoading: setLoading,
-                          flowTypeInfo: flowTypeInfo,
-                          entityRole: "funder",
-                          setLoadingSpinnerOn,
-                        }}
-                      />
-                    )
-                  } else setPage(undefined)
-                  return <Redirect to={`/details/${id}/funder`} />
-                }}
-              />
-              <Route
-                exact
-                path="/about/background"
-                render={d => {
-                  setPage("about")
-                  return <Background {...{ setLoadingSpinnerOn }} />
-                }}
-              />
-              <Route
-                exact
-                path="/about/data"
-                render={d => {
-                  setPage("about")
-                  return <DataSources />
-                }}
-              />
-              <Route
-                exact
-                path="/about/citations"
-                render={d => {
-                  setPage("about")
-                  return <Citations />
-                }}
-              />
-              <Route
-                exact
-                path="/about/submit"
-                render={d => {
-                  setPage("about")
-                  return <Submit {...{ setLoadingSpinnerOn }} />
-                }}
-              />
-              <Route
-                exact
-                path="/"
-                render={d => {
-                  setPage("home")
-                  return (
-                    <OutbreakProvider value={outbreakData}>
-                      <Home />
-                    </OutbreakProvider>
-                  )
-                }}
-              />
-              {
-                // TODO create 404 page
-                // <Route path="/404" component={() => <div>Not found</div>} />
-              }
-              <Redirect to="/" />
-            </div>
+                } else setPage(undefined)
+                return <Redirect to={`/details/${id}/funder`} />
+              }}
+            />
+            <Route
+              exact
+              path="/about/background"
+              render={d => {
+                setPage("about")
+                return <Background {...{ setLoadingSpinnerOn }} />
+              }}
+            />
+            <Route
+              exact
+              path="/about/data/"
+              render={d => {
+                setPage("about")
+                return <DataSources />
+              }}
+            />
+            <Route
+              exact
+              path="/about/citations"
+              render={d => {
+                setPage("about")
+                return <Citations />
+              }}
+            />
+            <Route
+              exact
+              path="/about/submit"
+              render={d => {
+                setPage("about")
+                return <Submit {...{ setLoadingSpinnerOn }} />
+              }}
+            />
+            <Route
+              exact
+              path="/"
+              render={d => {
+                setPage("home")
+                return (
+                  <OutbreakProvider value={outbreakData}>
+                    <Home />
+                  </OutbreakProvider>
+                )
+              }}
+            />
+            {
+              // TODO create 404 page
+              <Route path="/404" component={() => <div>Not found</div>} />
+            }
+            <Redirect to="/404" />
           </Switch>
           <BrowserDetection>{modalToShow}</BrowserDetection>
         </BrowserRouter>
