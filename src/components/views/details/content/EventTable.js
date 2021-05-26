@@ -12,7 +12,46 @@ import { cols } from "../../export/Export"
 // queries
 import { execute, Outbreak, Flow, Excel } from "../../../misc/Queries"
 
-// FC for EventTable.
+/**
+ *
+ * @param {*} o Parameters object
+ * @param {number} o.id
+ * The unique ID of the stakeholder for whom response funding projects need to
+ * be shown in the table.
+ * @param {number} o.eventId
+ * Optional: The unique ID of the event that projects in the table should
+ * pertain to. If undefined, then data for any event is returned.
+ * @param {boolean} o.hideName
+ * If true, hides the column that provides the name of the event.
+ * @param {"origin" | "target"} o.direction
+ * Optional: If `o.id` is defined: a string representing whether the
+ * stakeholder with unique ID `o.id` is the origin or target of the projects
+ * shown in the table.
+ * @param {"origin" | "target"} o.otherDirection
+ * Optional: The opposite of the direction defined in `o.direction`.
+ * @param {"funder" | "recipient"} o.entityRole
+ * Optional: The funding role implied by the value of `o.direction`.
+ * @param {"funder" | "recipient"} o.otherEntityRole
+ * Optional: The funding role implied by the value of `o.otherDirection`. Note:
+ * this value is not currently used.
+ * @param {"committed_funds" | "disbursed_funds"} o.curFlowType
+ * Optional: If only one flow type should be shown in the table at a time,
+ * the unique ID of it.
+ * @param {"Committed funds" | "Disbursed funds"} o.curFlowTypeName
+ * Optional: If only one flow type should be shown in the table at a time,
+ * the name of it.
+ * @param {boolean} isGhsaPage
+ * True if this table appears on the GHSA page, false otherwise. If true, will
+ * trigger the use of certain filters to retrieve and show GHSA-specific data.
+ * @param {Function<Record<string, any>} setEventTotalsData
+ * Optional: Function that sets data used to determine sum total of
+ * response funding from the projects shown in the table. This value can be
+ * displayed outside the table, e.g., above it.
+ * @param {Function<boolean>} setLoaded
+ * Function that sets whether the table has been loaded and is ready to be
+ * rendered or not.
+ * @returns {ReactElement} The table of response funding projects.
+ */
 const EventTable = ({
   id,
   eventId,
