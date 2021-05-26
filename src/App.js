@@ -480,6 +480,11 @@ const App = () => {
                   )
                 }}
               />
+              {
+                // TODO create 404 page
+                // <Route path="/404" component={() => <div>Not found</div>} />
+              }
+              <Redirect to="/" />
             </div>
           </Switch>
           <BrowserDetection>{modalToShow}</BrowserDetection>
