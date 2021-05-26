@@ -1,5 +1,42 @@
+@import "src/assets/styles/colors.scss";
 .entryCard {
     display: grid;
     grid-template-columns: auto 1fr;
     grid-gap: 0 20px;
+
+    .entryContent {
+        h3 {
+            margin-top: 0;
+            font-family: "rawline", serif;
+            font-weight: 600;
+        }
+        .description {
+            margin-bottom: 10px;
+        }
+        .actions {
+            display: flex;
+            flex-flow: row;
+            @include spaceChildrenHoriz(30px);
+        }
+    }
+    .entryGraphic {
+        width: auto;
+    }
+}
+
+.entryCardSet {
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: auto auto;
+    grid-gap: 50px 20px;
+    > div:first-child {
+        grid-column: -1/1;
+    }
+    .entryCard {
+        display: grid;
+        grid-template-columns: 166px 1fr;
+        .entryGraphic {
+            justify-self: flex-end;
+        }
+    }
 }

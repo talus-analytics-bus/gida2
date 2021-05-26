@@ -34,16 +34,10 @@
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 1fr;
         grid-gap: 50px;
-        > div:not(:first-child) > div {
-            // grid-template-columns: 92px 1fr;
-            > div:first-child {
-                text-align: right;
-            }
-        }
 
         // center first card
         > div:first-child {
-            grid-column: -1/1;
+            // grid-column: -1/1;
         }
     }
 }

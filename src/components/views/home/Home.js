@@ -4,6 +4,7 @@ import JeeMapEntryCard from "./content/JeeMapEntryCard"
 import React from "react"
 import classNames from "classnames"
 import styles from "./home.module.scss"
+import { EntryCardSet } from "./EntryCardSet/EntryCardSet"
 
 // JSX for home page
 const Home = () => {
@@ -12,11 +13,11 @@ const Home = () => {
     <div className={classNames(styles.home, "pageContainer")}>
       <h1>Georgetown Global Health Security Tracking</h1>
       <Introduction />
-      <div className={styles.entryCards}>
+      <EntryCardSet>
         <ProfileEntryCard />
-        <JeeMapEntryCard />
         <FundingMapEntryCard />
-      </div>
+        <JeeMapEntryCard />
+      </EntryCardSet>
     </div>
   )
 }

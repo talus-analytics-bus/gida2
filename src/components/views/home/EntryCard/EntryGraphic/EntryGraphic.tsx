@@ -1,5 +1,5 @@
 import React from "react"
-import styles from "./entrygraphic.module.scss"
+import styles from "../entrycard.module.scss"
 type EntryGraphicProps = {
   graphic: any
 }
