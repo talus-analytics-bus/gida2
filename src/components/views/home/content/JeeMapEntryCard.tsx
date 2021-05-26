@@ -16,7 +16,7 @@ import { Button } from "../../../common"
  */
 const JeeMapEntryCard = () => {
   return (
-    <SlideUp delayFactor={10}>
+    <SlideUp delayFactor={20}>
       <EntryCard
         {...{
           graphic: (

@@ -13,7 +13,7 @@ import { Search, GhsaButton } from "../../../common"
  */
 const ProfileEntryCard = () => {
   return (
-    <SlideUp delayFactor={10}>
+    <SlideUp delayFactor={0}>
       <EntryCard
         {...{
           graphic: (

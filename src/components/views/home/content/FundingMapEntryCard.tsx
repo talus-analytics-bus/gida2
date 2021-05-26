@@ -16,7 +16,7 @@ import { Button } from "../../../common"
  */
 const FundingMapEntryCard = () => {
   return (
-    <SlideUp>
+    <SlideUp delayFactor={20}>
       <EntryCard
         {...{
           graphic: (
