@@ -423,21 +423,23 @@ const MapViewer = ({
 
   const filters = (
     <div>
-      {fundType === "event" && (
-        <FilterDropdown
-          {...{
-            label: "PHEIC",
-            options: outbreakOptions,
-            placeholder: "Select PHEIC",
-            onChange: v => setEvents(v.map(d => d.value)),
-            curValues: events,
-            className: [styles.italic],
-            isDark: isDark,
-            openDirection: "up",
-            setValues: setEvents,
-          }}
-        />
-      )}
+      {
+        // fundType === "event" && (
+        //   <FilterDropdown
+        //     {...{
+        //       label: "PHEIC",
+        //       options: outbreakOptions,
+        //       placeholder: "Select PHEIC",
+        //       onChange: v => setEvents(v.map(d => d.value)),
+        //       curValues: events,
+        //       className: [styles.italic],
+        //       isDark: isDark,
+        //       openDirection: "up",
+        //       setValues: setEvents,
+        //     }}
+        //   />
+        // )
+      }
       {fundType !== "event" && (
         <FilterDropdown
           {...{
@@ -461,6 +463,12 @@ const MapViewer = ({
     fundType,
   )
 
+  const filterSection = fundType !== "event" && (
+    <div className={styles.section}>
+      <div className={styles.sectionTitle}>Filter by</div>
+      {filters}
+    </div>
+  )
   const sections = [
     {
       slug: "funding",
@@ -529,10 +537,7 @@ const MapViewer = ({
               </div>
             </div>
           </div>
-          <div className={styles.section}>
-            <div className={styles.sectionTitle}>Filter by</div>
-            {filters}
-          </div>
+          {filterSection}
         </div>
       ),
     },
