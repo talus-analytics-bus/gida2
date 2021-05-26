@@ -203,21 +203,23 @@ const FundersAndRecipients = ({
 
   const filters = (
     <div className={styles.filterContainer}>
-      {ghsaOnly === "event" && (
-        <FilterDropdown
-          {...{
-            label: "Select PHEICs",
-            options: outbreakOptions,
-            placeholder: "Select PHEIC",
-            onChange: v => setEvents(v.map(d => d.value)),
-            curValues: events,
-            className: [styles.italic],
-            isDark: false,
-            openDirection: "down",
-            setValues: setEvents,
-          }}
-        />
-      )}
+      {
+        // ghsaOnly === "event" && (
+        //   <FilterDropdown
+        //     {...{
+        //       label: "Select PHEICs",
+        //       options: outbreakOptions,
+        //       placeholder: "Select PHEIC",
+        //       onChange: v => setEvents(v.map(d => d.value)),
+        //       curValues: events,
+        //       className: [styles.italic],
+        //       isDark: false,
+        //       openDirection: "down",
+        //       setValues: setEvents,
+        //     }}
+        //   />
+        // )
+      }
       {ghsaOnly !== "event" && (
         <FilterDropdown
           {...{
