@@ -71,12 +71,12 @@ const EventTable = ({
       hide: hideName,
     },
     {
-      title: "Project name",
-      prop: "name",
-      entity: "Project",
-      type: "text",
-      func: d => d.name,
-      render: d => d,
+      title: "Project name", // display name
+      prop: "name", // name of field in database model
+      entity: "Project", // name of entity in database model
+      type: "text", // "text" or "num"
+      func: rowData => rowData.name, // returns cell data from row data
+      render: cellData => cellData, // renders value of cell data
     },
     {
       title: Util.getInitCap(
