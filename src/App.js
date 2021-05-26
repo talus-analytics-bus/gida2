@@ -302,40 +302,40 @@ const App = () => {
                 }}
               />
               {
-                <Route
-                  exact
-                  path="/events/"
-                  render={d => {
-                    setPage("events")
-                    return (
-                      <Events
-                        {...{
-                          flowTypeInfo,
-                        }}
-                      />
-                    )
-                  }}
-                />
+                // <Route
+                //   exact
+                //   path="/events/"
+                //   render={d => {
+                //     setPage("events")
+                //     return (
+                //       <Events
+                //         {...{
+                //           flowTypeInfo,
+                //         }}
+                //       />
+                //     )
+                //   }}
+                // />
               }
               {
-                <Route
-                  path="/events/:slug"
-                  render={d => {
-                    setPage("event")
-                    const slug = d.match.params.slug
-                    return (
-                      <FlowTypeProvider value={flowTypeInfo}>
-                        <Event
-                          {...{
-                            key: slug,
-                            slug, // id
-                            flowTypeInfo,
-                          }}
-                        />
-                      </FlowTypeProvider>
-                    )
-                  }}
-                />
+                // <Route
+                //   path="/events/:slug"
+                //   render={d => {
+                //     setPage("event")
+                //     const slug = d.match.params.slug
+                //     return (
+                //       <FlowTypeProvider value={flowTypeInfo}>
+                //         <Event
+                //           {...{
+                //             key: slug,
+                //             slug, // id
+                //             flowTypeInfo,
+                //           }}
+                //         />
+                //       </FlowTypeProvider>
+                //     )
+                //   }}
+                // />
               }
 
               <Route
