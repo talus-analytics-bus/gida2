@@ -4,83 +4,7 @@ orbs:
   aws-cli: circleci/aws-cli@0.1.13
 
 jobs:
-  deploy:
-    working_directory: ~/repo
-
-    docker:
-      - image: circleci/node:12.16.3-stretch
-    environment:
-      API_URL: https://ghs-tracking-api.ghscosting.org
-
-    steps:
-      - checkout
-
-      - run:
-          name: Installing Deployment Dependencies
-          working_directory: /
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get install python3-pip python3-dev g++ build-essential
-            sudo pip3 install --upgrade setuptools pytz
-            sudo pip3 install awsebcli --upgrade
-
-      - aws-cli/install
-      - aws-cli/configure
-
-      - run:
-          name: Install packages
-          command: rm yarn.lock; yarn install --network-timeout 1000000
-
-      - run:
-          name: Deploy
-          command: yarn run deploy-prod
-
-      - run:
-          name: Invalidate Cloudfront cache
-          command: |
-            aws cloudfront create-invalidation \
-            --distribution-id E1911YV1N9JGAA \
-            --paths "/*"
-
-  deploy-dev:
-    working_directory: ~/repo
-
-    docker:
-      - image: circleci/node:12.16.3-stretch
-    environment:
-      API_URL: https://ghs-tracking-api-dev.ghscosting.org/
-
-    steps:
-      - checkout
-
-      - run:
-          name: Install deployment dependencies
-          working_directory: /
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get install python3-pip python3-dev g++ build-essential
-            sudo pip3 install --upgrade setuptools pytz
-            sudo pip3 install awsebcli --upgrade
-
-      - aws-cli/install
-      - aws-cli/configure
-
-      - run:
-          name: Install packages
-          command: rm yarn.lock; yarn install --network-timeout 1000000
-
-      - run:
-          name: Deploy
-          command: yarn run deploy-dev
-
-      - run:
-          name: Invalidate Cloudfront cache
-          command: |
-            aws cloudfront create-invalidation \
-            --distribution-id E375JMTWL12BHY \
-            --paths "/*"
-
-  deploy-dev2-dev3:
+  deploy-dev2:
     working_directory: ~/repo
 
     docker:
@@ -108,45 +32,22 @@ jobs:
           command: rm yarn.lock; yarn install --network-timeout 1000000
 
       - run:
-          name: Deploy to first dev site
-          command: yarn run deploy-dev
+          name: Deploy to second dev site
+          command: yarn run deploy-dev2
 
       - run:
-          name: Invalidate CloudFront cache for first dev site
+          name: Invalidate CloudFront cache for second dev site
           command: |
             aws cloudfront create-invalidation \
-            --distribution-id E375JMTWL12BHY \
+            --distribution-id E51RCTR83HBYL \
             --paths "/*"
-
-      # - run:
-      #     name: Invalidate CloudFront cache for second dev site
-      #     command: |
-      #       aws cloudfront create-invalidation \
-      #       --distribution-id E51RCTR83HBYL \
-      #       --paths "/*"
-      # - run:
-      #     name: Invalidate CloudFront cache for third dev site
-      #     command: |
-      #       aws cloudfront create-invalidation \
-      #       --distribution-id E2FFGJGPGYWRIT \
-      #       --paths "/*"
 
 workflows:
   version: 2
   build:
     jobs:
-      - deploy:
+      - deploy-dev2:
           filters:
             branches:
               only:
-                - master
-      - deploy-dev:
-          filters:
-            branches:
-              only:
-                - dev
-      - deploy-dev2-dev3:
-          filters:
-            branches:
-              only:
-                - events
+                - nonpheic-updates
