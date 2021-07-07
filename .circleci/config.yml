@@ -145,8 +145,9 @@ workflows:
             branches:
               only:
                 - dev
-      - deploy-dev2-dev3:
-          filters:
-            branches:
-              only:
                 - events
+      # - deploy-dev2-dev3:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - events
