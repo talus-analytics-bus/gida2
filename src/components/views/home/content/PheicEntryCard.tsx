@@ -27,18 +27,8 @@ const PheicEntryCard = () => {
           graphic: <img src={virionSvg} alt={"A virion (virus particle)"} />,
           title: "Funding by PHEIC",
           className: styles.pheicEntryCard,
-          description: (
-            <>
-              View response funding for the six{" "}
-              <a
-                href={"https://www.who.int/ihr/procedures/pheic/en/"}
-                target={"_blank"}
-              >
-                public health emergencies of international concern (PHEICs)
-              </a>
-              .
-            </>
-          ),
+          description:
+            "View response funding for the six public health emergencies of international concern (PHEICs)",
           actions: [<PheicSelectpicker {...{ outbreaks }} />],
         }}
       />
