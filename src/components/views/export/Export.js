@@ -246,7 +246,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                       url={
                         showClear
                           ? undefined
-                          : "https://gida.ghscosting.org/downloads/GHS%20Tracking%20-%20Full%20Data%20Export%202021-01-29.xlsx"
+                          : "/export/GHS Tracking - Full Data Export.xlsx"
                       }
                       sameWindow={true}
                       callback={
