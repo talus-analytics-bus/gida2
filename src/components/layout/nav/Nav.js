@@ -47,7 +47,7 @@ const Nav = ({ page, isDark, ...props }) => {
   // CONSTANTS
   // define about menu links
   const aboutLinkData = [
-    { pathname: "/about/background", label: "Background" },
+    { pathname: "/about/background", label: "Background and methods" },
     { pathname: "/about/data", label: "Data sources" },
     { pathname: "/about/citations", label: "Citations" },
     { pathname: "/about/submit", label: "Submit data" },

@@ -11,6 +11,8 @@
   }
   .header {
     @include header;
+    flex-flow: column;
+    align-items: unset;
     .title {
       @include title;
     }
@@ -25,6 +27,9 @@
     .citation {
       margin-left: 40px;
       font-style: italic;
+    }
+    > h3:first-of-type {
+      margin-top: 0;
     }
   }
   button {
