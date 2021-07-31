@@ -1,22 +1,20 @@
 // 3rd party libs
-import React, { useState, useEffect } from "react";
-import styles from "./eventoverview.module.scss";
+import React from "react"
+import styles from "./eventoverview.module.scss"
 
 // local components
 // common components
-import { DurationTimeline, EventNumberTotals } from "..";
-import SourceText, {
-  Website,
-  WebsiteList,
-} from "../../../common/SourceText/SourceText";
+import { DurationTimeline, EventNumberTotals, Disclaimer } from ".."
+import SourceText, { WebsiteList } from "../../../common/SourceText/SourceText"
 
 // utility
-import { NONE_VALS } from "../../../misc/Util";
+import { NONE_VALS } from "../../../misc/Util"
 
 const EventOverview = ({
   // event attributes from database
   id,
   name,
+  slug,
   desc,
   desc_refs,
   start,
@@ -40,39 +38,39 @@ const EventOverview = ({
 }) => {
   // FUNCTIONS //
   const getTimelinePoints = () => {
-    const pheicPoints = [];
+    const pheicPoints = []
     if (was_pheic) {
       pheicPoints.push({
         date: pheic_start,
         desc: "WHO declared PHEIC",
         type: "pheic_start",
-      });
+      })
       pheicPoints.push({
         date: pheic_end,
         desc: "WHO lifted PHEIC",
         type: "pheic_end",
-      });
+      })
     }
     const validPoints = [
       { date: start, desc: start_desc, type: "start" },
       { date: end, desc: end_desc, type: "end" },
     ]
       .concat(pheicPoints)
-      .filter(d => !NONE_VALS.includes(d.date));
-    return validPoints;
-  };
+      .filter(d => !NONE_VALS.includes(d.date))
+    return validPoints
+  }
 
   const getIsOngoing = ps => {
-    return !ps.some(d => d.type === "end");
-  };
+    return !ps.some(d => d.type === "end")
+  }
 
   // CONSTANTS //
-  const points = getTimelinePoints();
-  const isOngoing = getIsOngoing(points);
-  const showDesc = !NONE_VALS.includes(desc);
-  const hasDescDataSources = desc_refs.length > 0;
-  const descDataSourcesNoun = desc_refs.length === 1 ? "Source" : "Sources";
-  const linksOnly = false;
+  const points = getTimelinePoints()
+  const isOngoing = getIsOngoing(points)
+  const showDesc = !NONE_VALS.includes(desc)
+  const hasDescDataSources = desc_refs.length > 0
+  const descDataSourcesNoun = desc_refs.length === 1 ? "Source" : "Sources"
+  const linksOnly = false
   // JSX //
   return (
     <div className={styles.eventOverview}>
@@ -98,6 +96,7 @@ const EventOverview = ({
           )}
         </p>
       )}
+      <Disclaimer eventSlug={slug} />
       <DurationTimeline
         {...{
           points: points.filter(d => d.type.startsWith("pheic")),
@@ -127,6 +126,6 @@ const EventOverview = ({
         }}
       />
     </div>
-  );
-};
-export default EventOverview;
+  )
+}
+export default EventOverview
