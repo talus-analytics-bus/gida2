@@ -47,13 +47,14 @@ const Footer = ({ versionData, ...props }) => {
           {images.map(d => (
             <a
               target="_blank"
+              rel="noopener noreferrer"
               href={d.url}
               className={
                 d.alt == "Talus Analytics, LLC" ? styles.talusLogo : null
               }
             >
               <img src={d.imgSrc} alt={d.alt} />
-              {d.alt == "Talus Analytics, LLC" && (
+              {d.alt === "Talus Analytics, LLC" && (
                 <div className={styles.builtBy}>Built by</div>
               )}
             </a>
