@@ -1,9 +1,8 @@
-import React from "react";
-import classNames from "classnames";
-import styles from "./filterdropdown.module.scss";
-import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes";
-import Util from "../../misc/Util.js";
-import {Button} from "../../common";
+import React from "react"
+import classNames from "classnames"
+import styles from "./filterdropdown.module.scss"
+import ReactMultiSelectCheckboxes from "react-multiselect-checkboxes"
+import Util from "../../misc/Util.js"
 
 /**
  * @method FilterDropdown

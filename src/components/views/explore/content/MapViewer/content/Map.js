@@ -1,29 +1,27 @@
-import React, { useState, useEffect } from "react";
-import ReactTooltip from "react-tooltip";
-import styles from "./map.module.scss";
-import tooltipStyles from "../../../../../common/tooltip.module.scss";
-import classNames from "classnames";
-import * as d3 from "d3/dist/d3.min";
+import React, { useState, useEffect } from "react"
+import ReactTooltip from "react-tooltip"
+import styles from "./map.module.scss"
+import tooltipStyles from "../../../../../common/tooltip.module.scss"
+import classNames from "classnames"
+import * as d3 from "d3/dist/d3.min"
 
 // Local content components
-import D3Map from "../../../../../d3map/D3Map.js";
-import Legend from "../../../../../map/Legend/Legend.js";
-import InfoBox from "../../../../../map/InfoBox.js";
+import D3Map from "../../../../../d3map/D3Map.js"
+import Legend from "../../../../../map/Legend/Legend.js"
+import InfoBox from "../../../../../map/InfoBox.js"
 import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
   getMapColorScale,
   getMapMetricValue,
-} from "../../../../../map/MapUtil.js";
+} from "../../../../../map/MapUtil.js"
 import {
-  getNodeData,
   getTableRowData,
   getInfoBoxData,
   calculateNeedsMet,
-  getFlowValues,
-} from "../../../../../misc/Data.js";
-import Util, { isEmpty } from "../../../../../misc/Util.js";
-import { getJeeScores, getNodeLinkList } from "../../../../../misc/Data.js";
+} from "../../../../../misc/Data.js"
+import Util, { isEmpty } from "../../../../../misc/Util.js"
+import { getJeeScores, getNodeLinkList } from "../../../../../misc/Data.js"
 
 // FC for Map.
 const Map = ({
@@ -43,7 +41,7 @@ const Map = ({
   ...props
 }) => {
   // Get node type from entity role
-  const nodeType = entityRole === "funder" ? "origin" : "target";
+  const nodeType = entityRole === "funder" ? "origin" : "target"
 
   const addNeedsMetDatum = ({
     d,
@@ -53,39 +51,39 @@ const Map = ({
     iso3,
     jeeScores,
   }) => {
-    const hasJee = jeeScores[iso3] !== undefined;
+    const hasJee = jeeScores[iso3] !== undefined
     const hasDisbursementOrZero =
-      d.disbursed_funds === undefined || d.disbursed_funds >= 0;
+      d.disbursed_funds === undefined || d.disbursed_funds >= 0
     if (hasJee) {
-      iso3WithJeeAdded.push(iso3);
-      let needs_met = -9999;
-      let avgJeeScore;
+      iso3WithJeeAdded.push(iso3)
+      let needs_met = -9999
+      let avgJeeScore
       if (hasDisbursementOrZero) {
         const scores = getJeeScores({
           scores: jeeScores,
           iso3,
           coreCapacities,
-        });
-        avgJeeScore = d3.mean(scores, d => d.score);
+        })
+        avgJeeScore = d3.mean(scores, d => d.score)
 
         needs_met = calculateNeedsMet({
           datum: d,
           avgCapScores: avgJeeScore,
-        });
+        })
       }
       dataNeedsMet.push({
         ...d,
         needs_met,
         avgJeeScore,
-      });
+      })
     }
-  };
+  }
 
-  const dataNeedsMet = [];
+  const dataNeedsMet = []
   if (supportType === "needs_met") {
-    const iso3WithJeeAdded = [];
+    const iso3WithJeeAdded = []
     data.forEach(d => {
-      const iso3 = d.target !== undefined ? d.target.iso3 : d.origin.iso3;
+      const iso3 = d.target !== undefined ? d.target.iso3 : d.origin.iso3
       addNeedsMetDatum({
         d,
         dataNeedsMet,
@@ -93,8 +91,8 @@ const Map = ({
         coreCapacities,
         iso3,
         jeeScores,
-      });
-    });
+      })
+    })
 
     // Add data for countries with JEE scores but no funds
     for (const iso3 in jeeScores) {
@@ -106,15 +104,15 @@ const Map = ({
           coreCapacities,
           iso3,
           jeeScores,
-        });
+        })
       }
     }
 
     // make null values equal to highest val
-    const maxVal = d3.max(dataNeedsMet, d => d.needs_met);
+    const maxVal = d3.max(dataNeedsMet, d => d.needs_met)
     dataNeedsMet.forEach(d => {
-      if (d.needs_met === null) d.needs_met = maxVal;
-    });
+      if (d.needs_met === null) d.needs_met = maxVal
+    })
   }
 
   const colorScale = getMapColorScale({
@@ -125,17 +123,17 @@ const Map = ({
     jeeScores,
     coreCapacities,
     entityRole,
-  });
+  })
 
   // Track selected node (i.e., the clicked country whose info box is also
   // visible).
-  const [nodeData, setNodeData] = useState(undefined);
-  const [tooltipCountry, setTooltipCountry] = useState(undefined);
-  const [tooltipNodeData, setTooltipNodeData] = useState(undefined);
-  const [mapData, setMapData] = useState(null);
-  const [showFloatTip, setShowFloatTip] = useState(false);
-  const [showPinTip, setShowPinTip] = useState(false);
-  const [activeCountry, setActiveCountry] = useState(null);
+  const [nodeData, setNodeData] = useState(undefined)
+  const [tooltipCountry, setTooltipCountry] = useState(undefined)
+  const [tooltipNodeData, setTooltipNodeData] = useState(undefined)
+  const [mapData, setMapData] = useState(null)
+  const [showFloatTip, setShowFloatTip] = useState(false)
+  const [showPinTip, setShowPinTip] = useState(false)
+  const [activeCountry, setActiveCountry] = useState(null)
 
   // Define "columns" for map data.
   const d3MapDataFields = [
@@ -223,14 +221,14 @@ const Map = ({
         // return true if inkind assistance for current flow type (disbursed or
         // committed) is defined, false otherwise
         const committed = ["committed_funds", "committed_inkind"].includes(
-          flowType
-        );
-        if (committed && d.committed_inkind !== undefined) return true;
+          flowType,
+        )
+        if (committed && d.committed_inkind !== undefined) return true
         else {
           const disbursed = ["disbursed_funds", "provided_inkind"].includes(
-            flowType
-          );
-          return disbursed && d.provided_inkind !== undefined;
+            flowType,
+          )
+          return disbursed && d.provided_inkind !== undefined
         }
       },
     },
@@ -269,57 +267,57 @@ const Map = ({
           scores: jeeScores,
         }),
     },
-  ];
+  ]
 
   // when active country is set update which popups can be shown
   useEffect(() => {
-    const pinned = activeCountry !== null;
-    setShowFloatTip(!pinned);
-    setShowPinTip(pinned);
-    ReactTooltip.rebuild();
+    const pinned = activeCountry !== null
+    setShowFloatTip(!pinned)
+    setShowPinTip(pinned)
+    ReactTooltip.rebuild()
     const elsHidden = document.getElementsByClassName(
-      pinned ? "floating" : "pinned"
-    );
+      pinned ? "floating" : "pinned",
+    )
     if (elsHidden[0] !== undefined)
-      elsHidden[0].style.setProperty("pointer-events", "none");
+      elsHidden[0].style.setProperty("pointer-events", "none")
     const elsShown = document.getElementsByClassName(
-      !pinned ? "floating" : "pinned"
-    );
+      !pinned ? "floating" : "pinned",
+    )
     if (elsShown[0] !== undefined)
-      elsShown[0].style.setProperty("pointer-events", null);
-  }, [activeCountry]);
+      elsShown[0].style.setProperty("pointer-events", null)
+  }, [activeCountry])
 
   // set map data when params are changed
   useEffect(() => {
     if (supportType !== "jee") {
       // add missing countries as zeros
       const dataArr =
-        supportType === "needs_met" ? dataNeedsMet : Object.values(data);
+        supportType === "needs_met" ? dataNeedsMet : Object.values(data)
       const newMapData = getTableRowData({
         tableRowDefs: d3MapDataFields,
         data: dataArr,
-      });
-      setMapData(newMapData);
+      })
+      setMapData(newMapData)
     } else {
-      const jeeScoreData = [];
+      const jeeScoreData = []
       for (let iso3 in jeeScores) {
         jeeScoreData.push({
           [nodeType]: {
             iso3,
           },
           value_raw: 5,
-        });
+        })
       }
       const newMapData = getTableRowData({
         tableRowDefs: d3MapDataFields,
         data: jeeScoreData,
-      });
-      setMapData(newMapData);
+      })
+      setMapData(newMapData)
     }
-  }, [data, supportType, flowType]);
+  }, [data, supportType, flowType])
 
   // Get datum for the selected node, if it exists.
-  const existsDataForHover = data.length > 0 && data[0][nodeType] !== undefined;
+  const existsDataForHover = data.length > 0 && data[0][nodeType] !== undefined
   // const datumForInfoBox =
   //   nodeData !== undefined && existsDataForHover
   //     ? data.find(d => d[nodeType].iso3 === nodeData.iso3)
@@ -329,22 +327,22 @@ const Map = ({
       ? data.find(
           d =>
             d[nodeType].iso3 !== null &&
-            d[nodeType].iso3 === tooltipNodeData.iso3
+            d[nodeType].iso3 === tooltipNodeData.iso3,
         )
-      : undefined;
+      : undefined
 
   const datumForInfoBox =
     tooltipNodeData !== undefined && existsDataForHover
       ? data.find(
-          d => d[nodeType].iso3 !== null && d[nodeType].iso3 === activeCountry
+          d => d[nodeType].iso3 !== null && d[nodeType].iso3 === activeCountry,
         )
-      : undefined;
+      : undefined
 
   const infoBoxNodeDataTmp =
-    datumForInfoBox !== undefined ? datumForInfoBox[nodeType] : {};
+    datumForInfoBox !== undefined ? datumForInfoBox[nodeType] : {}
   const infoBoxNodeData = !isEmpty(infoBoxNodeDataTmp)
     ? infoBoxNodeDataTmp
-    : tooltipNodeData;
+    : tooltipNodeData
 
   const infoBoxData = getInfoBoxData({
     nodeDataToCheck: tooltipNodeData,
@@ -359,7 +357,7 @@ const Map = ({
     maxYear,
     flowType,
     simple: false,
-  });
+  })
 
   const tooltipData =
     tooltipNodeData !== undefined
@@ -377,7 +375,7 @@ const Map = ({
           flowType,
           simple: true,
         })
-      : undefined;
+      : undefined
   const pinnedTipInfoBoxData =
     tooltipNodeData !== undefined
       ? getInfoBoxData({
@@ -394,7 +392,7 @@ const Map = ({
           flowType,
           simple: false,
         })
-      : undefined;
+      : undefined
   return (
     <div className={classNames(styles.map, { [styles.dark]: isDark })}>
       <D3Map
@@ -460,7 +458,7 @@ const Map = ({
             {
               [tooltipStyles.dark]: isDark,
               // [tooltipStyles.noEvents]: !showFloatTip,
-            }
+            },
           )}
           place="top"
           effect="float"
@@ -503,7 +501,7 @@ const Map = ({
             {
               [tooltipStyles.dark]: isDark,
               // [tooltipStyles.noEvents]: !showPinTip,
-            }
+            },
           )}
           place="top"
           effect="float"
@@ -535,7 +533,7 @@ const Map = ({
         />
       }
     </div>
-  );
-};
+  )
+}
 
-export default Map;
+export default Map
