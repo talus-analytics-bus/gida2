@@ -62,8 +62,7 @@ const Footer = ({ versionData, ...props }) => {
         </div>
         {lastedUpdatedDateStr && (
           <div className={styles.dataAsOf}>
-            Data last updated {lastedUpdatedDateStr}.<br />
-            Select COVID-19 sources updated June and July 2021.
+            Data last updated {lastedUpdatedDateStr}
           </div>
         )}
       </div>
