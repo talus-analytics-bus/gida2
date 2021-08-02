@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-122495993-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || []
+      window["ga-disable-UA-122495993-1"] = true
+    </script>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
     <link
@@ -83,32 +92,95 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <script src="js/cookieconsent.min.js"></script>
+    <script
+      src="%PUBLIC_URL%/js/cookieconsent.min.js"
+      data-cfasync="false"
+    ></script>
     <script>
-      window.addEventListener("load", function() {
-        if (window !== undefined && window.cookieconsent !== undefined)
-          window.cookieconsent.initialise({
-            palette: {
-              popup: {
-                background: "#CCCCCC",
-                text: "#000000",
-              },
-              button: {
-                background: "#5781ab",
-              },
-            },
-            position: "bottom-right",
-        });
-      });
+      /**
+       * If consent is given for cookies, add gtag cookies
+       * @method setupGA
+       * @return {[type]} [description]
+       */
+      function setupGA(allowed) {
+        if (!allowed) {
+          window["ga-disable-UA-122495993-1"] = true
+        } else {
+          window["ga-disable-UA-122495993-1"] = false
+          /**
+           * Helper function for defining gtag cookies
+           * @method gtag
+           * @return {[type]} [description]
+           */
+          function gtag() {
+            dataLayer.push(arguments)
+          }
+          gtag("js", new Date())
+          gtag("config", "UA-122495993-1")
+        }
+      }
+      window.cookieconsent.initialise({
+        palette: {
+          popup: {
+            background: "#CCCCCC",
+            text: "#000000",
+          },
+          button: {
+            background: "#5781ab",
+          },
+        },
+        position: "bottom-right",
+        type: "opt-in",
+        content: {
+          message:
+            "GHS Tracking uses cookies to ensure you get the best experience possible. GHS Tracking is optimized for desktop browsers.",
+        },
+        // https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
+        onInitialise: function(status) {
+          var type = this.options.type
+          var didConsent = this.hasConsented()
+          if (type == "opt-in" && didConsent) {
+            // enable cookies
+            setupGA(true)
+          }
+          if (type == "opt-out" && !didConsent) {
+            // disable cookies
+            setupGA(false)
+          }
+        },
+        onStatusChange: function(status, chosenBefore) {
+          var type = this.options.type
+          var didConsent = this.hasConsented()
+          if (type == "opt-in" && didConsent) {
+            // enable cookies
+            setupGA(true)
+          }
+          if (type == "opt-out" && !didConsent) {
+            // disable cookies
+            setupGA(false)
+          }
+        },
+        onRevokeChoice: function() {
+          var type = this.options.type
+          if (type == "opt-in") {
+            // disable cookies
+            setupGA(false)
+          }
+          if (type == "opt-out") {
+            // enable cookies
+            setupGA(true)
+          }
+        },
+      })
     </script>
   </body>
   <!-- Global site tag (gtag.js) - Google Analytics -->
-  <!--<script async src="https://www.googletagmanager.com/gtag/js?id=UA-151750411-1"></script>
+  <!--<script async src="https://www.googletagmanager.com/gtag/js?id=UA-122495993-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'UA-151750411-1');
+    gtag('config', 'UA-122495993-1');
   </script>
 </html> -->
 </html>
