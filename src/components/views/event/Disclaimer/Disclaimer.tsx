@@ -7,13 +7,13 @@ interface DisclaimerProps {
   /**
    * True if text should be unformatted, false if it should be red and large.
    */
-  isUnformatted: boolean
+  isUnformatted?: boolean
   /**
    * If true, show the disclaimer no matter what, if false, hide no matter what
    */
-  show: boolean
+  show?: boolean
 
-  style: CSS.Properties
+  style?: CSS.Properties
 }
 export const Disclaimer: FC<DisclaimerProps> = ({
   eventSlug,
