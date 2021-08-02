@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { Link } from "react-router-dom"
 import classNames from "classnames"
 import styles from "./search.module.scss"
-import { Stakeholder } from "../../misc/Queries"
+import { SearchResults } from "../../misc/Queries"
 import Util from "../../misc/Util.js"
 
 export const searchableSubcats = [
@@ -20,16 +20,36 @@ export const searchableSubcats = [
   "private_sector",
   "public_private_partnership",
   // "region",
-  // "state_/_department_/_territory",
+  "state_/_department_/_territory",
   // "sub-organization",
   "world",
 ]
 /**
- * Generic radio toggle
- * TODO implement tooltip
- * @method Search
+ * Search bar displaying stakeholders and (optionally) PHEICs that match the
+ * keywords entered.
+ *
+ * @param {Object} SearchProps  Search component properties object
+ * @param {Function|undefined}  [SearchProps.callback] Function to be called after
+ *                              search finished
+ * @param {string} SearchProps.name Unique name of search bar
+ * @param {boolean} [SearchProps.top] True if search results should show on top, false if btm
+ * @param {number} [SearchProps.limit] Max number of search results to display
+ * @param {boolean} [SearchProps.wide] True if bar should occupy 100% of container width,
+ *                       false if it should occupy only as much as needed
+ * @param {boolean} [SearchProps.includePheics] True if PHEICs should be included in search
+ *                                results, false if only stakeholders
+ * @param  {...any} props Additional properties
+ * @returns
  */
-const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
+const Search = ({
+  callback,
+  name,
+  top = false,
+  limit = 5,
+  wide = false,
+  includePheics = true,
+  ...props
+}) => {
   // REFS //
   const resultsRef = useRef(null)
 
@@ -37,6 +57,7 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   const [expanded, setExpanded] = useState(props.expandedDefault || false)
   const [showResults, setShowResults] = useState(false)
   const [results, setResults] = useState(null)
+  const [allowAnimation, setAllowAnimation] = useState(false)
 
   const handleInputChange = async e => {
     const val = e.target.value
@@ -44,18 +65,17 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
     if (val === "") {
       setResults(null)
     } else {
-      // Find country or org matches
-      // Return them by setting the country values
-
-      const results = await Stakeholder({
+      const results = await SearchResults({
         search: val,
         limit: limit || 5,
+        includePheics,
         filters: {
+          "Stakeholder.show": [true],
           "Stakeholder.subcat": [
             [
               "neq",
               [
-                "state_/_department_/_territory",
+                // "state_/_department_/_territory",
                 "region",
                 "agency",
                 "sub-organization",
@@ -112,16 +132,22 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
   const getResults = results => {
     if (callback === undefined) {
       return results.map(d => {
-        d = { cat: "Stakeholder", ...d }
+        const pheic = d.was_pheic !== undefined
+        const defaultCat = pheic ? "PHEIC" : "Stakeholder"
+        const url = pheic
+          ? `/events/${d.slug}`
+          : `/details/${d.id}/${d.primary_role}`
+        d = { cat: defaultCat, ...d }
         let catTmp = d["cat"]
         if (catTmp.startsWith("ngo")) catTmp = "NGO"
         const cat = catTmp.replaceAll("_", " ").trim()
         return (
-          <Link onClick={unset} to={`/details/${d.id}/${d.primary_role}`}>
+          <Link tabindex={0} onClick={unset} to={url}>
             <div className={styles.result}>
               <div className={styles.name}>{d.name}</div>
               <div className={styles.type}>
-                {Util.getInitCap(cat)}, mainly {d.primary_role}
+                {Util.getInitCap(cat)}
+                {d.primary_role && <>, mainly {d.primary_role}</>}
               </div>
             </div>
           </Link>
@@ -153,21 +179,31 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
       className={"dark-bg-allowed"}
       id={"placeSearch-" + name}
       type="text"
-      placeholder="search for a country or organization"
+      placeholder={getPlaceholderText({ includePheics })}
       onChange={handleInputChange}
       onKeyDown={handleKeyPress}
     />
   )
 
+  useEffect(() => {
+    // toggle expand/collapse if default value is changed
+    setExpanded(props.expandedDefault)
+  }, [props.expandedDefault])
+
   // JSX //
   return (
     <div
       onClick={() => setShowResults(true)}
-      className={classNames(styles.search, { [styles.top]: top })}
+      className={classNames(styles.search, {
+        [styles.top]: top,
+        [styles.wide]: wide,
+        [styles.allowAnimation]: allowAnimation,
+      })}
     >
       <div
         className={classNames(styles.searchBar, {
           [styles.expanded]: expanded,
+          [styles.expandedByDefault]: props.expandedDefault === true,
           [styles.dark]: props.isDark,
         })}
       >
@@ -180,7 +216,13 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
                 e.stopPropagation()
                 setShowResults(false)
               }
-              if (props.expandedDefault !== true) setExpanded(!expanded)
+              if (props.expandedDefault !== true) {
+                setAllowAnimation(true)
+                setExpanded(!expanded)
+                setTimeout(() => {
+                  setAllowAnimation(false)
+                }, 500)
+              }
             }}
             className={"material-icons"}
           >
@@ -211,3 +253,12 @@ const Search = ({ callback, name, top = false, limit = 5, ...props }) => {
 }
 
 export default Search
+
+/**
+ * Return placeholder text based on which entities will be searched for.
+ */
+const getPlaceholderText = ({ includePheics }) => {
+  if (includePheics) {
+    return "search for a country, org, or PHEIC"
+  } else return "search for a country or organization"
+}

@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
-import classNames from "classnames";
-import styles from "./d3map.module.scss";
-import TableInstance from "../chart/table/TableInstance.js";
-import WorldMap from "./worldMap.js";
-import Util from "../misc/Util.js";
-import { noDataGray } from "../../assets/styles/colors.scss";
-import { purples, greens, lightHatchColors } from "../map/MapUtil.js";
-import { Stakeholder } from "../misc/Queries";
-import axios from "axios";
+import React, { useState, useEffect } from "react"
+import classNames from "classnames"
+import styles from "./d3map.module.scss"
+import WorldMap from "./worldMap.js"
+import { noDataGray } from "../../assets/styles/colors.scss"
+import { purples, greens, lightHatchColors } from "../map/MapUtil.js"
+import { Stakeholder } from "../misc/Queries"
 
 // FC
 const D3Map = ({
@@ -30,20 +27,20 @@ const D3Map = ({
   setActiveCountry,
   ...props
 }) => {
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const [worldMap, setWorldMap] = useState(null);
-  const [tooltipCountry, setTooltipCountry] = useState(null);
-  const [init, setInit] = useState(true);
+  const [mapLoaded, setMapLoaded] = useState(false)
+  const [worldMap, setWorldMap] = useState(null)
+  const [tooltipCountry, setTooltipCountry] = useState(null)
+  const [init, setInit] = useState(true)
   const [colorSeries, setColorSeries] = useState(
-    entityRole === "funder" ? greens : purples
-  );
+    entityRole === "funder" ? greens : purples,
+  )
 
   // CONSTANTS //
-  const colors = greens.concat(purples).concat([noDataGray]);
-  const colorHash = {};
+  const colors = greens.concat(purples).concat([noDataGray])
+  const colorHash = {}
   colors.forEach((c, i) => {
-    colorHash[c.toLowerCase() + entityRole] = i + 1;
-  });
+    colorHash[c.toLowerCase() + entityRole] = i + 1
+  })
 
   // Create map the first time it's loaded.
   useEffect(() => {
@@ -55,57 +52,57 @@ const D3Map = ({
       supportType,
       colorHash,
       entityRole,
-    });
-    setWorldMap(worldMapNew);
-  }, []);
+    })
+    setWorldMap(worldMapNew)
+  }, [])
 
   // Update active country if it changes
   useEffect(() => {
     if (worldMap !== null) {
-      worldMap.params.activeCountry = activeCountry;
+      worldMap.params.activeCountry = activeCountry
       if (activeCountry !== null) {
         Stakeholder({ iso3: activeCountry }).then(d => {
-          setNodeData(d[0]);
-        });
+          setNodeData(d[0])
+        })
       } else {
-        setNodeData(undefined);
+        setNodeData(undefined)
       }
     }
-  }, [activeCountry]);
+  }, [activeCountry])
 
   // Update tooltip country if it changes
   useEffect(() => {
     if (worldMap !== null) {
       if (tooltipCountry !== null) {
         Stakeholder({ iso3: tooltipCountry }).then(d => {
-          setTooltipNodeData(d[0]);
-        });
+          setTooltipNodeData(d[0])
+        })
       } else {
-        setTooltipNodeData(undefined);
+        setTooltipNodeData(undefined)
       }
     }
-  }, [tooltipCountry]);
+  }, [tooltipCountry])
 
   // Update map coloring and tooltips etc. whenever view options are changed
   useEffect(() => {
     if (mapLoaded) {
-      setLoaded(true);
-      worldMap.params.entityRole = entityRole;
-      worldMap.params.colorHash = colorHash;
-      if (entityRole === "funder") setColorSeries(greens);
-      else setColorSeries(purples);
+      setLoaded(true)
+      worldMap.params.entityRole = entityRole
+      worldMap.params.colorHash = colorHash
+      if (entityRole === "funder") setColorSeries(greens)
+      else setColorSeries(purples)
       worldMap.colorCountries(
         mapData.map(dd => {
           return {
             ...dd,
             color: colorScale(dd.color),
-          };
+          }
         }),
-        init
-      );
-      setInit(false);
+        init,
+      )
+      setInit(false)
     }
-  }, [mapData]);
+  }, [mapData])
 
   // // When entity role changes, update color series used
   // useEffect(() => {
@@ -116,12 +113,12 @@ const D3Map = ({
   // Update map params when certain state vars. change
   useEffect(() => {
     if (mapLoaded) {
-      worldMap.params.supportType = supportType;
-      worldMap.params.colorHash = colorHash;
+      worldMap.params.supportType = supportType
+      worldMap.params.colorHash = colorHash
     }
-  }, [supportType, colorScale]);
+  }, [supportType, colorScale])
 
-  const stroke = 8;
+  const stroke = 8
 
   // JSX //
   return (
@@ -205,7 +202,7 @@ const D3Map = ({
         </svg>
       }
     </div>
-  );
-};
+  )
+}
 
-export default D3Map;
+export default D3Map

@@ -1,197 +1,197 @@
-import * as d3 from "d3/dist/d3.min";
-import moment from "moment";
+import * as d3 from "d3/dist/d3.min"
+import moment from "moment"
 
 // Utility functions and data.
-const Util = {};
+const Util = {}
 
 Util.getShortName = s => {
-  if (s === "General IHR Implementation") return s;
-  const maxLen = 20;
+  if (s === "General IHR Implementation") return s
+  const maxLen = 20
   if (s.length > maxLen) {
     const shortened = s
       .split(" ")
       .slice(0, 4)
-      .join(" ");
+      .join(" ")
     if (/[^a-z]$/.test(shortened.toLowerCase())) {
-      return `${shortened.slice(0, shortened.length - 1)}...`;
+      return `${shortened.slice(0, shortened.length - 1)}...`
     }
-    return `${shortened}...`;
+    return `${shortened}...`
   } else {
-    return s;
+    return s
   }
-};
+}
 
 const getCookieDomain = () => {
   if (window.location.href.search("talusanalytics") > -1)
-    return "talusanalytics.com";
+    return "talusanalytics.com"
   else if (window.location.href.search("ghscosting") > -1) {
-    return "ghscosting.org";
+    return "ghscosting.org"
   } else {
-    return "localhost";
+    return "localhost"
   }
-};
+}
 
-const COOKIE_DOMAIN = getCookieDomain();
+const COOKIE_DOMAIN = getCookieDomain()
 
 Util.createCookie = (name, value, days) => {
   if (days) {
-    var date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-    var expires = "; expires=" + date.toUTCString();
-  } else var expires = "";
+    var date = new Date()
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
+    var expires = "; expires=" + date.toUTCString()
+  } else var expires = ""
   const domain = (document.cookie =
-    name + "=" + value + expires + `; domain=${COOKIE_DOMAIN}; path=/`);
-};
+    name + "=" + value + expires + `; domain=${COOKIE_DOMAIN}; path=/`)
+}
 
 Util.readCookie = name => {
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(";");
+  var nameEQ = name + "="
+  var ca = document.cookie.split(";")
   for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == " ") c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    var c = ca[i]
+    while (c.charAt(0) == " ") c = c.substring(1, c.length)
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length)
   }
-  return null;
-};
+  return null
+}
 
 Util.eraseCookie = name => {
-  Util.createCookie(name, "", -1);
-};
+  Util.createCookie(name, "", -1)
+}
 
 // Returns true if color is light, false otherwise
 Util.isLightColor = color => {
-  if (color === undefined) return false;
+  if (color === undefined) return false
   // Variables for red, green, blue values
-  var r, g, b, hsp;
+  var r, g, b, hsp
 
   // Check the format of the color, HEX or RGB?
   if (color.match(/^rgb/)) {
     // If HEX --> store the red, green, blue values in separate variables
     color = color.match(
-      /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/
-    );
+      /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/,
+    )
 
-    r = color[1];
-    g = color[2];
-    b = color[3];
+    r = color[1]
+    g = color[2]
+    b = color[3]
   } else {
     // If RGB --> Convert it to HEX: http://gist.github.com/983661
-    color = +("0x" + color.slice(1).replace(color.length < 5 && /./g, "$&$&"));
+    color = +("0x" + color.slice(1).replace(color.length < 5 && /./g, "$&$&"))
 
-    r = color >> 16;
-    g = (color >> 8) & 255;
-    b = color & 255;
+    r = color >> 16
+    g = (color >> 8) & 255
+    b = color & 255
   }
 
   // HSP (Highly Sensitive Poo) equation from http://alienryderflex.com/hsp.html
-  hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b));
+  hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
 
   // Using the HSP value, determine whether the color is light or dark
-  return hsp > 127.5;
-};
+  return hsp > 127.5
+}
 
 // Return init cap version of input string
 export const getInitCap = str => {
-  return str.charAt(0).toUpperCase() + str.slice(1, str.length);
-};
-Util.getInitCap = getInitCap;
+  return str.charAt(0).toUpperCase() + str.slice(1, str.length)
+}
+Util.getInitCap = getInitCap
 
 // Returns correct noun form of entity given their role
 Util.getRoleTerm = ({ type, role }) => {
   if (role === "funder") {
     switch (type) {
       case "noun":
-        return "funder";
+        return "funder"
       case "adjective":
-        return "provided";
+        return "provided"
       default:
-        return "";
+        return ""
     }
   } else if (role === "recipient") {
     switch (type) {
       case "noun":
-        return "recipient";
+        return "recipient"
       case "adjective":
-        return "received";
+        return "received"
       default:
-        return "";
+        return ""
     }
   }
-};
+}
 
 // Executes queries in parallel and returns all results when completed.
 Util.getQueryResults = async queries => {
-  const results = {};
+  const results = {}
   for (let q in queries) {
-    results[q] = await queries[q];
+    results[q] = await queries[q]
   }
-  return results;
-};
+  return results
+}
 
 // Calculate age difference in months from text datetime strings.
 // Assumes a is more recent than b
 Util.getMonthsDiff = (aStr, bStr) => {
-  const aDt = new Date(aStr.replace(/-/g, "/"));
-  const bDt = new Date(bStr.replace(/-/g, "/"));
+  const aDt = new Date(aStr.replace(/-/g, "/"))
+  const bDt = new Date(bStr.replace(/-/g, "/"))
 
   // count months
-  let monthsDiff = 0;
-  let stop = false;
+  let monthsDiff = 0
+  let stop = false
   while (!stop) {
     // get years
-    const aYear = aDt.getUTCFullYear();
-    const bYear = bDt.getUTCFullYear();
-    const aMonth = aDt.getUTCMonth();
-    const bMonth = bDt.getUTCMonth();
+    const aYear = aDt.getUTCFullYear()
+    const bYear = bDt.getUTCFullYear()
+    const aMonth = aDt.getUTCMonth()
+    const bMonth = bDt.getUTCMonth()
 
-    if (aYear === bYear && aMonth === bMonth) stop = true;
+    if (aYear === bYear && aMonth === bMonth) stop = true
     else {
-      aDt.setUTCMonth(aDt.getUTCMonth() - 1);
-      monthsDiff++;
+      aDt.setUTCMonth(aDt.getUTCMonth() - 1)
+      monthsDiff++
     }
   }
-  return monthsDiff;
-};
+  return monthsDiff
+}
 
 // Calc the cumulative caseload for X months from the most recent data point.
 Util.getCumulativeCount = (data, nMonth = 12, lagMonths = 0) => {
-  data.reverse();
+  data.reverse()
 
   if (data.length === 0) {
-    return { value: null };
+    return { value: null }
   }
 
-  let cumulativeCount = 0;
-  let nCounted = 0;
-  let nNull = 0;
-  let cumulativeNull = true;
+  let cumulativeCount = 0
+  let nCounted = 0
+  let nNull = 0
+  let cumulativeNull = true
 
-  const first = data[0];
-  const firstDt = new Date(first.date_time.replace(/-/g, "/"));
+  const first = data[0]
+  const firstDt = new Date(first.date_time.replace(/-/g, "/"))
 
   // cycle thru lag
-  const startDt = new Date(firstDt);
-  startDt.setUTCMonth(startDt.getUTCMonth() - lagMonths);
+  const startDt = new Date(firstDt)
+  startDt.setUTCMonth(startDt.getUTCMonth() - lagMonths)
 
   // count from startDt
-  let end, start;
+  let end, start
   for (let i = 0; i < data.length; i++) {
-    const datum = data[i];
-    const thisDt = new Date(datum.date_time.replace(/-/g, "/"));
-    if (thisDt > startDt) continue;
-    else if (start === undefined) start = datum;
-    if (nCounted + nNull === nMonth) break;
-    end = datum;
+    const datum = data[i]
+    const thisDt = new Date(datum.date_time.replace(/-/g, "/"))
+    if (thisDt > startDt) continue
+    else if (start === undefined) start = datum
+    if (nCounted + nNull === nMonth) break
+    end = datum
     if (datum.value !== null) {
-      cumulativeNull = false;
-      nCounted++;
-      cumulativeCount += datum.value;
+      cumulativeNull = false
+      nCounted++
+      cumulativeCount += datum.value
     } else {
-      nNull++;
+      nNull++
     }
   }
   // return a datum
-  data.reverse();
+  data.reverse()
 
   return {
     data_source: start.data_source,
@@ -209,29 +209,29 @@ Util.getCumulativeCount = (data, nMonth = 12, lagMonths = 0) => {
     updated_at: start.updated_at,
     value: cumulativeCount,
     n_null: nNull,
-  };
-};
+  }
+}
 
 // Calculate percent change between two values
 Util.getPercentChange = (prv, cur) => {
-  const diff = cur - prv;
-  if (diff === 0) return 0;
+  const diff = cur - prv
+  if (diff === 0) return 0
   else if (prv === 0) {
-    if (diff < 0) return -1000000000;
-    else return 1000000000;
+    if (diff < 0) return -1000000000
+    else return 1000000000
   } else {
-    return diff / prv;
+    return diff / prv
   }
-};
+}
 
 Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
   const start = Util.getCumulativeCount(
     data,
     lagMonths, // n months
-    lagMonths // lag months
-  );
+    lagMonths, // lag months
+  )
 
-  const percentChange = Util.getPercentChange(start.value, end.value);
+  const percentChange = Util.getPercentChange(start.value, end.value)
 
   return {
     change_per_period: end.value - start.value,
@@ -252,8 +252,8 @@ Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
     startDatum: start,
     endDatum: end,
     incomplete: start.n_null > 0 || end.n_null > 0,
-  };
-};
+  }
+}
 
 /**
  * Return + if delta > 0, - if less, none otherwise.
@@ -263,52 +263,52 @@ Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
  */
 Util.getDeltaSign = deltaVal => {
   if (deltaVal > 0) {
-    return "+";
+    return "+"
   } else if (deltaVal < 0) {
-    return "-";
+    return "-"
   } else {
-    return "";
+    return ""
   }
-};
+}
 
 Util.getDeltaWord = deltaVal => {
   if (deltaVal > 0) {
-    return "increase";
+    return "increase"
   } else if (deltaVal < 0) {
-    return "decrease";
+    return "decrease"
   } else {
-    return "No change";
+    return "No change"
   }
-};
+}
 
 Util.getPeopleNoun = val => {
-  if (val === 1) return "case";
-  else return "cases";
-};
+  if (val === 1) return "case"
+  else return "cases"
+}
 
 Util.getDeltaData = datum => {
   if (datum && datum["percent_change"] !== null) {
-    const pct = datum["percent_change"];
-    let direction;
-    if (datum.incomplete === true) direction = "notCalc";
-    else if (pct > 0) direction = "inc";
-    else if (pct < 0) direction = "dec";
-    else if (pct === 0) direction = "same";
+    const pct = datum["percent_change"]
+    let direction
+    if (datum.incomplete === true) direction = "notCalc"
+    else if (pct > 0) direction = "inc"
+    else if (pct < 0) direction = "dec"
+    else if (pct === 0) direction = "same"
 
     return {
       delta: datum["percent_change"],
       deltaSign: Util.getDeltaSign(datum["percent_change"]),
       deltaFmt: Util.percentizeDelta(datum["percent_change"]),
       direction: direction,
-    };
-  } else return {};
-};
+    }
+  } else return {}
+}
 
 // Color series for change since previous time period in measles caseload.
-const valueRed = "#b02c3a";
-const valueRed2 = "#d65c68";
-const valueGreen = "#006837";
-const valueGreen2 = "#14b86b";
+const valueRed = "#b02c3a"
+const valueRed2 = "#d65c68"
+const valueGreen = "#006837"
+const valueGreen2 = "#14b86b"
 Util.changeColors = {
   same: "white",
   neg: valueGreen,
@@ -316,7 +316,7 @@ Util.changeColors = {
   pos: valueRed,
   posLight: valueRed2,
   missing: "#b3b3b3",
-};
+}
 
 // Color series used to indicate relative vaccination coverage from least to
 // most vaccinated.
@@ -327,7 +327,7 @@ Util.vaccinationColors = [
   "#41b6c4",
   "#2c7fb8",
   "#303d91",
-];
+]
 
 // const vaccinationColorScale = (val) => {
 //
@@ -343,26 +343,26 @@ Util.getMetricChartParams = metric => {
         metric: "cumcaseload_totalpop",
         label: "Cases in past 12 months",
         dateFmt: allObs => {
-          const firstObs = allObs[0];
-          const firstObsDt = new Date(firstObs.date_time.replace(/-/g, "/"));
-          const fakeObsDt = new Date(firstObsDt);
-          fakeObsDt.setUTCFullYear(fakeObsDt.getUTCFullYear() - 1);
-          fakeObsDt.setUTCMonth(fakeObsDt.getUTCMonth() + 1);
+          const firstObs = allObs[0]
+          const firstObsDt = new Date(firstObs.date_time.replace(/-/g, "/"))
+          const fakeObsDt = new Date(firstObsDt)
+          fakeObsDt.setUTCFullYear(fakeObsDt.getUTCFullYear() - 1)
+          fakeObsDt.setUTCMonth(fakeObsDt.getUTCMonth() + 1)
 
           const firstStr = fakeObsDt.toLocaleString("en-us", {
             month: "short",
             year: "numeric",
             timeZone: "UTC",
-          });
+          })
           const lastStr = firstObsDt.toLocaleString("en-us", {
             month: "short",
             year: "numeric",
             timeZone: "UTC",
-          });
+          })
 
-          return `${firstStr} to ${lastStr}`;
+          return `${firstStr} to ${lastStr}`
         },
-      };
+      }
     case "caseload_totalpop":
       return {
         tickFormat: Util.formatSIInteger,
@@ -373,7 +373,7 @@ Util.getMetricChartParams = metric => {
         sort: "desc",
         label: "Total cases of measles",
         name: "Total cases of measles",
-      };
+      }
     case "incidence_monthly":
       return {
         tickFormat: Util.formatIncidence,
@@ -385,7 +385,7 @@ Util.getMetricChartParams = metric => {
           val === 1 ? "case per 1M population" : "cases per 1M population",
         label: "Monthly incidence of measles (cases per 1M population)",
         name: "Monthly incidence rate",
-      };
+      }
     case "incidence_yearly":
       return {
         tickFormat: Util.formatIncidence,
@@ -397,7 +397,7 @@ Util.getMetricChartParams = metric => {
           val === 1 ? "case per 1M population" : "cases per 1M population",
         label: "Yearly incidence of measles (cases per 1M population)",
         name: "Yearly incidence rate",
-      };
+      }
     case "monthlycaseload_totalpop":
       return {
         tickFormat: Util.formatSIInteger,
@@ -406,7 +406,7 @@ Util.getMetricChartParams = metric => {
         sort: "desc",
         temporal_resolution: "monthly",
         label: "Cases reported globally",
-      };
+      }
 
     case "coverage_mcv1_infant": // DEBUG
       return {
@@ -417,7 +417,7 @@ Util.getMetricChartParams = metric => {
         sort: "asc",
         label: "Vaccination coverage (% of infants)",
         dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year"),
-      };
+      }
 
     case "avg_coverage_mcv1_infant": // DEBUG
       return {
@@ -429,9 +429,9 @@ Util.getMetricChartParams = metric => {
         defaultTicks: [0, 50, 100],
         label: "Average vaccination coverage",
         dateFmt: allObs => Util.getDatetimeStamp(allObs[0], "year"),
-      };
+      }
   }
-};
+}
 
 Util.setColorScaleProps = (metric, colorScale) => {
   switch (metric) {
@@ -439,16 +439,16 @@ Util.setColorScaleProps = (metric, colorScale) => {
     case "cumcaseload_totalpop":
     case "caseload_totalpop":
     case "incidence_monthly":
-      colorScale.interpolate(d3.interpolateRgb).range(["#e6c1c6", "#9d3e4c"]);
-      return;
+      colorScale.interpolate(d3.interpolateRgb).range(["#e6c1c6", "#9d3e4c"])
+      return
 
     case "coverage_mcv1_infant": // DEBUG
       colorScale
         .interpolate(d3.interpolateRgbBasis)
-        .range(Util.vaccinationColors);
-      return;
+        .range(Util.vaccinationColors)
+      return
   }
-};
+}
 
 Util.getColorScaleForMetric = (metric, domain) => {
   switch (metric) {
@@ -459,72 +459,72 @@ Util.getColorScaleForMetric = (metric, domain) => {
       return d3
         .scaleLinear()
         .range(["#e6c1c6", "#9d3e4c"])
-        .domain(domain);
-      return;
+        .domain(domain)
+      return
 
     case "coverage_mcv1_infant": // DEBUG
       return val => {
-        return d3.interpolateRgbBasis(Util.vaccinationColors)(val / 100);
-      };
+        return d3.interpolateRgbBasis(Util.vaccinationColors)(val / 100)
+      }
   }
-};
+}
 
 export const getIntArray = (min, max) => {
-  const list = [];
+  const list = []
   for (let i = min; i <= max; i++) {
-    list.push(i);
+    list.push(i)
   }
-  return list;
-};
+  return list
+}
 
 Util.getScatterLabelData = datum => {
   switch (datum.metric || datum) {
     case "incidence_12months":
     case "caseload_totalpop":
-      return "Total measles cases reported";
+      return "Total measles cases reported"
     case "incidence_monthly":
-      return "Monthly incidence of measles";
+      return "Monthly incidence of measles"
     case "coverage_mcv1_infant":
-      return "Vaccination coverage";
+      return "Vaccination coverage"
     default:
-      return "";
+      return ""
   }
-};
+}
 
 Util.getSvgChartLabelData = datum => {
   switch (datum.metric) {
     case "caseload_totalpop":
-      return ["Cases reported"];
+      return ["Cases reported"]
     case "incidence_monthly": // DEBUG
-      return ["Global yearly", "incidence"];
+      return ["Global yearly", "incidence"]
     default:
       // DEBUG
-      return ["Global vaccination", "coverage"];
+      return ["Global vaccination", "coverage"]
   }
-};
+}
 
 Util.getUTCDate = dt => {
-  const utcYear = dt.getUTCFullYear();
-  const utcMonth = dt.getUTCMonth();
-  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
-  return utcDt;
-};
+  const utcYear = dt.getUTCFullYear()
+  const utcMonth = dt.getUTCMonth()
+  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`)
+  return utcDt
+}
 
 Util.getLocalDate = dt => {
-  let utcYear = dt.getFullYear();
-  const utcMonth = dt.getMonth() % 12;
-  if (utcMonth !== dt.getMonth()) utcYear++;
-  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
-  return utcDt;
-};
+  let utcYear = dt.getFullYear()
+  const utcMonth = dt.getMonth() % 12
+  if (utcMonth !== dt.getMonth()) utcYear++
+  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`)
+  return utcDt
+}
 
 Util.getLocalNextMonth = dt => {
-  let utcYear = dt.getFullYear();
-  const utcMonth = (dt.getMonth() + 1) % 12;
-  if (utcMonth !== dt.getMonth() + 1) utcYear++;
-  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
-  return utcDt;
-};
+  let utcYear = dt.getFullYear()
+  const utcMonth = (dt.getMonth() + 1) % 12
+  if (utcMonth !== dt.getMonth() + 1) utcYear++
+  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`)
+  return utcDt
+}
 
 Util.getTooltipItem = datum => {
   switch (datum.metric) {
@@ -535,7 +535,7 @@ Util.getTooltipItem = datum => {
         period: "month",
         value: datum.value === null ? null : Util.comma(datum.value),
         label: datum.value === 1 ? "case" : "cases",
-      };
+      }
     case "incidence_monthly": // DEBUG
       return {
         name: "Monthly incidence rate",
@@ -543,7 +543,7 @@ Util.getTooltipItem = datum => {
         period: "month",
         value: datum.value === null ? null : Util.formatIncidence(datum.value),
         label: "cases per 1M population",
-      };
+      }
     case "monthlycaseload_totalpop": // DEBUG
       return {
         name: "Cases reported",
@@ -551,7 +551,7 @@ Util.getTooltipItem = datum => {
         period: "month",
         value: Util.comma(datum.value),
         label: "cases",
-      };
+      }
     case "coverage_mcv1_infant": // DEBUG
       return {
         name: "Vaccination coverage",
@@ -559,7 +559,7 @@ Util.getTooltipItem = datum => {
         period: "year",
         value: datum.value ? Util.percentize(datum.value) : null,
         label: "of infants",
-      };
+      }
     case "avg_coverage_mcv1_infant": // DEBUG
       return {
         name: "Average vaccination coverage",
@@ -567,7 +567,7 @@ Util.getTooltipItem = datum => {
         period: "year",
         value: Util.percentize(datum.value),
         label: "of infants",
-      };
+      }
     case "total_population":
       return {
         name: "Total population",
@@ -575,9 +575,9 @@ Util.getTooltipItem = datum => {
         period: "year",
         value: Util.formatSI(datum.value),
         label: "cases",
-      };
+      }
   }
-};
+}
 
 Util.quantiles = [
   {
@@ -596,28 +596,28 @@ Util.quantiles = [
     name: "High",
     value: 4.1,
   },
-];
+]
 
 // const getIncidenceQuantile = (allObsTmp, countryObs) => {
 Util.getIncidenceQuantile = (countryObs, params = {}) => {
   if (countryObs.value === 0) {
-    if (params.type === "name") return "";
-    return -9999;
+    if (params.type === "name") return ""
+    return -9999
   }
 
   for (let i = 0; i < Util.quantiles.length; i++) {
     if (countryObs.value < Util.quantiles[i].value) {
-      if (params.type === "name") return Util.quantiles[i].name;
-      else return i;
+      if (params.type === "name") return Util.quantiles[i].name
+      else return i
     } else if (
       i === Util.quantiles.length - 1 &&
       countryObs.value >= Util.quantiles[i].value
     ) {
-      if (params.type === "name") return "Very high";
-      return i + 1;
+      if (params.type === "name") return "Very high"
+      return i + 1
     }
   }
-  return null;
+  return null
 
   // const allObs = allObsTmp.filter(o => {
   //   return o.value && o.value !== null && o.value > 0;
@@ -644,79 +644,78 @@ Util.getIncidenceQuantile = (countryObs, params = {}) => {
   // else if (countryObs.value >= quartiles[2]) {
   //   return 3;
   // } else return null;
-};
+}
 
 Util.roman = i => {
   switch (i) {
     case 1:
-      return "I";
+      return "I"
     case 2:
-      return "II";
+      return "II"
     case 3:
-      return "III";
+      return "III"
     case 4:
-      return "IV";
+      return "IV"
     case 5:
-      return "V";
+      return "V"
     default:
-      return i;
+      return i
   }
-};
+}
 
 const getApiUrl = () => {
   if (process.env.REACT_APP_API_URL !== undefined)
-    return process.env.REACT_APP_API_URL;
+    return process.env.REACT_APP_API_URL
   else {
     if (process.env.NODE_ENV === "production") {
       if (window.location.href.search("https") > -1)
-        return "https://gida-tracking-api.ghscosting.org/";
-      else
-        return "http://gida-tracking-api-dev.us-west-1.elasticbeanstalk.com/";
-    } else return "http://localhost:5002";
+        return "https://gida-tracking-api.ghscosting.org/"
+      else return "http://gida-tracking-api-dev.us-west-1.elasticbeanstalk.com/"
+    } else return "http://localhost:5002"
   }
-};
+}
 
-Util.API_URL = getApiUrl();
+Util.API_URL = getApiUrl()
 
 Util.getDateTimeRange = item => {
-  const data = item.value;
-  if (data === null) return "";
-  const first = data[0]["date_time"];
-  const last = data[data.length - 1]["date_time"];
+  const data = item.value
+  if (data === null) return ""
+  const first = data[0]["date_time"]
+  const last = data[data.length - 1]["date_time"]
 
-  if (first === undefined) return "";
+  if (first === undefined) return ""
 
   const firstStr = new Date(first.replace(/-/g, "/")).toLocaleString("en-us", {
     month: "short",
     year: "numeric",
     timeZone: "UTC",
-  });
+  })
   const firstStrNoYear = new Date(first.replace(/-/g, "/")).toLocaleString(
     "en-us",
     {
       month: "short",
       timeZone: "UTC",
-    }
-  );
+    },
+  )
   const lastStr = new Date(last.replace(/-/g, "/")).toLocaleString("en-us", {
     month: "short",
     year: "numeric",
     timeZone: "UTC",
-  });
-  const sameYear = first.slice(0, 4) === last.slice(0, 4);
+  })
+  const sameYear = first.slice(0, 4) === last.slice(0, 4)
 
-  if (firstStr === lastStr) return `${firstStr}`;
-  else if (sameYear) return `${firstStrNoYear} to ${lastStr}`;
-  else return `${firstStr} to ${lastStr}`;
-};
+  if (firstStr === lastStr) return `${firstStr}`
+  else if (sameYear) return `${firstStrNoYear} to ${lastStr}`
+  else return `${firstStr} to ${lastStr}`
+}
 
 Util.formatDatetimeApi = dt => {
-  const year = dt.getFullYear();
-  const monthTmp = dt.getMonth() + 1;
-  const month = monthTmp > 9 ? "" + monthTmp : "0" + monthTmp;
+  const year = dt.getFullYear()
+  const monthTmp = dt.getMonth() + 1
+  const month = monthTmp > 9 ? "" + monthTmp : "0" + monthTmp
 
-  const dateTmp = dt.getDate();
-  const date = dateTmp > 9 ? "" + dateTmp : "0" + dateTmp;
+  const dateTmp = dt.getDate()
+  const date = dateTmp > 9 ? "" + dateTmp : "0" + dateTmp
 
   // const hoursTmp = dt.getHours();
   // const hours = hoursTmp > 9 ? ('' + hoursTmp) : ('0' + hoursTmp);
@@ -727,217 +726,224 @@ Util.formatDatetimeApi = dt => {
   // const secondsTmp = dt.getSeconds();
   // const seconds = secondsTmp > 9 ? ('' + secondsTmp) : ('0' + secondsTmp);
 
-  const yyyymmdd = `${year}-${month}-${date}`;
-  return `${yyyymmdd}`;
+  const yyyymmdd = `${year}-${month}-${date}`
+  return `${yyyymmdd}`
   // const hhmmss = `${hours}:${minutes}:${seconds}`;
   // return `${yyyymmdd}T${hhmmss}`;
-};
+}
 
 Util.today = () => {
-  const today = new Date();
+  const today = new Date()
   // today.setDate(30);
   // today.setMonth(9);
-  return today; // TODO put time traveling here if needed
-};
+  return today // TODO put time traveling here if needed
+}
 
 Util.lastUpdated = ({ type = "all" }) => {
   switch (type) {
     case "iati":
-      return new Date("2020-11-03 12:00 PM");
+      return new Date("2020-11-03 12:00 PM")
     case "all":
     default:
-      return new Date("2020-11-03 12:00 PM");
+      return new Date("2020-11-03 12:00 PM")
   }
-};
+}
 
 Util.getDatetimeStamp = (datum, type = "year") => {
-  if (!datum || datum["value"] === null) return "";
+  if (!datum || datum["value"] === null) return ""
 
-  let datetimeStamp;
-  const date_time = datum["date_time"].replace(/-/g, "/");
+  let datetimeStamp
+  const date_time = datum["date_time"].replace(/-/g, "/")
   if (type === "month") {
     datetimeStamp = new Date(date_time).toLocaleString("en-US", {
       month: "short",
       year: "numeric",
       timeZone: "UTC",
-    });
+    })
   } else if (type === "year") {
     datetimeStamp = new Date(date_time).toLocaleString("en-US", {
       year: "numeric",
       timeZone: "UTC",
-    });
+    })
   }
-  return `${datetimeStamp}`;
-};
+  return `${datetimeStamp}`
+}
 
 Util.importAll = r => {
-  let images = {};
+  let images = {}
   r.keys().map((item, index) => {
-    images[item.replace("./", "")] = r(item);
-  });
-  return images;
-};
+    images[item.replace("./", "")] = r(item)
+  })
+  return images
+}
 
 // Sorting functions to sort alerts and statuses data by datetime and by
 // unique ID (sequential relative to submission order).
 Util.sortByDatetime = (a, b) => {
-  const dateA = new Date(a.effective_dtm);
-  const dateB = new Date(b.effective_dtm);
-  if (dateA > dateB) return -1;
-  if (dateA < dateB) return 1;
-  return 0;
-};
+  const dateA = new Date(a.effective_dtm)
+  const dateB = new Date(b.effective_dtm)
+  if (dateA > dateB) return -1
+  if (dateA < dateB) return 1
+  return 0
+}
 Util.sortByAlertId = (a, b) => {
-  if (a.alert_id > b.alert_id) return -1;
-  if (a.alert_id < b.alert_id) return 1;
-  return 0;
-};
+  if (a.alert_id > b.alert_id) return -1
+  if (a.alert_id < b.alert_id) return 1
+  return 0
+}
 Util.sortByDetailsId = (a, b) => {
-  if (a.details_id > b.details_id) return -1;
-  if (a.details_id < b.details_id) return 1;
-  return 0;
-};
+  if (a.details_id > b.details_id) return -1
+  if (a.details_id < b.details_id) return 1
+  return 0
+}
 Util.sortByName = (a, b) => {
-  if (a.name > b.name) return -1;
-  if (a.name < b.name) return 1;
-  return 0;
-};
+  if (a.name > b.name) return -1
+  if (a.name < b.name) return 1
+  return 0
+}
 Util.sortByField = field => {
   return (a, b) => {
-    if (a[field] > b[field]) return -1;
-    if (a[field] < b[field]) return 1;
-    return 0;
-  };
-};
+    if (a[field] > b[field]) return 1
+    if (a[field] < b[field]) return -1
+    return 0
+  }
+}
+
+export const sortByField = Util.sortByField
 
 // Percentize number
 Util.percentize = val => {
-  if (val > 0 && val < 1) return "<1%";
-  return parseFloat(val).toFixed(0) + "%";
-};
+  if (val > 0 && val < 1) return "<1%"
+  return parseFloat(val).toFixed(0) + "%"
+}
 
 // Format delta value
 Util.percentizeDelta = deltaTmp => {
-  const delta = Math.abs(deltaTmp);
-  const d3Format = d3.format(",.0%");
-  const d3FormattedNum = d3Format(delta);
+  const delta = Math.abs(deltaTmp)
+  const d3Format = d3.format(",.0%")
+  const d3FormattedNum = d3Format(delta)
 
-  if (Math.abs(delta) > 1) return ">100%";
+  if (Math.abs(delta) > 1) return ">100%"
 
   if (d3FormattedNum === "0%" && delta !== 0) {
-    return "<1%";
+    return "<1%"
   } else {
-    return d3FormattedNum;
+    return d3FormattedNum
   }
-};
+}
 
 // Format incidence value
 Util.formatIncidence = inc => {
-  if (inc === 0) return "0";
-  else if (inc < 0.001) return "<0.001";
-  else return Util.formatSI(inc);
-};
+  if (inc === 0) return "0"
+  else if (inc < 0.001) return "<0.001"
+  else return Util.formatSI(inc)
+}
 
 // Decimalize-ize numbers to one place
-Util.decimalizeOne = d3.format(".1f");
+Util.decimalizeOne = d3.format(".1f")
 
 // Comma-ize numbers
 export const comma = function(num) {
-  const resultTmp = d3.format(",.0f")(num);
-  return resultTmp;
-};
-Util.comma = comma;
+  const resultTmp = d3.format(",.0f")(num)
+  return resultTmp
+}
+Util.comma = comma
 
 Util.formatLabel = ft => {
   switch (ft) {
     case "disbursed_funds":
-      return "disbursed";
+      return "disbursed"
     case "committed_funds":
-      return "committed";
+      return "committed"
     case "provided_inkind":
-      return "provided projects";
+      return "provided projects"
     case "committed_inkind":
-      return "committed projects";
+      return "committed projects"
     default:
-      return "";
+      return ""
   }
-};
+}
 
 Util.getScoreName = score => {
   if (score < 1.5) {
-    return "No Capacity";
+    return "No Capacity"
   } else if (score < 2.5) {
-    return "Limited Capacity";
+    return "Limited Capacity"
   } else if (score < 3) {
-    return "Developed Capacity";
-  } else if (score < 4.5) return "Demonstrated Capacity";
-  return "Sustained Capacity";
-};
+    return "Developed Capacity"
+  } else if (score < 4.5) return "Demonstrated Capacity"
+  return "Sustained Capacity"
+}
 
 Util.getScoreShortName = score => {
-  if (score === -9999 || score === "zzz") return "Unspecified";
+  if (score === -9999 || score === "zzz") return "Unspecified"
   else if (score < 1.5) {
-    return "None";
+    return "None"
   } else if (score < 3) {
-    return "Limited or Developed";
-  } else return "Demonstrated or Sustained";
-};
+    return "Limited or Developed"
+  } else return "Demonstrated or Sustained"
+}
 
 // Formats value based on column name
 export const formatValue = (val, cn, units = true, round = false) => {
-  if (val === -8888 || val === "yyy") return "Specific amount not reported";
-  if (val === "n/a" || val === "Unavailable") return val;
-  if (val === undefined || val === null) val = 0;
+  if (val === -8888 || val === "yyy") return "Specific amount not reported"
+  if (val === "n/a" || val === "Unavailable") return val
+  if (val === undefined || val === null) val = 0
+  if (typeof val === "string") return val
   else {
     switch (cn) {
       case "jee":
-        if (val === -9999 || val === "zzz") return val;
-        else if (typeof val === "string") return val;
-        else return Util.getScoreName(val);
+        if (val === -9999 || val === "zzz") return val
+        else if (typeof val === "string") return val
+        else return Util.getScoreName(val)
+      case "response_disbursed_funds":
+      case "response_committed_funds":
       case "disbursed_funds":
       case "committed_funds":
       case "funds":
       case "funds_and_inkind":
       case "needs_met":
-        if (val === -9999 || val === "zzz") return undefined;
-        else return Util.money(val, units, round);
+        if (val === -9999 || val === "zzz") return undefined
+        else return Util.money(val, units, round)
       case "needs_met_legend":
-        if (val === 0) return "Needs met";
-        else return "Needs unmet";
+        if (val === 0) return "Needs met"
+        else return "Needs unmet"
+      case "response_provided_inkind":
+      case "response_committed_inkind":
       case "provided_inkind":
       case "committed_inkind":
       case "inkind":
-        if (val === "unknown") return "Specific amount not reported";
-        else if (val === -9999 || val === "zzz") return undefined;
+        if (val === "unknown") return "Specific amount not reported"
+        else if (val === -9999 || val === "zzz") return undefined
         else {
-          const valFmt = val || 0;
-          const noun = valFmt === 1 ? "project" : "projects";
-          return `${Util.comma(valFmt)} ${noun}`;
+          const valFmt = val || 0
+          const noun = valFmt === 1 ? "project" : "projects"
+          return `${Util.comma(valFmt)} ${noun}`
         }
       case "total_cases":
-        return Util.formatSIInteger(val) + " cases";
+        return Util.formatSIInteger(val) + " cases"
       case "total_deaths":
-        return Util.formatSIInteger(val) + " deaths";
+        return Util.formatSIInteger(val) + " deaths"
       case "project_name":
-        if (val === -9999 || val === "zzz") return undefined;
-        else return val;
+        if (val === -9999 || val === "zzz") return undefined
+        else return val
       default:
-        if (val === -9999 || val === "zzz") return undefined;
-        else return comma(val);
+        if (val === -9999 || val === "zzz") return undefined
+        else return comma(val)
     }
   }
-};
-Util.formatValue = formatValue;
+}
+Util.formatValue = formatValue
 
 // Format money as comma number with USD suffix
 export const money = (val, units = true, round = false) => {
-  if (val === "unknown") return "Specific amount not reported";
-  else if (val === 0) return "0" + (units ? " USD" : "");
+  if (val === "unknown") return "Specific amount not reported"
+  else if (val === 0) return "0" + (units ? " USD" : "")
   else if (round) {
-    return `${Util.formatSIInteger(val)}${units ? " USD" : ""}`;
-  } else return `${Util.formatSI(val)}${units ? " USD" : ""}`;
-};
-Util.money = money;
+    return `${Util.formatSIInteger(val)}${units ? " USD" : ""}`
+  } else return `${Util.formatSI(val)}${units ? " USD" : ""}`
+}
+Util.money = money
 
 export const regions = [
   { value: "", label: "All regions" },
@@ -950,48 +956,49 @@ export const regions = [
     label: "Eastern Mediterranean Region (EMRO)",
   },
   { value: "wpro", label: "Western Pacific Region (WPRO)" },
-];
+]
 
-export const regionsByValue = {};
+export const regionsByValue = {}
 regions.forEach(d => {
-  if (d.value !== "") regionsByValue[d.value] = d.label;
-});
+  if (d.value !== "") regionsByValue[d.value] = d.label
+})
 
 export const formatRegion = v => {
-  return regionsByValue[v] || v;
-};
+  return regionsByValue[v] || v
+}
 
-Util.formatSIInteger = val => {
-  if (val === 0) return "0";
-  else if (val <= 999) return comma(val);
+export const formatSIInteger = val => {
+  if (val === 0) return "0"
+  else if (val <= 999) return comma(val)
   else
     return d3
       .format(".2s")(val)
-      .replace(/G/, "B");
-};
+      .replace(/G/, "B")
+}
+Util.formatSIInteger = formatSIInteger
 
 // Format using standard suffixes
 Util.formatSI = val => {
   // If zero, just return zero
-  if (val === 0) return "0";
+  if (val === 0) return "0"
   // If 1 or less, return the value with three significant digits. (?)
-  else if (val < 1) return d3.format(".3f")(val);
+  else if (val < 1) return d3.format(".3f")(val)
   // If between 1 - 1000, return value with two significant digits.
-  else if (val >= 1 && val < 1000) return d3.formatPrefix(".2f", 1)(val);
+  else if (val >= 1 && val < 1000) return d3.formatPrefix(".2f", 1)(val)
   // k
   // If 1k or above, return SI value with two significant digits
   else if (val >= 1000 && val < 1000000)
-    return d3.formatPrefix(".2f", 1000)(val);
+    return d3.formatPrefix(".2f", 1000)(val)
   // k
   // If 1k or above, return SI value with two significant digits
   else if (val >= 1000000 && val < 1000000000)
-    return d3.formatPrefix(".2f", 1000000)(val);
+    return d3.formatPrefix(".2f", 1000000)(val)
   // M
   else
     return d3
       .formatPrefix(",.2s", 1000000000)(val)
-      .replace(/G/, "B"); // B
-};
+      .replace(/G/, "B") // B
+}
 
 /**
  * Capitalizes each word in the input text and returns the result.
@@ -1001,9 +1008,9 @@ Util.formatSI = val => {
  */
 Util.toTitleCase = str => {
   return str.replace(/\w\S*/g, function(txt) {
-    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-  });
-};
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  })
+}
 
 // Formatting functions for dates and datetimes.
 Util.formatDatetime = input => {
@@ -1014,63 +1021,63 @@ Util.formatDatetime = input => {
     second: "2-digit",
     year: "numeric",
     day: "numeric",
-  });
-};
+  })
+}
 export const formatDate = input => {
   return input.toLocaleString("en-us", {
     month: "short",
     year: "numeric",
     day: "numeric",
-  });
-};
+  })
+}
 
 Util.getWrappedText = (text, thresh = 20) => {
   // Get label text
   // If it's more than 20 chars try to wrap it
-  const tryTextWrap = text.length > thresh;
-  let svgLabelTspans;
+  const tryTextWrap = text.length > thresh
+  let svgLabelTspans
   if (tryTextWrap) {
-    svgLabelTspans = [];
+    svgLabelTspans = []
 
     // Split names by word
-    const words = text.split(" ");
+    const words = text.split(" ")
 
     // Concatenate words for each tspan until over 20 chars
-    let curTspan = "";
+    let curTspan = ""
     for (let i = 0; i < words.length; i++) {
-      const word = words[i];
+      const word = words[i]
       if ((curTspan + " " + word).length < thresh) {
-        curTspan += " " + word;
+        curTspan += " " + word
       } else {
-        svgLabelTspans.push(curTspan);
-        curTspan = word;
+        svgLabelTspans.push(curTspan)
+        curTspan = word
       }
     }
-    if (curTspan !== "") svgLabelTspans.push(curTspan);
+    if (curTspan !== "") svgLabelTspans.push(curTspan)
   }
 
   // Otherwise just use the name as-is
   else {
-    svgLabelTspans = [text];
+    svgLabelTspans = [text]
   }
-  return svgLabelTspans;
-};
+  return svgLabelTspans
+}
 
 Util.mobilecheck = () => {
-  let check = false;
-  (function(a) {
+  let check = false
+  ;(function(a) {
     if (
       /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
-        a
+        a,
       ) ||
       /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
-        a.substr(0, 4)
+        a.substr(0, 4),
       )
     )
-      check = true;
-  })(navigator.userAgent || navigator.vendor || window.opera);
-  return check;
-};
+      check = true
+  })(navigator.userAgent || navigator.vendor || window.opera)
+  return check
+}
 
 // Returns attribute formatter for the given slug
 // export const getAttrFormatter = name => {
@@ -1080,23 +1087,23 @@ Util.getAttrFormatter = name => {
       return v => {
         switch (v) {
           case "P":
-            return "Prevent";
+            return "Prevent"
           case "D":
-            return "Detect";
+            return "Detect"
           case "R":
-            return "Respond";
+            return "Respond"
           case "O":
-            return "Other";
+            return "Other"
           case "General IHR":
-            return "General IHR Implementation";
+            return "General IHR Implementation"
           default:
-            return v;
+            return v
         }
-      };
+      }
     default:
-      return v => v;
+      return v => v
   }
-};
+}
 
 /**
  * Returns true if the object has no keys, false otherwise.
@@ -1105,29 +1112,70 @@ Util.getAttrFormatter = name => {
  * @return {Boolean}   [description]
  */
 export const isEmpty = d => {
-  if (d === undefined || Object.keys(d).length === 0) return true;
-  else return false;
-};
+  if (d === undefined || Object.keys(d).length === 0) return true
+  else return false
+}
 
 // convert float to pct string with limited precision
 export const floatToPctString = f => {
-  const s = f.toString();
+  const s = f.toString()
   if (s.includes(".")) {
-    const sArr = s.split(".");
-    return `${sArr[0]}.${sArr[1].slice(0, 3)}%`;
-  } else return s.slice(0, 3);
-};
+    const sArr = s.split(".")
+    return `${sArr[0]}.${sArr[1].slice(0, 3)}%`
+  } else return s.slice(0, 3)
+}
 
 // none values
-export const NONE_VALS = [undefined, null, ""];
+export const NONE_VALS = [undefined, null, ""]
 
 // get last updated date as formatted str, or null
 export const getLastUpdatedDate = ({ versionType, data }) => {
-  const datum = data.find(d => d.version_type === versionType);
-  if (datum === undefined) return null;
+  const datum = data.find(d => d.version_type === versionType)
+  if (datum === undefined) return null
   else {
-    return moment(datum.last_updated_date).format("MMM D, YYYY");
+    return moment(datum.last_updated_date).format("MMM D, YYYY")
   }
-};
+}
 
-export default Util;
+/**
+ * Given a stakeholder data record, return what page subtype it belongs in:
+ * countries, organizations, or other.
+ */
+export const getSubPageType = shData => {
+  if (isCountryStakeholder(shData)) return "countries"
+  else if (isOrgStakeholder(shData)) return "organizations"
+  else return "other"
+}
+
+/**
+ * Returns `true` if stakeholder is a country, false otherwise.
+ */
+export function isCountryStakeholder(d) {
+  return d.cat === "government" && d.subcat === "country"
+}
+
+/**
+ * Returns `true` if stakeholder is an org, false otherwise.
+ */
+export function isOrgStakeholder(d) {
+  return !["government", "other"].includes(d.cat) && d.subcat !== "sub-agency"
+}
+
+/**
+ * Returns `true` if stakeholder is type "other", false otherwise.
+ */
+export function isOtherStakeholder(d) {
+  return (
+    ["other"].includes(d.cat) ||
+    ["state_/_department_/_territory"].includes(d.subcat)
+  )
+}
+
+export function getFlowTypeLabel(flowType, flowTypeInfo) {
+  if (!flowTypeInfo) return ""
+  const match = flowTypeInfo.find(d => d.name === flowType)
+  if (match) return match.display_name
+  return ""
+}
+
+export default Util

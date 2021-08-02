@@ -1,4 +1,4 @@
-@import "./assets/styles/colors.scss";
+@import "./src/assets/styles/colors.scss";
 
 html,
 body,
@@ -14,17 +14,21 @@ body,
     color: $font-color;
   }
 
+  // table sort icons from bootstrap
+  .sort-ascending,
+  .sort-descending {
+    &::after {
+      color: #337ab7;
+    }
+  }
+
   // Cookie consent styling
   .cc-floating {
     &.cc-window {
       .cc-compliance {
         .cc-btn {
           border: 2px solid #023f88;
-          background: linear-gradient(
-            180deg,
-            rgba(2, 63, 136, 0.85) 0%,
-            #023f88 100%
-          );
+          background: linear-gradient(180deg, rgba(2, 63, 136, 0.85) 0%, #023f88 100%);
           color: white;
           display: flex;
           justify-content: center;
@@ -149,12 +153,20 @@ body,
 
     // Search bar
     [for="search-field"] {
-      margin-right: 10px;
+      display: none;
     }
 
     [for="search-field"],
-    #search-field {
+    input#search-field {
       margin-left: auto;
+    }
+    input#search-field {
+      padding: 5px;
+      border: 1px solid $gray-2;
+      border-radius: 5px;
+      &::placeholder {
+        font-style: italic;
+      }
     }
 
     table {
@@ -185,6 +197,7 @@ body,
   // Flex styling
   .flexrow {
     display: flex;
+    align-items: center;
   }
   .flexrow + div {
     margin-top: 10px;

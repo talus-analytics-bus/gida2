@@ -1,6 +1,6 @@
-import React from "react";
-import styles from "./checkbox.module.scss";
-import classNames from "classnames";
+import React from "react"
+import styles from "./checkbox.module.scss"
+import classNames from "classnames"
 
 /**
  * Generic radio toggle
@@ -13,6 +13,8 @@ const Checkbox = ({
   curChecked,
   callback,
   classes = [],
+  ref,
+  style = {},
   ...props
 }) => {
   /**
@@ -22,12 +24,16 @@ const Checkbox = ({
    * @return {[type]}   [description]
    */
   const onChange = e => {
-    const input = e.target.closest("label").querySelector("input");
-    callback(input.value);
-  };
+    const input = e.target.closest("label").querySelector("input")
+    callback(input.value)
+  }
 
   return (
-    <div className={classNames(styles.checkbox, ...classes)}>
+    <div
+      style={style}
+      ref={ref}
+      className={classNames(styles.checkbox, ...classes)}
+    >
       <form>
         <label onClick={callback ? onChange : undefined} for={label}>
           <input
@@ -40,7 +46,7 @@ const Checkbox = ({
         </label>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default Checkbox;
+export default Checkbox

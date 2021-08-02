@@ -9,6 +9,7 @@
     "@types/node": "12.0.4",
     "@types/react": "16.8.19",
     "@types/react-dom": "16.8.4",
+    "@types/react-helmet": "^6.1.1",
     "@types/react-router-dom": "^4.3.3",
     "axios": "^0.19.0",
     "chart.js": "^2.8.0",
@@ -29,9 +30,11 @@
     "react-data-components": "^1.2.0",
     "react-datepicker": "^2.8.0",
     "react-dom": "^16.8.6",
+    "react-helmet": "^6.1.0",
     "react-jquery-datatables": "^1.0.0",
     "react-map-gl": "^5.0.3",
     "react-multiselect-checkboxes": "^0.1.1",
+    "react-perfect-scrollbar": "^1.5.8",
     "react-popper": "^1.3.4",
     "react-redux": "^7.1.3",
     "react-router-dom": "^5.0.1",
@@ -46,14 +49,15 @@
     "typescript": "3.8"
   },
   "scripts": {
-    "start": "REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_METRICS_API_URL=http://localhost:5002 REACT_APP_AMP_METRICS_API_URL=http://amp-metric-api.us-west-1.elasticbeanstalk.com/ REACT_APP_API_URL=http://localhost:8000 react-scripts start",
+    "start": "REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_METRICS_API_URL=http://localhost:5003 REACT_APP_AMP_METRICS_API_URL=http://amp-metric-api.us-west-1.elasticbeanstalk.com/ REACT_APP_API_URL=http://localhost:8001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tslint": "./node_modules/.bin/tslint",
     "deploy-prod": "CI=false REACT_APP_GOAL_URL=https://goal.ghscosting.org REACT_APP_ENV_NAME=prod REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-prod.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-prod  --acl public-read --delete",
-    "deploy-dev": "CI=false REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete",
-    "deploy-dev2": "CI=false REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev2  --acl public-read --delete"
+    "deploy-dev": "CI=false REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev3.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete",
+    "deploy-dev2": "CI=false REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev2.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev2  --acl public-read --delete",
+    "deploy-dev3": "CI=false REACT_APP_GOAL_URL=https://goal2.ghscosting.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev3.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev3  --acl public-read --delete"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -1,12 +1,15 @@
 // 3rd party libs
-import React from "react";
-import SourceText from "../../../common/SourceText/SourceText.js";
-import classNames from "classnames";
+import React from "react"
+import { SourceText } from "../../../common"
+import classNames from "classnames"
+
+// utilities
+import { getFlowTypeLabel } from "../../../misc/Util"
 
 // styles
-import styles from "./detailssection.module.scss";
+import styles from "./detailssection.module.scss"
+import { ToggleFlowType } from "./ToggleFlowType"
 
-// FC for DetailsSection.
 const DetailsSection = ({
   header,
   content,
@@ -16,10 +19,10 @@ const DetailsSection = ({
   flowTypeInfo,
   toggleFlowType,
   noFinancialData,
+  noDataContent = null,
   // show data source text if true, hide otherwise
   showSource = true,
   classes = [],
-  ...props
 }) => {
   /**
    * When radio button changes, set current flow type equal to its value.
@@ -28,44 +31,39 @@ const DetailsSection = ({
    * @return {[type]}   [description]
    */
   const onChange = e => {
-    const input = e.target.closest("label").querySelector("input");
-    setCurFlowType(input.value);
-  };
+    const input = e.target.closest("label").querySelector("input")
+    setCurFlowType(input.value)
+  }
 
-  const getFlowTypeLabel = (flowType, flowTypeInfo) => {
-    if (!flowTypeInfo) return "";
-    const match = flowTypeInfo.find(d => d.name === flowType);
-    if (match) return match.display_name;
-    return "";
-  };
+  const showCustomNoDataContent = noFinancialData && noDataContent !== null
   return (
     <div className={classNames(styles.detailsSection, ...classes)}>
       {header}
-      {text && <div className={styles.text}>{text}</div>}
-      {toggleFlowType && !noFinancialData && (
-        <form>
-          {["committed_funds", "disbursed_funds"].map(flowType => (
-            <label onClick={onChange} for={flowType}>
-              <input
-                type="radio"
-                name="radio"
-                value={flowType}
-                checked={curFlowType === flowType}
-              />
-              <span>{getFlowTypeLabel(flowType, flowTypeInfo)}</span>
-            </label>
-          ))}
-        </form>
+      {showCustomNoDataContent && noDataContent}
+      {!showCustomNoDataContent && (
+        <>
+          {text && <div className={styles.text}>{text}</div>}
+          {toggleFlowType && !noFinancialData && (
+            <ToggleFlowType
+              onChange={onChange}
+              getFlowTypeLabel={getFlowTypeLabel}
+              curFlowType={curFlowType}
+              flowTypeInfo={flowTypeInfo}
+            />
+          )}
+          {!noFinancialData && (
+            <div className={styles.content}>
+              {content}
+              {showSource && <SourceText />}
+            </div>
+          )}
+          {noFinancialData && (
+            <span>No financial assistance data to show.</span>
+          )}
+        </>
       )}
-      {!noFinancialData && (
-        <div className={styles.content}>
-          {content}
-          {showSource && <SourceText />}
-        </div>
-      )}
-      {noFinancialData && <span>No financial assistance data to show.</span>}
     </div>
-  );
-};
+  )
+}
 
-export default DetailsSection;
+export default DetailsSection

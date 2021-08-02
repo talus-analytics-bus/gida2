@@ -1,46 +1,28 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
-import { Link } from "react-router-dom";
-import styles from "./details.module.scss";
-import classNames from "classnames";
-import { Settings } from "../../../App.js";
-import {
-  getNodeLinkList,
-  getWeightsBySummaryAttributeSimple,
-  getSummaryAttributeWeightsByNode,
-  isUnknownDataOnly,
-  parseIdsAsNames,
-} from "../../misc/Data.js";
-import Util, { isEmpty } from "../../misc/Util.js";
+import React, { useState, useEffect, useLayoutEffect } from "react"
+import styles from "./details.module.scss"
+import classNames from "classnames"
+import { Settings } from "../../../App.js"
+import Util, { isEmpty } from "../../misc/Util.js"
+import EventNumberTotals from "../../views/event/EventNumberTotals/EventNumberTotals"
 
 // queries
-import {
-  execute,
-  Stakeholder,
-  Assessment,
-  Flow,
-  NodeSums,
-  Outbreak,
-} from "../../misc/Queries";
-
-import { purples, greens, pvsCats, pvsColors } from "../../map/MapUtil.js";
+import { execute, Stakeholder, Assessment } from "../../misc/Queries"
+import { pvsCats, pvsColors } from "../../map/MapUtil.js"
 
 // Content components
-import DetailsSection from "../../views/details/content/DetailsSection.js";
-import FundsByYear from "../../chart/FundsByYear/FundsByYear.js";
-import Donuts from "../../chart/Donuts/Donuts.js";
-import StackBar from "../../chart/StackBar/StackBar.js";
-import TableInstance from "../../chart/table/TableInstance.js";
-import EntityRoleToggle from "../../misc/EntityRoleToggle.js";
-import Loading from "../../common/Loading/Loading.js";
-import ScoreBlocks from "../../common/ScoreBlocks/ScoreBlocks.js";
-import Tab from "../../misc/Tab.js";
-import TotalByFlowType from "../../infographic/TotalByFlowType/TotalByFlowType.js";
-import ReactTooltip from "react-tooltip";
-import tooltipStyles from "../../common/tooltip.module.scss";
-import TopTable from "../../chart/TopTable/TopTable";
-
-// local components
-import EventTable from "./content/EventTable";
+import DetailsSection from "../../views/details/content/DetailsSection.js"
+import FundsByYear from "../../chart/FundsByYear/FundsByYear.js"
+import StackBar from "../../chart/StackBar/StackBar.js"
+import TableInstance from "../../chart/table/TableInstance.js"
+import EntityRoleToggle from "../../misc/EntityRoleToggle.js"
+import { Loading } from "../../common"
+import { ScoreBlocks } from "../../common"
+import Tab from "../../misc/Tab.js"
+import ReactTooltip from "react-tooltip"
+import tooltipStyles from "../../common/tooltip.module.scss"
+import TopTable from "../../chart/TopTable/TopTable"
+import EventTable from "./content/EventTable"
+import { Flag, localFlags } from "../../views/explore/content/Orgs/Flag"
 
 // FC for Details.
 const Details = ({
@@ -52,108 +34,97 @@ const Details = ({
   setGhsaOnly,
   setComponent,
   setLoadingSpinnerOn,
-  setPage = () => "",
   ...props
 }) => {
-  const direction = entityRole === "funder" ? "origin" : "target";
-  const otherDirection = direction === "origin" ? "target" : "origin";
+  const direction = entityRole === "funder" ? "origin" : "target"
+  const otherDirection = direction === "origin" ? "target" : "origin"
 
-  let pageType;
-  if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa";
-  else pageType = "entity";
+  let pageType
+  if (id.toString().toLowerCase() === "ghsa") pageType = "ghsa"
+  else pageType = "entity"
 
   // If entity role is not defined, let it be funder as a placeholder.
-  if (entityRole === undefined) entityRole = "funder";
+  if (entityRole === undefined) entityRole = "funder"
 
   // Define noun for entity role
-  const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole });
+  const entityRoleNoun = Util.getRoleTerm({ type: "noun", role: entityRole })
 
   // Define other entity role, which is used in certain charts
-  const otherEntityRole = entityRole === "funder" ? "recipient" : "funder";
+  const otherEntityRole = entityRole === "funder" ? "recipient" : "funder"
 
   // Define the other node type based on the current entity role, which is used
   // in certain charts.
-  const nodeType = entityRole === "funder" ? "origin" : "target";
-  const otherNodeType = entityRole === "funder" ? "target" : "origin";
+  const nodeType = entityRole === "funder" ? "origin" : "target"
+  const otherNodeType = entityRole === "funder" ? "target" : "origin"
 
   // Track whether viewing committed or disbursed/provided assistance
-  const [curFlowType, setCurFlowType] = useState("committed_funds");
-  const [pvsTooltipData, setPvsTooltipData] = useState(undefined);
+  const [curFlowType, setCurFlowType] = useState("committed_funds")
+  const [pvsTooltipData, setPvsTooltipData] = useState(undefined)
 
   // is there any data to show? Inkind only?
-  const [noData, setNoData] = useState(false);
-  const [inkindOnly, setInkindOnly] = useState(false);
+  const [noData, setNoData] = useState(false)
+  const [inkindOnly, setInkindOnly] = useState(false)
 
   // track flows used to calc. total event funding
-  const [eventTotalsData, setEventTotalsData] = useState(null);
-
-  // is there any event funding?
-  const noEventFunding =
-    eventTotalsData === null || eventTotalsData.length === 0;
-
-  const [nodeData, setNodeData] = useState({});
-  const [nodesData, setNodesData] = useState({});
-  const defaultPvs = { eds: [], data: [], loading: true };
-  const [pvs, setPvs] = useState(defaultPvs);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [eventTotalsData, setEventTotalsData] = useState(null)
+  const [nodeData, setNodeData] = useState({})
+  const [nodesData, setNodesData] = useState({})
+  const defaultPvs = { eds: [], data: [], loading: true }
+  const [pvs, setPvs] = useState(defaultPvs)
+  const [dataLoaded, setDataLoaded] = useState(false)
 
   const getData = async () => {
-    // define directions for queries
-    const direction = entityRole === "funder" ? "origin" : "target";
-    const otherDirection = direction === "origin" ? "target" : "origin";
-
     // define common filters for most queries
-    const commonFilters = {};
+    const commonFilters = {}
 
     // if GHSA page, filter by `is_ghsa === true`
-    const isGhsaPage = id === "ghsa";
+    const isGhsaPage = id === "ghsa"
     if (isGhsaPage) {
-      commonFilters["Flow.is_ghsa"] = [true];
+      commonFilters["Flow.is_ghsa"] = [true]
     }
 
     const queries = {
       // Information about the entity
       nodesData: Stakeholder({ by: "id" }),
-    };
+    }
 
     if (!isGhsaPage)
       queries.pvs = Assessment({
         id,
         scoreType: "PVS",
-      });
+      })
 
     // Get query results.
     // setLoadingSpinnerOn(true);
-    const results = await execute({ queries });
+    const results = await execute({ queries })
 
     // use first and only node result
-    if (!isGhsaPage) results.nodeData = results.nodesData[id];
-    else results.nodeData = { id: -9999, name: "GHSA" };
+    if (!isGhsaPage) results.nodeData = results.nodesData[id]
+    else results.nodeData = { id: -9999, name: "GHSA" }
 
-    // set page based on stakeholder category
-    if (results.nodeData.cat === "organization") setPage("details-org");
-    else setPage("details-country");
-    setNodeData(results.nodeData);
-    setNodesData(results.nodesData);
-    if (!isGhsaPage) setPvs(results.pvs);
-    else setPvs({ ...defaultPvs, loading: false });
-  };
+    setNodeData(results.nodeData)
+    setNodesData(results.nodesData)
+    if (!isGhsaPage) setPvs(results.pvs)
+    else setPvs({ ...defaultPvs, loading: false })
+  }
 
-  const [curTab, setCurTab] = useState("ihr");
-  const [showFlag, setShowFlag] = useState(nodeData.subcat === "country");
-  const [curPvsEdition, setCurPvsEdition] = useState(pvs.eds[0] || {});
+  const [curTab, setCurTab] = useState("ihr")
+  const defaultShowFlag = shouldShowFlag(nodeData)
+  const [showFlag, setShowFlag] = useState(defaultShowFlag)
+  // const [showFlag, setShowFlag] = useState(nodeData.subcat === "country")
+  const [curPvsEdition, setCurPvsEdition] = useState(pvs.eds[0] || {})
 
   // Get display name for current flow type
   const curFlowTypeName = flowTypeInfo.find(d => d.name === curFlowType)
-    .display_name;
+    .display_name
 
   // True if there are no data to show for the entire page, false otherwise.
-  const noFinancialData = false;
+  const noFinancialData = false
 
   // True if the only available data to show are for "unknown" values (specific
   // value no reported).
   // TODO make work with new API
-  const unknownDataOnly = false;
+  const unknownDataOnly = false
 
   // Define header charts
   const pageHeaderContent = {
@@ -181,32 +152,10 @@ const Details = ({
     ),
     toggleFlowType: false,
     // hide: noData,
-  };
+  }
 
   // Define details content sections.
-  const showTabs = true;
-  // const showTabs = !noData && !unknownDataOnly && !noFinancialData;
-
-  // For event response funding: get totals.
-  // TODO move into EventTable
-  const eventResponseTotals = (
-    <div className={styles.totals}>
-      <TotalByFlowType
-        key={"c"}
-        inline={true}
-        flowType="committed_funds"
-        data={eventTotalsData}
-        label={"event response funding"}
-      />
-      <TotalByFlowType
-        key={"d"}
-        inline={true}
-        flowType="disbursed_funds"
-        data={eventTotalsData}
-        label={"event response funding"}
-      />
-    </div>
-  );
+  const showTabs = true
 
   const pvsLegend = (
     <div className={styles.legend}>
@@ -225,14 +174,14 @@ const Details = ({
         ))}
       </div>
     </div>
-  );
+  )
 
   const updatePvsTooltipData = d => {
     const allEdVals = pvs.data.filter(
-      dd => dd.ind.toLowerCase() === d.indName.toLowerCase()
-    );
+      dd => dd.ind.toLowerCase() === d.indName.toLowerCase(),
+    )
 
-    const indNum = d.indId.split(" ")[0].split("-")[1];
+    const indNum = d.indId.split(" ")[0].split("-")[1]
     const tooltipData = {
       title: (
         <div>
@@ -247,11 +196,11 @@ const Details = ({
       ),
       cols: ["Edition number", "Score"],
       rows: allEdVals.map((dd, ii) => {
-        return [dd.ed, dd.score];
+        return [dd.ed, dd.score]
       }),
-    };
-    setPvsTooltipData(tooltipData);
-  };
+    }
+    setPvsTooltipData(tooltipData)
+  }
   // tooltipFunc={d => {
   //   return {
   //     "data-tip": "",
@@ -364,15 +313,17 @@ const Details = ({
       toggleFlowType: false,
       // hide: noData || unknownDataOnly || noFinancialData,
     },
-  ];
+  ]
 
   // constants
-  const havePvs = pvs.data.length !== 0 && entityRole !== "funder";
-  const haveAssistance = noData !== null ? !noData && !inkindOnly : true;
+  const havePvs = pvs.data.length !== 0 && entityRole !== "funder"
+  const haveAssistance = noData !== null ? !noData && !inkindOnly : true
   const haveEvent =
-    eventTotalsData !== null ? eventTotalsData.length !== 0 : false;
-  const haveAny = havePvs || haveAssistance || haveEvent;
+    eventTotalsData !== null ? eventTotalsData.length !== 0 : false
+  const haveAny = havePvs || haveAssistance || haveEvent
 
+  const noEventTotalsRecords =
+    eventTotalsData !== null && eventTotalsData.length === 0
   const tabSections = showTabs
     ? [
         {
@@ -394,6 +345,8 @@ const Details = ({
                   over a bar to see additional funding details.
                 </p>
               ),
+              // TODO check props.nodesData below, seems to be
+              // duplicate variable
               content: (
                 <StackBar
                   staticStakeholders={props.nodesData}
@@ -466,55 +419,43 @@ const Details = ({
         },
         {
           slug: "event",
-          header: "Event response funding",
-          hide:
-            noData ||
-            (eventTotalsData !== null && eventTotalsData.length === 0),
+          header: "PHEIC funding",
           invis: eventTotalsData === null, // not yet loaded
+          hide: noData || noFinancialData || noEventTotalsRecords,
           content: [
             {
               header: (
                 <div>
                   <h2>
-                    Recent event response funding projects <br />
-                    {
-                      // Time frame
-                      // <span>in past 12 months</span>
-                    }
-                    {
-                      // // Date range
-                      // <span className={styles.timeFrame}>
-                      //   {props.responseStart.toLocaleString("en-us", {
-                      //     // month: "short",
-                      //     // day: "numeric",
-                      //     year: "numeric",
-                      //     timeZone: "UTC",
-                      //   })}{" "}
-                      //   -{" "}
-                      //   {props.responseEnd.toLocaleString("en-us", {
-                      //     // month: "short",
-                      //     // day: "numeric",
-                      //     year: "numeric",
-                      //     timeZone: "UTC",
-                      //   })}
-                      // </span>
-                    }
+                    PHEIC funding projects <br />
                   </h2>
                 </div>
               ),
               text: (
                 <div>
                   <p>
-                    This tab shows recent event response funding projects where{" "}
+                    This tab shows PHEIC response funding projects where{" "}
                     {nodeData.name} or an associated region/group was a{" "}
-                    {entityRole}. Note that all values listed here may not apply
-                    specifically to {nodeData.name}.
+                    {entityRole}. Note that values listed in the table may not
+                    apply specifically to {nodeData.name}. Contributions known
+                    to be specifically{" "}
+                    {entityRole === "funder" ? "from" : "for"} {nodeData.name}{" "}
+                    are tabulated in the two numbers below.
                   </p>
-                  {eventResponseTotals}
+                  {/* {eventResponseTotals} */}
                 </div>
               ),
               content: (
-                <div>
+                <div key={`${id}-${direction}`}>
+                  <EventNumberTotals
+                    {...{
+                      key: `${id}-${entityRole}`,
+                      compact: true,
+                      type: "funding",
+                      id,
+                      role: entityRole,
+                    }}
+                  />
                   <EventTable
                     {...{
                       id,
@@ -522,17 +463,14 @@ const Details = ({
                       otherDirection,
                       entityRole,
                       otherEntityRole,
-                      curFlowType,
-                      curFlowTypeName,
                       setEventTotalsData, // set flows to var. for totals
                       isGhsaPage: id === "ghsa",
-                      sortByProp: "amount",
+                      sortByProp: `amount-${curFlowType}`,
                     }}
                   />
                 </div>
               ),
-              toggleFlowType: true,
-              hide: noData || noFinancialData,
+              toggleFlowType: false,
             },
           ],
         },
@@ -545,89 +483,86 @@ const Details = ({
           invis: pvs.loading, // not yet loaded
         },
       ]
-    : [];
+    : []
 
-  const flagId = nodeData.slug ? nodeData.slug : "unspecified";
+  const flagId = nodeData.slug ? nodeData.slug : "unspecified"
 
-  const ghsa = pageType === "ghsa";
+  const ghsa = pageType === "ghsa"
 
-  const flagSrc = ghsa
-    ? `/flags/ghsa.png`
-    : `https://flags.talusanalytics.com/1000px/${flagId}.png`;
-  // : `https://www.countryflags.io/${flagId}/flat/64.png`;
-  const flag =
-    !isEmpty(nodeData) && (showFlag || ghsa) ? (
-      <img
-        key={flagId}
-        onError={e => addDefaultSrc(e)}
-        className={classNames({ [styles.small]: ghsa })}
-        src={flagSrc}
-      />
-    ) : null;
+  const flag = (
+    <Flag
+      {...{
+        filename: ghsa ? "ghsa.png" : flagId + ".png",
+        show: !isEmpty(nodeData) && (showFlag || ghsa),
+        big: !ghsa,
+        localFile: ghsa,
+      }}
+    />
+  )
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
-    ev.target.src = "/flags/unspecified.png";
-    setShowFlag(false);
-  };
+    ev.target.src = "/flags/unspecified.png"
+    setShowFlag(false)
+  }
 
   // update all data when `id` changes
   useEffect(() => {
-    setShowFlag(true);
-    setPvs(defaultPvs);
-    setEventTotalsData(null);
-    setCurPvsEdition(pvs.eds[0] || {});
+    setShowFlag(true)
+    setPvs(defaultPvs)
+    setEventTotalsData(null)
+    setCurPvsEdition(pvs.eds[0] || {})
 
-    window.scrollTo(0, 0); // TODO check
-    setDataLoaded(false);
+    window.scrollTo(0, 0) // TODO check
+    setDataLoaded(false)
 
     // reset data when ID changes
-    setEventTotalsData(null);
-  }, [id]);
+    setEventTotalsData(null)
+  }, [id])
 
   // update pvs edition
   useEffect(() => {
-    setCurPvsEdition(pvs.eds[0] || {});
-  }, [pvs]);
+    setCurPvsEdition(pvs.eds[0] || {})
+  }, [pvs])
 
   useEffect(() => {
-    ReactTooltip.rebuild();
-  }, [curPvsEdition]);
+    ReactTooltip.rebuild()
+  }, [curPvsEdition])
 
   // update initial tab if IHR data not avail.
   useEffect(() => {
     if (noData !== null && eventTotalsData !== null) {
       if (!haveAssistance) {
-        if (haveEvent) setCurTab("event");
-        else if (havePvs) setCurTab("pvs");
-        else setCurTab(null);
-      } else setCurTab("ihr");
-    } else setCurTab("ihr");
-  }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id]);
+        if (haveEvent) setCurTab("event")
+        else if (havePvs) setCurTab("pvs")
+        else setCurTab(null)
+      } else if (eventTotalsData.length === 0) setCurTab("ihr")
+    } else setCurTab("ihr")
+  }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id])
 
   useEffect(() => {
     // setCurTab("ihr");
-    setDataLoaded(false);
+    setDataLoaded(false)
     // reset data when role changes
-    setEventTotalsData(null);
-  }, [entityRole]);
+    setEventTotalsData(null)
+  }, [entityRole])
 
-  // if no event response data then set current tab to IHR
+  // if no PHEIC data then set current tab to IHR
   useEffect(() => {
-    if (eventTotalsData !== null && eventTotalsData.length === 0)
-      setCurTab("ihr");
-  }, [eventTotalsData]);
+    if (noEventTotalsRecords) setCurTab("ihr")
+  }, [eventTotalsData])
 
   useLayoutEffect(() => {
-    if (!dataLoaded) getData();
-  }, [id, dataLoaded]);
+    if (!dataLoaded) getData()
+  }, [id, dataLoaded])
 
   // when node data are updated, update flag show/hide
   useLayoutEffect(() => {
     if (!isEmpty(nodeData)) {
-      setShowFlag(ghsa || nodeData.subcat === "country");
+      setShowFlag(ghsa || shouldShowFlag(nodeData))
+      // setShowFlag(ghsa || nodeData.subcat === "country")
     }
-  }, [nodeData]);
+  }, [nodeData])
 
   // Return JSX
   return (
@@ -637,7 +572,9 @@ const Details = ({
           <div
             style={{
               backgroundColor:
-                entityRole === "funder" ? "rgb(56, 68, 52)" : "rgb(68, 0, 66)",
+                entityRole === "funder"
+                  ? Settings.funderGreen
+                  : Settings.recipientPurple,
             }}
             className={styles.entityRole}
           >
@@ -672,7 +609,7 @@ const Details = ({
                 flowTypeInfo={flowTypeInfo}
                 toggleFlowType={s.toggleFlowType}
               />
-            )
+            ),
         )}
       </div>
 
@@ -682,6 +619,7 @@ const Details = ({
             .filter(s => s.hide !== true)
             .map(s => (
               <button
+                key={s.slug}
                 className={classNames(styles.tabToggle, {
                   [styles.selected]: s.slug === curTab,
                   [styles.invis]: s.invis,
@@ -701,8 +639,12 @@ const Details = ({
           }
         </div>
       )}
-      {showTabs && haveAny && (
-        <div className={styles.tabContent}>
+      {showTabs && (
+        <div
+          className={classNames(styles.tabContent, {
+            [styles.invis]: !haveAny,
+          })}
+        >
           {tabSections
             .filter(s => s.hide !== true)
             .map(
@@ -722,10 +664,10 @@ const Details = ({
                             flowTypeInfo={flowTypeInfo}
                             toggleFlowType={s.toggleFlowType}
                           />
-                        )
+                        ),
                     )}
                   />
-                )
+                ),
             )}
         </div>
       )}
@@ -740,7 +682,7 @@ const Details = ({
               flowTypeInfo={flowTypeInfo}
               toggleFlowType={s.toggleFlowType}
             />
-          )
+          ),
       )}
 
       {
@@ -751,7 +693,7 @@ const Details = ({
           className={classNames(
             tooltipStyles.tooltip,
             tooltipStyles.simple,
-            tooltipStyles.fullTable
+            tooltipStyles.fullTable,
           )}
           place="top"
           effect="float"
@@ -787,7 +729,12 @@ const Details = ({
         />
       }
     </div>
-  );
-};
+  )
+}
 
-export default Details;
+export default Details
+function shouldShowFlag(nodeData) {
+  return (
+    nodeData.flag_url !== undefined && !localFlags.includes(nodeData.flag_url)
+  )
+}

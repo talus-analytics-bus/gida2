@@ -1,17 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import Util from "./Util.js";
-import * as d3 from "d3/dist/d3.min";
+import React from "react"
+import { Link } from "react-router-dom"
+import Util from "./Util.js"
+import * as d3 from "d3/dist/d3.min"
 import {
   getMapTooltipLabel,
   getUnknownValueExplanation,
   getMapColorScale,
   getMapMetricValue,
-} from "../map/MapUtil.js";
+} from "../map/MapUtil.js"
 
 export const fetchPost = async (url, data, config) => {
-  return { data: [] };
-};
+  return { data: [] }
+}
 
 /**
  * Return flow values for display in the InfoBox for the selected node, given
@@ -32,14 +32,14 @@ const getFlowValues = ({
   // Define the flows that should be used to get the flow values.
   const flowsTmp = ["funds", "funds_and_inkind"].includes(supportTypeForValues)
     ? ["disbursed_funds", "committed_funds"]
-    : ["provided_inkind", "committed_inkind"];
+    : ["provided_inkind", "committed_inkind"]
 
-  let flows;
+  let flows
   if (transactionType !== undefined) {
-    if (transactionType === "committed") flows = [flowsTmp[1]];
-    else flows = [flowsTmp[0]];
+    if (transactionType === "committed") flows = [flowsTmp[1]]
+    else flows = [flowsTmp[0]]
   } else {
-    flows = flowsTmp;
+    flows = flowsTmp
   }
 
   // If the datum is undefined, return "zeros" for the flow values.
@@ -55,10 +55,10 @@ const getFlowValues = ({
             minYear,
             maxYear,
             entityRole,
-          });
+          })
         },
-      };
-    });
+      }
+    })
   } else {
     // Otherwise, return an array with one object for each flow value that
     // contains (1) the value to be displayed, formatted; and (2) the label
@@ -72,7 +72,7 @@ const getFlowValues = ({
             flowType: f,
             coreCapacities,
           }) || 0,
-          f
+          f,
         ),
         label() {
           return getMapTooltipLabel({
@@ -82,12 +82,12 @@ const getFlowValues = ({
             minYear,
             maxYear,
             entityRole,
-          });
+          })
         },
-      };
-    });
+      }
+    })
   }
-};
+}
 
 export const getInfoBoxData = ({
   nodeDataToCheck,
@@ -106,7 +106,7 @@ export const getInfoBoxData = ({
   // If a node has been selected, get the info box data for it.
   // First, get the JEE score for the node, if it exists. If it is not avail,
   // then 'scoreOfNode' is undefined.
-  let scoreOfNode;
+  let scoreOfNode
   if (
     // There is a node selected...
     nodeDataToCheck !== undefined &&
@@ -118,11 +118,11 @@ export const getInfoBoxData = ({
       scores: jeeScores, // TODO
       iso3: nodeDataToCheck.iso3, // TODO
       coreCapacities,
-    });
+    })
 
     // Average JEE score is mean.
-    const avgJeeScore = d3.mean(jeeScoresToAvg, d => d.score);
-    scoreOfNode = avgJeeScore;
+    const avgJeeScore = d3.mean(jeeScoresToAvg, d => d.score)
+    scoreOfNode = avgJeeScore
   }
 
   // Define the InfoBox data passed to the InfoBox component. By default the
@@ -130,19 +130,19 @@ export const getInfoBoxData = ({
   const transactionTypeTmp =
     flowType.startsWith("committed") && supportType !== "needs_met"
       ? "committed"
-      : "disbursed";
-  const transactionType = simple ? transactionTypeTmp : undefined;
-  if (nodeDataToCheck === undefined) return {};
+      : "disbursed"
+  const transactionType = simple ? transactionTypeTmp : undefined
+  if (nodeDataToCheck === undefined) return {}
 
   if (datum === undefined && supportType === "needs_met") {
     datum = {
       disbursed_funds: 0,
-    };
+    }
   }
   const nodeMapData =
     nodeDataToCheck !== undefined
       ? mapData.find(d => d.iso3 === nodeDataToCheck.iso3)
-      : undefined;
+      : undefined
   let infoBoxData = {
     scoreOfNode: scoreOfNode,
     flowValues: getFlowValues({
@@ -155,7 +155,7 @@ export const getInfoBoxData = ({
       coreCapacities,
     }),
     colorScale: colorScale,
-  };
+  }
 
   // Get the node data that is in the table of values for display in the map.
 
@@ -163,7 +163,7 @@ export const getInfoBoxData = ({
   if (nodeMapData !== undefined && datum !== undefined) {
     // Define a value with which to determine the color of the InfoBox header.
     // This will be overriden by 'jeeLabel' if the supportType is 'jee'.
-    infoBoxData.colorValue = nodeMapData.value_raw;
+    infoBoxData.colorValue = nodeMapData.value_raw
 
     // If unknown value applies, get the message for it, explaining why the
     // value is unknown (e.g., country is marked as a funder for a multilateral
@@ -177,7 +177,7 @@ export const getInfoBoxData = ({
         coreCapacities,
       }),
       entityRole: entityRole,
-    });
+    })
 
     // Get other data for info box depending on the support type.
     switch (supportType) {
@@ -192,8 +192,8 @@ export const getInfoBoxData = ({
           maxYear,
           entityRole,
           coreCapacities,
-        });
-        break;
+        })
+        break
 
       // Inkind data: show amount committed/provided
       case "inkind":
@@ -205,8 +205,8 @@ export const getInfoBoxData = ({
           maxYear,
           entityRole,
           coreCapacities,
-        });
-        break;
+        })
+        break
 
       // JEE data / needs met: show amount committed/disbursed and JEE score
       case "needs_met":
@@ -219,50 +219,50 @@ export const getInfoBoxData = ({
           maxYear,
           entityRole,
           coreCapacities,
-        });
-        break;
+        })
+        break
 
       default:
-        break;
+        break
     }
 
     // if showing `funds_and_inkind`, mark whether in-kind support applies
     if (supportType === "funds_and_inkind") {
-      infoBoxData.has_inkind = nodeMapData.has_inkind;
+      infoBoxData.has_inkind = nodeMapData.has_inkind
     }
-    infoBoxData.flowType = flowType;
+    infoBoxData.flowType = flowType
   }
 
-  return infoBoxData;
-};
+  return infoBoxData
+}
 
 // Given the full set of JEE scores, an iso3 code, and a set of core capacities,
 // returns the average core capacity score for each defined core capacity for
 // the location with the provided iso3 code.
 export const getJeeScores = ({ scores, iso3, coreCapacities }) => {
   // TODO
-  if (iso3 === undefined) return [];
-  const scoresForPlace = scores[iso3];
-  if (scoresForPlace === undefined) return [];
+  if (iso3 === undefined) return []
+  const scoresForPlace = scores[iso3]
+  if (scoresForPlace === undefined) return []
   const ccsToInclude =
     coreCapacities.length > 0
       ? coreCapacities
-      : core_capacities.map(cc => cc.value);
+      : core_capacities.map(cc => cc.value)
   const output = ccsToInclude.map(cc => {
-    const scoreForPlace = scoresForPlace[cc];
+    const scoreForPlace = scoresForPlace[cc]
     if (scoreForPlace === undefined)
       return {
         value: cc,
         score: null,
-      };
+      }
     else
       return {
         value: cc,
         score: scoreForPlace, // TODO
-      };
-  });
-  return output;
-};
+      }
+  })
+  return output
+}
 
 /**
  * Given the disbursed funds received (single value) and the data array of
@@ -273,38 +273,38 @@ export const getJeeScores = ({ scores, iso3, coreCapacities }) => {
  * @param  {[type]}          avgCapScores           [description]
  * @return {[type]}                                 [description]
  */
-const debugNeedsMet = false;
+const debugNeedsMet = false
 // TODO move to API
 export const calculateNeedsMet = ({ datum, avgCapScores }) => {
   // Get the disbursed funds received for this datum.
-  const disbursedFundsReceived = datum["disbursed_funds"];
+  const disbursedFundsReceived = datum["disbursed_funds"]
   if (
     (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&
     avgCapScores < 3
   )
-    return 0; // 0 - needs most unmet (CONFIRM)
+    return 0 // 0 - needs most unmet (CONFIRM)
   if (
     (disbursedFundsReceived === 0 || disbursedFundsReceived === undefined) &&
     avgCapScores >= 3
   )
-    return null; // doing better than 3 and got nothing? no data. ???
-  if (disbursedFundsReceived === undefined) return -9999; // no fund info? unknown
-  if (disbursedFundsReceived === "unknown") return -8888; // hatch? hatch
-  if (avgCapScores === undefined) return -9999;
+    return null // doing better than 3 and got nothing? no data. ???
+  if (disbursedFundsReceived === undefined) return -9999 // no fund info? unknown
+  if (disbursedFundsReceived === "unknown") return -8888 // hatch? hatch
+  if (avgCapScores === undefined) return -9999
   // no score? unknown
   else {
     // Finally, perform the needs met calculation if needed data are avail.
     // The numerator.
-    const numerator = 10 + Math.log10(1 + disbursedFundsReceived);
+    const numerator = 10 + Math.log10(1 + disbursedFundsReceived)
 
     // The denominator.
-    const denominator = 5.01 - avgCapScores;
+    const denominator = 5.01 - avgCapScores
 
     // Needs met is the numerator divided by the denominator.
-    const needsMet = numerator / denominator;
-    return needsMet;
+    const needsMet = numerator / denominator
+    return needsMet
   }
-};
+}
 
 // Core capacities
 // TODO move this to API/db
@@ -414,7 +414,7 @@ export const core_capacities = [
     label: "Unspecified",
     cat: "Unspecified",
   },
-];
+]
 
 // Core capacities grouped by core elements
 // TODO move this to API/db
@@ -435,7 +435,11 @@ export const core_capacities_grouped = [
     label: "Other",
     options: core_capacities.filter(cc => cc.cat === "Other"),
   },
-];
+]
+
+// define which stakeholder subcategories should not be hyperlinked to a
+// details page
+export const nonUrlSubcats = ["region"]
 
 /**
  * Given the parameters, returns a list of links (semicolon-delimited) for the
@@ -455,70 +459,91 @@ export const getNodeLinkList = ({
   id,
   otherId,
 }) => {
-  let urlFunc;
+  let urlFunc
   if (urlType === "pair-table") {
     urlFunc = node => {
       const url =
         entityRole === "funder"
           ? `/pair-table/${node}/${otherId || id}`
-          : `/pair-table/${id}/${node}`;
-      return url;
-    };
+          : `/pair-table/${id}/${node}`
+      return url
+    }
   } else if (urlType === "table") {
     urlFunc = node => {
-      const url = `/table/${node}/${entityRole}`;
-      return url;
-    };
+      const url = `/table/${node}/${entityRole}`
+      return url
+    }
   } else if (urlType === "details") {
     urlFunc = node => {
-      const url = `/details/${node}/${entityRole}`;
-      return url;
-    };
+      const url = `/details/${node}/${entityRole}`
+      return url
+    }
   }
 
   // Do not list URLs unless the node belongs to any of these types
-  const urlTypes = ["country", "organization"];
-  const nonUrlTypes = ["region", "state_/_department_/_territory"];
-  const nonUrlSubcats = ["region", "agency", "sub-organization"];
-  // const nonUrlTypes = ["region", "state_/_department_/_territory", "other"];
+  const nonUrlTypes = ["region"]
+  const parentUrlSubcats = ["agency", "sub-organization"]
   return nodeList.map((node, i) => {
-    const url = urlFunc(node.id);
-    const type = node.cat;
-    const subcat = node.subcat;
+    const type = node.cat
+    const subcat = node.subcat
+    const doParentUrl =
+      node.parent !== undefined && parentUrlSubcats.includes(subcat)
     const doUrl =
       !nonUrlTypes.includes(type) &&
       !nonUrlSubcats.includes(subcat) &&
-      node.slug !== "not-reported";
+      node.slug !== "not-reported"
+    const url = !doParentUrl ? urlFunc(node.id) : urlFunc(node.parent.id)
+
     const skipUrlBecauseIsTargetInRecipientCol =
-      otherId && node.id === otherId && entityRole === "recipient";
+      otherId && node.id === otherId && entityRole === "recipient"
+
+    const idMatchesSelfOrParent =
+      (id && node.id === id) || (node.parent && node.parent.id === id)
+
     const skipUrlBecauseIsSourceInFunderCol =
-      id && node.id === id && entityRole === "funder";
+      idMatchesSelfOrParent && entityRole === "funder"
     const skipUrlBecauseIsOnlyNode =
-      otherId === undefined && id && node.id === id;
+      otherId === undefined && id && node.id === id
+    const showAsLink =
+      doUrl &&
+      !skipUrlBecauseIsOnlyNode &&
+      !skipUrlBecauseIsTargetInRecipientCol &&
+      !skipUrlBecauseIsSourceInFunderCol
+
+    const parentIsUnlinkable =
+      node.parent &&
+      (nonUrlTypes.includes(node.parent.cat) ||
+        nonUrlSubcats.includes(node.parent.subcat))
     return (
       <span>
-        {doUrl &&
-          !skipUrlBecauseIsOnlyNode &&
-          !skipUrlBecauseIsTargetInRecipientCol &&
-          !skipUrlBecauseIsSourceInFunderCol && (
-            <span>
-              <Link to={url}>{node.name}</Link>
-              {i !== nodeList.length - 1 && <span>; </span>}
-            </span>
-          )}
-        {(!doUrl ||
-          skipUrlBecauseIsOnlyNode ||
-          skipUrlBecauseIsTargetInRecipientCol ||
-          skipUrlBecauseIsSourceInFunderCol) && (
+        {!doParentUrl && showAsLink && (
+          <span>
+            <Link to={url}>{node.name}</Link>
+            {i !== nodeList.length - 1 && <span>; </span>}
+          </span>
+        )}
+        {!doParentUrl && (parentIsUnlinkable || !showAsLink) && (
           <span>
             <span>{node.name}</span>
             {i !== nodeList.length - 1 && <span>; </span>}
           </span>
         )}
+        {doParentUrl && !parentIsUnlinkable && showAsLink && (
+          <span>
+            <Link to={url}>{node.parent.name}</Link> (via {node.name})
+            {i !== nodeList.length - 1 && <span>; </span>}
+          </span>
+        )}
+        {doParentUrl && (parentIsUnlinkable || !showAsLink) && (
+          <span>
+            {node.parent.name} (via {node.name})
+            {i !== nodeList.length - 1 && <span>; </span>}
+          </span>
+        )}
       </span>
-    );
-  });
-};
+    )
+  })
+}
 
 /**
  * Given the value and the type (num, text), returns the correct AZ or numeric
@@ -530,28 +555,28 @@ export const getNodeLinkList = ({
  * @return {[type]}                      [description]
  */
 export const getTableCellCodeFromVal = ({ val, type, ...props }) => {
-  const undefinedOrNull = val === undefined || val === null;
-  const unknown = val === "unknown";
+  const undefinedOrNull = val === undefined || val === null
+  const unknown = val === "unknown"
   switch (type) {
     case "num":
       // If undefined or null, return -9999, which represents "n/a".
-      if (undefinedOrNull) return -9999;
+      if (undefinedOrNull) return -9999
       // If "unknown", return -8888, which represents ("Specific amount
       // unknown").
-      if (unknown) return -8888;
-      else return val;
+      if (unknown) return -8888
+      else return val
 
     case "text":
       // If undefined or null, return 'zzz', which represents "n/a".
-      if (undefinedOrNull) return "zzz";
+      if (undefinedOrNull) return "zzz"
       // If "unknown", return 'yyy', which represents ("Specific amount
       // unknown").
-      if (unknown) return "yyy";
-      else return val;
+      if (unknown) return "yyy"
+      else return val
     default:
-      return val;
+      return val
   }
-};
+}
 
 /**
  * Given an array of objs with attribute 'func' that defines how the data need
@@ -567,24 +592,24 @@ export const getTableRowData = ({
   data,
   filterFcn = d => true,
 }) => {
-  const tableRows = [];
+  const tableRows = []
   data.forEach(d => {
-    const row = {};
+    const row = {}
     tableRowDefs.forEach(def => {
       // const noDataVal = def.type === "num" ? -9999 : "zzz";
       if (def.func === undefined)
         def.func = d => {
-          return d[def.prop];
-        };
+          return d[def.prop]
+        }
       row[def.prop] = getTableCellCodeFromVal({
         val: def.func(d),
         type: def.type,
-      });
-    });
-    if (filterFcn(row)) tableRows.push(row);
-  });
-  return tableRows;
-};
+      })
+    })
+    if (filterFcn(row)) tableRows.push(row)
+  })
+  return tableRows
+}
 
 /**
  * Returns true if the data are unknown amounts only, false otherwise.
@@ -594,14 +619,14 @@ export const getTableRowData = ({
  * @return {Boolean}              [description]
  */
 export const isUnknownDataOnly = ({ masterSummary }) => {
-  let unknownOnly = true;
+  let unknownOnly = true
   for (let [k, v] of Object.entries(masterSummary.flow_types)) {
     if (v.focus_node_weight !== "unknown") {
-      unknownOnly = false;
+      unknownOnly = false
     }
   }
-  return unknownOnly;
-};
+  return unknownOnly
+}
 
 /**
  * Returns array with one object per target/source node in the flow dataset,
@@ -623,20 +648,20 @@ export const getSummaryAttributeWeightsByNode = ({
   ...props
 }) => {
   // If no data, return null
-  if (data === undefined || data.length === 0) return [];
+  if (data === undefined || data.length === 0) return []
 
   // Define output array
-  const outputArr = [];
+  const outputArr = []
 
   // For each node,
   data.forEach(d => {
     // Create output object
     const output = {
       [nodeType]: d[nodeType],
-    };
+    }
 
     // Flag false if no data for any flow type, true otherwise
-    let noData = true;
+    let noData = true
 
     // For each flow type
     flowTypes.forEach(ft => {
@@ -644,8 +669,8 @@ export const getSummaryAttributeWeightsByNode = ({
       // "getWeightsBySummaryAttribute"
       // Get all data related to the flow type. If none, then continue to the
       // next flow type.
-      const curFtData = d.flow_types[ft];
-      if (curFtData === undefined) return;
+      const curFtData = d.flow_types[ft]
+      if (curFtData === undefined) return
 
       // get summaries for the current flow type (e.g., total weights by year)
 
@@ -655,9 +680,9 @@ export const getSummaryAttributeWeightsByNode = ({
           [field]: {
             Unspecified: curFtData["focus_node_weight"],
           },
-        };
+        }
       }
-      const summaries = curFtData.summaries;
+      const summaries = curFtData.summaries
 
       // If summary not provided for field, skip this flow type
       if (
@@ -666,26 +691,26 @@ export const getSummaryAttributeWeightsByNode = ({
       )
         summaries[field] = {
           Unspecified: curFtData["focus_node_weight"],
-        };
+        }
 
       // return;
       // else noData = false;
-      noData = false;
+      noData = false
 
       // Initialize output obj for current flow type
-      output[ft] = { total: curFtData.focus_node_weight };
+      output[ft] = { total: curFtData.focus_node_weight }
 
       // Otherwise, add all the summary field values
       for (let [k, v] of Object.entries(summaries[field])) {
-        output[ft][k] = v;
+        output[ft][k] = v
       }
-    });
+    })
 
     // Push row to output array
-    if (!noData) outputArr.push(output);
-  });
-  return outputArr;
-};
+    if (!noData) outputArr.push(output)
+  })
+  return outputArr
+}
 
 /**
  * Totals weights by a particular summary attribute given a FlowBundle API
@@ -699,10 +724,10 @@ export const getWeightsBySummaryAttributeSimple = ({
   ...props
 }) => {
   // Get value formatter
-  const format = Util.getAttrFormatter("core_elements");
+  const format = Util.getAttrFormatter("core_elements")
 
   // Define output array
-  const outputArr = [];
+  const outputArr = []
 
   // For each flow type
   flowTypes.forEach(ft => {
@@ -710,40 +735,40 @@ export const getWeightsBySummaryAttributeSimple = ({
     data.forEach(d => {
       // Get all data related to the flow type. If none, then continue to the
       // next flow type.
-      const curFtData = d.flow_types[ft];
-      if (curFtData === undefined) return;
+      const curFtData = d.flow_types[ft]
+      if (curFtData === undefined) return
 
       // get summaries for the current flow type (e.g., total weights by year)
-      const summaries = curFtData.summaries;
+      const summaries = curFtData.summaries
 
       // If summaries not defined, skip this flow type
-      if (summaries === undefined) return;
+      if (summaries === undefined) return
 
       // If summary not provided for field, skip this flow type
-      if (summaries[field] === undefined) return;
+      if (summaries[field] === undefined) return
 
       // Otherwise, for each value in it
       for (let [kTmp, v] of Object.entries(summaries[field])) {
         // Format key
-        const attribute = format(kTmp);
+        const attribute = format(kTmp)
         const outputObj = {
           attribute: attribute,
           [ft]: v,
-        };
-        const nodeTypes = ["source", "target"];
+        }
+        const nodeTypes = ["source", "target"]
         nodeTypes.forEach(nodeType => {
           if (d[nodeType] !== undefined) {
-            outputObj[nodeType] = d[nodeType].map(dd => dd.name).join("; ");
+            outputObj[nodeType] = d[nodeType].map(dd => dd.name).join("; ")
           }
-        });
-        outputArr.push(outputObj);
+        })
+        outputArr.push(outputObj)
       }
-    });
-  });
+    })
+  })
 
   // Format output as an array of objects (one object per row)
-  return outputArr;
-};
+  return outputArr
+}
 
 /**
  * Totals weights by a particular summary attribute given a FlowBundle API
@@ -757,50 +782,50 @@ export const getWeightsBySummaryAttribute = ({
   ...props
 }) => {
   // Get value formatter
-  const format = Util.getAttrFormatter("core_elements");
+  const format = Util.getAttrFormatter("core_elements")
 
   // Flag true if data should be returned specific to target/source, and false
   // if it should be returned aggregated by target/source (non-specific).
   const byOtherNode =
-    props.byOtherNode === true && props.otherNodeType !== undefined;
+    props.byOtherNode === true && props.otherNodeType !== undefined
 
   // If no data, return null
-  if (data === undefined || data.length === 0) return null;
+  if (data === undefined || data.length === 0) return null
 
   // Define output array
-  const outputArr = [];
+  const outputArr = []
 
   // Define output object
-  const output = {};
+  const output = {}
 
   // For each flow type
   flowTypes.forEach(ft => {
     // For each datum
     data.forEach(d => {
       // Get target or source (as specified in props object)
-      const otherNodeType = byOtherNode ? props.otherNodeType : null;
+      const otherNodeType = byOtherNode ? props.otherNodeType : null
 
       // Create string from target/source list
-      const otherNodesStr = byOtherNode ? d[otherNodeType].join("; ") : null;
+      const otherNodesStr = byOtherNode ? d[otherNodeType].join("; ") : null
 
       // Get all data related to the flow type. If none, then continue to the
       // next flow type.
-      const curFtData = d.flow_types[ft];
-      if (curFtData === undefined) return;
+      const curFtData = d.flow_types[ft]
+      if (curFtData === undefined) return
 
       // get summaries for the current flow type (e.g., total weights by year)
-      const summaries = curFtData.summaries;
+      const summaries = curFtData.summaries
 
       // If summaries not defined, skip this flow type
-      if (summaries === undefined) return;
+      if (summaries === undefined) return
 
       // If summary not provided for field, skip this flow type
-      if (summaries[field] === undefined) return;
+      if (summaries[field] === undefined) return
 
       // Otherwise, for each value in it
       for (let [kTmp, v] of Object.entries(summaries[field])) {
         // Format key
-        const k = format(kTmp);
+        const k = format(kTmp)
 
         // If the value has not yet been seen,
         if (output[k] === undefined) {
@@ -813,10 +838,10 @@ export const getWeightsBySummaryAttribute = ({
                 attribute: k,
                 [otherNodeType]: otherNodesStr,
               },
-            };
+            }
           // otherwise, simply add an entry for the flow type and attribute
           // (not specifying target/source)
-          else output[k] = { [ft]: v, attribute: k };
+          else output[k] = { [ft]: v, attribute: k }
 
           // If we are separating outputs by target/source node, and the
           // attribute has already been seen but not the target/source node,
@@ -826,7 +851,7 @@ export const getWeightsBySummaryAttribute = ({
             [ft]: v,
             attribute: k,
             [otherNodeType]: otherNodesStr,
-          };
+          }
         // otherwise, the flow type/attribute/target-source node has been
         // seen before, so increment its value as appropriate
         else {
@@ -837,20 +862,20 @@ export const getWeightsBySummaryAttribute = ({
               output[k][otherNodesStr][ft] === undefined ||
               output[k][ft] === "unknown"
             ) {
-              output[k][otherNodesStr][ft] = v;
+              output[k][otherNodesStr][ft] = v
             }
             // otherwise,
           } else {
             // increment the flow type value as appropriate without specifying
             // the target/source node
             if (output[k][ft] === undefined || output[k][ft] === "unknown") {
-              output[k][ft] = v;
+              output[k][ft] = v
             }
           }
         }
       }
-    });
-  });
+    })
+  })
 
   // Organize the output as an array of objects rather than as a single object
   // For each key/val pair in the current output object,
@@ -860,17 +885,17 @@ export const getWeightsBySummaryAttribute = ({
       // For each key/val pair in that target/source node entry,
       for (let [k2, v2] of Object.entries(v)) {
         // add the value to the output array
-        outputArr.push(v2);
+        outputArr.push(v2)
       }
     } else {
       // add the value to the output array without tracking target/source node
-      outputArr.push(v);
+      outputArr.push(v)
     }
   }
 
   // Format output as an array of objects (one object per row)
-  return outputArr;
-};
+  return outputArr
+}
 
 export const getNodeData = id => {
   switch (id) {
@@ -878,25 +903,25 @@ export const getNodeData = id => {
       return {
         name: "Global Health Security Agenda (GHSA)",
         id: id,
-      };
+      }
     default:
       return {
         name: id,
         id: id,
-      };
+      }
   }
-};
+}
 
 // given datum `d` from NodeSums or Flows, and dict of stakeholder info
 // `stakeholders` with keys of stakeholder IDs, return list of names
 export const parseIdsAsNames = ({ d, field = "id", stakeholders }) => {
-  const value = d[field];
-  const ids = typeof value === "object" ? value : d[field].split("; ");
+  const value = d[field]
+  const ids = typeof value === "object" ? value : d[field].split("; ")
 
   // split ids on semicolon
-  const shArr = [];
+  const shArr = []
   ids.forEach(id => {
-    shArr.push(stakeholders[id]);
-  });
-  return JSON.stringify(shArr);
-};
+    shArr.push(stakeholders[id])
+  })
+  return JSON.stringify(shArr)
+}

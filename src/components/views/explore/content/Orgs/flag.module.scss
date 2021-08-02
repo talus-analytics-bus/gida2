@@ -1,0 +1,12 @@
+.flag {
+  &:not(.big) img {
+    $size: 30px;
+    width: $size;
+    height: $size;
+  }
+  &.big img {
+    $size: 80px;
+    width: $size;
+    height: $size;
+  }
+}

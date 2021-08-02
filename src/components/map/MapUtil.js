@@ -1,11 +1,11 @@
-import React from "react";
-import Util from "../misc/Util.js";
-import * as d3 from "d3/dist/d3.min";
-import { calculateNeedsMet, getJeeScores } from "../misc/Data.js";
+import React from "react"
+import Util from "../misc/Util.js"
+import * as d3 from "d3/dist/d3.min"
+import { calculateNeedsMet, getJeeScores } from "../misc/Data.js"
 
 // define values that indicate "unknown credit" to source or target stakeholder
-const UNKNOWN_CREDIT_VALUES = ["unknown", -8888];
-const isUnknownCredit = v => UNKNOWN_CREDIT_VALUES.includes(v);
+const UNKNOWN_CREDIT_VALUES = ["unknown", -8888]
+const isUnknownCredit = v => UNKNOWN_CREDIT_VALUES.includes(v)
 
 export const greens = [
   // "#eaeff1",
@@ -14,7 +14,7 @@ export const greens = [
   "#3d8662",
   "#217249",
   "#045f32",
-];
+]
 
 export const purples = [
   "#aa9bc3",
@@ -23,29 +23,23 @@ export const purples = [
   "#713286",
   "#6a1266",
   "#3c003a",
-];
+]
 
 export const lightHatchColors = [
   purples[purples.length - 1],
   purples[purples.length - 2],
   greens[greens.length - 1],
-];
+]
 
-export const pvsColors = [
-  "#b879bc",
-  "#974299",
-  "#721277",
-  "#5b045b",
-  "#440042",
-];
+export const pvsColors = ["#b879bc", "#974299", "#721277", "#5b045b", "#440042"]
 export const pvsCats = [
   ["Human, Physical and Financial Resources", "#2f456b"],
   ["Technical Authority and Capacity", "#5683ba"],
   ["Interaction with the Actors Concerned", "#6aa7e2"],
   ["Market Access", "#9bd3f9"],
-];
+]
 
-export const jeeColors = ["#ccc", "#a91726", "#f9a510", "#007c47"];
+export const jeeColors = ["#ccc", "#a91726", "#f9a510", "#007c47"]
 
 // // Old color series with shades of yellow and green.
 // // Do not use in GU sites.
@@ -67,7 +61,7 @@ export const blues = [
   "#82b8d1",
   "#6296be",
   "#32649f",
-].reverse();
+].reverse()
 
 /**
  * Given the support type, datum (d), flow type, and core capacities (if
@@ -89,24 +83,24 @@ export const getMapMetricValue = ({
 }) => {
   if (["funds", "inkind", "funds_and_inkind"].includes(supportType)) {
     // Get assistance flow values
-    return d[flowType];
+    return d[flowType]
   } else if (supportType === "jee") {
     // Get JEE score values.
-    const node = d.target ? d.target : d.origin;
-    const iso3 = node.iso3;
+    const node = d.target ? d.target : d.origin
+    const iso3 = node.iso3
     const jeeScores = getJeeScores({
       scores,
       iso3,
       coreCapacities,
-    });
-    const avgJeeScore = d3.mean(jeeScores, d => d.score);
-    return avgJeeScore;
+    })
+    const avgJeeScore = d3.mean(jeeScores, d => d.score)
+    return avgJeeScore
   } else if (supportType === "needs_met") {
     // Get "needs met" values
     if (forTooltip) {
-      return d["disbursed_funds"];
+      return d["disbursed_funds"]
     } else {
-      return d.needs_met;
+      return d.needs_met
       // // Get JEE score values.
       // const node = d.target ? d.target : d.origin;
       // if (node === undefined) return -9999;
@@ -127,8 +121,8 @@ export const getMapMetricValue = ({
       // }
     }
   }
-  return -9999;
-};
+  return -9999
+}
 
 /**
  * Given the support type and the data, returns the appropriate D3 map color
@@ -147,86 +141,86 @@ export const getMapColorScale = ({
   entityRole,
 }) => {
   const colorScaleMaker = ({ domain, range, type }) => {
-    const removeUnknowns = true; // TODO with param
+    const removeUnknowns = true // TODO with param
     const domainForScale = removeUnknowns
       ? domain.filter(d => d != -8888)
-      : domain;
+      : domain
     const baseScale = d3[type || "scaleThreshold"]()
       .domain(domainForScale)
-      .range(range);
+      .range(range)
 
     const colorScale = v => {
       if (type === "scaleLinear" && v === null)
-        return baseScale(domainForScale[1]);
-      const noData = v === "zzz" || v === -9999;
-      const unknownVal = v === "yyy" || v === -8888;
-      if (noData) return "#b3b3b3";
-      else if (unknownVal) return range[0];
+        return baseScale(domainForScale[1])
+      const noData = v === "zzz" || v === -9999
+      const unknownVal = v === "yyy" || v === -8888
+      if (noData) return "#b3b3b3"
+      else if (unknownVal) return range[0]
       else {
         if (supportType === "jee") {
           if (typeof v === "number") {
-            v = Util.getScoreShortName(v);
+            v = Util.getScoreShortName(v)
           }
-          return baseScale(v);
-        } else return baseScale(v);
+          return baseScale(v)
+        } else return baseScale(v)
       }
-    };
+    }
 
     // Define d3 variables that are needed (not real versions!)
-    colorScale.type = type;
+    colorScale.type = type
     colorScale.values =
-      type === "scaleQuantile" ? baseScale.quantiles() : baseScale.domain();
-    colorScale.domain = () => baseScale.domain();
-    colorScale.range = () => baseScale.range();
-    colorScale.supportType = supportType;
-    return colorScale;
-  };
+      type === "scaleQuantile" ? baseScale.quantiles() : baseScale.domain()
+    colorScale.domain = () => baseScale.domain()
+    colorScale.range = () => baseScale.range()
+    colorScale.supportType = supportType
+    return colorScale
+  }
 
   if (supportType === "inkind") {
     return colorScaleMaker({
       domain: [5, 10, 15, 20, 25],
       // domain: [5, 10, 15, 20, 25, 30],
       range: entityRole === "funder" ? greens : purples,
-    });
+    })
   } else if (supportType === "funds") {
     // Get values for use in calculating quantile scales.
     const values = Object.values(data)
       .map(d => {
-        return d[flowType] !== undefined ? d[flowType] : null;
+        return d[flowType] !== undefined ? d[flowType] : null
       })
-      .filter(d => d !== null && d !== "unknown");
+      .filter(d => d !== null && d !== "unknown")
 
     return colorScaleMaker({
       domain: values,
       range: entityRole === "funder" ? greens : purples,
       type: "scaleQuantile",
-    });
+    })
   } else if (supportType === "funds_and_inkind") {
     // Get values for use in calculating quantile scales.
     const values = Object.values(data)
       .map(d => {
-        return d[flowType] !== undefined ? d[flowType] : null;
+        return d[flowType] !== undefined ? d[flowType] : null
       })
-      .filter(d => d !== null && d !== "unknown");
+      .filter(d => d !== null && d !== "unknown")
 
     return colorScaleMaker({
       domain: values,
       range: entityRole === "funder" ? greens : purples,
       type: "scaleQuantile",
-    });
+    })
   } else if (supportType === "needs_met") {
-    const valueData = supportType === "needs_met" ? dataNeedsMet : data;
+    const valueData = supportType === "needs_met" ? dataNeedsMet : data
     const values = valueData
       .map(d => {
-        return d.needs_met;
+        return d.needs_met
       })
-      .filter(d => d >= 0);
+      .filter(d => d >= 0)
 
     return colorScaleMaker({
       domain: [d3.min(values), d3.max(values)],
       range: [blues[0], blues[blues.length - 1]],
       type: "scaleLinear",
-    });
+    })
   } else if (supportType === "jee") {
     return colorScaleMaker({
       domain: [
@@ -245,13 +239,13 @@ export const getMapColorScale = ({
       // ],
       range: jeeColors,
       type: "scaleOrdinal",
-    });
+    })
   } else
     return d3
       .scaleLinear()
       .domain([0, 1e5])
-      .range(["white", "purple"]);
-};
+      .range(["white", "purple"])
+}
 
 /**
  * Given various parameters, determines the map tooltip label text that should
@@ -272,27 +266,27 @@ export const getMapTooltipLabel = ({
   maxYear,
 }) => {
   if (val === -8888 || val === "yyy") {
-    return <span className={"text-sm"}>Specific amounts not indicated</span>;
+    return <span className={"text-sm"}>Specific amounts not indicated</span>
   } else {
     if (supportType === "jee") {
       if (val === -9999 || val === "zzz") {
-        return <span>No JEE score data currently available</span>;
-      } else return <b>{Util.getScoreName(val)}</b>;
-    } else if (val === -9999 || val === "zzz" || val === undefined) return "";
+        return <span>No JEE score data currently available</span>
+      } else return <b>{Util.getScoreName(val)}</b>
+    } else if (val === -9999 || val === "zzz" || val === undefined) return ""
     else {
       const timeString =
-        minYear === maxYear ? `in ${minYear}` : `from ${minYear} to ${maxYear}`;
+        minYear === maxYear ? `in ${minYear}` : `from ${minYear} to ${maxYear}`
       const flowTypeToUse =
-        supportType === "needs_met" ? "disbursed_funds" : flowType;
+        supportType === "needs_met" ? "disbursed_funds" : flowType
       return (
         <span>
           Total <b>{Util.formatLabel(flowTypeToUse)}</b> {timeString} (
           {entityRole})
         </span>
-      );
+      )
     }
   }
-};
+}
 
 /**
  * Returns an explanation for an unknown value if applicable
@@ -303,12 +297,12 @@ export const getMapTooltipLabel = ({
  */
 export const getUnknownValueExplanation = ({ datum, value, entityRole }) => {
   if (isUnknownCredit(value)) {
-    const nodeType = entityRole === "funder" ? "origin" : "target";
+    const nodeType = entityRole === "funder" ? "origin" : "target"
     return (
       <span>
         {datum[nodeType].name} included as {entityRole} for multilateral group
         projects
       </span>
-    );
-  } else return undefined;
-};
+    )
+  } else return undefined
+}

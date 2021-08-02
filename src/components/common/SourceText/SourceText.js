@@ -1,14 +1,13 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import classNames from "classnames";
-import moment from "moment";
-import styles from "./sourcetext.module.scss";
+import React, { useState } from "react"
+import { Link } from "react-router-dom"
+import moment from "moment"
+import styles from "./sourcetext.module.scss"
+import classNames from "classnames"
 
 const SourceText = ({
   label = "Data sources",
   linkTo = "/about/data",
   children,
-  ...props
 }) => {
   const component =
     children === undefined ? (
@@ -17,65 +16,95 @@ const SourceText = ({
       </Link>
     ) : (
       <div className={styles.custom}>{children}</div>
-    );
-  return component;
-};
+    )
+  return component
+}
 
-export const Website = ({
+const Website = ({
   url,
   name,
   date_published,
   publication,
   notes,
   linksOnly = true,
-  ...props
 }) => {
   // CONSTANTS //
-  const notesJsx = notes !== "" ? <> {notes}.</> : null;
+  const notesJsx = notes !== "" ? <>. {notes} </> : null
   const dateJsx =
     date_published !== null ? (
       <> {moment(date_published).format("MMM D, YYYY")}. </>
-    ) : null;
+    ) : null
   if (linksOnly) {
     return (
-      <a href={url} target={"_blank"}>
-        {publication}
-      </a>
-    );
+      <>
+        <a className={styles.url} href={url} target={"_blank"}>
+          {publication}
+        </a>
+        <>{notesJsx}</>
+      </>
+    )
   } else
     return (
       <span>
         "<i>{name}</i>." {publication}. {dateJsx}
         {
-          <a href={url} target={"_blank"}>
+          <a className={styles.url} href={url} target={"_blank"}>
             {url}
           </a>
         }
-        .{notesJsx}
+        {notesJsx}
       </span>
-    );
-};
+    )
+}
 
 export const WebsiteList = ({ websites, linksOnly }) => {
+  const limit = 1
+  const withinLimit = websites.length <= limit
+  const [showAll, setShowAll] = useState(withinLimit)
   if (linksOnly) {
     return websites.map((d, i) => {
-      const comma = i !== websites.length - 1 ? ", " : null;
+      const comma = i !== websites.length - 1 ? ", " : null
       return (
         <>
           <Website {...{ ...d, linksOnly }} />
           {comma}
         </>
-      );
-    });
+      )
+    })
   } else {
-    return websites.map(d => (
-      <ul className={styles.sourceTextList}>
-        <li>
-          <Website {...{ ...d, linksOnly }} />
-        </li>
-      </ul>
-    ));
+    if (websites.length === 1)
+      return (
+        <>
+          {": "}
+          <Website {...{ ...websites[0], linksOnly }} />
+        </>
+      )
+    else
+      return (
+        <>
+          {websites
+            .map(d => (
+              <ul className={styles.sourceTextList}>
+                <li>
+                  <Website {...{ ...d, linksOnly }} />
+                </li>
+              </ul>
+            ))
+            .slice(0, showAll ? websites.length : limit)}
+          {!withinLimit && (
+            <span
+              className={styles.showAll}
+              onClick={() => setShowAll(!showAll)}
+            >
+              View {showAll ? "fewer" : "all " + websites.length} sources
+              <span
+                className={classNames("caret", { [styles.flipped]: showAll })}
+              />{" "}
+            </span>
+          )}
+        </>
+      )
   }
-};
-
-export default SourceText;
+}
+SourceText.Website = Website
+export default SourceText

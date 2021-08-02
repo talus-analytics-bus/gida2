@@ -1,0 +1,111 @@
+$phone: "screen and (max-width: 812px)";
+
+.paginator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  // margin-bottom: 20px;
+  @media #{$phone} {
+    // reflow vertically on mobile
+    flex-flow: column-reverse;
+    align-items: flex-start;
+  }
+
+  .right {
+    align-items: right;
+  }
+
+  .rightSide {
+    display: flex;
+    align-items: center;
+  }
+
+  .rowNumberTracker {
+    margin-top: 5px;
+  }
+  .pageButtons {
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    @media #{$phone} {
+      // add spacing below page buttons on mobile
+      margin-bottom: 1rem;
+    }
+    // page buttons
+    .pageButton {
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      justify-content: center;
+      padding: 18px 12px;
+
+      &.selected {
+        //  border-color: #337ab7;
+        background-color: #337ab7;
+        color: white;
+      }
+      &.disabled {
+        color: lightgray;
+        cursor: not-allowed;
+      }
+      &:not(.disabled) {
+        &:hover {
+          background-color: darken(white, 5%);
+        }
+        &:active {
+          background-color: darken(white, 10%);
+        }
+      }
+
+      &.control {
+        font-size: 1.5em;
+        span {
+          position: relative;
+          top: -2px;
+        }
+      }
+
+      // hide extra borders
+      &:not(:first-child) {
+        border-left: none;
+      }
+
+      // border styling
+      $border-radius: 4px;
+      &:first-child {
+        border-radius: $border-radius 0 0 $border-radius;
+      }
+      &:last-child {
+        border-radius: 0 $border-radius $border-radius 0;
+      }
+
+      // mobile friendliness
+      @media #{$phone} {
+        // hide all but selected page button on mobile
+        &:not(.selected):not(.control) {
+          display: none;
+        }
+        &.selected {
+          min-width: 4rem;
+        }
+        &.control {
+          width: 2rem;
+        }
+      }
+    }
+  }
+}
+
+// pagesize picker (select)
+.pagesizePicker {
+  display: flex;
+  label {
+    margin: 0;
+    margin-right: 5px;
+  }
+  &.below {
+    margin-top: 10px;
+  }
+}

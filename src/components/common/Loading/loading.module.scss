@@ -22,12 +22,24 @@
   position: relative;
   .imgContainer {
     margin: 0 auto;
+    display: flex;
+    flex-flow: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    i {
+      margin-bottom: 10px;
+    }
     img {
       width: 50px;
       // height: 50px;
       animation: rotation 12s infinite linear;
     }
-    // @include placeholder(50px);
+    .message {
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 10px;
+    }
   }
 
   &.small {
@@ -35,10 +47,17 @@
       margin: 0;
       img {
         width: 30px;
-        // height: 30px;
         animation: rotation 12s infinite linear;
       }
-      // @include placeholder(30px);
+    }
+  }
+  &.tiny {
+    .imgContainer {
+      margin: 0;
+      img {
+        width: 15px;
+        animation: rotation 12s infinite linear;
+      }
     }
   }
 

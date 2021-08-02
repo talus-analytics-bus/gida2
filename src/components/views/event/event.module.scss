@@ -1,0 +1,81 @@
+@import "../../../assets/styles/colors.scss";
+
+.events {
+  position: relative;
+  $spacing: 20px;
+  $band-height: 138px;
+  min-height: 75vh;
+
+  p {
+    font-size: 1.6rem;
+  }
+
+  .band {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    height: $band-height;
+    width: 100vw;
+    background-color: #0a3154;
+  }
+  .content {
+    z-index: 0;
+    .title {
+      @include title;
+      color: white;
+      font-weight: 400;
+      margin-bottom: $spacing;
+      font-size: 2.5rem; // 25px
+      text-transform: uppercase;
+    }
+    .card {
+      background-color: white;
+      border-radius: $border-radius * 2; // 10px
+      padding: 40px;
+      box-shadow: $layout-box-shadow;
+      .cols {
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        $col-spacing: $spacing * 3;
+        .col:first-child {
+          margin-right: $col-spacing;
+        }
+        .col:last-child {
+          margin-left: $col-spacing;
+        }
+        .col {
+          @include spaceChildrenVert($spacing * 2);
+        }
+      }
+    }
+    .subsections {
+      margin-bottom: 60px;
+      .subsection {
+        // margin: 60px 0;
+        padding-top: 60px;
+        h2 {
+          @include eventTitle;
+          font-size: 3rem;
+          margin-bottom: 30px;
+          margin-top: 0;
+        }
+
+        .header {
+          .title {
+          }
+          .instructions {
+            // includes radio toggles
+          }
+        }
+        .content {
+        }
+      }
+    }
+  }
+
+  .noDataContent {
+    padding-bottom: $spacing;
+    font-style: italic;
+  }
+}

@@ -80,6 +80,57 @@ jobs:
             --distribution-id E375JMTWL12BHY \
             --paths "/*"
 
+  deploy-dev2-dev3:
+    working_directory: ~/repo
+
+    docker:
+      - image: circleci/node:12.16.3-stretch
+    environment:
+      API_URL: https://ghs-tracking-api-dev2.ghscosting.org/
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install deployment dependencies
+          working_directory: /
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get install python3-pip python3-dev g++ build-essential
+            sudo pip3 install --upgrade setuptools pytz
+            sudo pip3 install awsebcli --upgrade
+
+      - aws-cli/install
+      - aws-cli/configure
+
+      - run:
+          name: Install packages
+          command: rm yarn.lock; yarn install --network-timeout 1000000
+
+      - run:
+          name: Deploy to first dev site
+          command: yarn run deploy-dev
+
+      - run:
+          name: Invalidate CloudFront cache for first dev site
+          command: |
+            aws cloudfront create-invalidation \
+            --distribution-id E375JMTWL12BHY \
+            --paths "/*"
+
+      # - run:
+      #     name: Invalidate CloudFront cache for second dev site
+      #     command: |
+      #       aws cloudfront create-invalidation \
+      #       --distribution-id E51RCTR83HBYL \
+      #       --paths "/*"
+      # - run:
+      #     name: Invalidate CloudFront cache for third dev site
+      #     command: |
+      #       aws cloudfront create-invalidation \
+      #       --distribution-id E2FFGJGPGYWRIT \
+      #       --paths "/*"
+
 workflows:
   version: 2
   build:
@@ -94,3 +145,9 @@ workflows:
             branches:
               only:
                 - dev
+                - events
+      # - deploy-dev2-dev3:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - events

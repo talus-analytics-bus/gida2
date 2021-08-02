@@ -42,8 +42,9 @@
         }
       }
       > a,
-      > div > a {
+      > div a {
         color: $black;
+        // color: $black;
         &:hover:not(.active) {
           color: $primary-light-blue;
         }
@@ -51,10 +52,19 @@
         &:focus {
           text-decoration: none;
         }
-        &.active {
+        &.active,
+        &.activeSubpage {
           font-family: "open_sanssemibold", sans-serif;
+          &.activeSubpage {
+            color: $primary-light-blue;
+          }
+        }
+        // highlight in gray any submenu items
+        &.activeSubpage {
+          background-color: #f5f5f5;
         }
       }
+
       align-items: center;
     }
   }
