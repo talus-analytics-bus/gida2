@@ -26,6 +26,10 @@
     }
   }
 
+  // &.right {
+  //   margin-left: auto;
+  // }
+
   &.close {
     cursor: pointer;
     background-color: #e6e6e6 !important;
@@ -73,6 +77,9 @@
     padding: 5px;
     &:hover {
       background-color: darken(white, 5%);
+    }
+    &.padded {
+      padding: 10px 30px;
     }
   }
   &.primary {

@@ -26,6 +26,7 @@ import { Toggle } from "react-toggle-component"
 
 // Local content components
 import Map from "./content/Map.js"
+import { EventFilter } from "../../../../misc/EventFilter/EventFilter"
 
 // FC for MapViewer.
 const MapViewer = ({
@@ -424,17 +425,13 @@ const MapViewer = ({
   const filters = (
     <div>
       {fundType === "event" && (
-        <FilterDropdown
+        <EventFilter
           {...{
-            label: "PHEIC",
-            options: outbreakOptions,
-            placeholder: "Select PHEIC",
-            onChange: v => setEvents(v.map(d => d.value)),
-            curValues: events,
-            className: [styles.italic],
-            isDark: isDark,
+            outbreakOptions,
+            events,
+            setEvents,
+            isDark,
             openDirection: "up",
-            setValues: setEvents,
           }}
         />
       )}

@@ -1,4 +1,6 @@
 .disclaimer {
-    color: red;
-    font-size: 1.25em;
+    &:not(.unformatted) {
+        color: red;
+        font-size: 1.25em;
+    }
 }

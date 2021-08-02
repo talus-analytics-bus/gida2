@@ -42,6 +42,7 @@ import spinnerImg from "./assets/images/spinner.svg"
 
 // styles
 import styles from "./App.module.scss"
+import modalStyles from "./Modal.module.scss"
 import "./components/views/details/details.module.scss"
 // import "material-design-icons/iconfont/material-icons.css";
 
@@ -140,10 +141,12 @@ const App = () => {
       modal
     >
       {close => (
-        <div className={styles.modal}>
-          <div className={styles.header}>Please try a different browser</div>
-          <div className={styles.content}>
-            <div className={styles.text}>
+        <div className={modalStyles.modal}>
+          <div className={modalStyles.header}>
+            Please try a different browser
+          </div>
+          <div className={modalStyles.content}>
+            <div className={modalStyles.text}>
               <p>
                 This site was designed for Chrome and Firefox desktop browsers,
                 but you seem to be using an unsupported browser.

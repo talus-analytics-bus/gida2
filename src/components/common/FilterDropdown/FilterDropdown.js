@@ -45,7 +45,9 @@ const FilterDropdown = ({ label, options, onChange, className, ...props }) => {
       <ReactMultiSelectCheckboxes
         styles={customStyles}
         placeholderButtonLabel={props.placeholder}
-        options={options}
+        options={options.map(d => {
+          return { ...d, disabled: true }
+        })}
         onChange={onChange}
         getDropdownButtonLabel={({ placeholderButtonLabel, value }) => {
           if (value === undefined || value.length === 0)

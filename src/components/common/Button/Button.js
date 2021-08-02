@@ -11,7 +11,7 @@ import plusWhite from "../../../assets/images/plus-white.svg"
  */
 const Button = ({
   label,
-  url,
+  url = null,
   disabled = false,
   iconName = null,
   ...props
@@ -28,6 +28,8 @@ const Button = ({
         [styles.closeBadge]: props.type === "close-badge",
         [styles.dark]: props.isDark,
         [styles.disabled]: disabled,
+        [styles.right]: props.right,
+        [styles.padded]: props.padded,
       })}
     >
       {props.type === "close" && (

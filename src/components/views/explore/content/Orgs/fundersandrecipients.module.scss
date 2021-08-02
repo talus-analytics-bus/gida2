@@ -52,6 +52,9 @@
   .filterContainer {
     width: 400px;
     @include spaceChildrenVert(20px);
+    [class^="popup-overlay"] {
+      margin-bottom: 0;
+    }
   }
   .tables {
     display: flex;

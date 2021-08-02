@@ -1,0 +1,46 @@
+@import "src/assets/styles/colors.scss";
+$spacing: 15px;
+.modal {
+    padding: $spacing;
+    border-radius: 0;
+    .header {
+        font-family: "rawline", serif;
+        font-size: 2.19em;
+        font-weight: bold;
+        line-height: 1.1;
+        color: #132338;
+        padding-bottom: $spacing;
+        margin-bottom: $spacing;
+        border-bottom: 2px solid #6d6e70;
+    }
+    .content {
+        .text {
+            font-family: "Open Sans", sans-serif;
+            font-size: 1.19em;
+            line-height: 1.5;
+            p:not(:last-of-type) {
+                margin: $spacing * 2 0;
+            }
+        }
+        .actions {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            button {
+                &:not(:last-of-type) {
+                    margin-right: 1em;
+                }
+                margin-top: $spacing;
+                a {
+                    text-decoration: none;
+                    color: #333;
+                }
+            }
+        }
+    }
+
+    // dark mode
+    &.dark {
+        background-color: $dark-background-color;
+    }
+}

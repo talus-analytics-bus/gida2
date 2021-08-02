@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react"
 import ReactTooltip from "react-tooltip"
+import Modal from "reactjs-popup"
+
 import classNames from "classnames"
 import styles from "./fundersandrecipients.module.scss"
 import tooltipStyles from "../../../../common/tooltip.module.scss"
@@ -26,6 +28,7 @@ import { getNodeLinkList } from "../../../../misc/Data.js"
 import SourceText from "../../../../common/SourceText/SourceText.js"
 import InfoBox from "../../../../map/InfoBox.js"
 import { Flag } from "./Flag"
+import { EventFilter } from "../../../../misc/EventFilter/EventFilter"
 
 // FC for Orgs.
 /**
@@ -204,17 +207,11 @@ const FundersAndRecipients = ({
   const filters = (
     <div className={styles.filterContainer}>
       {ghsaOnly === "event" && (
-        <FilterDropdown
+        <EventFilter
           {...{
-            label: "Select PHEICs",
-            options: outbreakOptions,
-            placeholder: "Select PHEIC",
-            onChange: v => setEvents(v.map(d => d.value)),
-            curValues: events,
-            className: [styles.italic],
-            isDark: false,
-            openDirection: "down",
-            setValues: setEvents,
+            outbreakOptions,
+            events,
+            setEvents,
           }}
         />
       )}

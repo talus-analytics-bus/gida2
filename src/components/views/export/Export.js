@@ -13,6 +13,7 @@ import { searchableSubcats } from "../../common/Search/Search"
 
 // Content components
 import ExportTable, { getFlowQueryForDataPage } from "./ExportTable.js"
+import { Disclaimer } from "../event"
 
 export const cols = [
   ["name", "Project name", true],
@@ -347,6 +348,10 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
             </div>,
           ],
         }}
+      />
+      <Disclaimer
+        style={{ marginTop: 20, maxWidth: 800 }}
+        show={outbreaks.some(v => v.value === 673)}
       />
       {dataTable}
     </div>
