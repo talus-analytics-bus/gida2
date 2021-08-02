@@ -26,15 +26,15 @@ $spacing: 15px;
             width: 100%;
             display: flex;
             justify-content: flex-end;
+            > :not(:last-child) {
+                margin-right: 1em;
+            }
             button {
-                &:not(:last-of-type) {
-                    margin-right: 1em;
-                }
                 margin-top: $spacing;
-                a {
-                    text-decoration: none;
-                    color: #333;
-                }
+            }
+            a {
+                text-decoration: none;
+                color: #333;
             }
         }
     }

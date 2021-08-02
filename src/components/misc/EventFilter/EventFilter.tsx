@@ -81,17 +81,15 @@ export const EventFilter: FC<EventFilterProps> = ({
                   />
                 </div>
                 <div className={modalStyles.actions}>
-                  <Button
-                    padded
-                    label={
-                      <Link to={"/events/2009-2010-h1n1-swine-flu"}>
-                        Go to H1N1 PHEIC page
-                      </Link>
-                    }
-                    type={"secondary"}
-                    onClick={close}
-                    {...{ isDark }}
-                  />
+                  <Link to={"/events/2009-2010-h1n1-swine-flu"}>
+                    <Button
+                      padded
+                      label={"Go to H1N1 PHEIC page"}
+                      type={"secondary"}
+                      onClick={close}
+                      {...{ isDark }}
+                    />
+                  </Link>
                   <Button
                     label={"Dismiss"}
                     type={"primary"}
