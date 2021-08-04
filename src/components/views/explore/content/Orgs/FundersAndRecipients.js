@@ -130,10 +130,10 @@ const FundersAndRecipients = ({
     }
 
     // add outbreak events filters
-    if (events.length > 0) {
+    if (events.length > 0 && ghsaOnly === "event") {
       nodeSumsFilters["Event.id"] = events
     }
-    if (coreCapacities.length > 0) {
+    if (coreCapacities.length > 0 && ghsaOnly !== "event") {
       nodeSumsFilters["Core_Capacity.name"] = coreCapacities
     }
 
