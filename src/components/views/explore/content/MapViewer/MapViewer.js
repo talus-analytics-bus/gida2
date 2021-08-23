@@ -556,36 +556,36 @@ const MapViewer = ({
         </div>
       ),
     },
-    {
-      slug: "combined",
-      header: "Combined",
-      content: (
-        <div className={styles.tabContent}>
-          <div className={styles.section}>
-            <RadioToggle
-              label={""}
-              callback={v => {
-                if (
-                  v === "needs_met" &&
-                  (entityRole !== "recipient" || fundType !== "capacity")
-                ) {
-                  if (entityRole !== "recipient") setEntityRole("recipient")
-                  if (fundType !== "capacity_for_needs_met")
-                    setFundType("capacity_for_needs_met")
-                }
-                setSupportType(v)
-              }}
-              curVal={supportType}
-              choices={combined_toggle_data}
-            />
-          </div>
-          <div className={styles.section}>
-            <div className={styles.sectionTitle}>Filter by</div>
-            {filters}
-          </div>
-        </div>
-      ),
-    },
+    // {
+    //   slug: "combined",
+    //   header: "Combined",
+    //   content: (
+    //     <div className={styles.tabContent}>
+    //       <div className={styles.section}>
+    //         <RadioToggle
+    //           label={""}
+    //           callback={v => {
+    //             if (
+    //               v === "needs_met" &&
+    //               (entityRole !== "recipient" || fundType !== "capacity")
+    //             ) {
+    //               if (entityRole !== "recipient") setEntityRole("recipient")
+    //               if (fundType !== "capacity_for_needs_met")
+    //                 setFundType("capacity_for_needs_met")
+    //             }
+    //             setSupportType(v)
+    //           }}
+    //           curVal={supportType}
+    //           choices={combined_toggle_data}
+    //         />
+    //       </div>
+    //       <div className={styles.section}>
+    //         <div className={styles.sectionTitle}>Filter by</div>
+    //         {filters}
+    //       </div>
+    //     </div>
+    //   ),
+    // },
   ]
 
   const mapTitleData = getMapTitle({ fundType, supportType, entityRole })
