@@ -6,7 +6,7 @@ import EntityRoleToggle from "../../../../misc/EntityRoleToggle.js"
 import GhsaToggle from "../../../../misc/GhsaToggle.js"
 import RadioToggle from "../../../../misc/RadioToggle.js"
 import { Settings } from "../../../../../App.js"
-import Util, { getLastUpdatedDate } from "../../../../misc/Util.js"
+import { getLastUpdatedDate } from "../../../../misc/Util.js"
 import {
   execute,
   NodeSums,
@@ -47,7 +47,6 @@ const MapViewer = ({
   })
 
   // STATE //
-  const [data, setData] = useState(null)
   const [nodeSums, setNodeSums] = useState([])
   const [outbreaks, setOutbreaks] = useState([])
   const [jeeScores, setJeeScores] = useState([])
@@ -92,9 +91,6 @@ const MapViewer = ({
         "This metric combines both a country's JEE scores and the amount of disbursed funds that the country has received. We use JEE scores as a proxy for country-specific needs, and calculate the ratio of financial resources to need. The goal of this metric is to highlight areas whose needs may still be unmet based on their ratio of financial resources to need.",
     },
   ]
-
-  // Track main map title
-  const [mapTitle, setMapTitle] = useState("funds")
 
   // Track whether to show main menu
   const [showControls, setShowControls] = useState(true)
@@ -162,38 +158,25 @@ const MapViewer = ({
     }
     if (fundType === "capacity_for_needs_met") setSupportType("needs_met")
   }
-  const getAuxData = async () => {
-    // Define queries for map page.
-    const queries = {
-      jeeScores: Assessment({
-        format: "map",
-        scoreType: "JEE v1",
-      }),
-      outbreaks: Outbreak({}),
-    }
-
-    // Get query results.
-    const results = await execute({ queries })
-    setJeeScores(results.jeeScores)
-    setOutbreaks(results.outbreaks)
-    setLoadedAux(true)
-  }
 
   // EFFECT HOOKS //
   // load data for map when needed
   useEffect(() => {
     if (!loadedData) getData()
+    // eslint-disable-next-line
   }, [loadedData])
 
   // when parameters change, refresh the data
   useEffect(() => {
     if (loadedData) setLoadedData(false)
+    // eslint-disable-next-line
   }, [minYear, maxYear, events, fundType, coreCapacities, entityRole])
 
   // when map, data, and aux data loaded, update `initialized` if needed
   useEffect(() => {
     if (loadedData && loadedAux && !initializedData) setInitializedData(true)
     if (loaded && initializedData && !initialized) setInitialized(true)
+    // eslint-disable-next-line
   }, [loaded && loadedData, loadedAux])
 
   // toggle dark mode
@@ -203,6 +186,7 @@ const MapViewer = ({
       setIsDark(false)
       setPage(undefined)
     }
+    // eslint-disable-next-line
   }, [])
 
   /**
@@ -246,7 +230,6 @@ const MapViewer = ({
   // Get year range to use in title
   const yearRange =
     minYear === maxYear ? minYear.toString() : `${minYear} - ${maxYear}`
-  const transactionTypeDisplay = Util.getInitCap(transactionType) + " funds"
   const getMapTitle = ({ fundType, supportType, entityRole }) => {
     if (
       supportType === "funds" ||
@@ -258,13 +241,6 @@ const MapViewer = ({
         fund: "",
         filters: "",
       }
-
-      // suffix
-      let suffix = ""
-      if (supportType === "funds") suffix = " (financial)"
-      else if (supportType === "inkind") suffix = " (in-kind)"
-      else if (supportType === "funds_and_inkind")
-        suffix = " (financial and in-kind)"
 
       // Role text
       if (entityRole === "recipient") {
@@ -340,13 +316,6 @@ const MapViewer = ({
     } else return "[Error] Unknown map metric"
   }
 
-  // Get whether metric has transaction type
-  const metricHasTransactionType = [
-    "funds",
-    "inkind",
-    "funds_and_inkind",
-  ].includes(supportType)
-
   // Define map menu sections
   const [curTab, setCurTab] = useState(
     supportTypeDefault === "jee" ? "scores" : "funding",
@@ -381,6 +350,7 @@ const MapViewer = ({
       setEntityRole("recipient")
       setFundType("capacity_for_needs_met") // TODO dynamically
     }
+    // eslint-disable-next-line
   }, [curTab])
 
   const outbreakOptions =
