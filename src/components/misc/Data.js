@@ -557,10 +557,11 @@ export const getNodeLinkList = ({
 export const getTableCellCodeFromVal = ({ val, type, ...props }) => {
   const undefinedOrNull = val === undefined || val === null
   const unknown = val === "unknown"
+  const neg = val < 0
   switch (type) {
     case "num":
       // If undefined or null, return -9999, which represents "n/a".
-      if (undefinedOrNull) return -9999
+      if (undefinedOrNull || neg) return -9999
       // If "unknown", return -8888, which represents ("Specific amount
       // unknown").
       if (unknown) return -8888

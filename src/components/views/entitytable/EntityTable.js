@@ -248,8 +248,9 @@ const EntityTable = ({
           ]}
           tableData={data.fundsByOther.filter(
             f =>
-              f.committed_funds !== undefined ||
-              f.disbursed_funds !== undefined,
+              (f.committed_funds !== undefined ||
+                f.disbursed_funds !== undefined) &&
+              (f.committed_funds > 0 || f.disbursed_funds > 0),
           )}
         />
       ),
@@ -289,8 +290,9 @@ const EntityTable = ({
           ]}
           tableData={data.fundsBySame.filter(
             f =>
-              f.committed_funds !== undefined ||
-              f.disbursed_funds !== undefined,
+              (f.committed_funds !== undefined ||
+                f.disbursed_funds !== undefined) &&
+              (f.committed_funds > 0 || f.disbursed_funds > 0),
           )}
         />
       ),
