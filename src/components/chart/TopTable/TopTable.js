@@ -126,7 +126,15 @@ const TopTable = ({
               },
             },
           ].concat(topTableCols)}
-          tableData={data ? data.filter(d => d[curFlowType] !== undefined) : []}
+          tableData={
+            data
+              ? data.filter(
+                  d =>
+                    d[curFlowType] !== undefined &&
+                    !Object.values(d[curFlowType]).some(v => v < 0),
+                )
+              : []
+          }
         />
       )}
     </Loading>
