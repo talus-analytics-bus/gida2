@@ -3,6 +3,12 @@ import { Link } from "react-router-dom"
 import styles from "./about.module.scss"
 import classNames from "classnames"
 
+const ExtLink = ({ url, children = url }) => (
+  <a href={url} rel="noreferrer" target="_blank">
+    {children}
+  </a>
+)
+
 // JSX for about page.
 const DataSources = () => {
   // Scroll to top of window afer loading.
@@ -377,13 +383,7 @@ const DataSources = () => {
                 prevent, detect, and respond to public health threats. Publicly
                 available mission reports and executive summaries describing
                 these evaluations are available at{" "}
-                <a
-                  target="_blank"
-                  href="https://www.who.int/ihr/procedures/mission-reports/en/"
-                >
-                  https://www.who.int/ihr/procedures/mission-reports/en/
-                </a>
-                .
+                <ExtLink url={"https://extranet.who.int/sph/jee"} />.
               </td>
             </tr>
             <tr>
