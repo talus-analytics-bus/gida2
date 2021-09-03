@@ -744,6 +744,11 @@ const Details = ({
 export default Details
 function shouldShowFlag(nodeData) {
   return (
-    nodeData.flag_url !== undefined && !localFlags.includes(nodeData.flag_url)
+    nodeData.flag_url !== undefined &&
+    !localFlags.includes(nodeData.flag_url) &&
+    !(
+      nodeData.subcat === "state_/_department_/_territory" &&
+      nodeData.cat === "government"
+    )
   )
 }
