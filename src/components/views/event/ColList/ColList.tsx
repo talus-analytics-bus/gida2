@@ -1,5 +1,5 @@
 // 3rd party libs
-import React, { useState, useEffect } from "react"
+import React, { useState, FC } from "react"
 import { Link } from "react-router-dom"
 
 // styles
@@ -10,16 +10,26 @@ import { comma } from "../../../misc/Util"
 
 // local components
 import { Loading } from "../../../common"
-import InfoTooltip from "../../../misc/InfoTooltip"
+import { ReactElement } from "react-router/node_modules/@types/react"
 
-const ColList = ({ items = [], max = 10, isGlobal = false }) => {
+interface ColListProps {
+  items: object[]
+  max: number
+  isGlobal: boolean
+}
+
+const ColList: FC<ColListProps> = ({
+  items = [],
+  max = 10,
+  isGlobal = false,
+}): ReactElement => {
   // STATE //
   const [viewAll, setViewAll] = useState(
-    items.length !== 0 && items.length <= max,
+    items.length !== 0 && items.length <= max + 1,
   )
 
   // FUNCTIONS //
-  const getListItemJsx = d => {
+  const getListItemJsx = (d: any) => {
     if (d.label === undefined) return null
     if (d.url !== undefined && !isGlobal) {
       return (
@@ -35,7 +45,7 @@ const ColList = ({ items = [], max = 10, isGlobal = false }) => {
     else if (items.length === 0) return null
     else if (viewAll) {
       return comma(items.length)
-    } else if (items.length > max) {
+    } else if (items.length > max + 1) {
       return <span className={styles.topTenLabel}>top 10 by total cases</span>
     } else return comma(items.length)
   }
@@ -47,7 +57,7 @@ const ColList = ({ items = [], max = 10, isGlobal = false }) => {
     </button>
   )
 
-  const nItems = viewAll ? items.length : max
+  const nItems = viewAll ? items.length : max + 1
   const list1 = items.slice(0, Math.ceil(nItems / 2)).map(d => {
     return getListItemJsx(d)
   })
@@ -59,7 +69,7 @@ const ColList = ({ items = [], max = 10, isGlobal = false }) => {
     <div className={styles.items}>
       <div className={styles.itemCol}>{list1}</div>
       <div className={styles.itemCol}>{list2}</div>
-      {items.length > max && toggle}
+      {items.length > max + 1 && toggle}
     </div>
   )
 

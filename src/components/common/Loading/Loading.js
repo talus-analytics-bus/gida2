@@ -1,9 +1,7 @@
 import React from "react"
-import { Link } from "react-router-dom"
 import classNames from "classnames"
 import styles from "./loading.module.scss"
 import spinnerImg from "../../../assets/images/loading.gif"
-// import spinnerImg from "../../../assets/images/spinner.svg";
 
 const Loading = ({
   loaded = true,
@@ -15,12 +13,12 @@ const Loading = ({
   children,
 
   // custom styles
-  margin,
-  top,
-  messageTop,
-  right,
-  position,
-  minHeight,
+  margin = undefined,
+  top = undefined,
+  messageTop = undefined,
+  right = undefined,
+  position = undefined,
+  minHeight = undefined,
   ...props
 }) => {
   return (
