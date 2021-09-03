@@ -67,6 +67,7 @@ const Details = ({
 
   // track flows used to calc. total event funding
   const [eventTotalsData, setEventTotalsData] = useState(null)
+  const [filteredEvents, setFilteredEvents] = useState(false)
   const [nodeData, setNodeData] = useState({})
   const [nodesData, setNodesData] = useState({})
   const defaultPvs = { eds: [], data: [], loading: true }
@@ -421,13 +422,16 @@ const Details = ({
           slug: "event",
           header: "PHEIC funding",
           invis: eventTotalsData === null, // not yet loaded
-          hide: noData || noFinancialData || noEventTotalsRecords,
+          hide:
+            noData ||
+            noFinancialData ||
+            (noEventTotalsRecords && !filteredEvents),
           content: [
             {
               header: (
                 <div>
                   <h2>
-                    PHEIC funding projects <br />
+                    PHEIC funding projects (all time) <br />
                   </h2>
                 </div>
               ),
@@ -463,7 +467,10 @@ const Details = ({
                       otherDirection,
                       entityRole,
                       otherEntityRole,
-                      setEventTotalsData, // set flows to var. for totals
+                      setEventTotalsData: (newData, searchText) => {
+                        setFilteredEvents(searchText !== "")
+                        setEventTotalsData(newData)
+                      }, // set flows to var. for totals
                       isGhsaPage: id === "ghsa",
                       sortByProp: `amount-${curFlowType}`,
                     }}
@@ -536,7 +543,9 @@ const Details = ({
         if (haveEvent) setCurTab("event")
         else if (havePvs) setCurTab("pvs")
         else setCurTab(null)
-      } else if (eventTotalsData.length === 0) setCurTab("ihr")
+      } else if (eventTotalsData.length === 0 && !filteredEvents) {
+        setCurTab("ihr")
+      }
     } else setCurTab("ihr")
   }, [noData, inkindOnly, pvs, eventTotalsData, entityRole, id])
 
@@ -549,7 +558,7 @@ const Details = ({
 
   // if no PHEIC data then set current tab to IHR
   useEffect(() => {
-    if (noEventTotalsRecords) setCurTab("ihr")
+    if (noEventTotalsRecords && !filteredEvents) setCurTab("ihr")
   }, [eventTotalsData])
 
   useLayoutEffect(() => {
