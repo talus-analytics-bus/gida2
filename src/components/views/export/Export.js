@@ -393,6 +393,7 @@ const getComponentData = async ({ setComponent, setLoadingSpinnerOn }) => {
     // Information about the entity
     stakeholders: Stakeholder({
       by: "id",
+      includeParentId: true,
     }),
     outbreaks: Outbreak({}),
   }
