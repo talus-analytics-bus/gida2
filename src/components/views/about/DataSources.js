@@ -3,8 +3,13 @@ import { Link } from "react-router-dom"
 import styles from "./about.module.scss"
 import classNames from "classnames"
 
-const ExtLink = ({ url, children = url }) => (
-  <a href={url} rel="noreferrer" target="_blank">
+const ExtLink = ({ url, children = url, breakwords = false }) => (
+  <a
+    style={{ wordBreak: breakwords ? "break-all" : undefined }}
+    href={url}
+    rel="noopener noreferrer"
+    target="_blank"
+  >
     {children}
   </a>
 )
@@ -309,16 +314,22 @@ const DataSources = () => {
                   The WHO Contingency Fund for Emergencies (CFE) was established
                   by the World Health Assembly in 2015 as a means to respond
                   quickly and effectively to disease outbreaks and humanitarian
-                  crises. Information about commitments made to the CFE in 2018
-                  is available online here. Additional data on contributions to
-                  and allocations from the fund are found online at{" "}
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://www.who.int/emergencies/funding/contingency-fund-for-emergencies"
-                  >
-                    https://www.who.int/emergencies/funding/contingency-fund-for-emergencies
-                  </a>
+                  crises. Information about commitments made to the CFE in 2020
+                  is available online at{" "}
+                  <ExtLink
+                    breakwords
+                    url={"https://apps.who.int/iris/handle/10665/342236"}
+                  />
+                  . Additional data on contributions to and allocations from the
+                  fund from 2015 to present are found online at{" "}
+                  <ExtLink
+                    breakwords
+                    url={
+                      "https://www.who.int/emergencies/funding/" +
+                      "contingency-fund-for-emergencies/" +
+                      "contributions-and-allocations"
+                    }
+                  />
                   .
                 </p>
               </td>

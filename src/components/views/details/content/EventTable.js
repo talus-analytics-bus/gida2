@@ -284,7 +284,7 @@ const EventTable = ({
       setFlows(newFlows)
       setNTotalRecords(results.flows.paging.n_records)
       setOutbreaks(results.outbreaks)
-      setEventTotalsData(newFlows)
+      setEventTotalsData(newFlows, searchText)
       setDataLoaded(true)
       setLoaded(true)
     }

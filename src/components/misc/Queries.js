@@ -223,6 +223,7 @@ export const Stakeholder = async function({
   by,
   limit,
   filters,
+  includeParentId = false,
 }) {
   const params = new URLSearchParams()
   const toCheck = [
@@ -231,6 +232,7 @@ export const Stakeholder = async function({
     ["search", search],
     ["by", by],
     ["limit", limit],
+    ["include_parent_id", includeParentId],
   ]
   toCheck.forEach(([k, v]) => {
     if (![undefined, null, ""].includes(v)) {

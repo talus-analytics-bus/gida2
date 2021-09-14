@@ -530,13 +530,13 @@ export const getNodeLinkList = ({
         )}
         {doParentUrl && !parentIsUnlinkable && showAsLink && (
           <span>
-            <Link to={url}>{node.parent.name}</Link> (via {node.name})
+            <Link to={url}>{node.parent.name}</Link> ({node.name})
             {i !== nodeList.length - 1 && <span>; </span>}
           </span>
         )}
         {doParentUrl && (parentIsUnlinkable || !showAsLink) && (
           <span>
-            {node.parent.name} (via {node.name})
+            {node.parent.name} ({node.name})
             {i !== nodeList.length - 1 && <span>; </span>}
           </span>
         )}

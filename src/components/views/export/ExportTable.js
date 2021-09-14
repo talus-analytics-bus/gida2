@@ -148,7 +148,12 @@ const ExportTable = ({
       prop: "origins",
       entity: "project_constants",
       type: "text",
-      func: d => d.origins.map(dd => stakeholders[dd].name).join("; "),
+      func: d =>
+        d.origins
+          .map(shId =>
+            getShParentName({ shId, stakeholders, withSuborg: true }),
+          )
+          .join("; "),
       render: d => <ShowMore {...{ text: d, charLimit: 100 }} />,
     },
     {
@@ -161,7 +166,12 @@ const ExportTable = ({
       prop: "targets",
       entity: "project_constants",
       type: "text",
-      func: d => d.targets.map(dd => stakeholders[dd].name).join("; "),
+      func: d =>
+        d.targets
+          .map(shId =>
+            getShParentName({ shId, stakeholders, withSuborg: true }),
+          )
+          .join("; "),
       render: d => getLimitedText(d),
     },
     {
@@ -334,6 +344,18 @@ export const getFlowQueryForDataPage = ({
 }
 
 export default ExportTable
+function getShParentName({ shId, stakeholders, withSuborg = false }) {
+  // get parent name from id
+  const shInfo = stakeholders[shId]
+  const parentShId = shInfo["parent_id"]
+  if (parentShId === undefined || parentShId === null) return shInfo.name
+  else {
+    const parentShInfo = stakeholders[parentShId]
+    if (withSuborg) return `${parentShInfo.name} (${shInfo.name})`
+    else return parentShInfo.name
+  }
+}
+
 function getLimitedText(d) {
   return <ShowMore {...{ text: d, charLimit: 90 }} />
 }

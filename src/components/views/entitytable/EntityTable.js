@@ -51,10 +51,10 @@ const EntityTable = ({
   const getAssistanceTableCols = flowTypeInfo => {
     return allFlowTypes.map(ft => {
       const match = flowTypeInfo.find(d => d.name === ft)
+      const allFlowTitle = match.display_name
+      // const allFlowTitle = `${match.display_name} (${Settings.startYear} - ${Settings.endYear})`
       return {
-        title: `${match.display_name} (${Settings.startYear} - ${
-          Settings.endYear
-        })`,
+        title: allFlowTitle,
         prop: match.name,
         render: val => Util.formatValue(val, match.name),
         type: "num",
@@ -113,6 +113,14 @@ const EntityTable = ({
   const [isDesc, setIsDesc] = useState(true)
   const [searchText, setSearchText] = useState("")
 
+  const committedFundsTitle = "Committed funds"
+  const disbursedFundsTitle = "Disbursed funds"
+  // const committedFundsTitle = `Committed funds (${Settings.startYear} - ${
+  //   Settings.endYear
+  // })`
+  // const disbursedFundsTitle = `Disbursed funds (${Settings.startYear} - ${
+  //   Settings.endYear
+  // })`
   const sections = [
     {
       header: <>All funds{financialCount}</>,
@@ -179,9 +187,7 @@ const EntityTable = ({
                     render: val => Util.formatValue(val, "project_name"),
                   },
                   {
-                    title: `Committed funds (${Settings.startYear} - ${
-                      Settings.endYear
-                    })`,
+                    title: committedFundsTitle,
                     func: d => d.committed_funds,
                     type: "num",
                     className: d => (d > 0 ? "num" : "num-with-text"),
@@ -191,9 +197,7 @@ const EntityTable = ({
                     defaultContent: "n/a",
                   },
                   {
-                    title: `Disbursed funds (${Settings.startYear} - ${
-                      Settings.endYear
-                    })`,
+                    title: disbursedFundsTitle,
                     func: d => d.disbursed_funds,
                     type: "num",
                     className: d => (d > 0 ? "num" : "num-with-text"),
@@ -224,9 +228,7 @@ const EntityTable = ({
           tableColumns={[
             otherEntityRole === "funder" ? funderCol : recipientCol,
             {
-              title: `Committed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
+              title: committedFundsTitle,
               func: d => d.committed_funds,
               type: "num",
               className: d => (d > 0 ? "num" : "num-with-text"),
@@ -235,9 +237,7 @@ const EntityTable = ({
               defaultContent: "n/a",
             },
             {
-              title: `Disbursed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
+              title: disbursedFundsTitle,
               func: d => d.disbursed_funds,
               type: "num",
               className: d => (d > 0 ? "num" : "num-with-text"),
@@ -266,9 +266,7 @@ const EntityTable = ({
           tableColumns={[
             otherEntityRole === "funder" ? recipientCol : funderCol,
             {
-              title: `Committed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
+              title: committedFundsTitle,
               func: d => d.committed_funds,
               type: "num",
               className: d => (d > 0 ? "num" : "num-with-text"),
@@ -277,9 +275,7 @@ const EntityTable = ({
               defaultContent: "n/a",
             },
             {
-              title: `Disbursed funds (${Settings.startYear} - ${
-                Settings.endYear
-              })`,
+              title: disbursedFundsTitle,
               func: d => d.disbursed_funds,
               type: "num",
               className: d => (d > 0 ? "num" : "num-with-text"),
@@ -801,11 +797,11 @@ const getComponentData = async ({
   const isGhsaPage = id === "ghsa"
 
   const nodeSumsFilters = {
-    "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
+    // "Flow.year": [["gt_eq", Settings.startYear], ["lt_eq", Settings.endYear]],
     "Stakeholder.subcat": [["neq", ["sub-organization", "agency"]]],
   }
   const flowFilters = {
-    "Project_Constants.min_year": [["gt_eq", Settings.startYear]],
+    // "Project_Constants.min_year": [["gt_eq", Settings.startYear]],
   }
 
   if (isGhsaPage) {
