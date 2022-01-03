@@ -239,8 +239,8 @@ function adjustMinMax(min, max) {
     }
   } else {
     max = moment()
-    const addYear = moment().year() - min.year() < 3
-    if (addYear) max.add(1, "year")
+    // const addYear = moment().year() - min.year() < 3
+    // if (addYear) max.add(1, "year")
   }
   return [min, max]
 }

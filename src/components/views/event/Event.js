@@ -302,9 +302,8 @@ function PheicTooltip() {
         place: "bottom",
         text: (
           <p>
-            A PHEIC, or{" "}
-            <strong>public health emergency of international concern</strong>,
-            is a declaration used by the World Health Organization (WHO) when a
+            A PHEIC, or public health emergency of international concern, is a
+            declaration used by the World Health Organization (WHO) when a
             public health threat unexpectedly emerges that has the potential to
             spread beyond the affected country’s national borders. The
             International Health Regulations (2005) confer certain legal
