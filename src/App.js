@@ -326,6 +326,12 @@ const App = () => {
                   render={d => {
                     setPage("event")
                     const slug = d.match.params.slug
+                    if (slug === "2019-2021-covid-19-pandemic")
+                      return (
+                        <Redirect to={"/events/2019-2022-covid-19-pandemic"} />
+                      )
+                    if (slug === "2014-2021-poliovirus")
+                      return <Redirect to={"/events/2014-2022-poliovirus"} />
                     return (
                       <FlowTypeProvider value={flowTypeInfo}>
                         <Event
