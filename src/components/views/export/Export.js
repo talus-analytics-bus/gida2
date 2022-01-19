@@ -247,7 +247,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                       url={
                         showClear
                           ? undefined
-                          : "/export/GHS Tracking - Full Data Export.xlsx"
+                          : "/export/GHS Tracking - Full Data Export (v6).xlsx"
                       }
                       sameWindow={true}
                       callback={
