@@ -18,6 +18,17 @@ const Background = ({ ...props }) => {
     <div className={classNames(styles.about, "pageContainer")}>
       <div className={styles.aboutContainer}>
         <div className={styles.header}>
+          <div className={styles.accessibility}>
+            <p>
+              If you have any accessibility issues using this site, please
+              contact us directly at{" "}
+              <a href="mailto:accessibility@talusanalytics.com">
+                accessibility@talusanalytics.com
+              </a>
+              .
+            </p>
+          </div>
+
           <div className={styles.title}>Background and methods</div>
           <div className={styles.description}>
             <p>
