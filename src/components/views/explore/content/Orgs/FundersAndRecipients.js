@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react"
+import { Helmet } from "react-helmet"
 import ReactTooltip from "react-tooltip"
-import Modal from "reactjs-popup"
 
 import classNames from "classnames"
 import styles from "./fundersandrecipients.module.scss"
@@ -464,6 +464,9 @@ const FundersAndRecipients = ({
   // JSX //
   return (
     <div className={classNames(styles.orgs, "pageContainer")}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>Funders and recipients</title>
+      </Helmet>
       {
         // HEADER
         <div className={styles.header}>

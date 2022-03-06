@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { Helmet } from "react-helmet"
 import ReactTooltip from "react-tooltip"
 import styles from "./map.module.scss"
 import tooltipStyles from "../../../../../common/tooltip.module.scss"
@@ -395,6 +396,9 @@ const Map = ({
       : undefined
   return (
     <div className={classNames(styles.map, { [styles.dark]: isDark })}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>Map</title>
+      </Helmet>
       <D3Map
         {...{
           mapData,

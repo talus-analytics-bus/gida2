@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from "react"
+import { Helmet } from "react-helmet"
 import styles from "./details.module.scss"
 import classNames from "classnames"
 import { Settings } from "../../../App.js"
@@ -576,6 +577,9 @@ const Details = ({
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.details)}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>{nodeData.name && `${nodeData.name}, ${entityRole}`}</title>
+      </Helmet>
       <div className={styles.header}>
         {!ghsa && (
           <div

@@ -1,4 +1,5 @@
 import React from "react"
+import { Helmet } from "react-helmet"
 import styles from "./about.module.scss"
 import classNames from "classnames"
 
@@ -8,6 +9,9 @@ const Citations = () => {
   React.useEffect(() => window.scrollTo(0, 0), [])
   return (
     <div className={classNames(styles.about, "pageContainer")}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>About: Citations</title>
+      </Helmet>
       <div className={styles.aboutContainer}>
         <div className={styles.header}>
           <div className={styles.title}>Citations and data use</div>

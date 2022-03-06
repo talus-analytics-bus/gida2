@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { Helmet } from "react-helmet"
 import classNames from "classnames"
 import styles from "./export.module.scss"
 import Util from "../../misc/Util.js"
@@ -149,6 +150,9 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.export)}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>Data</title>
+      </Helmet>
       <div className={styles.header}>
         <div className={styles.title}>Download data</div>
       </div>
