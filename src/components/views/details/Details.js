@@ -508,10 +508,10 @@ const Details = ({
   )
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
-  const addDefaultSrc = ev => {
-    ev.target.src = "/flags/unspecified.png"
-    setShowFlag(false)
-  }
+  // const addDefaultSrc = ev => {
+  //   ev.target.src = "/flags/unspecified.png"
+  //   setShowFlag(false)
+  // }
 
   // update all data when `id` changes
   useEffect(() => {
@@ -593,7 +593,8 @@ const Details = ({
         <div className={styles.countryBanner}>
           <div className={styles.bannerRow}>
             <div className={styles.countryName}>
-              {showFlag && flag && flag}
+              <Loading small={false} loaded={nodeData.name !== undefined} />
+              {showFlag && flag}
               <h1>{nodeData.name}</h1>
             </div>
             {!ghsa && (
