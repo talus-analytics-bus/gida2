@@ -48,6 +48,7 @@ import "./components/views/details/details.module.scss"
 
 // Misc
 import Modal from "reactjs-popup"
+import MobileDisclaimer from "./components/common/MobileDisclaimer/MobileDisclaimer.js"
 
 //: FC
 const App = () => {
@@ -187,7 +188,7 @@ const App = () => {
             </OutbreakProvider>
           </StakeholderProvider>
           <Switch>
-            <div>
+            <div className={classNames(styles.page)}>
               <Route
                 exact
                 path="/explore/map"
@@ -493,22 +494,17 @@ const App = () => {
           </Switch>
           <BrowserDetection>{modalToShow}</BrowserDetection>
         </BrowserRouter>
-        {
-          <Footer
-            {...{ versionData, isDark, isWide: page === "explore-map" }}
-          />
-        }
-        {
-          <div
-            id={"loadingSpinner"}
-            className={classNames(styles.loadingSpinner, {
-              [styles.on]: page !== "home" && page !== "about" && spinnerOn,
-            })}
-          >
-            <img src={spinnerImg} alt={"Loading spinner"} />
-            <div>Loading...</div>
-          </div>
-        }
+        <MobileDisclaimer />
+        <Footer {...{ versionData, isDark, isWide: page === "explore-map" }} />
+        <div
+          id={"loadingSpinner"}
+          className={classNames(styles.loadingSpinner, {
+            [styles.on]: page !== "home" && page !== "about" && spinnerOn,
+          })}
+        >
+          <img src={spinnerImg} alt={"Loading spinner"} />
+          <div>Loading...</div>
+        </div>
       </div>
     )
 }

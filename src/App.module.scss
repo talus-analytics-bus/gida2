@@ -8,6 +8,12 @@ $logo-height: 70px;
 // h1 {
 //   margin-bottom: 0;
 // }
+
+.page {
+  @media #{$phone} {
+    display: none;
+  }
+}
 .loadingSpinner {
   position: fixed;
   background-color: rgba(0, 0, 0, 0);

@@ -68,4 +68,12 @@
       align-items: center;
     }
   }
+  @media #{$phone} {
+    .content {
+      justify-content: center;
+    }
+    .links {
+      display: none !important;
+    }
+  }
 }
