@@ -1,5 +1,6 @@
 // 3rd party libs
 import React, { useState, useLayoutEffect } from "react"
+import { Helmet } from "react-helmet"
 import { Link } from "react-router-dom"
 
 // styles, colors, and assets
@@ -216,6 +217,9 @@ const Event = ({ slug, flowTypeInfo }) => {
 
   return (
     <div className={classNames(styles.events)}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>{data !== null && `${data.name}`}</title>
+      </Helmet>
       <div className={classNames("pageContainer", styles.content)}>
         <div className={styles.title}>
           Public health emergency of international concern (PHEIC){" "}

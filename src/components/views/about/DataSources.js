@@ -1,4 +1,5 @@
 import React from "react"
+import { Helmet } from "react-helmet"
 import { Link } from "react-router-dom"
 import styles from "./about.module.scss"
 import classNames from "classnames"
@@ -20,6 +21,9 @@ const DataSources = () => {
   React.useEffect(() => window.scrollTo(0, 0), [])
   return (
     <div className={classNames(styles.about, "pageContainer")}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>About: Data sources</title>
+      </Helmet>
       <div className={styles.aboutContainer}>
         <div className={styles.header}>
           <div className={styles.title}>Data sources</div>

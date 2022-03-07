@@ -1,10 +1,11 @@
+import React from "react"
+import { Helmet } from "react-helmet"
+import classNames from "classnames"
+import styles from "./home.module.scss"
 import PheicEntryCard from "./content/PheicEntryCard"
 import ProfileEntryCard from "./content/ProfileEntryCard"
 import FundingMapEntryCard from "./content/FundingMapEntryCard"
 import JeeMapEntryCard from "./content/JeeMapEntryCard"
-import React from "react"
-import classNames from "classnames"
-import styles from "./home.module.scss"
 
 // JSX for home page
 const Home = () => {
@@ -28,6 +29,7 @@ export default Home
 function Introduction() {
   return (
     <div className={styles.introduction}>
+      <Helmet titleTemplate={"Global Health Security Tracking"} />
       <p>
         The International Disease and Events Analysis (IDEA) Global Health
         Security Tracking site

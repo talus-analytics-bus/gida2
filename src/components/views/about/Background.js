@@ -1,4 +1,5 @@
 import React from "react"
+import { Helmet } from "react-helmet"
 import styles from "./about.module.scss"
 import classNames from "classnames"
 
@@ -16,6 +17,9 @@ const Background = ({ ...props }) => {
 
   return (
     <div className={classNames(styles.about, "pageContainer")}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>About: Background and methods</title>
+      </Helmet>
       <div className={styles.aboutContainer}>
         <div className={styles.header}>
           <div className={styles.accessibility}>

@@ -1,41 +1,45 @@
-import React from "react";
-import styles from "./about.module.scss";
-import classNames from "classnames";
-import {Button} from "../../common";
-import Util from "../../misc/Util.js";
-import axios from "axios";
+import React from "react"
+import { Helmet } from "react-helmet"
+import styles from "./about.module.scss"
+import classNames from "classnames"
+import { Button } from "../../common"
+import Util from "../../misc/Util.js"
+import axios from "axios"
 
 // JSX for about page.
 const Submit = ({ setLoadingSpinnerOn }) => {
-  const [uploadBody, setUploadBody] = React.useState(undefined);
-  const [fileName, setFileName] = React.useState("No file selected");
-  const [status, setStatus] = React.useState(undefined);
+  const [uploadBody, setUploadBody] = React.useState(undefined)
+  const [fileName, setFileName] = React.useState("No file selected")
+  const [status, setStatus] = React.useState(undefined)
 
   // Scroll to top of window after loading.
-  React.useEffect(() => window.scrollTo(0, 0), []);
+  React.useEffect(() => window.scrollTo(0, 0), [])
   React.useEffect(() => {
     if (uploadBody !== undefined) {
-      const el = document.getElementById("upload");
-      if (el) el.click();
+      const el = document.getElementById("upload")
+      if (el) el.click()
     }
-  }, [uploadBody]);
+  }, [uploadBody])
 
   const upload = () => {
-    const els = document.getElementsByClassName("form-control");
-    const newUploadBody = [];
+    const els = document.getElementsByClassName("form-control")
+    const newUploadBody = []
     for (let elIdx = 0; elIdx < els.length; elIdx++) {
-      const el = els[elIdx];
+      const el = els[elIdx]
       newUploadBody.push(
         <div>
           <input name={el.name} id={el.name} value={el.value} />
-        </div>
-      );
+        </div>,
+      )
     }
-    setUploadBody(newUploadBody);
-  };
+    setUploadBody(newUploadBody)
+  }
 
   return (
     <div className={classNames(styles.about, "pageContainer")}>
+      <Helmet titleTemplate={"%s | Global Health Security Tracking"}>
+        <title>About: Submit data</title>
+      </Helmet>
       <div className={styles.aboutContainer}>
         <div className={styles.header}>
           <div className={styles.title}>Submit data</div>
@@ -61,7 +65,7 @@ const Submit = ({ setLoadingSpinnerOn }) => {
                     <span>
                       <span
                         className={classNames(
-                          "glyphicon glyphicon-download-alt"
+                          "glyphicon glyphicon-download-alt",
                         )}
                       />
                       Download data reporting template
@@ -128,8 +132,8 @@ const Submit = ({ setLoadingSpinnerOn }) => {
                   label={"Upload completed data reporting template"}
                   type={"secondary"}
                   callback={() => {
-                    const el = document.getElementById("file");
-                    if (el) el.click();
+                    const el = document.getElementById("file")
+                    if (el) el.click()
                   }}
                 />
                 <input
@@ -144,34 +148,34 @@ const Submit = ({ setLoadingSpinnerOn }) => {
                 label={"Submit data"}
                 type={"primary"}
                 callback={() => {
-                  upload();
+                  upload()
                 }}
               />
               {status}
               {
                 <form
                   onSubmit={(e, i) => {
-                    e.preventDefault();
-                    const el = document.getElementById("form");
-                    var formData = new FormData();
-                    var imagefile = el.elements.file;
+                    e.preventDefault()
+                    const el = document.getElementById("form")
+                    var formData = new FormData()
+                    var imagefile = el.elements.file
                     if (imagefile.files.length === 0) {
-                      alert("Please upload completed data reporting template.");
-                      return;
+                      alert("Please upload completed data reporting template.")
+                      return
                     }
-                    formData.append("file", imagefile.files[0]);
-                    const fields = ["first_name", "last_name", "org", "email"];
-                    let stop = false;
+                    formData.append("file", imagefile.files[0])
+                    const fields = ["first_name", "last_name", "org", "email"]
+                    let stop = false
                     fields.forEach(field => {
-                      if (stop) return;
+                      if (stop) return
                       if (el.elements[field].value === "") {
-                        alert("Please populate all fields before submitting.");
-                        stop = true;
-                        return;
+                        alert("Please populate all fields before submitting.")
+                        stop = true
+                        return
                       }
-                      formData.append(field, el.elements[field].value);
-                    });
-                    setLoadingSpinnerOn(true);
+                      formData.append(field, el.elements[field].value)
+                    })
+                    setLoadingSpinnerOn(true)
                     axios
                       .post(el.action, formData, {
                         headers: {
@@ -179,21 +183,21 @@ const Submit = ({ setLoadingSpinnerOn }) => {
                         },
                       })
                       .then(res => {
-                        setLoadingSpinnerOn(false);
+                        setLoadingSpinnerOn(false)
                         if (res.status === 200) {
                           setStatus(
                             <div className={styles.success}>
                               Thank you. Your data was submitted and will be
                               reviewed.
-                            </div>
-                          );
+                            </div>,
+                          )
                           // Remove all form values
                           const inputEls = document.getElementsByTagName(
-                            "input"
-                          );
+                            "input",
+                          )
                           for (let i = 0; i < inputEls.length; i++) {
-                            inputEls[i].value = "";
-                            setFileName("No file selected");
+                            inputEls[i].value = ""
+                            setFileName("No file selected")
                           }
                         } else {
                           setStatus(
@@ -207,10 +211,10 @@ const Submit = ({ setLoadingSpinnerOn }) => {
                                 info@talusanalytics.com
                               </a>{" "}
                               for assistance.
-                            </div>
-                          );
+                            </div>,
+                          )
                         }
-                      });
+                      })
                   }}
                   action={Util.API_URL + "/upload_file"}
                   method="POST"
@@ -226,15 +230,15 @@ const Submit = ({ setLoadingSpinnerOn }) => {
                         v.target.files !== undefined &&
                         v.target.files[0] !== undefined
                       ) {
-                        const fn = v.target.files[0].name;
+                        const fn = v.target.files[0].name
                         if (!fn.includes(".xlsx") && !fn.includes(".csv")) {
                           alert(
-                            "Please upload a file with extension .XLSX or .CSV"
-                          );
-                          v.target.value = "";
-                          setFileName("No file selected");
+                            "Please upload a file with extension .XLSX or .CSV",
+                          )
+                          v.target.value = ""
+                          setFileName("No file selected")
                         } else {
-                          setFileName(v.target.files[0].name);
+                          setFileName(v.target.files[0].name)
                         }
                       }
                     }}
@@ -255,7 +259,7 @@ const Submit = ({ setLoadingSpinnerOn }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Submit;
+export default Submit
