@@ -29,7 +29,10 @@ export default Home
 function Introduction() {
   return (
     <div className={styles.introduction}>
-      <Helmet titleTemplate={"Global Health Security Tracking"} />
+      <Helmet>
+        <title>sGlobal Health Security Tracking</title>"Global HealthsSecurity
+        Tracking"
+      </Helmet>
       <p>
         The International Disease and Events Analysis (IDEA) Global Health
         Security Tracking site
