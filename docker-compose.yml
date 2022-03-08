@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  frontend-build:
+    image: tracking-frontend-build
+    build:
+      context: .
+      dockerfile: Dockerfile.build
+    ports:
+      - 3000:80
+  api:
+    image: tracking-api
+    command: uvicorn main:app --host 0.0.0.0
+    ports:
+      - 8000:8000
+    build:
+      context: ../ghs-tracking-api
+      dockerfile: ../ghs-tracking-api/Dockerfile.api
+    env_file: ../ghs-tracking-api/.env
+
+
+  # # Dev frontend below
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     - REACT_APP_API_URL=http://localhost:8000
+  #     - REACT_APP_GOAL_URL=https://goal.ghscosting.org
+  #     - REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com
+  #     - REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com
+  #   command: yarn start
