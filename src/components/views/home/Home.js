@@ -30,8 +30,7 @@ function Introduction() {
   return (
     <div className={styles.introduction}>
       <Helmet>
-        <title>sGlobal Health Security Tracking</title>"Global HealthsSecurity
-        Tracking"
+        <title>Global Health Security Tracking</title>
       </Helmet>
       <p>
         The International Disease and Events Analysis (IDEA) Global Health
