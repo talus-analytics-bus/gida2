@@ -263,7 +263,7 @@ const ExportTable = ({
   // Return JSX
   return (
     <div className={classNames("pageContainer", styles.exportTable)}>
-      <Loading {...{ loaded: initLoaded, slideUp: true, top: "-20px" }}>
+      <Loading {...{ loaded: initLoaded, slideUp: true, top: "0" }}>
         {dataTable}
       </Loading>
     </div>
