@@ -1,8 +1,8 @@
-import React from "react";
-import classNames from "classnames";
-import styles from "./timeslider.module.scss";
-import Slider from "rc-slider";
-import "rc-slider/assets/index.css";
+import React from "react"
+import classNames from "classnames"
+import styles from "./timeslider.module.scss"
+import Slider from "rc-slider"
+import "rc-slider/assets/index.css"
 // import "rc-tooltip/assets/bootstrap.css";
 
 /**
@@ -20,16 +20,17 @@ const TimeSlider = ({
 }) => {
   // Setup year slider components.
   // TODO make a component so we can reuse it.
-  const Range = Slider.Range;
-  const marks = {};
+  const Range = Slider.Range
+  const marks = {}
   for (let i = minYearDefault; i <= maxYearDefault; i++) {
-    marks[i] = i;
+    if (i !== minYearDefault && i !== maxYearDefault) marks[i] = `'${i - 2000}`
+    else marks[i] = i
   }
 
   return (
     <div
       className={classNames(styles.timeSlider, {
-        [styles.disabled]: props.disabled
+        [styles.disabled]: props.disabled,
       })}
     >
       <div>{label || "Select time range"}</div>
@@ -48,7 +49,7 @@ const TimeSlider = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default TimeSlider;
+export default TimeSlider
