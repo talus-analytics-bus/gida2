@@ -1,9 +1,8 @@
 // standard packages
-import React, { useState } from "react";
+import React, { useState } from "react"
 
 // assets and styles
-import { styles, toggle } from "./showmore.module.scss";
-import classNames from "classnames";
+import { styles, toggle } from "./showmore.module.scss"
 
 /**
  * @method ShowMore
@@ -11,35 +10,38 @@ import classNames from "classnames";
  * button to display more of them optionally.
  */
 export const ShowMore = ({ text = "", charLimit = 30 }) => {
-  // if text is less than the limit don't implement
-  const textShortEnough = text.length < charLimit;
-
   // true if "read more" is fully opened, false otherwise
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false)
+  if (text === null) return null
 
-  // message of read more button
-  const label = expanded ? "show less" : "show more";
+  // message of "read more" button
+  const label = expanded ? "show less" : "show more"
 
   // text to show
+  const textShortEnough = text.length < charLimit
   const textToShow = textShortEnough
     ? text
-    : getText({ text, expanded, charLimit });
+    : getText({
+        text,
+        expanded,
+        charLimit,
+      })
 
   return (
     <span className={styles}>
       {textToShow}{" "}
       <span
         onClick={e => {
-          e.stopPropagation();
-          setExpanded(!expanded);
+          e.stopPropagation()
+          setExpanded(!expanded)
         }}
         className={toggle}
       >
         {!textShortEnough && label}
       </span>
     </span>
-  );
-};
+  )
+}
 
 /**
  * Return full text if expanded or shortened text with ellipsis if not and its
@@ -51,17 +53,17 @@ export const ShowMore = ({ text = "", charLimit = 30 }) => {
  * @return {[type]}           [description]
  */
 const getText = ({ text, expanded, charLimit }) => {
-  if (expanded) return text;
+  if (expanded) return text
   else {
-    const words = text.split(" ");
-    let shortText = "";
+    const words = text.split(" ")
+    let shortText = ""
     for (let i = 0; i < words.length; i++) {
-      const wouldBeTooLong = (shortText + words[i]).length > charLimit;
-      if (wouldBeTooLong) break;
-      else shortText += " " + words[i];
+      const wouldBeTooLong = (shortText + words[i]).length > charLimit
+      if (wouldBeTooLong) break
+      else shortText += " " + words[i]
     }
-    return shortText + "...";
+    return shortText + "..."
   }
-};
+}
 
-export default ShowMore;
+export default ShowMore
