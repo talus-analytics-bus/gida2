@@ -311,6 +311,29 @@ const DataSources = () => {
             </tr>
             <tr>
               <td>
+                <p>WHO ACT-Accelerator Commitment Tracker</p>
+              </td>
+              <td>
+                <p>
+                  The WHO ACT-Accelerator (ACT-A) Commitment Tracker reports
+                  pledges in support of ACT-A Pillar budgets and co-convening
+                  agencies for COVID-19 response. The ACT-A Commitment Tracker
+                  defines cumulative amounts committed by donor, recipient, and
+                  Pillar for ACT-A financial requirements each budget year. The
+                  ACT-A Commitment does not track disbursements. Additional
+                  information about commitments made is available online at{" "}
+                  <ExtLink
+                    breakwords
+                    url={
+                      "https://www.who.int/publications/m/item/access-to-covid-19-tools-tracker"
+                    }
+                  />
+                  .
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
                 <p>WHO Contingency Fund for Emergencies</p>
               </td>
               <td>
