@@ -511,7 +511,7 @@ const App = () => {
 
 export const Settings = {
   startYear: 2014,
-  endYear: 2021,
+  endYear: 2022,
   recipientPurple: "#380A5C",
   recipientPurple2: "#5E3E78",
   funderGreen: "#384434",
