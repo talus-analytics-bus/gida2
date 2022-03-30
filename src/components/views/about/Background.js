@@ -5,7 +5,7 @@ import classNames from "classnames"
 
 // JSX for about page.
 const Background = ({ ...props }) => {
-  // Scroll to top of window afer loading.
+  // Scroll to top of window after loading.
   React.useEffect(() => window.scrollTo(0, 0), [])
   props.setLoadingSpinnerOn(false)
 
