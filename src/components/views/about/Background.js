@@ -10,7 +10,7 @@ const Background = ({ ...props }) => {
   props.setLoadingSpinnerOn(false)
 
   const techAppLink = (
-    <a href="/export/GHS Tracking Technical Appendix - July 2021.pdf">
+    <a href="/export/GHS Tracking Technical Appendix - March 2022.pdf">
       Technical Appendix
     </a>
   )
