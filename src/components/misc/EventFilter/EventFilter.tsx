@@ -55,6 +55,7 @@ export const EventFilter: FC<EventFilterProps> = ({
         }}
       />
       {
+        // @ts-ignore
         <Modal
           position="top center"
           on="click"

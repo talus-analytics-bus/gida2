@@ -134,6 +134,7 @@ const App = () => {
 
   // Define a modal to show if an unexpected or unsupported browser is detected
   const browserModal = browser => (
+    // @ts-ignore
     <Modal
       position="top center"
       on="click"
