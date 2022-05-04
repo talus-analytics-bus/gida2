@@ -21,6 +21,7 @@ const Header: React.FC = (props: any) => {
         </Link>
       )) ||
       (routePath && name && (
+        // @ts-ignore
         <Popup
           trigger={open => <button className={styles.button}>{name}</button>}
           position='top right'
@@ -47,6 +48,7 @@ const Header: React.FC = (props: any) => {
       {!props.showBack && (
         // Show settings gear (containing the watermark toggle checkbox) if the
         // "Back to map" button is not being shown in that space.
+        // @ts-ignore
         <Popup
           trigger={open => <i className='material-icons'>settings</i>}
           position='bottom left'
