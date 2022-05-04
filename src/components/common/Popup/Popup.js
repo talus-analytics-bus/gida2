@@ -14,10 +14,10 @@ import calendarSvg from "./svg/calendar.svg";
  * @method Popup
  */
 const Popup = ({
-  body,
+  body = null,
   header = [{ title: "Germany", label: "funder" }],
-  popupStyle,
-  style,
+  popupStyle = {},
+  style = {},
   align = "center",
 }) => {
   // JSX //
@@ -79,7 +79,7 @@ const Header = ({ header, style }) => {
 };
 
 const Body = ({ data, style }) => {
-  const isArr = data.map !== undefined;
+  const isArr = data !== null && Array.isArray(data)
   return (
     <div style={style} className={styles.body}>
       {!isArr && data}
