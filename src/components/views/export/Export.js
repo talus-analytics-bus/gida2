@@ -251,7 +251,7 @@ const Export = ({ data, setLoadingSpinnerOn, ...props }) => {
                       url={
                         showClear
                           ? undefined
-                          : "/export/GHS Tracking - Full Data Export (v8).xlsx"
+                          : `${process.env.REACT_APP_API_URL}/projects/xlsx/full`
                       }
                       sameWindow={true}
                       callback={
