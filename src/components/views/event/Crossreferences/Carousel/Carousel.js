@@ -18,7 +18,7 @@ const Carousel = ({ items, setGoalAgentName }) => {
   // CONSTANTS //
   const item = idx !== null && data[idx] !== undefined ? data[idx] : {}
   const imgSrc =
-    item.images !== undefined ? `${GOAL_URL}/${item.images[0].fn}` : null
+    item.images !== undefined ? `${item.images[0].fn}` : null
 
   // FUNCTIONS //
   const getData = async () => {
