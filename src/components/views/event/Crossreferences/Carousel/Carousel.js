@@ -6,7 +6,6 @@ import classNames from "classnames"
 import styles from "./carousel.module.scss"
 
 // local components
-import { GOAL_URL } from "../Crossreferences"
 import { GOALCaseStudies, execute } from "../../../../misc/Queries"
 
 const Carousel = ({ items, setGoalAgentName }) => {
