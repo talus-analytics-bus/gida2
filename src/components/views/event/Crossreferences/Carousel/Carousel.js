@@ -35,7 +35,7 @@ const Carousel = ({ items, setGoalAgentName }) => {
     return (
       <a
         target="_blank"
-        href={`https://goal.ghscosting.org/case-studies/${
+        href={`https://outbreaklibrary.org/case-studies/${
           item.id
         }?from=case-studies`}
       >
