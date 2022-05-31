@@ -56,7 +56,7 @@
     "eject": "react-scripts eject",
     "tslint": "./node_modules/.bin/tslint",
     "deploy-prod": "CI=false REACT_APP_GOAL_URL=https://outbreaklibrary.org REACT_APP_ENV_NAME=prod REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-prod.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-prod  --acl public-read --delete",
-    "deploy-dev": "CI=false REACT_APP_GOAL_URL=https://outbreaklibrary.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev3.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete",
+    "deploy-dev": "CI=false REACT_APP_GOAL_URL=https://outbreaklibrary.org REACT_APP_ENV_NAME=dev REACT_APP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_AMP_METRICS_API_URL=https://metric-api-test.talusanalytics.com REACT_APP_API_URL=https://ghs-tracking-api-dev3.ghscosting.org yarn build && aws s3 sync build/ s3://ghs-tracking-dev  --acl public-read --delete"
   },
   "eslintConfig": {
     "extends": "react-app"
