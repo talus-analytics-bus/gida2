@@ -28,7 +28,7 @@ const PheicEntryCard = () => {
           title: "Funding by PHEIC",
           className: styles.pheicEntryCard,
           description:
-            "View response funding for the six public health emergencies of international concern (PHEICs)",
+            "View response funding for the seven public health emergencies of international concern (PHEICs)",
           actions: [<PheicSelectpicker {...{ outbreaks }} />],
         }}
       />
