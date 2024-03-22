@@ -14,7 +14,7 @@ jobs:
         type: string
 
     docker:
-      - image: cimg/node:12
+      - image: cimg/node:12.22.6
       # - image: circleci/node:12.16.3-stretch
 
     steps:
